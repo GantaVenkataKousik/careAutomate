@@ -1,0 +1,219 @@
+.tenants-page {
+    padding: 20px;
+    margin-left: 0px; /* No margin for sidebar space */
+}
+
+.tenants-header {
+    margin-bottom: 20px;
+}
+
+.search-add-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    border: 1px solid #282727;
+    padding: 5px;
+    border-radius: 15px;
+    height: 25px;
+    width: 240px;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    margin-left: 10px;
+}
+
+.search-icon {
+    color: #888;
+}
+
+.add-tenant-btn {
+    background-color: #6F84F8;
+    width: 240px;
+    height: 40px;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.plus-icon {
+    margin-right: 5px;
+}
+
+.filters {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    position: relative; /* Position relative for filter and sort box positioning */
+}
+
+.sort-btn.active {
+    background-color: #4b6ee5; /* Change color to indicate active state */
+}
+
+.filter-btn, .sort-btn {
+    background-color: #6F84F8;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.filter-icon, .sort-icon {
+    margin-right: 5px;
+}
+
+/* Filter Box Styling */
+.filter-container {
+    position: absolute;
+    top: 250px; /* Position directly below the filter button */
+    left: 220px; /* Position beside the filter button */
+    background-color: #fff;
+    padding: 0px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 280px; /* Adjust width as needed */
+    max-height: 700px; /* Set a maximum height to ensure it doesn’t grow too large */
+    overflow-y: auto; /* Allow scrolling if content overflows */
+    display: none; /* Hide the filter box by default */
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1000; /* Ensure filter box is above other content */
+}
+
+.filter-container.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Sort Box Styling */
+.sort-container {
+    position: absolute;
+    top: 250px; /* Align top with the filter button */
+    left: 510px; /* Position the sort box beside the filter box */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 250px; /* Adjust width as needed */
+    max-height: 700px; /* Set a maximum height to ensure it doesn’t grow too large */
+    overflow-y: auto; /* Allow scrolling if content overflows */
+    display: none; /* Hide the sort box by default */
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1000; /* Ensure sort box is above other content */
+}
+
+.sort-container.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Grid Shifting */
+.tenant-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    transition: margin-left 0.3s ease; /* Smooth transition for grid shift */
+}
+
+.tenant-grid.shift-right-filter {
+    margin-left: 270px; /* Shift right when only filter is visible */
+}
+
+.tenant-grid.shift-right-both {
+    margin-left: 580px; /* Shift right when both filter and sort boxes are visible */
+}
+
+/* Tenant Box Styles */
+.tenant-box {
+    display: flex;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tenant-info {
+    flex: 2;
+    color: #505254;
+}
+
+.tenant-info h3 {
+    margin: 0;
+    color: #505254;
+}
+
+.tenant-info p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #505254;
+}
+
+.tenant-icons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.tenant-icon {
+    font-size: 18px;
+    color: #505254;
+    cursor: pointer;
+}
+
+.tenant-image {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tenant-image img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%; /* Circle image */
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.close-btn {
+    margin-top: 10px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+
+  

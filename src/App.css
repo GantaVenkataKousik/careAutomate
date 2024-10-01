@@ -1,0 +1,16 @@
+.app {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  display: flex;
+}
+
+.content {
+  margin-left: 200px;
+  padding: 20px;
+  width: calc(100% - 200px);
+  background-color: #f4f6f9;
+}
+
