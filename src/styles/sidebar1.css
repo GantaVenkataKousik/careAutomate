@@ -32,40 +32,61 @@
 }
 
 .upgrade-box {
-    width: 160px; /* Fixed width */
-    height: 200px; /* Fixed height */
+    width: 160px;
+    /* Fixed width */
+    height: 200px;
+    /* Fixed height */
     display: flex;
-    flex-direction: column; /* Align items vertically */
+    flex-direction: column;
+    /* Align items vertically */
     align-items: center;
     justify-content: center;
-    background-color: #6F84F8; /* Background color of the box */
-    border-radius: 10px; /* Rounded corners */
-    position: absolute; /* Positioning to place it at the top */
-    top: 410px; /* Adjust top position as needed */
-    left: 45%; /* Center horizontally */
-    transform: translateX(-50%); /* Center horizontally */
-    padding: 10px; /* Padding inside the box */
-    box-sizing: border-box; /* Include padding and border in the box's total width and height */
-    overflow: hidden; /* Hide any content that overflows */
+    background-color: #6F84F8;
+    /* Background color of the box */
+    border-radius: 10px;
+    /* Rounded corners */
+    position: absolute;
+    /* Positioning to place it at the top */
+    top: 410px;
+    /* Adjust top position as needed */
+    left: 45%;
+    /* Center horizontally */
+    transform: translateX(-50%);
+    /* Center horizontally */
+    padding: 10px;
+    /* Padding inside the box */
+    box-sizing: border-box;
+    /* Include padding and border in the box's total width and height */
+    overflow: hidden;
+    /* Hide any content that overflows */
 }
 
 .diamond-icon {
-    font-size: 64px; /* Smaller icon size */
-    color: #ffcc00; /* Icon color */
-    margin-top: 2px; /* Reduce space between icon and text */
+    font-size: 64px;
+    /* Smaller icon size */
+    color: #ffcc00;
+    /* Icon color */
+    margin-top: 2px;
+    /* Reduce space between icon and text */
 }
 
 .upgrade-text {
-    text-align: center; /* Center align text */
-    color: white; /* Text color */
-    margin-top: 3px; /* Reduce space above text */
+    text-align: center;
+    /* Center align text */
+    color: white;
+    /* Text color */
+    margin-top: 3px;
+    /* Reduce space above text */
 }
 
 .upgrade-text p {
-    margin: 5px 0; /* Reduce margin around paragraphs */
-    font-size: 15px; /* Adjust font size if needed */
+    margin: 5px 0;
+    /* Reduce margin around paragraphs */
+    font-size: 15px;
+    /* Adjust font size if needed */
 }
-.upgrade-text .p1{
+
+.upgrade-text .p1 {
     font-size: 12px;
 }
 
@@ -73,13 +94,16 @@
     display: inline-block;
     background-color: #FFFFFF80;
     color: white;
-    padding: 6px 10px; /* Reduce padding */
+    padding: 6px 10px;
+    /* Reduce padding */
     border-radius: 8px;
     text-decoration: none;
     font-weight: bold;
     text-align: center;
-    margin-top: 10px; /* Adjust margin from text above */
-    font-size: 14px; /* Adjust font size */
+    margin-top: 10px;
+    /* Adjust margin from text above */
+    font-size: 14px;
+    /* Adjust font size */
 }
 
 .view-plans-btn:hover {

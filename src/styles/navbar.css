@@ -5,11 +5,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: fixed; /* Fixed position */
-    top: 0; /* Start from the top */
-    left: 0; /* Align to the left */
-    width: 100%; /* Full width of the viewport */
-    z-index: 1000; /* Ensure it stays above other content */
+    position: fixed;
+    /* Fixed position */
+    top: 0;
+    /* Start from the top */
+    left: 0;
+    /* Align to the left */
+    width: 100%;
+    /* Full width of the viewport */
+    z-index: 1000;
+    /* Ensure it stays above other content */
 }
 
 .navbar-left h2 {
@@ -34,36 +39,49 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px; /* Adjust size as needed */
-    color: white; /* White color for the icon */
+    font-size: 24px;
+    /* Adjust size as needed */
+    color: white;
+    /* White color for the icon */
     margin-right: 40px;
     margin-left: 10px;
 }
 
 .notification-icon::before {
-    content: "🔔"; /* Notification bell icon */
-    font-size: 24px; /* Size of the bell icon */
+    content: "🔔";
+    /* Notification bell icon */
+    font-size: 24px;
+    /* Size of the bell icon */
     color: white;
 }
 
 /* Badge styles */
 .notification-icon .notification-badge {
     position: absolute;
-    top: -5px; /* Position the badge above the icon */
-    right: -5px; /* Position the badge to the right of the icon */
-    width: 20px; /* Size of the badge */
-    height: 20px; /* Size of the badge */
-    border-radius: 50%; /* Make the badge round */
-    background-color: red; /* Red background for the badge */
-    color: white; /* White text color for the badge */
+    top: -5px;
+    /* Position the badge above the icon */
+    right: -5px;
+    /* Position the badge to the right of the icon */
+    width: 20px;
+    /* Size of the badge */
+    height: 20px;
+    /* Size of the badge */
+    border-radius: 50%;
+    /* Make the badge round */
+    background-color: red;
+    /* Red background for the badge */
+    color: white;
+    /* White text color for the badge */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px; /* Font size for the number */
+    font-size: 12px;
+    /* Font size for the number */
 }
 
 .notification-icon .notification-badge.hidden {
-    display: none; /* Hide badge if no notifications */
+    display: none;
+    /* Hide badge if no notifications */
 }
 
 .user-profile {

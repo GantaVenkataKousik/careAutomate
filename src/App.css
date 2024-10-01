@@ -1,7 +1,4 @@
-.app {
-  display: flex;
-  flex-direction: column;
-}
+.app {}
 
 .main-content {
   display: flex;
@@ -11,6 +8,5 @@
   margin-left: 200px;
   padding: 20px;
   width: calc(100% - 200px);
-  background-color: #f4f6f9;
+  display: flex;
 }
-

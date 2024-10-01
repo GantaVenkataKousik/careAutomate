@@ -30,16 +30,21 @@
   .sidebar-icon {
     margin-right: 10px;
   } */
-  .sidebar {
+.sidebar {
     background-color: #00000015;
     color: white;
     width: 210px;
-    height: 100vh; /* Full height of the viewport */
+    height: 100vh;
+    /* Full height of the viewport */
     padding-top: 70px;
-    position: fixed; /* Fixed position */
-    top: 0; /* Start from the top */
-    left: 0; /* Align to the left */
-    overflow-y: auto; /* Enable scrolling if content overflows */
+    position: fixed;
+    /* Fixed position */
+    top: 0;
+    /* Start from the top */
+    left: 0;
+    /* Align to the left */
+    overflow-y: auto;
+    /* Enable scrolling if content overflows */
 }
 
 .sidebar-menu {
@@ -48,8 +53,10 @@
 }
 
 .sidebar-menu li {
-    padding: 10px 15px; /* Adjust padding for spacing */
-    margin-bottom: 1px; /* Gap between menu items */
+    padding: 10px 15px;
+    /* Adjust padding for spacing */
+    margin-bottom: 1px;
+    /* Gap between menu items */
 }
 
 .sidebar-menu a {
@@ -69,38 +76,57 @@
 
 /* Upgrade box styling remains unchanged */
 .upgrade-box {
-    width: 180px; /* Fixed width */
-    height: 200px; /* Fixed height */
+    width: 180px;
+    /* Fixed width */
+    height: 200px;
+    /* Fixed height */
     display: flex;
-    flex-direction: column; /* Align items vertically */
+    flex-direction: column;
+    /* Align items vertically */
     align-items: center;
     justify-content: center;
-    background-color: #6F84F8; /* Background color of the box */
-    border-radius: 10px; /* Rounded corners */
-    position: absolute; /* Positioning to place it at the bottom */
-    bottom: 80px; /* Position at the bottom of the sidebar */
-    left: 48%; /* Center horizontally */
-    transform: translateX(-50%); /* Center horizontally */
-    padding: 10px; /* Padding inside the box */
-    box-sizing: border-box; /* Include padding and border in the box's total width and height */
-    overflow: hidden; /* Hide any content that overflows */
+    background-color: #6F84F8;
+    /* Background color of the box */
+    border-radius: 10px;
+    /* Rounded corners */
+    position: absolute;
+    /* Positioning to place it at the bottom */
+    bottom: 80px;
+    /* Position at the bottom of the sidebar */
+    left: 48%;
+    /* Center horizontally */
+    transform: translateX(-50%);
+    /* Center horizontally */
+    padding: 10px;
+    /* Padding inside the box */
+    box-sizing: border-box;
+    /* Include padding and border in the box's total width and height */
+    overflow: hidden;
+    /* Hide any content that overflows */
 }
 
 /* Inner component styles */
 .diamond-icon {
-    font-size: 64px; /* Icon size */
-    color: #ffcc00; /* Icon color */
-    margin-bottom: 5px; /* Space between icon and text */
+    font-size: 64px;
+    /* Icon size */
+    color: #ffcc00;
+    /* Icon color */
+    margin-bottom: 5px;
+    /* Space between icon and text */
 }
 
 .upgrade-text {
-    text-align: center; /* Center align text */
-    color: white; /* Text color */
+    text-align: center;
+    /* Center align text */
+    color: white;
+    /* Text color */
 }
 
 .upgrade-text p {
-    margin: 5px 0; /* Margin around paragraphs */
-    font-size: 15px; /* Font size */
+    margin: 5px 0;
+    /* Margin around paragraphs */
+    font-size: 15px;
+    /* Font size */
 }
 
 .upgrade-text .p1 {
@@ -111,16 +137,18 @@
     display: inline-block;
     background-color: #FFFFFF80;
     color: white;
-    padding: 6px 10px; /* Padding */
+    padding: 6px 10px;
+    /* Padding */
     border-radius: 8px;
     text-decoration: none;
     font-weight: bold;
     text-align: center;
-    margin-top: 10px; /* Margin from text above */
-    font-size: 14px; /* Font size */
+    margin-top: 10px;
+    /* Margin from text above */
+    font-size: 14px;
+    /* Font size */
 }
 
 .view-plans-btn:hover {
     background-color: #5b6dff;
 }
-

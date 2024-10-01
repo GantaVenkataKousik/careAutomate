@@ -1,30 +1,31 @@
 import React, { useState } from 'react';
 import { FaSearch, FaPlus, FaFilter, FaSort, FaCalendarAlt, FaBars, FaEnvelope, FaFileAlt } from 'react-icons/fa';
 import '../styles/tenants1.css';
-import '../styles/filter.css'; 
+import '../styles/filter.css';
 import '../styles/sort.css';
-import AddTenantPopup from './AddTenantPopup';
-import tenantImage from '../images/tenant.jpg'; 
+import tenantImage from '../images/tenant.jpg';
+import { useNavigate } from 'react-router-dom';
 
 const Tenants = () => {
+  const navigate = useNavigate();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [isFilterVisible, setIsFilterVisible] = useState(false); 
-  const [isSortVisible, setIsSortVisible] = useState(false); 
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [isSortVisible, setIsSortVisible] = useState(false);
 
   const handleAddTenantClick = () => {
-    setIsPopupVisible(!isPopupVisible);
+    navigate('/tenants/createTenant');
   };
 
   const toggleFilter = () => {
-    setIsFilterVisible(!isFilterVisible); 
+    setIsFilterVisible(!isFilterVisible);
     if (!isFilterVisible) {
-      setIsSortVisible(false); 
+      setIsSortVisible(false);
     }
   };
 
   const toggleSort = () => {
-    setIsSortVisible(!isSortVisible); 
-    setIsFilterVisible(true); 
+    setIsSortVisible(!isSortVisible);
+    setIsFilterVisible(true);
   };
 
 
@@ -35,9 +36,7 @@ const Tenants = () => {
     image: tenantImage, // Use the local image
   });
 
-  // Handle filter changes
   const handleFilterChange = (event) => {
-    // Implement filter logic based on the selected criteria
     console.log(event.target.value);
   };
 

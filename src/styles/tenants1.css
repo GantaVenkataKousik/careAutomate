@@ -1,6 +1,7 @@
 .tenants-page {
     padding: 20px;
-    margin-left: 0px; /* No margin for sidebar space */
+    margin-top: 25vh;
+    width: 80vw;
 }
 
 .tenants-header {
@@ -55,14 +56,17 @@
     margin-top: 20px;
     display: flex;
     gap: 10px;
-    position: relative; /* Position relative for filter and sort box positioning */
+    position: relative;
+    /* Position relative for filter and sort box positioning */
 }
 
 .sort-btn.active {
-    background-color: #4b6ee5; /* Change color to indicate active state */
+    background-color: #4b6ee5;
+    /* Change color to indicate active state */
 }
 
-.filter-btn, .sort-btn {
+.filter-btn,
+.sort-btn {
     background-color: #6F84F8;
     color: white;
     border: none;
@@ -73,27 +77,35 @@
     cursor: pointer;
 }
 
-.filter-icon, .sort-icon {
+.filter-icon,
+.sort-icon {
     margin-right: 5px;
 }
 
 /* Filter Box Styling */
 .filter-container {
     position: absolute;
-    top: 250px; /* Position directly below the filter button */
-    left: 220px; /* Position beside the filter button */
+    top: 250px;
+    /* Position directly below the filter button */
+    left: 220px;
+    /* Position beside the filter button */
     background-color: #fff;
     padding: 0px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    width: 280px; /* Adjust width as needed */
-    max-height: 700px; /* Set a maximum height to ensure it doesn’t grow too large */
-    overflow-y: auto; /* Allow scrolling if content overflows */
-    display: none; /* Hide the filter box by default */
+    width: 280px;
+    /* Adjust width as needed */
+    max-height: 700px;
+    /* Set a maximum height to ensure it doesn’t grow too large */
+    overflow-y: auto;
+    /* Allow scrolling if content overflows */
+    display: none;
+    /* Hide the filter box by default */
     opacity: 0;
     transform: translateY(-20px);
     transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 1000; /* Ensure filter box is above other content */
+    z-index: 1000;
+    /* Ensure filter box is above other content */
 }
 
 .filter-container.show {
@@ -105,20 +117,27 @@
 /* Sort Box Styling */
 .sort-container {
     position: absolute;
-    top: 250px; /* Align top with the filter button */
-    left: 510px; /* Position the sort box beside the filter box */
+    top: 250px;
+    /* Align top with the filter button */
+    left: 510px;
+    /* Position the sort box beside the filter box */
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    width: 250px; /* Adjust width as needed */
-    max-height: 700px; /* Set a maximum height to ensure it doesn’t grow too large */
-    overflow-y: auto; /* Allow scrolling if content overflows */
-    display: none; /* Hide the sort box by default */
+    width: 250px;
+    /* Adjust width as needed */
+    max-height: 700px;
+    /* Set a maximum height to ensure it doesn’t grow too large */
+    overflow-y: auto;
+    /* Allow scrolling if content overflows */
+    display: none;
+    /* Hide the sort box by default */
     opacity: 0;
     transform: translateY(-20px);
     transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 1000; /* Ensure sort box is above other content */
+    z-index: 1000;
+    /* Ensure sort box is above other content */
 }
 
 .sort-container.show {
@@ -132,15 +151,18 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
-    transition: margin-left 0.3s ease; /* Smooth transition for grid shift */
+    transition: margin-left 0.3s ease;
+    /* Smooth transition for grid shift */
 }
 
 .tenant-grid.shift-right-filter {
-    margin-left: 270px; /* Shift right when only filter is visible */
+    margin-left: 270px;
+    /* Shift right when only filter is visible */
 }
 
 .tenant-grid.shift-right-both {
-    margin-left: 580px; /* Shift right when both filter and sort boxes are visible */
+    margin-left: 580px;
+    /* Shift right when both filter and sort boxes are visible */
 }
 
 /* Tenant Box Styles */
@@ -191,7 +213,8 @@
     width: 50px;
     height: 50px;
     object-fit: cover;
-    border-radius: 50%; /* Circle image */
+    border-radius: 50%;
+    /* Circle image */
 }
 
 .popup {
@@ -214,6 +237,3 @@
     cursor: pointer;
     border-radius: 5px;
 }
-
-
-  

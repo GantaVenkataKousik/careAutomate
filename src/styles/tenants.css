@@ -1,12 +1,4 @@
 /* Container for tenants page */
-.tenants-page {
-    padding: 20px;
-    margin-left: 0; /* No margin by default */
-}
-
-.tenants-header {
-    margin-bottom: 20px;
-}
 
 .search-add-container {
     display: flex;
@@ -55,7 +47,8 @@
     position: relative;
 }
 
-.filter-btn, .sort-btn {
+.filter-btn,
+.sort-btn {
     background-color: #6F84F8;
     color: white;
     border: none;
@@ -66,7 +59,8 @@
     cursor: pointer;
 }
 
-.filter-icon, .sort-icon {
+.filter-icon,
+.sort-icon {
     margin-right: 5px;
 }
 
@@ -80,7 +74,8 @@
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     width: 250px;
-    display: none; /* Hidden by default */
+    display: none;
+    /* Hidden by default */
     opacity: 0;
     transform: translateY(-20px);
     transition: opacity 0.3s ease, transform 0.3s ease;
@@ -97,7 +92,8 @@
 .sort-container {
     position: absolute;
     top: 80px;
-    left: 270px; /* This will shift left to fill filter space if filter is hidden */
+    left: 270px;
+    /* This will shift left to fill filter space if filter is hidden */
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
@@ -121,15 +117,18 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
-    transition: margin-left 0.3s ease; /* Smooth transition */
+    transition: margin-left 0.3s ease;
+    /* Smooth transition */
 }
 
 .tenant-grid.shift-right-filter {
-    margin-left: 270px; /* Shift right when filter is open */
+    margin-left: 270px;
+    /* Shift right when filter is open */
 }
 
 .tenant-grid.shift-right-both {
-    margin-left: 540px; /* Shift right when both filter and sort are open */
+    margin-left: 540px;
+    /* Shift right when both filter and sort are open */
 }
 
 /* Tenant Box */
@@ -153,5 +152,6 @@
     width: 50px;
     height: 50px;
     object-fit: cover;
-    border-radius: 50%; /* Circular tenant images */
+    border-radius: 50%;
+    /* Circular tenant images */
 }

@@ -1,0 +1,99 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    width: 800px; /* Increased width to accommodate the image */
+    height: 500px;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .login-box {
+    flex: 2;
+    padding: 35px;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  h2 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  form {
+    margin-bottom: 20px;
+  }
+  
+  .login-input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    height: 20px;
+    border-radius: 7px;
+  }
+  
+  .login-btn {
+    background-color: #6F84F8;
+    margin-top: 25px;
+    color: white;
+    padding: 12px;
+    width: 30%;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  }
+  
+  .or-separator {
+    margin: 20px 0;
+    font-size: 14px;
+    color: #888;
+  }
+  
+
+  
+
+  
+  .signup-link {
+    margin-top: 50px;
+  }
+  
+  .signup-link a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  /* New extended section for the image */
+  .login-image-container {
+    flex: 1;
+    background-color: #6F84F8; /* Same color as login button */
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  /* You can add an image here and style it */
+  .smartphone-image {
+    margin-top: 80px;
+    width: 200px;
+    height: auto;
+  }
