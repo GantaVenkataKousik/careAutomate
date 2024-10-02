@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
@@ -38,6 +38,7 @@ const App = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} exact />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="*" element={
