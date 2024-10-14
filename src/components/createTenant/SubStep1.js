@@ -2,7 +2,7 @@ import React from "react";
 
 const SubStep1 = () => {
   return (
-    <div >
+    <div style={{ maxHeight: "400px", overflowY: "auto" }}>
       <h2 className="text-xl font-medium mb-4">Basic Information</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -15,7 +15,7 @@ const SubStep1 = () => {
             type="text"
             id="first-name"
             name="first-name"
-            placeholder="First Name"
+            placeholder=""
             required
           />
         </div>
@@ -29,7 +29,7 @@ const SubStep1 = () => {
             type="text"
             id="middle-name"
             name="middle-name"
-            placeholder="Middle Name"
+            placeholder=""
           />
         </div>
 
@@ -42,7 +42,7 @@ const SubStep1 = () => {
             type="text"
             id="last-name"
             name="last-name"
-            placeholder="Last Name"
+            placeholder=""
             required
           />
         </div>
@@ -85,18 +85,20 @@ const SubStep1 = () => {
             Phone Number*
           </label>
           <div className="flex">
-            <select className="border border-gray-300 p-2 rounded-l focus:outline-none focus:border-blue-400">
-              <option value="+91">🇮🇳 +91</option>
-            </select>
-            <input
-              className="border border-gray-300 p-2 w-full rounded-r focus:outline-none focus:border-blue-400"
-              type="tel"
-              id="phone-number"
-              name="phone-number"
-              placeholder="Phone Number"
-              required
-            />
-          </div>
+  <div className="flex items-center border border-gray-300 p-2 rounded-l focus:outline-none focus:border-blue-400">
+    <img src="usa.jpg" alt="US Flag" className="us-icon mr-2" /> {/* Add margin-right to space the flag and +1 */}
+    <span>+1</span>
+  </div>
+  <input
+    className="border border-gray-300 p-2 w-full rounded-r focus:outline-none focus:border-blue-400"
+    type="tel"
+    id="phone-number"
+    name="phone-number"
+    placeholder=""
+    required
+  />
+</div>
+
         </div>
 
         <div className="col-span-2">
@@ -108,7 +110,7 @@ const SubStep1 = () => {
             type="email"
             id="email"
             name="email"
-            placeholder="Email"
+            placeholder=""
             required
           />
         </div>

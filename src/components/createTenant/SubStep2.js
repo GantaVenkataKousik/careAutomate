@@ -23,7 +23,7 @@ const SubStep2 = () => {
     <div>
       <h2 className="text-xl font-medium mb-4">Address Information</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4" style={{ maxHeight: "400px", overflowY: "auto" }}>
         <div>
           <label className="block text-gray-700" htmlFor="addressLine1">
             Address Line 1*
@@ -35,7 +35,7 @@ const SubStep2 = () => {
             name="addressLine1"
             value={address.addressLine1}
             onChange={handleChange}
-            placeholder="Address Line 1"
+            placeholder=""
             required
           />
         </div>
@@ -51,7 +51,7 @@ const SubStep2 = () => {
             name="addressLine2"
             value={address.addressLine2}
             onChange={handleChange}
-            placeholder="Address Line 2"
+            placeholder=""
           />
         </div>
 
@@ -66,7 +66,7 @@ const SubStep2 = () => {
             name="city"
             value={address.city}
             onChange={handleChange}
-            placeholder="City"
+            placeholder=""
             required
           />
         </div>
@@ -82,7 +82,7 @@ const SubStep2 = () => {
             name="state"
             value={address.state}
             onChange={handleChange}
-            placeholder="State"
+            placeholder=""
             required
           />
         </div>
@@ -98,7 +98,7 @@ const SubStep2 = () => {
             name="zipCode"
             value={address.zipCode}
             onChange={handleChange}
-            placeholder="Zip Code"
+            placeholder=""
             required
           />
         </div>

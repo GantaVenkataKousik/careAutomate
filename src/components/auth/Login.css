@@ -28,9 +28,10 @@ body {
     margin-top: 20px;
   }
   
-  h2 {
+  h1 {
     color: #333;
     margin-bottom: 20px;
+    font-size: 22px;
   }
   
   form {
@@ -42,7 +43,7 @@ body {
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ccc;
-    height: 20px;
+    height: 45px;
     border-radius: 7px;
   }
   

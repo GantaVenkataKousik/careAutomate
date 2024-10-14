@@ -1,7 +1,8 @@
 .tenants-page {
     padding: 20px;
-    margin-top: 25vh;
-    width: 80vw;
+    margin-top: 450px;
+    width: 1200px;
+    transition: margin-top 0.3s ease; /* Smooth transition */
 }
 
 .tenants-header {
@@ -14,20 +15,22 @@
     gap: 10px;
 }
 
-.search-bar {
+.search-bar1 {
     display: flex;
     align-items: center;
     border: 1px solid #282727;
     padding: 5px;
     border-radius: 15px;
-    height: 25px;
+    height: 30px;
     width: 240px;
 }
 
-.search-bar input {
+.search-bar1 input {
     border: none;
     outline: none;
     margin-left: 10px;
+    background: transparent; 
+    color: #000;        
 }
 
 .search-icon {
@@ -85,7 +88,7 @@
 /* Filter Box Styling */
 .filter-container {
     position: absolute;
-    top: 250px;
+    top: 280px;
     /* Position directly below the filter button */
     left: 220px;
     /* Position beside the filter button */
@@ -117,7 +120,7 @@
 /* Sort Box Styling */
 .sort-container {
     position: absolute;
-    top: 250px;
+    top: 280px;
     /* Align top with the filter button */
     left: 510px;
     /* Position the sort box beside the filter box */
@@ -161,7 +164,7 @@
 }
 
 .tenant-grid.shift-right-both {
-    margin-left: 580px;
+    margin-left: 500px;
     /* Shift right when both filter and sort boxes are visible */
 }
 
@@ -236,4 +239,11 @@
     padding: 10px;
     cursor: pointer;
     border-radius: 5px;
+}
+.tenants-page.expanded {
+    margin-top: 800px; 
+}
+
+.tenants-page.sort-expanded {
+    margin-top: 1150px; 
 }

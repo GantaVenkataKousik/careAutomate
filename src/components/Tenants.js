@@ -26,8 +26,10 @@ const Tenants = () => {
   const toggleSort = () => {
     setIsSortVisible(!isSortVisible);
     setIsFilterVisible(true);
+    // if (!isSortVisible) {
+    //   setIsFilterVisible(false);
+    // }
   };
-
 
   const tenants = Array(25).fill({
     name: 'John Doe',
@@ -41,12 +43,12 @@ const Tenants = () => {
   };
 
   return (
-    <div className="tenants-page">
+    <div className={`tenants-page ${isFilterVisible || isSortVisible ? 'expanded' : ''} ${isSortVisible ? 'sort-expanded' : ''}`}>
       <h1>Tenants</h1>
 
       <div className="tenants-header">
         <div className="search-add-container">
-          <div className="search-bar">
+          <div className="search-bar1">
             <FaSearch className="search-icon" />
             <input type="text" placeholder="Search....." />
           </div>
@@ -56,7 +58,6 @@ const Tenants = () => {
           </button>
         </div>
       </div>
-      {/* <TenantPopup isVisible={isPopupVisible} onClose={handleAddTenantClick} /> */}
 
       <div className="filters">
         <button className="filter-btn" onClick={toggleFilter}>
@@ -170,5 +171,3 @@ const Tenants = () => {
 };
 
 export default Tenants;
-
-

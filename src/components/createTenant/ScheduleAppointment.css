@@ -1,0 +1,24 @@
+/* ScheduleAppointment.css */
+.schedule-appointment-container {
+    max-height: 300px; /* Set the maximum height for the container */
+    overflow-y: auto;  /* Enable vertical scrollbar when content exceeds height */
+    padding: 20px;
+  }
+  
+  .schedule-appointment-container::-webkit-scrollbar {
+    width: 10px; /* Width of the scrollbar */
+  }
+  
+  .schedule-appointment-container::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color of the scrollbar track */
+  }
+  
+  .schedule-appointment-container::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar handle */
+    border-radius: 10px;
+  }
+  
+  .schedule-appointment-container::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color of the scrollbar handle on hover */
+  }
+  
