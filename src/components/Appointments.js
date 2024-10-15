@@ -9,7 +9,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton
+  IconButton,
+  Grid
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -29,19 +30,23 @@ const VisitList = () => {
   const [currentVisitIndex, setCurrentVisitIndex] = useState(null); // State to store current visit index
   const [editedVisit, setEditedVisit] = useState({}); // State to store edited visit data
   const [errors, setErrors] = useState({});
+ 
   const [newVisit, setNewVisit] = useState({
+    serviceType: '',       // New field
     title: '',
-    startDate: '',
-    endDate: '',
-    typeMethod: '',
-    hcm: '',
-    scheduledDate: '',
-    dos: '',
-    duration: '',
+    dos: '',               // Date of Service
+    duration: '',          // Will be in the format "Start time - End time"
+    planOfService: '',     // New field (dropdown)
+    methodOfVisit: '',     // New field (direct/indirect)
+    visitMode: '',         // In-person/remote (only if method is direct)
     details: '',
-    status: 'Pending',
-    signature: ''
+    transportation: '',    // New field (dropdown yes/no)
+    miles: '',             // Only visible if transportation is yes
+    transportWithTenant: '', // New field
+    transportWithoutTenant: '', // New field
+    signature: '',
   });
+  
   const [visitData, setVisitData] = useState([
     {
       title: 'Housing Transition',
@@ -83,19 +88,69 @@ const VisitList = () => {
       signature: ''
     }
   ]);
+  
   const validateVisit = (visit) => {
     const newErrors = {};
+    if (!visit.serviceType) newErrors.serviceType = 'Service Type is required'; // New field
     if (!visit.title) newErrors.title = 'Title is required';
-    if (!visit.startDate) newErrors.startDate = 'Start date is required';
-    if (!visit.endDate) newErrors.endDate = 'End date is required';
-    if (!visit.typeMethod) newErrors.typeMethod = 'Type and Method are required';
-    if (!visit.hcm) newErrors.hcm = 'HCM is required';
-    if (!visit.scheduledDate) newErrors.scheduledDate = 'Scheduled date is required';
-    if (!visit.dos) newErrors.dos = 'DOS is required';
+    if (!visit.dos) newErrors.dos = 'Date of Service is required';
     if (!visit.duration) newErrors.duration = 'Duration is required';
+    if (!visit.planOfService) newErrors.planOfService = 'Plan of Service is required'; // New field
+    if (!visit.methodOfVisit) newErrors.methodOfVisit = 'Method of Visit is required'; // New field
+    if (visit.methodOfVisit === 'direct' && !visit.visitMode) newErrors.visitMode = 'Visit Mode is required'; // Dependent on method
     if (!visit.details) newErrors.details = 'Details are required';
+    if (!visit.transportation) newErrors.transportation = 'Transportation is required'; // New field
+    if (visit.transportation === 'yes' && !visit.miles) newErrors.miles = 'Miles are required'; // Dependent on transportation
     if (!visit.signature) newErrors.signature = 'Signature is required';
     return newErrors;
+  };
+  const timeOptions = [
+    '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', 
+    '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', 
+    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
+    // Add more time slots as needed
+  ];
+  
+  const handleStartTimeChange = (startTime) => {
+    setNewVisit({
+      ...newVisit,
+      startTime,
+    });
+  
+    // Recalculate end time based on selected duration
+    if (newVisit.duration) {
+      const newEndTime = calculateEndTime(startTime, newVisit.duration);
+      setNewVisit({
+        ...newVisit,
+        endTime: newEndTime,
+      });
+    }
+  };
+  
+  const calculateEndTime = (startTime, duration) => {
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const totalMinutes = hours * 60 + minutes + parseInt(duration); // Add duration to start time
+    const endHours = Math.floor(totalMinutes / 60) % 24;
+    const endMinutes = totalMinutes % 60;
+  
+    // Return in "HH:mm" format
+    return `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
+  };
+  
+  const handleDurationChange = (duration) => {
+    setNewVisit({
+      ...newVisit,
+      duration,
+    });
+  
+    // Recalculate end time based on selected start time
+    if (newVisit.startTime) {
+      const newEndTime = calculateEndTime(newVisit.startTime, duration);
+      setNewVisit({
+        ...newVisit,
+        endTime: newEndTime,
+      });
+    }
   };
   
   const handleDetailsClick = (details) => {
@@ -137,56 +192,58 @@ const VisitList = () => {
     }
     return errorMessage;
   };
-  
   const handleBlur = (field) => {
     setErrors({
       ...errors,
       [field]: validateField(field, newVisit[field]),
     });
   };
-  const handleNewVisitSubmit = () => {
-    const newErrors = {};
-    Object.keys(newVisit).forEach((key) => {
-      const error = validateField(key, newVisit[key]);
-      if (error) newErrors[key] = error;
-    });
   
+  const handleNewVisitSubmit = () => {
+    const newErrors = validateVisit(newVisit);
+    
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-    } else {
-      // Submit the form data
-      console.log("Form Submitted:", newVisit);
+      return;
     }
-    setVisitData([...visitData, newVisit]); // Add the new visit to the visitData array
-    setOpenNewVisitPopup(false); // Close the new visit dialog
+  
+    setVisitData([...visitData, newVisit]); // Add new visit to visitData
+    setOpenNewVisitPopup(false); // Close the dialog
+  
+    // Reset the form fields
     setNewVisit({
+      serviceType: '',
       title: '',
-      startDate: '',
-      endDate: '',
-      typeMethod: '',
-      hcm: '',
-      scheduledDate: '',
       dos: '',
       duration: '',
+      planOfService: '',
+      methodOfVisit: '',
+      visitMode: '',
       details: '',
-      status: 'Pending',
-      signature: ''
-    }); // Reset the new visit fields
+      transportation: '',
+      miles: '',
+      transportWithTenant: '',
+      transportWithoutTenant: '',
+      signature: '',
+    });
   };
+  
   const handleCancelNewVisit = () => {
     setOpenNewVisitPopup(false); // Close the new visit dialog
     setNewVisit({
+      serviceType: '',
       title: '',
-      startDate: '',
-      endDate: '',
-      typeMethod: '',
-      hcm: '',
-      scheduledDate: '',
       dos: '',
       duration: '',
+      planOfService: '',
+      methodOfVisit: '',
+      visitMode: '',
       details: '',
-      status: 'Pending',
-      signature: ''
+      transportation: '',
+      miles: '',
+      transportWithTenant: '',
+      transportWithoutTenant: '',
+      signature: '',
     }); // Reset the new visit fields
   };
   return (
@@ -394,141 +451,246 @@ const VisitList = () => {
           <Button onClick={handleSaveChanges} color="primary">Save</Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={openNewVisitPopup} onClose={handleCancelNewVisit}>
-    <DialogTitle>New Visit</DialogTitle>
-    <DialogContent>
-      <TextField
-        label="Title"
-        value={newVisit.title}
-        onChange={(e) => setNewVisit({ ...newVisit, title: e.target.value })}
-        onBlur={() => handleBlur('title')}
-        fullWidth
-        margin="dense"
-        error={!!errors.title}
-        helperText={errors.title || ' '}
-      />
-      <TextField
-        label="Start Date"
-        type="date"
-        InputLabelProps={{ shrink: true }}
-        value={newVisit.startDate}
-        onChange={(e) => setNewVisit({ ...newVisit, startDate: e.target.value })}
-        onBlur={() => handleBlur('startDate')}
-        fullWidth
-        margin="dense"
-        error={!!errors.startDate}
-        helperText={errors.startDate || ' '}
-      />
-      <TextField
-        label="End Date"
-        type="date"
-        InputLabelProps={{ shrink: true }}
-        value={newVisit.endDate}
-        onChange={(e) => setNewVisit({ ...newVisit, endDate: e.target.value })}
-        onBlur={() => handleBlur('endDate')}
-        fullWidth
-        margin="dense"
-        error={!!errors.endDate}
-        helperText={errors.endDate || ' '}
-      />
-      {/* <Select
-        label="Type-Method"
-        value={newVisit.typeMethod}
-        onChange={(e) => setNewVisit({ ...newVisit, typeMethod: e.target.value })}
-        onBlur={() => handleBlur('typeMethod')}
-        fullWidth
-        margin="dense"
-        error={!!errors.typeMethod}
-        helperText={errors.typeMethod || ' '}
+   
+ <Dialog open={openNewVisitPopup} onClose={handleCancelNewVisit} className='newvisitpopup'>
+  <DialogTitle>New Visit</DialogTitle>
+  <DialogContent>
+    {/* <TextField
+      label="PlanOfService"
+      value={newVisit.serviceType}
+      onChange={(e) => setNewVisit({ ...newVisit, serviceType: e.target.value })}
+      onBlur={() => handleBlur('serviceType')}
+      fullWidth
+      margin="dense"
+      error={!!errors.serviceType}
+      helperText={errors.serviceType || ' '}
+    /> */}
+      <FormControl fullWidth margin="dense" error={!!errors.planOfService}>
+      <InputLabel>Plan of Service</InputLabel>
+      <Select
+        value={newVisit.planOfService}
+        onChange={(e) => setNewVisit({ ...newVisit, planOfService: e.target.value })}
+        onBlur={() => handleBlur('planOfService')}
+        label="Plan of Service"
       >
-        <MenuItem value="Online-Remote">Online-Remote</MenuItem>
-        <MenuItem value="Office-In Person">Office-In Person</MenuItem>
-      </Select> */}
-      <FormControl fullWidth margin="dense" error={!!errors.typeMethod}>
-  <InputLabel>Type-Method</InputLabel>
-  <Select
-    value={newVisit.typeMethod}
-    onChange={(e) => setNewVisit({ ...newVisit, typeMethod: e.target.value })}
-    onBlur={() => handleBlur('typeMethod')}
-    label="Type-Method"  // Ensure this is here for the label to be connected properly
-  >
-    <MenuItem value="Online-Remote">Online-Remote</MenuItem>
-    <MenuItem value="Office-In Person">Office-In Person</MenuItem>
-  </Select>
-  <FormHelperText>{errors.typeMethod || ' '}</FormHelperText>
-</FormControl>
-      <TextField
-        label="HCM"
-        value={newVisit.hcm}
-        onChange={(e) => setNewVisit({ ...newVisit, hcm: e.target.value })}
-        onBlur={() => handleBlur('hcm')}
-        fullWidth
-        margin="dense"
-        error={!!errors.hcm}
-        helperText={errors.hcm || ' '}
-      />
-      <TextField
-        label="Scheduled Date"
-        type="date"
-        value={newVisit.scheduledDate}
-        onChange={(e) => setNewVisit({ ...newVisit, scheduledDate: e.target.value })}
-        onBlur={() => handleBlur('scheduledDate')}
-        InputLabelProps={{ shrink: true }}
-        fullWidth
-        margin="dense"
-        error={!!errors.scheduledDate}
-        helperText={errors.scheduledDate || ' '}
-      />
-      <TextField
-        label="DOS"
-        type="date"
-        value={newVisit.dos}
-        onChange={(e) => setNewVisit({ ...newVisit, dos: e.target.value })}
-        onBlur={() => handleBlur('dos')}
-        InputLabelProps={{ shrink: true }}
-        fullWidth
-        margin="dense"
-        error={!!errors.dos}
-        helperText={errors.dos || ' '}
-      />
-      <TextField
-        label="Duration"
+        <MenuItem value="Office">Office</MenuItem>
+        <MenuItem value="Home">Home</MenuItem>
+        <MenuItem value="Institution">Institution</MenuItem>
+        <MenuItem value="Community">Community</MenuItem>
+        <MenuItem value="Other">Other</MenuItem>
+      </Select>
+      <FormHelperText>{errors.planOfService || ' '}</FormHelperText>
+    </FormControl>
+  
+    <TextField
+      label="Title"
+      value={newVisit.title}
+      onChange={(e) => setNewVisit({ ...newVisit, title: e.target.value })}
+      onBlur={() => handleBlur('title')}
+      fullWidth
+      margin="dense"
+      error={!!errors.title}
+      helperText={errors.title || ' '}
+    />
+    <TextField
+      label="Date of Service"
+      type="date"
+      value={newVisit.dos}
+      onChange={(e) => setNewVisit({ ...newVisit, dos: e.target.value })}
+      onBlur={() => handleBlur('dos')}
+      fullWidth
+      margin="dense"
+      InputLabelProps={{ shrink: true }}
+      error={!!errors.dos}
+      helperText={errors.dos || ' '}
+    />
+  
+<Grid container spacing={2}>
+  <Grid item xs={4}> {/* Adjust width as necessary */}
+    <FormControl fullWidth margin="dense" error={!!errors.duration}>
+      <InputLabel>Duration</InputLabel>
+      <Select
         value={newVisit.duration}
-        onChange={(e) => setNewVisit({ ...newVisit, duration: e.target.value })}
-        onBlur={() => handleBlur('duration')}
-        fullWidth
-        margin="dense"
-        error={!!errors.duration}
-        helperText={errors.duration || ' '}
-      />
-      <TextField
-        label="Details"
-        value={newVisit.details}
-        onChange={(e) => setNewVisit({ ...newVisit, details: e.target.value })}
-        onBlur={() => handleBlur('details')}
-        fullWidth
-        margin="dense"
-        multiline
-        rows={4}
-        error={!!errors.details}
-        helperText={errors.details || ' '}
-      />
-      <TextField
-        label="Signature"
-        value={newVisit.signature}
-        onChange={(e) => setNewVisit({ ...newVisit, signature: e.target.value })}
-        onBlur={() => handleBlur('signature')}
-        fullWidth
-        margin="dense"
-        error={!!errors.signature}
-        helperText={errors.signature || ' '}
-      />
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={handleCancelNewVisit}>Cancel</Button>
-      <Button onClick={handleNewVisitSubmit} color="primary">Submit</Button>
-    </DialogActions>
-  </Dialog>
+        onChange={(e) => handleDurationChange(e.target.value)}
+        label="Duration"
+      >
+        <MenuItem value="30">30 min</MenuItem>
+        <MenuItem value="45">45 min</MenuItem>
+        <MenuItem value="25">25 min</MenuItem>
+      </Select>
+      <FormHelperText>{errors.duration || ' '}</FormHelperText>
+    </FormControl>
+  </Grid>
+
+  <Grid item xs={4}> {/* Adjust width as necessary */}
+    <FormControl fullWidth margin="dense" error={!!errors.startTime}>
+      <InputLabel>Start Time</InputLabel>
+      <Select
+        value={newVisit.startTime}
+        onChange={(e) => handleStartTimeChange(e.target.value)}
+        label="Start Time"
+      >
+        {timeOptions.map((time) => (
+          <MenuItem key={time} value={time}>
+            {time}
+          </MenuItem>
+        ))}
+      </Select>
+      <FormHelperText>{errors.startTime || ' '}</FormHelperText>
+    </FormControl>
+  </Grid>
+
+  <Grid item xs={4}> {/* Adjust width as necessary */}
+    <TextField
+      label="End Time"
+      value={newVisit.endTime} // Calculated end time
+      fullWidth
+      margin="dense"
+      InputLabelProps={{ shrink: true }}
+      error={!!errors.endTime}
+      helperText={errors.endTime || ' '}
+      disabled // The end time will be calculated and can't be manually changed
+    />
+  </Grid>
+</Grid>
+    {/* <FormControl fullWidth margin="dense" error={!!errors.planOfService}>
+      <InputLabel>Plan of Service</InputLabel>
+      <Select
+        value={newVisit.planOfService}
+        onChange={(e) => setNewVisit({ ...newVisit, planOfService: e.target.value })}
+        onBlur={() => handleBlur('planOfService')}
+        label="Plan of Service"
+      >
+        <MenuItem value="Office">Office</MenuItem>
+        <MenuItem value="Home">Home</MenuItem>
+        <MenuItem value="Institution">Institution</MenuItem>
+        <MenuItem value="Community">Community</MenuItem>
+        <MenuItem value="Other">Other</MenuItem>
+      </Select>
+      <FormHelperText>{errors.planOfService || ' '}</FormHelperText>
+    </FormControl> */}
+    <FormControl fullWidth margin="dense" error={!!errors.methodOfVisit}>
+      <InputLabel>Method of Visit</InputLabel>
+      <Select
+        value={newVisit.methodOfVisit}
+        onChange={(e) => setNewVisit({ ...newVisit, methodOfVisit: e.target.value })}
+        onBlur={() => handleBlur('methodOfVisit')}
+        label="Method of Visit"
+      >
+        <MenuItem value="direct">Direct</MenuItem>
+        <MenuItem value="indirect">Indirect</MenuItem>
+      </Select>
+      <FormHelperText>{errors.methodOfVisit || ' '}</FormHelperText>
+    </FormControl>
+
+    {newVisit.methodOfVisit === 'direct' && (
+      <FormControl fullWidth margin="dense" error={!!errors.visitMode}>
+        <InputLabel>Visit Mode</InputLabel>
+        <Select
+          value={newVisit.visitMode}
+          onChange={(e) => setNewVisit({ ...newVisit, visitMode: e.target.value })}
+          onBlur={() => handleBlur('visitMode')}
+          label="Visit Mode"
+        >
+          <MenuItem value="in-person">In-Person</MenuItem>
+          <MenuItem value="remote">Remote</MenuItem>
+        </Select>
+        <FormHelperText>{errors.visitMode || ' '}</FormHelperText>
+      </FormControl>
+    )}
+
+    <TextField
+      label="Details"
+      value={newVisit.details}
+      onChange={(e) => setNewVisit({ ...newVisit, details: e.target.value })}
+      onBlur={() => handleBlur('details')}
+      fullWidth
+      margin="dense"
+      multiline
+      rows={4}
+      error={!!errors.details}
+      helperText={errors.details || ' '}
+    />
+    <FormControl fullWidth margin="dense" error={!!errors.transportation}>
+      <InputLabel>Transportation</InputLabel>
+      <Select
+        value={newVisit.transportation}
+        onChange={(e) => setNewVisit({ ...newVisit, transportation: e.target.value })}
+        onBlur={() => handleBlur('transportation')}
+        label="Transportation"
+      >
+        <MenuItem value="yes">Yes</MenuItem>
+        <MenuItem value="no">No</MenuItem>
+      </Select>
+      <FormHelperText>{errors.transportation || ' '}</FormHelperText>
+    </FormControl>
+
+    <Grid container spacing={2} alignItems="center">
+  {/* Transport With Tenant */}
+  {newVisit.transportation === 'yes' && (
+    <>
+      <Grid item xs={5}>
+        <TextField
+          label="Transport With Tenant"
+          value={newVisit.transportWithTenant}
+          onChange={(e) => setNewVisit({ ...newVisit, transportWithTenant: e.target.value })}
+          onBlur={() => handleBlur('transportWithTenant')}
+          fullWidth
+          margin="dense"
+          error={!!errors.transportWithTenant}
+          helperText={errors.transportWithTenant || ' '}
+        />
+      </Grid>
+
+      {/* Transport Without Tenant */}
+      <Grid item xs={5}>
+        <TextField
+          label="Transport Without Tenant"
+          value={newVisit.transportWithoutTenant}
+          onChange={(e) => setNewVisit({ ...newVisit, transportWithoutTenant: e.target.value })}
+          onBlur={() => handleBlur('transportWithoutTenant')}
+          fullWidth
+          margin="dense"
+          error={!!errors.transportWithoutTenant}
+          helperText={errors.transportWithoutTenant || ' '}
+        />
+      </Grid>
+
+      {/* Miles Field with Reduced Width */}
+      <Grid item xs={2}>
+        <TextField
+          label="Miles"
+          type="number"
+          value={newVisit.miles}
+          onChange={(e) => setNewVisit({ ...newVisit, miles: e.target.value })}
+          onBlur={() => handleBlur('miles')}
+          fullWidth
+          margin="dense"
+          error={!!errors.miles}
+          helperText={errors.miles || ' '}
+        />
+      </Grid>
+    </>
+  )}
+</Grid>
+    <TextField
+      label="Signature"
+      value={newVisit.signature}
+      onChange={(e) => setNewVisit({ ...newVisit, signature: e.target.value })}
+      onBlur={() => handleBlur('signature')}
+      fullWidth
+      margin="dense"
+      error={!!errors.signature}
+      helperText={errors.signature || ' '}
+    />
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCancelNewVisit} color="secondary">Cancel</Button>
+    <Button onClick={handleNewVisitSubmit} color="primary">Submit</Button>
+  </DialogActions>
+</Dialog>
+
+
     </div>
   );
 };
