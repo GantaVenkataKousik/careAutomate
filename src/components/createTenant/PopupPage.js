@@ -6,13 +6,10 @@ import SubStep4 from './SubStep4';
 import SubStep5 from './SubStep5';
 import SubStep6 from './SubStep6';
 import SubStep7 from './SubStep7';
-
 import Substep12 from './Substep12';
 import Substep22 from './Substep22';
-
 import ServiceSelection from './ServiceSelection';
 import ScheduleAppointment from './ScheduleAppointment';
-
 const steps = [
   {
     name: "Personal Info",
