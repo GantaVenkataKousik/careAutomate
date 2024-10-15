@@ -455,7 +455,7 @@ const VisitList = () => {
  <Dialog open={openNewVisitPopup} onClose={handleCancelNewVisit} className='newvisitpopup'>
   <DialogTitle>New Visit</DialogTitle>
   <DialogContent>
-    {/* <TextField
+    <TextField
       label="PlanOfService"
       value={newVisit.serviceType}
       onChange={(e) => setNewVisit({ ...newVisit, serviceType: e.target.value })}
@@ -464,23 +464,8 @@ const VisitList = () => {
       margin="dense"
       error={!!errors.serviceType}
       helperText={errors.serviceType || ' '}
-    /> */}
-      <FormControl fullWidth margin="dense" error={!!errors.planOfService}>
-      <InputLabel>Plan of Service</InputLabel>
-      <Select
-        value={newVisit.planOfService}
-        onChange={(e) => setNewVisit({ ...newVisit, planOfService: e.target.value })}
-        onBlur={() => handleBlur('planOfService')}
-        label="Plan of Service"
-      >
-        <MenuItem value="Office">Office</MenuItem>
-        <MenuItem value="Home">Home</MenuItem>
-        <MenuItem value="Institution">Institution</MenuItem>
-        <MenuItem value="Community">Community</MenuItem>
-        <MenuItem value="Other">Other</MenuItem>
-      </Select>
-      <FormHelperText>{errors.planOfService || ' '}</FormHelperText>
-    </FormControl>
+    />
+     
   
     <TextField
       label="Title"
@@ -553,8 +538,8 @@ const VisitList = () => {
     />
   </Grid>
 </Grid>
-    {/* <FormControl fullWidth margin="dense" error={!!errors.planOfService}>
-      <InputLabel>Plan of Service</InputLabel>
+    <FormControl fullWidth margin="dense" error={!!errors.planOfService}>
+      <InputLabel>Place of Service</InputLabel>
       <Select
         value={newVisit.planOfService}
         onChange={(e) => setNewVisit({ ...newVisit, planOfService: e.target.value })}
@@ -568,7 +553,7 @@ const VisitList = () => {
         <MenuItem value="Other">Other</MenuItem>
       </Select>
       <FormHelperText>{errors.planOfService || ' '}</FormHelperText>
-    </FormControl> */}
+    </FormControl>
     <FormControl fullWidth margin="dense" error={!!errors.methodOfVisit}>
       <InputLabel>Method of Visit</InputLabel>
       <Select
