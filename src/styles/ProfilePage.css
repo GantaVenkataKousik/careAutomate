@@ -1,0 +1,540 @@
+.profile-page {
+    padding: 15px;
+    margin-top: 320px;
+  }
+  
+  .row {
+    display: flex;
+    margin-bottom: 0px;
+  }
+  
+  .first-row {
+    margin-bottom: 0px;
+  }
+  
+  
+  .col {
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  .col-70 {
+    flex: 0 0 70%;
+    margin-right: 20px; /* Space between 70% and 30% column */
+    border-radius: 30px;
+  }
+  
+  .col-30 {
+    flex: 0 0 27%;
+    border-radius: 30px;
+  }
+  
+  .col-25 {
+    flex: 0 0 25%;
+    border-radius: 30px;
+  }
+ 
+  
+  
+  .title {
+    color: #5970F4;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  
+  .profile-details {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+  }
+  
+  
+  .circle-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+  }
+  
+  
+  .profile-text {
+    display: flex;
+    flex-direction: column;
+  }
+  .profile-basic-info {
+    margin-left: 20px;
+  }
+  
+  .profile-image-info {
+    display: flex;
+    align-items: center;
+  }
+ 
+  
+  
+  
+  .documents-box {
+    width: 250px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #dde0e3;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+  
+  .documents-box h3 {
+    font-size: 16px;
+    color: #3e3c3c;
+    margin-bottom: 10px;
+  }
+  .doc-date {
+    font-size: 12px;
+    color: #5970F4;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+  }
+  
+  .doc-list {
+    list-style-type: none;
+    padding-left: 0;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .doc-list ul {
+    padding-left: 20px;
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+  }
+  
+  .doc-list ul::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background: #a99797;
+  }
+  
+  .doc-list li {
+    position: relative;
+    padding-left: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+  }
+  
+  .doc-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 10px;
+    height: 1px;
+    background: #000;
+  }
+  .modal {
+    position: fixed;
+    z-index: 1000;
+    left: 400px;
+    top: 100px;
+    width: 50%;
+    height: 50%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  }
+  
+  .modal-content {
+    background-color: white;
+    margin: 15% auto; /* Center the modal */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 100%; /* Modal width */
+    height: 400px;
+    max-width: 600px; /* Max width */
+    position: relative; /* For positioning the close button */
+    bottom: 80px;
+  }
+  
+  .close {
+    color:red;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: red;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  /* Close button */
+  .close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .close-button:hover,
+  .close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .doc-list button {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 14px;
+  }
+  
+  .doc-list button:hover {
+    text-decoration: none;
+  }
+  
+  
+  .labels-row,
+  .info-row {
+    display: flex;
+    justify-content: space-between; 
+    width: 55%; 
+    margin: 0;
+    padding: 0; 
+  }
+  
+  .labels-row p {
+    color: #5970F4;
+  }
+  
+  .labels-row p,
+  .info-row p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px; 
+    font-weight: 400; 
+    margin: 0; 
+    line-height: 1.5; 
+  }
+  
+  .labels-row {
+    display: flex;
+    gap: 0px; 
+  }
+  
+  .info-row {
+    display: flex;
+    gap: 20px; 
+    margin-top: 4px;
+  }
+  
+  /* Buttons in Profile Section */
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .action-buttons button {
+    padding: 8px 12px;
+    background-color: transparent; /* Default no background */
+    color: #5970F4;
+    border: 1px solid #5970F4;
+    border-radius: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    width: 110px;
+    height: 33px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px; /* Font size */
+  }
+  
+  .action-buttons button:hover {
+    background-color: #5970F4;
+    color: white;
+  }
+  
+  .action-buttons button svg {
+    margin-right: 5px;
+    
+  }
+  
+  .view-more-container {
+    margin-bottom: 10px; 
+    text-align: right;
+    margin-right: 0px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 400; 
+    
+  }
+  
+  .view-more {
+    display: inline-block;
+    color: #5970F4;
+    text-decoration: none;
+  }
+  
+  /* HCM List and Item List Section */
+  .hcm-list,
+  .item-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 17px; /* Font size */
+    font-weight: 300; /* Font weight */
+  }
+  
+  .hcm-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #CCD2F38A; /* Set background color */
+    border: 1px solid #ddd; /* Keep existing border styling */
+    border-radius: 20px; /* Keep existing border-radius */
+    width: 80%;
+    margin-right: 60px;
+  }
+  .hcm-box1{
+  
+    border-radius: 8px; /* Rounded corners */
+    padding: 5px; /* Padding inside the box */
+    margin-bottom: 5px; /* Space between item boxes */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+  }
+  .item-box {
+    display: flex;
+    flex-direction: column; /* Stack header and footer vertically */
+    justify-content: flex-start;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    width: 110%;
+    height: auto; /* Let the height adjust based on content */
+    border-radius: 20px;
+  }
+  
+  /* Item Header and Footer for Appointments */
+  .item-header,
+  .item-footer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .item-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Ensure full width */
+  }
+  
+  .item-footer {
+    display: flex;
+    flex-direction: column; /* Stack footer items vertically */
+    width: 100%; /* Ensure full width */
+    margin-top: 0px; /* Space above footer */
+  }
+  
+  .icon {
+    margin-left: 10px;
+    color: #5970F4;
+    cursor: pointer;
+    font-size: 23px;
+  }
+  
+  /* 2nd Row Section for Appointments, Visits, Communication, Bills & Payments */
+  .second-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px; /* Space between columns */
+    margin-top: 20px;
+  }
+  
+  .col-25 {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+  }
+  
+  /* Appointment Box Styling */
+  .appointment-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+  }
+  
+  .appointment-time {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 0px;
+  }
+  
+  .appointment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    margin-bottom: 0px;
+  }
+  
+  .appointment-item-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .appointment-icons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* Icons inside Appointments */
+  .icon-small {
+    font-size: 16px;
+    color: #505254;
+  }
+  
+  .profile-name {
+    color: #505254;
+  }
+  
+  
+  
+  .status-icons {
+    display: flex;
+    gap: 10px; /* Space between check and times icons */
+    
+  }
+  
+  
+  /* Communication Box Description */
+  .communication-description {
+    display: flex;
+    flex-direction: column; /* Stack lines vertically */
+    margin-top: 5px; /* Space above */
+    width: 100%; /* Full width */
+  }
+  
+  .icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px; /* Set a fixed width for the icon wrapper */
+    height: 20px; /* Set a fixed height for the icon wrapper */
+    border-radius: 50%; /* Make the background circular */
+  }
+  
+  .icon-wrapper.green {
+    background-color: #6DD98C;
+     /* Light green background for check icon */
+  }
+  
+  .icon-wrapper.red {
+    background-color:lightcoral; /* Light red background for cross icon */
+  }
+  .popup {
+    position: fixed;
+    top: 350px;
+    left: 230;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    width: 300px;
+    height: 160px;
+    border-radius: 10px;
+  }
+  
+  .popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px;
+    text-align: left;
+  }
+  
+  .popup-content h3 {
+    margin: 0 0 10px;
+  }
+  
+  .popup-content button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .popup-content button:hover {
+    background-color: #0056b3;
+  }
+  .description {
+    cursor: pointer; /* Indicates clickable text */
+    color: #505254;
+  }
+  
+  .description .view-more {
+    margin-left: 5px; /* Adds space between description text and View More link */
+  }
+   .phn-icon {
+    font-size: 1.2rem; /* Adjust the size */
+    margin-right: 5px; /* Space between icon and text */
+    margin-top: -3px;
+    color: #555; /* Change the color as needed */
+  } 
+  .bills-payments-box .item-box {
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-bottom: 5px;
+    
+  }
+  
+  .bills-payments-box .item-details {
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 17px; /* Font size */
+    font-weight: 300; /* Font weight */
+  }
+  
+  .bills-payments-box .item-footer {
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 17px; /* Font size */
+    font-weight: 300; /* Font weight */
+  
+  }
+  
+  .view-more {
+    text-decoration: none;
+    color: #6F84F8;
+  }
