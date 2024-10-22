@@ -59,6 +59,7 @@ const ProfilePage = () => {
     <div className="profile-page">
       <br />
       <br />
+      <br/>
       {/* Row 1: Two columns layout */}
       <div className="row first-row">
         {/* 70% Column */}
