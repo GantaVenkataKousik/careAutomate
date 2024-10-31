@@ -1,11 +1,11 @@
 import React from 'react'
 
-export default function Calendar() {
+export default function HCM() {
   return (
     <div>
         <br></br>
         <br></br>
-      <h1>Calender</h1>
+      <h1>HCM</h1>
     </div>
   )
 }

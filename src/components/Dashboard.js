@@ -278,7 +278,7 @@ const ProfilePage = () => {
           <h3 className="title">Bills & Payments</h3>
           <div className="view-more-container">
             <span style={{ float: 'left' }}>This Month</span>
-            <a href="/bills" className="view-more">View More</a>
+            <a href="/BillingPaymnets" className="view-more">View More</a>
           </div>
 
           <div className="item-list">

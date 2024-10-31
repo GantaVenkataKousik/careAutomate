@@ -4,9 +4,10 @@ import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import Tenants from './components/Tenants';
+import HCM from './components/HCM';
 import Appointments from './components/Appointments';
-import Calendar from './components/Calendar';
-import Messages from './components/Messages';
+import Visits from './components/Visits';
+import Communication from './components/Communication';
 import Reports from './components/Reports';
 import Settings from './components/Settings';
 import './App.css';
@@ -46,10 +47,11 @@ const App = () => {
             <Routes>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/tenants" element={<Tenants />} />
+              <Route path="/hcm" element={<HCM />} />
               <Route path="/tenants/createTenant" element={<PopupPage />} />
               <Route path="/appointments" element={<Appointments />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/messages" element={<Messages />} />
+              <Route path="/visits" element={<Visits />} />
+              <Route path="/communication" element={<Communication />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/settings" element={<Settings />} />
             </Routes>
