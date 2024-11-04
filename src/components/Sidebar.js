@@ -80,21 +80,27 @@ const Sidebar = () => {
           </Link>
         </li>
         <li>
+          <Link to="/HCM">
+            <FaUsers className="sidebar-icon" />
+            <span>HCM</span>
+          </Link>
+        </li>
+        <li>
           <Link to="/appointments">
             <FaCalendarAlt className="sidebar-icon" />
             <span>Appointments</span>
           </Link>
         </li>
         <li>
-          <Link to="/calendar">
+          <Link to="/visits">
             <FaCalendarAlt className="sidebar-icon" />
-            <span>Calendar</span>
+            <span>Visits</span>
           </Link>
         </li>
         <li>
-          <Link to="/messages">
+          <Link to="/communication">
             <FaEnvelope className="sidebar-icon" />
-            <span>Messages</span>
+            <span>Communication</span>
           </Link>
         </li>
         <li>
