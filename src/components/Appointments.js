@@ -53,16 +53,14 @@ const VisitList = () => {
   useEffect(() => {
     const fetchVisitData = async () => {
       try {
-        // Retrieve the token from local storage
-        const token = localStorage.getItem('token'); // Ensure you store the token after login
+        const token = localStorage.getItem('token');
 
         if (!token) {
           throw new Error('No token found in local storage. Please log in.');
         }
 
-        // Decode the token to get user information
-        const payload = JSON.parse(atob(token.split('.')[1])); // Decode the JWT payload
-        const hcmId = payload._id; // Extract the user ID (hcmId) from the token payload
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const hcmId = payload._id;
 
         const response = await fetch('https://careautomate-backend.vercel.app/appointments/fetchAll/', {
           method: 'POST',
@@ -70,42 +68,44 @@ const VisitList = () => {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ hcmId }), // Pass hcmId in the request body
+          body: JSON.stringify({ hcmId }),
         });
 
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
 
-        const data = await response.json();
+        const result = await response.json();
 
-        // Assuming data is an array, map the response data to the desired structure
-        const mappedData = data.map(item => ({
-          title: item.reason, // Mapping 'reason' to 'title'
-          startDate: item.startTime, // Use startTime for startDate
-          endDate: item.endTime, // Use endTime for endDate
-          typeMethod: item.location === 'Remote' ? 'Online-Remote' : 'Office-In Person', // Mapping based on location
-          hcm: item.hcm || 'Not Specified', // Use 'hcm' as provided, or 'Not Specified' if absent
-          scheduledDate: item.date, // Use 'date' for scheduledDate
-          dos: item.date, // Assuming you want the same date as 'dos'
-          duration: `${item.startTime.split('T')[1].slice(0, 5)} - ${item.endTime.split('T')[1].slice(0, 5)}`, // Extracting time from startTime and endTime
-          details: 'Details not provided', // Placeholder for details; you can adjust as needed
-          status: item.approved ? 'Approved' : 'Rejected', // Mapping based on 'approved' status
-          signature: '' // Placeholder for signature
-        }));
+        // Check if the response is successful and data is present
+        if (result.success && result.data) {
+          const visitsArray = Object.values(result.data).flat(); // Flatten the nested arrays into a single array
 
-        // Update the state with mapped data
-        setVisitData(mappedData);
+          // Now map the flattened array
+          const mappedData = visitsArray.map(item => ({
+            title: item.reason,
+            startDate: item.startTime,
+            endDate: item.endTime,
+            typeMethod: item.location === 'Remote' ? 'Online-Remote' : 'Office-In Person',
+            hcm: item.hcm || 'Not Specified',
+            scheduledDate: item.date,
+            dos: item.date,
+            duration: `${item.startTime.split('T')[1].slice(0, 5)} - ${item.endTime.split('T')[1].slice(0, 5)}`,
+            details: 'Details not provided',
+            status: item.approved ? 'Approved' : 'Rejected',
+            signature: ''
+          }));
+
+          setVisitData(mappedData);
+        }
       } catch (error) {
         console.error('Error fetching visit data:', error);
-        setError(error.message); // Capture the error message for display
+        setError(error.message);
       }
     };
 
-    // Call the fetchVisitData function when the component mounts
     fetchVisitData();
   }, []);
-
   const validateVisit = (visit) => {
     const newErrors = {};
     if (!visit.serviceType) newErrors.serviceType = 'Service Type is required'; // New field
@@ -216,19 +216,80 @@ const VisitList = () => {
     });
   };
 
-  const handleNewVisitSubmit = () => {
+  const handleNewVisitSubmit = async () => {
     const newErrors = validateVisit(newVisit);
 
+    const token = localStorage.getItem('token');
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const hcmId = payload._id;
+    // Prepare the data to be sent to the API
+    const appointmentData = {
+      hcm: hcmId,
+      date: newVisit.dos,
+      tenantId: newVisit.tenantId || "",
+      startTime: newVisit.startTime,
+      endTime: newVisit.endTime,
+      reason: newVisit.title,
+      approved: false,
+      hcm: newVisit.hcm || "",
+    };
 
-    setVisitData([...visitData, newVisit]); // Add new visit to visitData
-    setOpenNewVisitPopup(false); // Close the dialog
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found in local storage. Please log in.');
+      }
 
-    // Reset the form fields
+      const response = await fetch('https://careautomate-backend.vercel.app/appointments/createAppointment/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(appointmentData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create appointment');
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Update local state if appointment was created successfully
+        setVisitData(prev => [...prev, appointmentData]);
+        setOpenNewVisitPopup(false);
+        // Reset the form fields
+        setNewVisit({
+          _id: '',
+          serviceType: '',
+          title: '',
+          dos: '',
+          duration: '',
+          planOfService: '',
+          methodOfVisit: '',
+          visitMode: '',
+          details: '',
+          transportation: '',
+          miles: '',
+          transportWithTenant: '',
+          transportWithoutTenant: '',
+          signature: '',
+        });
+      } else {
+        console.error('Error creating appointment:', result.message);
+      }
+    } catch (error) {
+      console.error('Error submitting new visit:', error);
+    }
+  };
+  const handleCancelNewVisit = () => {
     setNewVisit({
+      _id: '',
       serviceType: '',
       title: '',
       dos: '',
@@ -243,26 +304,7 @@ const VisitList = () => {
       transportWithoutTenant: '',
       signature: '',
     });
-  };
-
-  const handleCancelNewVisit = () => {
-    setOpenNewVisitPopup(false); // Close the new visit dialog
-    setNewVisit({
-      serviceType: '',
-      title: '',
-      dos: '',
-      duration: '',
-      planOfService: '',
-      methodOfVisit: '',
-      visitMode: '',
-      details: '',
-      transportation: '',
-      miles: '',
-      transportWithTenant: '',
-      transportWithoutTenant: '',
-      signature: '',
-    }); // Reset the new visit fields
-  };
+  }
   return (
     <div className="visit-list-container">
       <br />
