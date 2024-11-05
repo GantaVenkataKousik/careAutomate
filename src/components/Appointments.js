@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -30,7 +30,9 @@ const VisitList = () => {
   const [currentVisitIndex, setCurrentVisitIndex] = useState(null); // State to store current visit index
   const [editedVisit, setEditedVisit] = useState({}); // State to store edited visit data
   const [errors, setErrors] = useState({});
- 
+  const [visitData, setVisitData] = useState([]);
+
+
   const [newVisit, setNewVisit] = useState({
     serviceType: '',       // New field
     title: '',
@@ -46,49 +48,64 @@ const VisitList = () => {
     transportWithoutTenant: '', // New field
     signature: '',
   });
-  
-  const [visitData, setVisitData] = useState([
-    {
-      title: 'Housing Transition',
-      startDate: '2024/05/10',
-      endDate: '2024/03/02',
-      typeMethod: 'Office-In Person', // Combined field
-      hcm: 'Robert Roos',
-      scheduledDate: '2024/01/03',
-      dos: '2024/07/06',
-      duration: '8:00AM - 10:00AM',
-      details: 'Her old collection discovered. So at parties he warrant on staying...Her old collection discovered. So at parties he warrant on staying Her old collection discovered. So at parties he warrant on staying...Her old collection discovered. So at parties he warrant on staying',
-      status: 'Approved',
-      signature: ''
-    },
-    {
-      title: 'HCM - Robert Roos DOS',
-      startDate: '08/3/24',
-      endDate: '08/6/24',
-      typeMethod: 'Online-Remote', // Combined field
-      hcm: 'Robert Roos',
-      scheduledDate: '08/6/24',
-      dos: '08/7/24',
-      duration: '8:00AM - 10:00AM',
-      details: 'Sincerity collect happiness do is contented...Her old collection discovered. So at parties he warrant on staying Her old collection discovered. So at parties he warrant on staying...Her old collection discovered. So at parties he warrant on staying',
-      status: 'Rejected',
-      signature: ''
-    },
-    {
-      title: 'Tenant Meeting',
-      startDate: '06/01/2024',
-      endDate: '06/01/2024',
-      typeMethod: 'Online-Remote', // Combined field
-      hcm: 'Anna Smith',
-      scheduledDate: '06/01/24',
-      dos: '06/01/24',
-      duration: '9:00AM - 11:00AM',
-      details: 'Tenant meeting to discuss transition services...Her old collection discovered. So at parties he warrant on staying Her old collection discovered. So at parties he warrant on staying...Her old collection discovered. So at parties he warrant on staying',
-      status: 'Pending',
-      signature: ''
-    }
-  ]);
-  
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchVisitData = async () => {
+      try {
+        // Retrieve the token from local storage
+        const token = localStorage.getItem('token'); // Ensure you store the token after login
+
+        if (!token) {
+          throw new Error('No token found in local storage. Please log in.');
+        }
+
+        // Decode the token to get user information
+        const payload = JSON.parse(atob(token.split('.')[1])); // Decode the JWT payload
+        const hcmId = payload._id; // Extract the user ID (hcmId) from the token payload
+
+        const response = await fetch('https://careautomate-backend.vercel.app/appointments/fetchAll/', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ hcmId }), // Pass hcmId in the request body
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+
+        // Assuming data is an array, map the response data to the desired structure
+        const mappedData = data.map(item => ({
+          title: item.reason, // Mapping 'reason' to 'title'
+          startDate: item.startTime, // Use startTime for startDate
+          endDate: item.endTime, // Use endTime for endDate
+          typeMethod: item.location === 'Remote' ? 'Online-Remote' : 'Office-In Person', // Mapping based on location
+          hcm: item.hcm || 'Not Specified', // Use 'hcm' as provided, or 'Not Specified' if absent
+          scheduledDate: item.date, // Use 'date' for scheduledDate
+          dos: item.date, // Assuming you want the same date as 'dos'
+          duration: `${item.startTime.split('T')[1].slice(0, 5)} - ${item.endTime.split('T')[1].slice(0, 5)}`, // Extracting time from startTime and endTime
+          details: 'Details not provided', // Placeholder for details; you can adjust as needed
+          status: item.approved ? 'Approved' : 'Rejected', // Mapping based on 'approved' status
+          signature: '' // Placeholder for signature
+        }));
+
+        // Update the state with mapped data
+        setVisitData(mappedData);
+      } catch (error) {
+        console.error('Error fetching visit data:', error);
+        setError(error.message); // Capture the error message for display
+      }
+    };
+
+    // Call the fetchVisitData function when the component mounts
+    fetchVisitData();
+  }, []);
+
   const validateVisit = (visit) => {
     const newErrors = {};
     if (!visit.serviceType) newErrors.serviceType = 'Service Type is required'; // New field
@@ -105,18 +122,18 @@ const VisitList = () => {
     return newErrors;
   };
   const timeOptions = [
-    '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', 
-    '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', 
+    '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
+    '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
     '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
     // Add more time slots as needed
   ];
-  
+
   const handleStartTimeChange = (startTime) => {
     setNewVisit({
       ...newVisit,
       startTime,
     });
-  
+
     // Recalculate end time based on selected duration
     if (newVisit.duration) {
       const newEndTime = calculateEndTime(startTime, newVisit.duration);
@@ -126,23 +143,23 @@ const VisitList = () => {
       });
     }
   };
-  
+
   const calculateEndTime = (startTime, duration) => {
     const [hours, minutes] = startTime.split(':').map(Number);
     const totalMinutes = hours * 60 + minutes + parseInt(duration); // Add duration to start time
     const endHours = Math.floor(totalMinutes / 60) % 24;
     const endMinutes = totalMinutes % 60;
-  
+
     // Return in "HH:mm" format
     return `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
   };
-  
+
   const handleDurationChange = (duration) => {
     setNewVisit({
       ...newVisit,
       duration,
     });
-  
+
     // Recalculate end time based on selected start time
     if (newVisit.startTime) {
       const newEndTime = calculateEndTime(newVisit.startTime, duration);
@@ -152,7 +169,7 @@ const VisitList = () => {
       });
     }
   };
-  
+
   const handleDetailsClick = (details) => {
     setDetailsPopup(details);
     setOpenPopup(true);
@@ -198,18 +215,18 @@ const VisitList = () => {
       [field]: validateField(field, newVisit[field]),
     });
   };
-  
+
   const handleNewVisitSubmit = () => {
     const newErrors = validateVisit(newVisit);
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-  
+
     setVisitData([...visitData, newVisit]); // Add new visit to visitData
     setOpenNewVisitPopup(false); // Close the dialog
-  
+
     // Reset the form fields
     setNewVisit({
       serviceType: '',
@@ -227,7 +244,7 @@ const VisitList = () => {
       signature: '',
     });
   };
-  
+
   const handleCancelNewVisit = () => {
     setOpenNewVisitPopup(false); // Close the new visit dialog
     setNewVisit({
@@ -252,8 +269,8 @@ const VisitList = () => {
       <br />
       {/* Buttons aligned to the right */}
       <div className="top-actions" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-        <Button variant="outlined" color="primary" sx={{ marginRight: '10px' ,borderRadius:"20px"}}onClick={() => setOpenNewVisitPopup(true)}>+ New Visit</Button>
-        <Button variant="outlined" sx={{borderRadius:"20px"}}>Export</Button>
+        <Button variant="outlined" color="primary" sx={{ marginRight: '10px', borderRadius: "20px" }} onClick={() => setOpenNewVisitPopup(true)}>+ New Visit</Button>
+        <Button variant="outlined" sx={{ borderRadius: "20px" }}>Export</Button>
       </div>
 
       {/* Filter and search options */}
@@ -302,7 +319,7 @@ const VisitList = () => {
           <div className="visit-header">
             <h3 style={{ margin: 0 }}>{visit.title}</h3>
             <span>{visit.startDate} - {visit.endDate}</span>
-            {/* Type and Method moved to the right */} 
+            {/* Type and Method moved to the right */}
             <div style={{ marginLeft: 'auto' }}>
               <p><strong>{visit.typeMethod}</strong></p>
             </div>
@@ -345,7 +362,7 @@ const VisitList = () => {
           </div>
         </Box>
       ))}
-       <Dialog open={openPopup} onClose={handleClosePopup}>
+      <Dialog open={openPopup} onClose={handleClosePopup}>
         <DialogTitle>Visit Details</DialogTitle>
         <DialogContent>
           <p>{detailsPopup}</p>
@@ -368,14 +385,14 @@ const VisitList = () => {
             <MenuItem value="Housing Sustaining">Housing Sustaining</MenuItem>
             <MenuItem value="Housing Transition">Housing Transition</MenuItem>
           </Select>
-      
+
           <TextField
             label="Start Date"
             type="date"
             InputLabelProps={{ shrink: true }}
             value={editedVisit.startDate || ''}
             onChange={(e) => setEditedVisit({ ...editedVisit, startDate: e.target.value })}
-            sx={{ marginTop: '15px', marginBottom:'10px',width: '260px' }}
+            sx={{ marginTop: '15px', marginBottom: '10px', width: '260px' }}
           />
           <TextField
             label="End Date"
@@ -383,7 +400,7 @@ const VisitList = () => {
             InputLabelProps={{ shrink: true }}
             value={editedVisit.endDate || ''}
             onChange={(e) => setEditedVisit({ ...editedVisit, endDate: e.target.value })}
-            sx={{ marginTop: '15px', marginBottom:'10px',width: '260px' ,marginLeft:"13px"}}
+            sx={{ marginTop: '15px', marginBottom: '10px', width: '260px', marginLeft: "13px" }}
           />
 
           <Select
@@ -451,229 +468,229 @@ const VisitList = () => {
           <Button onClick={handleSaveChanges} color="primary">Save</Button>
         </DialogActions>
       </Dialog>
-   
- <Dialog open={openNewVisitPopup} onClose={handleCancelNewVisit} className='newvisitpopup'>
-  <DialogTitle>New Visit</DialogTitle>
-  <DialogContent>
-    <TextField
-      label="PlanOfService"
-      value={newVisit.serviceType}
-      onChange={(e) => setNewVisit({ ...newVisit, serviceType: e.target.value })}
-      onBlur={() => handleBlur('serviceType')}
-      fullWidth
-      margin="dense"
-      error={!!errors.serviceType}
-      helperText={errors.serviceType || ' '}
-    />
-     
-  
-    <TextField
-      label="Title"
-      value={newVisit.title}
-      onChange={(e) => setNewVisit({ ...newVisit, title: e.target.value })}
-      onBlur={() => handleBlur('title')}
-      fullWidth
-      margin="dense"
-      error={!!errors.title}
-      helperText={errors.title || ' '}
-    />
-    <TextField
-      label="Date of Service"
-      type="date"
-      value={newVisit.dos}
-      onChange={(e) => setNewVisit({ ...newVisit, dos: e.target.value })}
-      onBlur={() => handleBlur('dos')}
-      fullWidth
-      margin="dense"
-      InputLabelProps={{ shrink: true }}
-      error={!!errors.dos}
-      helperText={errors.dos || ' '}
-    />
-  
-<Grid container spacing={2}>
-  <Grid item xs={4}> {/* Adjust width as necessary */}
-    <FormControl fullWidth margin="dense" error={!!errors.duration}>
-      <InputLabel>Duration</InputLabel>
-      <Select
-        value={newVisit.duration}
-        onChange={(e) => handleDurationChange(e.target.value)}
-        label="Duration"
-      >
-        <MenuItem value="30">30 min</MenuItem>
-        <MenuItem value="45">45 min</MenuItem>
-        <MenuItem value="25">25 min</MenuItem>
-      </Select>
-      <FormHelperText>{errors.duration || ' '}</FormHelperText>
-    </FormControl>
-  </Grid>
 
-  <Grid item xs={4}> {/* Adjust width as necessary */}
-    <FormControl fullWidth margin="dense" error={!!errors.startTime}>
-      <InputLabel>Start Time</InputLabel>
-      <Select
-        value={newVisit.startTime}
-        onChange={(e) => handleStartTimeChange(e.target.value)}
-        label="Start Time"
-      >
-        {timeOptions.map((time) => (
-          <MenuItem key={time} value={time}>
-            {time}
-          </MenuItem>
-        ))}
-      </Select>
-      <FormHelperText>{errors.startTime || ' '}</FormHelperText>
-    </FormControl>
-  </Grid>
+      <Dialog open={openNewVisitPopup} onClose={handleCancelNewVisit} className='newvisitpopup'>
+        <DialogTitle>New Visit</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="PlanOfService"
+            value={newVisit.serviceType}
+            onChange={(e) => setNewVisit({ ...newVisit, serviceType: e.target.value })}
+            onBlur={() => handleBlur('serviceType')}
+            fullWidth
+            margin="dense"
+            error={!!errors.serviceType}
+            helperText={errors.serviceType || ' '}
+          />
 
-  <Grid item xs={4}> {/* Adjust width as necessary */}
-    <TextField
-      label="End Time"
-      value={newVisit.endTime} // Calculated end time
-      fullWidth
-      margin="dense"
-      InputLabelProps={{ shrink: true }}
-      error={!!errors.endTime}
-      helperText={errors.endTime || ' '}
-      disabled // The end time will be calculated and can't be manually changed
-    />
-  </Grid>
-</Grid>
-    <FormControl fullWidth margin="dense" error={!!errors.planOfService}>
-      <InputLabel>Place of Service</InputLabel>
-      <Select
-        value={newVisit.planOfService}
-        onChange={(e) => setNewVisit({ ...newVisit, planOfService: e.target.value })}
-        onBlur={() => handleBlur('planOfService')}
-        label="Plan of Service"
-      >
-        <MenuItem value="Office">Office</MenuItem>
-        <MenuItem value="Home">Home</MenuItem>
-        <MenuItem value="Institution">Institution</MenuItem>
-        <MenuItem value="Community">Community</MenuItem>
-        <MenuItem value="Other">Other</MenuItem>
-      </Select>
-      <FormHelperText>{errors.planOfService || ' '}</FormHelperText>
-    </FormControl>
-    <FormControl fullWidth margin="dense" error={!!errors.methodOfVisit}>
-      <InputLabel>Method of Visit</InputLabel>
-      <Select
-        value={newVisit.methodOfVisit}
-        onChange={(e) => setNewVisit({ ...newVisit, methodOfVisit: e.target.value })}
-        onBlur={() => handleBlur('methodOfVisit')}
-        label="Method of Visit"
-      >
-        <MenuItem value="direct">Direct</MenuItem>
-        <MenuItem value="indirect">Indirect</MenuItem>
-      </Select>
-      <FormHelperText>{errors.methodOfVisit || ' '}</FormHelperText>
-    </FormControl>
 
-    {newVisit.methodOfVisit === 'direct' && (
-      <FormControl fullWidth margin="dense" error={!!errors.visitMode}>
-        <InputLabel>Visit Mode</InputLabel>
-        <Select
-          value={newVisit.visitMode}
-          onChange={(e) => setNewVisit({ ...newVisit, visitMode: e.target.value })}
-          onBlur={() => handleBlur('visitMode')}
-          label="Visit Mode"
-        >
-          <MenuItem value="in-person">In-Person</MenuItem>
-          <MenuItem value="remote">Remote</MenuItem>
-        </Select>
-        <FormHelperText>{errors.visitMode || ' '}</FormHelperText>
-      </FormControl>
-    )}
+          <TextField
+            label="Title"
+            value={newVisit.title}
+            onChange={(e) => setNewVisit({ ...newVisit, title: e.target.value })}
+            onBlur={() => handleBlur('title')}
+            fullWidth
+            margin="dense"
+            error={!!errors.title}
+            helperText={errors.title || ' '}
+          />
+          <TextField
+            label="Date of Service"
+            type="date"
+            value={newVisit.dos}
+            onChange={(e) => setNewVisit({ ...newVisit, dos: e.target.value })}
+            onBlur={() => handleBlur('dos')}
+            fullWidth
+            margin="dense"
+            InputLabelProps={{ shrink: true }}
+            error={!!errors.dos}
+            helperText={errors.dos || ' '}
+          />
 
-    <TextField
-      label="Details"
-      value={newVisit.details}
-      onChange={(e) => setNewVisit({ ...newVisit, details: e.target.value })}
-      onBlur={() => handleBlur('details')}
-      fullWidth
-      margin="dense"
-      multiline
-      rows={4}
-      error={!!errors.details}
-      helperText={errors.details || ' '}
-    />
-    <FormControl fullWidth margin="dense" error={!!errors.transportation}>
-      <InputLabel>Transportation</InputLabel>
-      <Select
-        value={newVisit.transportation}
-        onChange={(e) => setNewVisit({ ...newVisit, transportation: e.target.value })}
-        onBlur={() => handleBlur('transportation')}
-        label="Transportation"
-      >
-        <MenuItem value="yes">Yes</MenuItem>
-        <MenuItem value="no">No</MenuItem>
-      </Select>
-      <FormHelperText>{errors.transportation || ' '}</FormHelperText>
-    </FormControl>
+          <Grid container spacing={2}>
+            <Grid item xs={4}> {/* Adjust width as necessary */}
+              <FormControl fullWidth margin="dense" error={!!errors.duration}>
+                <InputLabel>Duration</InputLabel>
+                <Select
+                  value={newVisit.duration}
+                  onChange={(e) => handleDurationChange(e.target.value)}
+                  label="Duration"
+                >
+                  <MenuItem value="30">30 min</MenuItem>
+                  <MenuItem value="45">45 min</MenuItem>
+                  <MenuItem value="25">25 min</MenuItem>
+                </Select>
+                <FormHelperText>{errors.duration || ' '}</FormHelperText>
+              </FormControl>
+            </Grid>
 
-    <Grid container spacing={2} alignItems="center">
-  {/* Transport With Tenant */}
-  {newVisit.transportation === 'yes' && (
-    <>
-      <Grid item xs={5}>
-        <TextField
-          label="Transport With Tenant"
-          value={newVisit.transportWithTenant}
-          onChange={(e) => setNewVisit({ ...newVisit, transportWithTenant: e.target.value })}
-          onBlur={() => handleBlur('transportWithTenant')}
-          fullWidth
-          margin="dense"
-          error={!!errors.transportWithTenant}
-          helperText={errors.transportWithTenant || ' '}
-        />
-      </Grid>
+            <Grid item xs={4}> {/* Adjust width as necessary */}
+              <FormControl fullWidth margin="dense" error={!!errors.startTime}>
+                <InputLabel>Start Time</InputLabel>
+                <Select
+                  value={newVisit.startTime}
+                  onChange={(e) => handleStartTimeChange(e.target.value)}
+                  label="Start Time"
+                >
+                  {timeOptions.map((time) => (
+                    <MenuItem key={time} value={time}>
+                      {time}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText>{errors.startTime || ' '}</FormHelperText>
+              </FormControl>
+            </Grid>
 
-      {/* Transport Without Tenant */}
-      <Grid item xs={5}>
-        <TextField
-          label="Transport Without Tenant"
-          value={newVisit.transportWithoutTenant}
-          onChange={(e) => setNewVisit({ ...newVisit, transportWithoutTenant: e.target.value })}
-          onBlur={() => handleBlur('transportWithoutTenant')}
-          fullWidth
-          margin="dense"
-          error={!!errors.transportWithoutTenant}
-          helperText={errors.transportWithoutTenant || ' '}
-        />
-      </Grid>
+            <Grid item xs={4}> {/* Adjust width as necessary */}
+              <TextField
+                label="End Time"
+                value={newVisit.endTime} // Calculated end time
+                fullWidth
+                margin="dense"
+                InputLabelProps={{ shrink: true }}
+                error={!!errors.endTime}
+                helperText={errors.endTime || ' '}
+                disabled // The end time will be calculated and can't be manually changed
+              />
+            </Grid>
+          </Grid>
+          <FormControl fullWidth margin="dense" error={!!errors.planOfService}>
+            <InputLabel>Place of Service</InputLabel>
+            <Select
+              value={newVisit.planOfService}
+              onChange={(e) => setNewVisit({ ...newVisit, planOfService: e.target.value })}
+              onBlur={() => handleBlur('planOfService')}
+              label="Plan of Service"
+            >
+              <MenuItem value="Office">Office</MenuItem>
+              <MenuItem value="Home">Home</MenuItem>
+              <MenuItem value="Institution">Institution</MenuItem>
+              <MenuItem value="Community">Community</MenuItem>
+              <MenuItem value="Other">Other</MenuItem>
+            </Select>
+            <FormHelperText>{errors.planOfService || ' '}</FormHelperText>
+          </FormControl>
+          <FormControl fullWidth margin="dense" error={!!errors.methodOfVisit}>
+            <InputLabel>Method of Visit</InputLabel>
+            <Select
+              value={newVisit.methodOfVisit}
+              onChange={(e) => setNewVisit({ ...newVisit, methodOfVisit: e.target.value })}
+              onBlur={() => handleBlur('methodOfVisit')}
+              label="Method of Visit"
+            >
+              <MenuItem value="direct">Direct</MenuItem>
+              <MenuItem value="indirect">Indirect</MenuItem>
+            </Select>
+            <FormHelperText>{errors.methodOfVisit || ' '}</FormHelperText>
+          </FormControl>
 
-      {/* Miles Field with Reduced Width */}
-      <Grid item xs={2}>
-        <TextField
-          label="Miles"
-          type="number"
-          value={newVisit.miles}
-          onChange={(e) => setNewVisit({ ...newVisit, miles: e.target.value })}
-          onBlur={() => handleBlur('miles')}
-          fullWidth
-          margin="dense"
-          error={!!errors.miles}
-          helperText={errors.miles || ' '}
-        />
-      </Grid>
-    </>
-  )}
-</Grid>
-    <TextField
-      label="Signature"
-      value={newVisit.signature}
-      onChange={(e) => setNewVisit({ ...newVisit, signature: e.target.value })}
-      onBlur={() => handleBlur('signature')}
-      fullWidth
-      margin="dense"
-      error={!!errors.signature}
-      helperText={errors.signature || ' '}
-    />
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCancelNewVisit} color="secondary">Cancel</Button>
-    <Button onClick={handleNewVisitSubmit} color="primary">Submit</Button>
-  </DialogActions>
-</Dialog>
+          {newVisit.methodOfVisit === 'direct' && (
+            <FormControl fullWidth margin="dense" error={!!errors.visitMode}>
+              <InputLabel>Visit Mode</InputLabel>
+              <Select
+                value={newVisit.visitMode}
+                onChange={(e) => setNewVisit({ ...newVisit, visitMode: e.target.value })}
+                onBlur={() => handleBlur('visitMode')}
+                label="Visit Mode"
+              >
+                <MenuItem value="in-person">In-Person</MenuItem>
+                <MenuItem value="remote">Remote</MenuItem>
+              </Select>
+              <FormHelperText>{errors.visitMode || ' '}</FormHelperText>
+            </FormControl>
+          )}
+
+          <TextField
+            label="Details"
+            value={newVisit.details}
+            onChange={(e) => setNewVisit({ ...newVisit, details: e.target.value })}
+            onBlur={() => handleBlur('details')}
+            fullWidth
+            margin="dense"
+            multiline
+            rows={4}
+            error={!!errors.details}
+            helperText={errors.details || ' '}
+          />
+          <FormControl fullWidth margin="dense" error={!!errors.transportation}>
+            <InputLabel>Transportation</InputLabel>
+            <Select
+              value={newVisit.transportation}
+              onChange={(e) => setNewVisit({ ...newVisit, transportation: e.target.value })}
+              onBlur={() => handleBlur('transportation')}
+              label="Transportation"
+            >
+              <MenuItem value="yes">Yes</MenuItem>
+              <MenuItem value="no">No</MenuItem>
+            </Select>
+            <FormHelperText>{errors.transportation || ' '}</FormHelperText>
+          </FormControl>
+
+          <Grid container spacing={2} alignItems="center">
+            {/* Transport With Tenant */}
+            {newVisit.transportation === 'yes' && (
+              <>
+                <Grid item xs={5}>
+                  <TextField
+                    label="Transport With Tenant"
+                    value={newVisit.transportWithTenant}
+                    onChange={(e) => setNewVisit({ ...newVisit, transportWithTenant: e.target.value })}
+                    onBlur={() => handleBlur('transportWithTenant')}
+                    fullWidth
+                    margin="dense"
+                    error={!!errors.transportWithTenant}
+                    helperText={errors.transportWithTenant || ' '}
+                  />
+                </Grid>
+
+                {/* Transport Without Tenant */}
+                <Grid item xs={5}>
+                  <TextField
+                    label="Transport Without Tenant"
+                    value={newVisit.transportWithoutTenant}
+                    onChange={(e) => setNewVisit({ ...newVisit, transportWithoutTenant: e.target.value })}
+                    onBlur={() => handleBlur('transportWithoutTenant')}
+                    fullWidth
+                    margin="dense"
+                    error={!!errors.transportWithoutTenant}
+                    helperText={errors.transportWithoutTenant || ' '}
+                  />
+                </Grid>
+
+                {/* Miles Field with Reduced Width */}
+                <Grid item xs={2}>
+                  <TextField
+                    label="Miles"
+                    type="number"
+                    value={newVisit.miles}
+                    onChange={(e) => setNewVisit({ ...newVisit, miles: e.target.value })}
+                    onBlur={() => handleBlur('miles')}
+                    fullWidth
+                    margin="dense"
+                    error={!!errors.miles}
+                    helperText={errors.miles || ' '}
+                  />
+                </Grid>
+              </>
+            )}
+          </Grid>
+          <TextField
+            label="Signature"
+            value={newVisit.signature}
+            onChange={(e) => setNewVisit({ ...newVisit, signature: e.target.value })}
+            onBlur={() => handleBlur('signature')}
+            fullWidth
+            margin="dense"
+            error={!!errors.signature}
+            helperText={errors.signature || ' '}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelNewVisit} color="secondary">Cancel</Button>
+          <Button onClick={handleNewVisitSubmit} color="primary">Submit</Button>
+        </DialogActions>
+      </Dialog>
 
 
     </div>

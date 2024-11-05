@@ -1,8 +1,8 @@
 .tenants-page {
+    top: 0px;
     padding: 20px;
-    margin-top: 450px;
     width: 1200px;
-    transition: margin-top 0.3s ease; /* Smooth transition */
+    transition: margin-top 0.3s ease;
 }
 
 .tenants-header {
@@ -11,7 +11,6 @@
 
 .search-add-container {
     display: flex;
-    align-items: center;
     gap: 10px;
 }
 
@@ -29,8 +28,8 @@
     border: none;
     outline: none;
     margin-left: 10px;
-    background: transparent; 
-    color: #000;        
+    background: transparent;
+    color: #000;
 }
 
 .search-icon {
@@ -88,27 +87,20 @@
 /* Filter Box Styling */
 .filter-container {
     position: absolute;
-    top: 280px;
-    /* Position directly below the filter button */
-    left: 220px;
-    /* Position beside the filter button */
+    top: 20px;
+    left: 20px;
     background-color: #fff;
     padding: 0px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     width: 280px;
-    /* Adjust width as needed */
     max-height: 700px;
-    /* Set a maximum height to ensure it doesn’t grow too large */
     overflow-y: auto;
-    /* Allow scrolling if content overflows */
     display: none;
-    /* Hide the filter box by default */
     opacity: 0;
     transform: translateY(-20px);
     transition: opacity 0.3s ease, transform 0.3s ease;
     z-index: 1000;
-    /* Ensure filter box is above other content */
 }
 
 .filter-container.show {
@@ -240,10 +232,11 @@
     cursor: pointer;
     border-radius: 5px;
 }
+
 .tenants-page.expanded {
-    margin-top: 800px; 
+    margin-top: 800px;
 }
 
 .tenants-page.sort-expanded {
-    margin-top: 1150px; 
+    margin-top: 1150px;
 }

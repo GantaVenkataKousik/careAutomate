@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaSearch, FaPlus, FaFilter, FaSort, FaCalendarAlt, FaBars, FaEnvelope, FaFileAlt } from 'react-icons/fa';
 import '../styles/tenants1.css';
 import '../styles/filter.css';
@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Tenants = () => {
   const navigate = useNavigate();
+  const [tenants, setTenants] = useState([]);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [isSortVisible, setIsSortVisible] = useState(false);
@@ -30,14 +31,25 @@ const Tenants = () => {
     //   setIsFilterVisible(false);
     // }
   };
+  useEffect(() => {
+    const fetchTenants = async () => {
+      try {
+        const response = await fetch('https://careautomate-backend.vercel.app/api/tenants/');
+        const data = await response.json();
 
-  const tenants = Array(25).fill({
-    name: 'John Doe',
-    mobile: '123-456-7890',
-    id: 'Tenant123',
-    image: tenantImage, // Use the local image
-  });
+        if (!response.ok) {
+          throw new Error(data.message || 'Error fetching tenants');
+        }
 
+        console.log(data);
+        setTenants(data);
+      } catch (error) {
+        console.error('Error fetching tenants:', error);
+      }
+    };
+
+    fetchTenants();
+  }, []);
   const handleFilterChange = (event) => {
     console.log(event.target.value);
   };
@@ -139,11 +151,11 @@ const Tenants = () => {
       {/* Tenant Profiles Grid */}
       <div className={`tenant-grid ${isFilterVisible && isSortVisible ? 'shift-right-both' : isFilterVisible ? 'shift-right-filter' : ''}`}>
         {tenants.map((tenant, index) => (
-          <div key={index} className="tenant-box">
+          <div key={tenant._id || index} className="tenant-box">
             <div className="tenant-info">
-              <h3>{tenant.name}</h3>
-              <p>{tenant.mobile}</p>
-              <p>{tenant.id}</p>
+              <h3>{tenant.personalInfo.firstName} {tenant.personalInfo.lastName}</h3>
+              <p>{tenant.personalInfo.contact.cellPhone}</p>
+              <p>{tenant.tenantId}</p>
               <div className="tenant-icons">
                 <FaCalendarAlt className="tenant-icon" />
                 <FaBars className="tenant-icon" />
@@ -152,18 +164,16 @@ const Tenants = () => {
               </div>
             </div>
             <div className="tenant-image">
-              <img src={tenant.image} alt="Tenant" />
+              <img src={tenantImage} alt="Tenant" />
             </div>
           </div>
         ))}
       </div>
 
-      {/* Popup for Adding New Tenant */}
       {isPopupVisible && (
         <div className="popup">
           <h2>Add New Tenant</h2>
-          <button className="close-btn" onClick={handleAddTenantClick}>Close</button>
-          {/* Add tenant form goes here */}
+          <button className="close-btn" onClick={() => setIsPopupVisible(false)}>Close</button>
         </div>
       )}
     </div>
