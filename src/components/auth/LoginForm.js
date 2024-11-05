@@ -1,6 +1,3 @@
-
-
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -12,13 +9,15 @@ import mobile from '../../images/mobilepic.png';
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [responseMessage, setResponseMessage] = useState(''); // New state for response message
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    navigate('/dashboard');
+    e.preventDefault(); // Prevent default form submission behavior
+    setResponseMessage(''); // Clear any previous message
+
     try {
-      const response = await fetch('http://localhost:5000/signin', {
+      const response = await fetch('https://careautomate-backend.vercel.app/auth/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -26,18 +25,20 @@ const LoginForm = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
       const data = await response.json();
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-        toast.success('Login successful');
 
+      if (!response.ok) {
+        setResponseMessage(data.error || 'Invalid credentials');
+      } else if (data.token) {
+        // Store the token in localStorage
+        localStorage.setItem('token', data.token);
+        toast.success(data.success || 'Login successful'); // Show success message in toast
+
+        // Navigate to the dashboard after a successful login
+        navigate('/dashboard');
       }
     } catch (error) {
-      toast.error('Invalid credentials');
+      setResponseMessage('An error occurred. Please try again.');
       console.error(error);
     }
   };
@@ -74,6 +75,20 @@ const LoginForm = () => {
           >
             Login
           </motion.button>
+
+          {/* Display the response message below the submit button */}
+          {responseMessage && (
+            <p
+              className="response-message"
+              style={{
+                color: 'red',
+                fontSize: '18px', // Adjust the size as needed
+                fontWeight: 'bold',
+              }}
+            >
+              {responseMessage}
+            </p>
+          )}
         </form>
 
         <div className="signup-link">
@@ -89,4 +104,3 @@ const LoginForm = () => {
 }
 
 export default LoginForm;
-

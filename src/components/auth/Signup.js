@@ -9,7 +9,7 @@ import usa from '../../images/usa.png';
 
 const Signup = () => {
   const navigate = useNavigate();
-
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -127,25 +127,41 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/signup', {
+      const response = await fetch('https://careautomate-backend.vercel.app/auth/register/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          name: `${formData.firstName} ${formData.lastName}`,
+          phoneNo: formData.mobileNumber,
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        const errorData = await response.json(); // Parse error response
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          apiError: errorData.message || 'An error occurred. Please try again.', // Display API error
+        }));
+        return;
       }
+
       const data = await response.json();
       console.log(data);
       navigate('/login');
-    } catch (error) {
-      console.error(error);
-      console.log(error)
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.email) {
+        setError(err.response.data.email);
+      } else {
+        setError('An unknown error occurred.');
+      }
     }
   };
+
+
   const handleMobileNumberChange = (e) => {
     const input = e.target.value.replace(/\D/g, ''); // Remove all non-numeric characters
     let formattedNumber = input;
@@ -196,6 +212,12 @@ const Signup = () => {
         <div className="right-section">
           <h3>A Small Step To Begin Automation Of<br />Your Housing Services</h3>
           <form className="signup-form" onSubmit={handleSubmit}>
+            {errors.apiError && <p className="error-message" style={{
+              color: 'red',
+              fontSize: '18px',
+              fontWeight: 'bold',
+            }}>{errors.apiError}</p>}
+
             <div className="form-group">
               <input
                 type="text"
