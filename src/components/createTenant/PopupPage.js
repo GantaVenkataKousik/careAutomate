@@ -15,7 +15,7 @@ const steps = [
     name: "Personal Info",
     subSteps: [SubStep1, SubStep2, SubStep3, SubStep4, SubStep5, SubStep6, SubStep7]
   },
- 
+
   {
     name: "Assign Services",
     subSteps: [ServiceSelection]
@@ -152,13 +152,12 @@ const PopupPage = () => {
                             </span>
                           </div>
                           <span
-                            className={`${
-                              i < currentStep
+                            className={`${i < currentStep
                                 ? "text-green-500"
                                 : isActive && complete
-                                ? "text-green-500"
-                                : "text-black"
-                            } text-sm`}
+                                  ? "text-green-500"
+                                  : "text-black"
+                              } text-sm`}
                           >
                             {step.name}
                           </span>
@@ -168,9 +167,8 @@ const PopupPage = () => {
                           <div className="flex-1 mx-2 -mt-10">
                             <div className="w-full h-2 bg-gray-300 rounded-full">
                               <div
-                                className={`h-2 rounded-full ${
-                                  i < currentStep ? "bg-indigo-500" : "bg-gray-300"
-                                }`}
+                                className={`h-2 rounded-full ${i < currentStep ? "bg-indigo-500" : "bg-gray-300"
+                                  }`}
                                 style={{ width: `${i === currentStep ? widthPercentage : i < currentStep ? 100 : 0}%` }}
                               ></div>
                             </div>
