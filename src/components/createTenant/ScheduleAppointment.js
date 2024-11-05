@@ -5,7 +5,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import './ScheduleAppointment.css';
-import AddToCalendar from 'react-add-to-calendar';
 import { format } from 'date-fns';
 
 const ScheduleAppointment = () => {
@@ -45,7 +44,7 @@ const ScheduleAppointment = () => {
 
   const handleCreateAppointment = () => {
     const formattedDate = appointmentDate ? format(new Date(appointmentDate), 'yyyy-MM-dd HH:mm') : '';
-  
+
     const event = {
       title: title || 'Appointment',
       location: visitMethod || 'Online',
@@ -53,11 +52,11 @@ const ScheduleAppointment = () => {
       endTime: calculateEndTime(formattedDate, timeDuration),
     };
     setPreviousData({
-        title,
-        location: visitMethod,
-        startTime: formattedDate,
-        endTime: calculateEndTime(formattedDate, timeDuration),
-      });
+      title,
+      location: visitMethod,
+      startTime: formattedDate,
+      endTime: calculateEndTime(formattedDate, timeDuration),
+    });
     setEventDetails(event);
     setScheduleCreated(true); // Set scheduleCreated to true when appointment is created
     setShowCreateScheduleDialog(true); // Show the dialog for appointment details
@@ -72,7 +71,7 @@ const ScheduleAppointment = () => {
       setShowCreateScheduleDialog(false); // Close the dialog
     }
   };
-  
+
   const calculateEndTime = (startTime, duration) => {
     if (!startTime || !duration) return startTime;
     const time = new Date(startTime);
@@ -82,7 +81,7 @@ const ScheduleAppointment = () => {
   };
   const handleCreateAnother = () => {
     setShowCreateAnotherDialog(false);
-    
+
     // Reset form fields
     setHcm('');
     setServiceType('');
@@ -278,27 +277,27 @@ const ScheduleAppointment = () => {
             </Grid>
           )}
 
-{frequency === 'Biweekly' && (
-  <Grid item xs={4}>
-    <TextField
-      select
-      fullWidth
-      margin="normal"
-      label="Select Days"
-      value={selectedBiweeklyDays}
-      onChange={(e) => setSelectedBiweeklyDays(e.target.value)}
-      SelectProps={{
-        multiple: true, // Enable multiple selection
-      }}
-    >
-      {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
-        <MenuItem key={day} value={day}>
-          {day}
-        </MenuItem>
-      ))}
-    </TextField>
-  </Grid>
-)}
+          {frequency === 'Biweekly' && (
+            <Grid item xs={4}>
+              <TextField
+                select
+                fullWidth
+                margin="normal"
+                label="Select Days"
+                value={selectedBiweeklyDays}
+                onChange={(e) => setSelectedBiweeklyDays(e.target.value)}
+                SelectProps={{
+                  multiple: true, // Enable multiple selection
+                }}
+              >
+                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                  <MenuItem key={day} value={day}>
+                    {day}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          )}
 
           {frequency === 'Monthly' && (
             <Grid item xs={4}>
@@ -319,24 +318,24 @@ const ScheduleAppointment = () => {
             </Grid>
           )}
 
-       
+
           <Grid item xs={4}>
             <TextField
               select
-               fullWidth
-               margin="normal"
-               label="Method of Visit"
-               value={visitMethod}
+              fullWidth
+              margin="normal"
+              label="Method of Visit"
+              value={visitMethod}
               onChange={(e) => setVisitMethod(e.target.value)}
             >
-               <MenuItem value="Direct">Direct</MenuItem>
-               <MenuItem value="Remote">Remote</MenuItem>
+              <MenuItem value="Direct">Direct</MenuItem>
+              <MenuItem value="Remote">Remote</MenuItem>
             </TextField>
           </Grid>
-         
+
 
           <Grid item xs={12} display="flex" justifyContent="center" gap={2} mt={2}>
-             <Button variant="outlined" color="secondary" onClick={() => console.log('Cancel')}>
+            <Button variant="outlined" color="secondary" onClick={() => console.log('Cancel')}>
               Cancel
             </Button>
             <Button variant="contained" color="primary" onClick={handleCreateAppointment}>
@@ -345,69 +344,68 @@ const ScheduleAppointment = () => {
           </Grid>
         </Grid>
       </div>
-    <Dialog open={showCreateScheduleDialog} onClose={handleCloseDialog}>
-  {scheduleCreated ? (
-    <>
-      <DialogTitle>Appointment Created</DialogTitle>
-      <Box sx={{ p: 2 }}>
-        <Typography variant="h6">{eventDetails?.title}</Typography>
-        <Typography variant="body1">Description: {eventDetails?.description}</Typography>
-        <Typography variant="body1">Location: {eventDetails?.location}</Typography>
-        <Typography variant="body1">Start Time: {eventDetails?.startTime}</Typography>
-        <Typography variant="body1">End Time: {eventDetails?.endTime}</Typography>
-        <AddToCalendar event={eventDetails}buttonText="Add to Calendar" />
-      </Box>
-      <DialogActions>
-        <Button onClick={handleCloseDialog} color="primary">
-          Close
-        </Button>
-      </DialogActions>
-    </>
-  ) : (
-    <>
-      <DialogTitle>Do you want to create another schedule?</DialogTitle>
-      <DialogActions>
-        <Button onClick={() => setShowCreateScheduleDialog(false)} color="primary">
-          No
-        </Button>
-        <Button
-          onClick={() => {
-            setHcm('HCM 2'); // Reset or change HCM if needed
-            setScheduleCreated(false); // Reset scheduleCreated for next appointment
-            setShowCreateScheduleDialog(false); // Close the dialog
-            // Open dialog for new appointment creation
-            
-          }}
-          color="primary"
-          autoFocus
-        >
-          Yes
-        </Button>
-      </DialogActions>
-    </>
-  )}
-</Dialog>
+      <Dialog open={showCreateScheduleDialog} onClose={handleCloseDialog}>
+        {scheduleCreated ? (
+          <>
+            <DialogTitle>Appointment Created</DialogTitle>
+            <Box sx={{ p: 2 }}>
+              <Typography variant="h6">{eventDetails?.title}</Typography>
+              <Typography variant="body1">Description: {eventDetails?.description}</Typography>
+              <Typography variant="body1">Location: {eventDetails?.location}</Typography>
+              <Typography variant="body1">Start Time: {eventDetails?.startTime}</Typography>
+              <Typography variant="body1">End Time: {eventDetails?.endTime}</Typography>
+            </Box>
+            <DialogActions>
+              <Button onClick={handleCloseDialog} color="primary">
+                Close
+              </Button>
+            </DialogActions>
+          </>
+        ) : (
+          <>
+            <DialogTitle>Do you want to create another schedule?</DialogTitle>
+            <DialogActions>
+              <Button onClick={() => setShowCreateScheduleDialog(false)} color="primary">
+                No
+              </Button>
+              <Button
+                onClick={() => {
+                  setHcm('HCM 2'); // Reset or change HCM if needed
+                  setScheduleCreated(false); // Reset scheduleCreated for next appointment
+                  setShowCreateScheduleDialog(false); // Close the dialog
+                  // Open dialog for new appointment creation
 
-<Dialog open={showCreateAnotherDialog} onClose={() => setShowCreateAnotherDialog(false)}>
-  <DialogTitle>Do you want to create another schedule?</DialogTitle>
-  <DialogActions>
-    <Button onClick={() => setShowCreateAnotherDialog(false)} color="primary">
-      No
-    </Button>
-    <Button
-      onClick={() => {
-        setHcm('HCM 2'); // Reset or change HCM if needed
-        setScheduleCreated(false); // Reset scheduleCreated for next appointment
-        setShowCreateAnotherDialog(false); // Close the dialog
-        // Proceed with creating another appointment
-      }}
-      color="primary"
-      autoFocus
-    >
-      Yes
-    </Button>
-  </DialogActions>
-</Dialog>
+                }}
+                color="primary"
+                autoFocus
+              >
+                Yes
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
+
+      <Dialog open={showCreateAnotherDialog} onClose={() => setShowCreateAnotherDialog(false)}>
+        <DialogTitle>Do you want to create another schedule?</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => setShowCreateAnotherDialog(false)} color="primary">
+            No
+          </Button>
+          <Button
+            onClick={() => {
+              setHcm('HCM 2'); // Reset or change HCM if needed
+              setScheduleCreated(false); // Reset scheduleCreated for next appointment
+              setShowCreateAnotherDialog(false); // Close the dialog
+              // Proceed with creating another appointment
+            }}
+            color="primary"
+            autoFocus
+          >
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
 
 
     </Box>
