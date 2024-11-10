@@ -12,6 +12,8 @@ import Substep22 from './Substep22';
 import ServiceSelection from './ServiceSelection';
 import ScheduleAppointment from './ScheduleAppointment';
 import axios from 'axios';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const steps = [
   {
@@ -40,9 +42,9 @@ const PopupPage = () => {
   const [currentSubStep, setCurrentSubStep] = useState(0);
   const [subStepProgress, setSubStepProgress] = useState(0);
   const dispatch = useDispatch();
-  
+  const navigate = useNavigate();
   // Access data from Redux state
-  const formData = useSelector((state) => state.tenant);
+  const tenantData = useSelector((state) => state.tenant);
 
   const togglePopup = () => setShowPopup(!showPopup);
 
@@ -94,8 +96,8 @@ const PopupPage = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/tenants/createTenant",
-        formData,
+        "https://careautomate-backend.vercel.app/tenant/createTenant",
+        {tenantData},
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -106,7 +108,8 @@ const PopupPage = () => {
       
       // Check if the response status is in the success range
       if (response.status >= 200 && response.status < 300) {
-        alert("Data saved successfully!");
+        toast.success("Tenant data saved successfully");
+        navigate('/tenants');
       } else {
         console.error("Failed to save data:", response.statusText);
       }

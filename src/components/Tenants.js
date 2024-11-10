@@ -66,7 +66,7 @@ const Tenants = () => {
   };
 
   return (
-    <div className={`tenants-page ${isFilterVisible || isSortVisible ? 'expanded' : ''} ${isSortVisible ? 'sort-expanded' : ''}`}>
+    <div className=''>
       <h1>Tenants</h1>
 
       <div className="tenants-header">
@@ -82,33 +82,33 @@ const Tenants = () => {
         </div>
       </div>
 
-      <div className="filters">
+      {/* <div className="filters">
         <button className="filter-btn" onClick={toggleFilter}>
           <FaFilter className="filter-icon" /> Filter
         </button>
         <button className={`sort-btn ${isFilterVisible ? 'active' : ''}`} onClick={toggleSort}>
           <FaSort className="sort-icon" /> Sort By
         </button>
-      </div>
+      </div> */}
       <br />
 
       {/* Filter Box */}
-      <div className={`filter-container ${isFilterVisible ? 'show' : ''}`}>
+      {/* <div className={`filter-container ${isFilterVisible ? 'show' : ''}`}>
         <div className="search-bar-filter">
           <FaSearch className="search-icon1" />
           <input type="text" placeholder="Search by PM/Name" onChange={handleFilterChange} />
         </div>
         {/* Filter options */}
-      </div>
+      {/* </div> */} 
 
       {/* Sort Box */}
-      <div className={`sort-container ${isSortVisible ? 'show' : ''}`}>
+      {/* <div className={`sort-container ${isSortVisible ? 'show' : ''}`}>
         <div className="search-bar-sort">
           <FaSearch className="search-icon1" />
           <input type="text" placeholder="Search by PM/Name" />
         </div>
         {/* Sort options */}
-      </div>
+      {/* </div> */} 
 
       {/* Tenant Profiles Grid */}
       <div className={`tenant-grid ${isFilterVisible && isSortVisible ? 'shift-right-both' : isFilterVisible ? 'shift-right-filter' : ''}`}>
@@ -116,9 +116,9 @@ const Tenants = () => {
           tenants.map((tenant, index) => (
             <div key={tenant._id || index} className="tenant-box">
               <div className="tenant-info">
-                <h3>{tenant.personalInfo?.firstName} {tenant.personalInfo?.lastName}</h3>
-                <p>{tenant.personalInfo?.contact?.cellPhone}</p>
-                <p>{tenant.tenantId}</p>
+                <h3>{tenant?.name}</h3>
+                <p>{tenant?.phoneNo}</p>
+                <p>{tenant.email}</p>
                 <div className="tenant-icons">
                   <FaCalendarAlt className="tenant-icon" />
                   <FaBars className="tenant-icon" />

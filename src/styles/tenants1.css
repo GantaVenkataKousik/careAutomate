@@ -1,8 +1,8 @@
 .tenants-page {
-    top: 0px;
-    padding: 20px;
+    /* top: 0px; */
+    padding-left: 20px;
     width: 1200px;
-    transition: margin-top 0.3s ease;
+    /* transition: margin-top 0.3s ease; */
 }
 
 .tenants-header {
@@ -18,9 +18,9 @@
     display: flex;
     align-items: center;
     border: 1px solid #282727;
-    padding: 5px;
-    border-radius: 15px;
-    height: 30px;
+    padding: 10px;
+    border-radius: 25px;
+    height: 40px;
     width: 240px;
 }
 
@@ -38,12 +38,12 @@
 
 .add-tenant-btn {
     background-color: #6F84F8;
-    width: 240px;
+    width: 200px;
     height: 40px;
     color: white;
     border: none;
     padding: 10px 15px;
-    border-radius: 15px;
+    border-radius: 25px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -54,20 +54,15 @@
     margin-right: 5px;
 }
 
-.filters {
+/* .filters {
     margin-top: 20px;
     display: flex;
     gap: 10px;
     position: relative;
     /* Position relative for filter and sort box positioning */
-}
+/* }  */
 
-.sort-btn.active {
-    background-color: #4b6ee5;
-    /* Change color to indicate active state */
-}
-
-.filter-btn,
+/* .filter-btn,
 .sort-btn {
     background-color: #6F84F8;
     color: white;
@@ -77,69 +72,25 @@
     display: flex;
     align-items: center;
     cursor: pointer;
-}
+} */
 
-.filter-icon,
+/* .filter-icon,
 .sort-icon {
     margin-right: 5px;
-}
+} */
 
 /* Filter Box Styling */
-.filter-container {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background-color: #fff;
-    padding: 0px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    width: 280px;
-    max-height: 700px;
-    overflow-y: auto;
-    display: none;
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 1000;
-}
 
-.filter-container.show {
+
+/* .filter-container.show {
     display: block;
     opacity: 1;
     transform: translateY(0);
-}
+} */
 
 /* Sort Box Styling */
-.sort-container {
-    position: absolute;
-    top: 280px;
-    /* Align top with the filter button */
-    left: 510px;
-    /* Position the sort box beside the filter box */
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    width: 250px;
-    /* Adjust width as needed */
-    max-height: 700px;
-    /* Set a maximum height to ensure it doesn’t grow too large */
-    overflow-y: auto;
-    /* Allow scrolling if content overflows */
-    display: none;
-    /* Hide the sort box by default */
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 1000;
-    /* Ensure sort box is above other content */
-}
 
-.sort-container.show {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
-}
+
 
 /* Grid Shifting */
 .tenant-grid {
@@ -164,9 +115,10 @@
 .tenant-box {
     display: flex;
     background-color: #f9f9f9;
-    padding: 20px;
+    padding: 15px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
 }
 
 .tenant-info {
@@ -202,6 +154,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    
 }
 
 .tenant-image img {
