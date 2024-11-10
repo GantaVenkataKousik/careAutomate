@@ -12,10 +12,9 @@ import Settings from './components/Settings';
 import PopupPage from './components/createTenant/PopupPage.js';
 import LoginForm from './components/auth/LoginForm.js';
 import Signup from './components/auth/Signup.js';
-import { useAuth } from './context/AuthContext';
 import './App.css';
 import PrivateRoute from './PrivateRoute';
-import { AuthProvider } from "./AuthContext";
+import { AuthProvider, useAuth } from "./AuthContext";
 
 const App = () => {
   const { token } = useAuth();
