@@ -439,10 +439,9 @@ const handleConfirmDelete = () => {
 }
 
 const Visits = () => {
-  const [showPopup1, setShowPopup1] = useState(null); // Track which popup to show
-  const [showPopup2, setShowPopup2] = useState(null); // Track which popup to show
+  const [showPopup1, setShowPopup1] = useState(null);
+  const [showPopup2, setShowPopup2] = useState(null);
   const [showDeletePopup1, setShowDeletePopup1] = useState(false);
-
   const [showDeletePopup2, setShowDeletePopup2] = useState(false);
   const [visitData, setVisitData] = useState({});
   const [activeTab, setActiveTab] = useState("Waiting on Decision");
