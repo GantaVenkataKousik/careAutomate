@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+// SubStep2.js
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateAddressInfo } from '../../redux/tenant/tenantSlice';
 
 const SubStep2 = () => {
+  const dispatch = useDispatch();
+  const addressInfo = useSelector((state) => state.tenant.addressInfo);
   const [address, setAddress] = useState({
     addressLine1: '',
     addressLine2: '',
@@ -11,23 +16,28 @@ const SubStep2 = () => {
     mailingDifferent: false,
   });
 
+  useEffect(() => {
+    setAddress(addressInfo);
+  }, [addressInfo]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const updatedValue = type === 'checkbox' ? checked : value;
+
     setAddress({
       ...address,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: updatedValue,
     });
+
+    dispatch(updateAddressInfo({ [name]: updatedValue })); // Update Redux store with each change
   };
 
   return (
     <div>
       <h2 className="text-xl font-medium mb-4">Address Information</h2>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4" style={{ maxHeight: "400px", overflowY: "auto" }}>
         <div>
-          <label className="block text-gray-700" htmlFor="addressLine1">
-            Address Line 1*
-          </label>
+          <label className="block text-gray-700" htmlFor="addressLine1">Address Line 1*</label>
           <input
             className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
             type="text"
@@ -41,9 +51,7 @@ const SubStep2 = () => {
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="addressLine2">
-            Address Line 2
-          </label>
+          <label className="block text-gray-700" htmlFor="addressLine2">Address Line 2</label>
           <input
             className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
             type="text"
@@ -56,9 +64,7 @@ const SubStep2 = () => {
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="city">
-            City*
-          </label>
+          <label className="block text-gray-700" htmlFor="city">City*</label>
           <input
             className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
             type="text"
@@ -72,9 +78,7 @@ const SubStep2 = () => {
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="state">
-            State*
-          </label>
+          <label className="block text-gray-700" htmlFor="state">State*</label>
           <input
             className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
             type="text"
@@ -88,9 +92,7 @@ const SubStep2 = () => {
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="zipCode">
-            Zip Code*
-          </label>
+          <label className="block text-gray-700" htmlFor="zipCode">Zip Code*</label>
           <input
             className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
             type="text"

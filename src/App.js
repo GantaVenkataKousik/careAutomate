@@ -49,6 +49,7 @@ const App = () => {
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
             <Route path="/tenants" element={<AppLayout><Tenants /></AppLayout>} />
+            <Route path="/tenants/createTenant" element={<AppLayout><PopupPage /></AppLayout>} />
             <Route path="/hcm" element={<AppLayout><HCM /></AppLayout>} />
             <Route path="/appointments" element={<AppLayout><Appointments /></AppLayout>} />
             <Route path="/visits" element={<AppLayout><Visits /></AppLayout>} />

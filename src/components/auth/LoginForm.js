@@ -32,7 +32,7 @@ const LoginForm = () => {
         toast.error(data.error || 'Invalid credentials');
       } else if (data.token) {
 
-        login(data.token, data.user);
+        login(data.user, data.token);
         toast.success('Login successful');
         // Pass token and user data to update context
         navigate('/dashboard');
