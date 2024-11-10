@@ -6,6 +6,8 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import './signup.css';
 import mobile from '../../images/mobilepic.png';
 import usa from '../../images/usa.png';
+import { toast } from 'react-toastify';
+
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -122,7 +124,7 @@ const Signup = () => {
 
     // Check if there are any errors
     if (Object.values(allErrors).some((error) => error !== '')) {
-      alert('Please fix the errors before submitting.');
+      toast.error('Please fix the errors before submitting.');
       return; // Prevent submission
     }
 
@@ -146,18 +148,16 @@ const Signup = () => {
           ...prevErrors,
           apiError: errorData.message || 'An error occurred. Please try again.', // Display API error
         }));
+        toast.error(errorData.message || 'An error occurred. Please try again.');
         return;
       }
 
       const data = await response.json();
       console.log(data);
-      navigate('/login');
+      toast.success('Signup successful! Redirecting to login...');
+      setTimeout(() => navigate('/login'), 2000); // Delay navigation by 2 seconds to show toast
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.email) {
-        setError(err.response.data.email);
-      } else {
-        setError('An unknown error occurred.');
-      }
+      toast.error('An unknown error occurred.');
     }
   };
 

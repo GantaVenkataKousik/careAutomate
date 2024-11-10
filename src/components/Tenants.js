@@ -5,6 +5,7 @@ import '../styles/filter.css';
 import '../styles/sort.css';
 import tenantImage from '../images/tenant.jpg';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Tenants = () => {
   const navigate = useNavigate();
@@ -27,29 +28,39 @@ const Tenants = () => {
   const toggleSort = () => {
     setIsSortVisible(!isSortVisible);
     setIsFilterVisible(true);
-    // if (!isSortVisible) {
-    //   setIsFilterVisible(false);
-    // }
   };
+
   useEffect(() => {
     const fetchTenants = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No token found in localStorage');
+        return;
+      }
+
       try {
-        const response = await fetch('https://careautomate-backend.vercel.app/api/tenants/');
-        const data = await response.json();
+        const response = await axios.post(
+          'https://careautomate-backend.vercel.app/fetchAll/fetchAllHCMsTenants',
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
 
-        if (!response.ok) {
-          throw new Error(data.message || 'Error fetching tenants');
-        }
-
-        console.log(data);
-        setTenants(data);
+        const tenantsData = response.data?.data?.tenants || []; // Extract tenants data
+        setTenants(tenantsData);
+        console.log('Fetched tenants:', tenantsData);
       } catch (error) {
-        console.error('Error fetching tenants:', error);
+        console.error('Error fetching tenants:', error.response?.data || error.message);
       }
     };
 
     fetchTenants();
   }, []);
+
   const handleFilterChange = (event) => {
     console.log(event.target.value);
   };
@@ -87,34 +98,7 @@ const Tenants = () => {
           <FaSearch className="search-icon1" />
           <input type="text" placeholder="Search by PM/Name" onChange={handleFilterChange} />
         </div>
-        <div className="filter-group">
-          <h3>Service Type</h3>
-          <label><input type="checkbox" value="Housing Consultation" onChange={handleFilterChange} /> Housing Consultation</label>
-          <label><input type="checkbox" value="Housing Transition" onChange={handleFilterChange} /> Housing Transition</label>
-          <label><input type="checkbox" value="Housing Sustaining" onChange={handleFilterChange} /> Housing Sustaining</label>
-          <label><input type="checkbox" value="Moving Expenses" onChange={handleFilterChange} /> Moving Expenses</label>
-        </div>
-        <div className="filter-group">
-          <h3>City</h3>
-          <label><input type="checkbox" value="Benroji" onChange={handleFilterChange} /> Benroji</label>
-          <label><input type="checkbox" value="Brooklyn" onChange={handleFilterChange} /> Brooklyn</label>
-          <label><input type="checkbox" value="Fridey" onChange={handleFilterChange} /> Fridey</label>
-          <label><input type="checkbox" value="St. Ckloud" onChange={handleFilterChange} /> St. Ckloud</label>
-        </div>
-        <div className="filter-group">
-          <h3>Country</h3>
-          <label><input type="checkbox" value="Bemidji" onChange={handleFilterChange} /> Bemidji</label>
-          <label><input type="checkbox" value="Brooklyn" onChange={handleFilterChange} /> Brooklyn</label>
-          <label><input type="checkbox" value="Fridey" onChange={handleFilterChange} /> Fridey</label>
-          <label><input type="checkbox" value="St. Ckloud" onChange={handleFilterChange} /> St. Ckloud</label>
-        </div>
-        <div className="filter-group">
-          <h3>Insurance</h3>
-          <label><input type="checkbox" value="MA" onChange={handleFilterChange} /> MA</label>
-          <label><input type="checkbox" value="Hennpin Health" onChange={handleFilterChange} /> Hennpin Health</label>
-          <label><input type="checkbox" value="UCare" onChange={handleFilterChange} /> UCare</label>
-          <label><input type="checkbox" value="Private Pay" onChange={handleFilterChange} /> Private Pay</label>
-        </div>
+        {/* Filter options */}
       </div>
 
       {/* Sort Box */}
@@ -123,51 +107,33 @@ const Tenants = () => {
           <FaSearch className="search-icon1" />
           <input type="text" placeholder="Search by PM/Name" />
         </div>
-        <div className="sort-group">
-          <h3>Name</h3>
-          <label><input type="radio" name="name" value="firstName" /> First Name</label>
-          <label><input type="radio" name="name" value="lastName" /> Last Name</label>
-        </div>
-        <div className="sort-group">
-          <h3>Status</h3>
-          <label><input type="radio" name="status" value="active" /> Active</label>
-          <label><input type="radio" name="status" value="deactivated" /> Deactivated</label>
-          <label><input type="radio" name="status" value="referral" /> Referral</label>
-        </div>
-        <div className="sort-group">
-          <h3>Documentation</h3>
-          <label><input type="radio" name="documentation" value="completed" /> Completed</label>
-          <label><input type="radio" name="documentation" value="pending" /> Pending</label>
-        </div>
-        <div className="sort-options">
-          <label><input type="checkbox" /> Restore to Default</label>
-          <div className="sort-buttons">
-            <button className="sort-btn">Sort</button>
-            <button className="cancel-btn" onClick={toggleSort}>Cancel</button>
-          </div>
-        </div>
+        {/* Sort options */}
       </div>
 
       {/* Tenant Profiles Grid */}
       <div className={`tenant-grid ${isFilterVisible && isSortVisible ? 'shift-right-both' : isFilterVisible ? 'shift-right-filter' : ''}`}>
-        {tenants.map((tenant, index) => (
-          <div key={tenant._id || index} className="tenant-box">
-            <div className="tenant-info">
-              <h3>{tenant.personalInfo.firstName} {tenant.personalInfo.lastName}</h3>
-              <p>{tenant.personalInfo.contact.cellPhone}</p>
-              <p>{tenant.tenantId}</p>
-              <div className="tenant-icons">
-                <FaCalendarAlt className="tenant-icon" />
-                <FaBars className="tenant-icon" />
-                <FaEnvelope className="tenant-icon" />
-                <FaFileAlt className="tenant-icon" />
+        {tenants.length > 0 ? (
+          tenants.map((tenant, index) => (
+            <div key={tenant._id || index} className="tenant-box">
+              <div className="tenant-info">
+                <h3>{tenant.personalInfo?.firstName} {tenant.personalInfo?.lastName}</h3>
+                <p>{tenant.personalInfo?.contact?.cellPhone}</p>
+                <p>{tenant.tenantId}</p>
+                <div className="tenant-icons">
+                  <FaCalendarAlt className="tenant-icon" />
+                  <FaBars className="tenant-icon" />
+                  <FaEnvelope className="tenant-icon" />
+                  <FaFileAlt className="tenant-icon" />
+                </div>
+              </div>
+              <div className="tenant-image">
+                <img src={tenantImage} alt="Tenant" />
               </div>
             </div>
-            <div className="tenant-image">
-              <img src={tenantImage} alt="Tenant" />
-            </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>No data available</p> // Show message if no tenants data
+        )}
       </div>
 
       {isPopupVisible && (

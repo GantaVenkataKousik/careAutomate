@@ -3,6 +3,10 @@ import '../styles/navbar.css';
 import tenantImage from '../images/tenant.jpg';
 
 const Navbar = () => {
+  const user = JSON.parse(localStorage.getItem('user'))
+   
+
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
@@ -19,7 +23,7 @@ const Navbar = () => {
 
         <div className="user-profile">
           <img src={tenantImage} alt="User" />
-          <span className="username">Mr.John Doe</span>
+          <span className="username">{user?.name}</span>
         </div>
       </div>
     </nav>
