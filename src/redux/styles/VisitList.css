@@ -1,0 +1,127 @@
+.visit-list-container {
+    padding: 20px;
+    margin-top: 350px;
+}
+
+.filter-options {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+    justify-content: flex-start; /* Keep input fields aligned to the left */
+}
+
+.filter-options-buttons {
+    margin-left: auto; /* Move buttons to the right end */
+    display: flex;
+    gap: 10px;
+}
+
+.visit-box {
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.visit-header {
+    display: flex;
+    justify-content: space-between; /* Align title to the left and type/method to the right */
+    margin-bottom: 10px;
+}
+
+.visit-header h3 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.visit-method {
+    font-size: 14px;
+    color: #666;
+}
+
+.visit-info-row {
+    display: flex;
+   align-items: first baseline;
+    gap: 60px;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.details-box {
+    padding: 0;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.visit-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.reject-button {
+    border-color: red;
+    color: red;
+}
+
+.approve-button {
+    border-color: green;
+    color: green;
+}
+
+/* Status colors */
+.visit-box.approved {
+    background-color: #B2FBC6;
+}
+
+.visit-box.rejected {
+    background-color: lightcoral;
+}
+
+.visit-box.pending {
+    background-color: lightblue;
+}
+
+/* Styling for popup */
+.MuiDialog-paper {
+    padding: 20px;
+    max-width: 400px;
+}
+
+/* Input fields styling (uneditable by default) */
+.visit-info-row .editable-field {
+    border: none;
+    background-color: transparent;
+    outline: none;
+    pointer-events: none; /* Disable user input */
+}
+
+.editable-field.edit-mode {
+    pointer-events: auto; /* Allow user input when in edit mode */
+    border-bottom: 1px solid #ccc;
+}
+
+/* Button for export and new visit */
+.export-button,
+.new-visit-button {
+    background-color: #1976D2;
+    color: white;
+    border: none; /* Remove default border */
+    border-radius: 4px; /* Add slight border-radius for aesthetics */
+    padding: 8px 16px; /* Add padding for button */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    transition: background-color 0.3s; /* Smooth transition for background-color */
+}
+
+.export-button:hover,
+.new-visit-button:hover {
+    background-color: #155a8a; /* Darker shade on hover */
+}
+
+.filter-options-buttons .MuiButton-root {
+    margin-left: 10px;
+    height: 40px;
+}

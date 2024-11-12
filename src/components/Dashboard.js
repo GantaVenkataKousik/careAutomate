@@ -61,9 +61,7 @@ const ProfilePage = () => {
       <br />
       <br />
       <br />
-      {/* Row 1: Two columns layout */}
       <div className="row first-row">
-        {/* 70% Column */}
         <div className="col col-70">
           <div className="profile-header">
             <h2 className="title">Profile Details</h2>
@@ -84,12 +82,12 @@ const ProfilePage = () => {
             <div className="profile-info">
               <h1 className="profile-name"><strong>{user?.name}</strong></h1>
               <div className="contact-info" >
-                <div className="labels-row" style={{display:'flex',gap:10,flexDirection:'column'}}>
-                  <div style={{display:'flex',gap:10}}>
+                <div className="labels-row" style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', gap: 10 }}>
                     <p><strong>Phone</strong></p>
-                    <p className="phone">+1234567890</p>
+                    <p className="phone">{user?.phoneNo}</p>
                   </div>
-                  <div style={{display:'flex',gap:10}}>
+                  <div style={{ display: 'flex', gap: 10 }}>
                     <p><strong>Email</strong></p>
                     <p className="email">{user?.email}</p>
                   </div>
@@ -147,7 +145,7 @@ const ProfilePage = () => {
           </div>
 
           <div className="hcm-list">
-            {[...Array(5)].map((_, index) => (
+            {[...Array(4)].map((_, index) => (
               <div className="hcm-box" key={index}>
                 <FaUserTie className="icon" />
                 <p className='' style={{ marginRight: "55px" }}>Robert John</p>
@@ -162,7 +160,7 @@ const ProfilePage = () => {
       <div className="row second-row">
         {/* Appointments */}
         <div className="col col-25 appointment-box">
-          <h3 className="title">Appointments</h3>
+          <h2 className="title">Appointments</h2>
           <div className="view-more-container">
             <span style={{ float: 'left' }}>Today</span>
             <a href="/appointments" className="view-more">View More</a>
