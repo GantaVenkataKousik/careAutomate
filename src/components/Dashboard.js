@@ -170,7 +170,7 @@ const ProfilePage = () => {
             {[...Array(4)].map((_, index) => (
               <div key={index}>
                 <div className="appointment-time">8:00 AM - 10:00 AM</div>
-                <div className="item-box" style={{ backgroundColor: "#CCD2F38A" }}>
+                <div className="item-box" style={{}}>
                   <div className="row item-header">
                     <div className="item-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                       <p>Robert John</p>
@@ -203,7 +203,7 @@ const ProfilePage = () => {
         </div>
         {/* Visits */}
         <div className="col col-25 ">
-          <h3 className="title">Visits</h3>
+          <h2 className="title">Visits</h2>
           <div className="view-more-container">
             <span style={{ float: 'left' }}>Today</span>
             <a href="/calendar" className="view-more">View More</a>
@@ -213,7 +213,7 @@ const ProfilePage = () => {
             {[...Array(4)].map((_, index) => (
               <div key={index}>
                 <div className="appointment-time">8:00 AM - 10:00 AM</div>
-                <div className="item-box" style={{ backgroundColor: "#CCD2F38A" }}>
+                <div className="item-box" style={{}}>
                   <div className="row item-header">
                     <div className="item-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                       <p>Robert John</p>
@@ -244,13 +244,13 @@ const ProfilePage = () => {
 
 
         <div className="col col-25">
-          <h3 className="title">Communication</h3>
+          <h2 className="title">Communication</h2>
           <div className="view-more-container">
             <a href="/messages" className="view-more" onClick={togglePopup}>View More</a>
           </div>
           <div className="item-list">
             {sampleRecords.map((record) => (
-              <div key={record.id} className="hcm-box1" style={{ backgroundColor: '#CCD2F38A' }}>
+              <div key={record.id} className="hcm-box1" style={{}}>
                 <div className="row item-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div className="item-title">
                     <p>{record.name}</p>
@@ -279,9 +279,8 @@ const ProfilePage = () => {
           )}
         </div>
 
-        {/* Bills & Payments */}
-        <div className="col bills-box" style={{ border: '1px solid #ddd', borderRadius: '25px', background: '#fff' }}>
-          <h3 className="title">Bills & Payments</h3>
+        <div className="col bills-box" style={{ border: '1px solid #ddd', background: '#fff' }}>
+          <h2 className="title">Bills & Payments</h2>
           <div className="view-more-container">
             <span style={{ float: 'left' }}>This Month</span>
             <a href="/BillingPaymnets" className="view-more">View More</a>
@@ -289,7 +288,7 @@ const ProfilePage = () => {
 
           <div className="item-list">
             {[...Array(3)].map((_, index) => (
-              <div key={index} className="item-box" style={{ width: "230px", backgroundColor: "#CCD2F38A" }}>
+              <div key={index} className="item-box" style={{ width: "230px", }}>
 
                 <div className="row item-header" style={{ marginBottom: '0px' }}>
                   <p className="item-title" style={{ margin: '0', color: '#6F84F8' }}>Robert John</p>

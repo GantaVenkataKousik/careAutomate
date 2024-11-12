@@ -38,6 +38,7 @@
   color: #5970F4;
   font-weight: bold;
   margin-bottom: 15px;
+  font-size: 1.1rem;
 }
 
 .profile-details {
@@ -332,29 +333,22 @@
 }
 
 .hcm-box1 {
-
   border-radius: 8px;
-  /* Rounded corners */
   padding: 5px;
-  /* Padding inside the box */
   margin-bottom: 5px;
-  /* Space between item boxes */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  /* Subtle shadow effect */
 }
 
 .item-box {
   display: flex;
   flex-direction: column;
-  /* Stack header and footer vertically */
   justify-content: flex-start;
   padding: 10px;
   background-color: #fff;
   border: 1px solid #ddd;
   width: 110%;
   height: auto;
-  /* Let the height adjust based on content */
-  border-radius: 20px;
+  border-radius: 1rem;
 }
 
 /* Item Header and Footer for Appointments */
@@ -560,6 +554,7 @@
 
 .bills-payments-box .item-box {
   border: 1px solid #ccc;
+  border-radius: 1rem;
   padding: 5px;
   margin-bottom: 5px;
 
