@@ -90,10 +90,6 @@ const ProfilePage = () => {
                   </div>
 
                 </div>
-                <div className="info-row">
-
-
-                </div>
               </div>
             </div>
 

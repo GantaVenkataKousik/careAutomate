@@ -42,6 +42,10 @@
   font-size: 1.1rem;
 }
 
+.profile-info {
+  margin-left: -5rem;
+}
+
 .profile-details {
   display: flex;
   justify-content: space-between;
@@ -80,8 +84,6 @@
   display: flex;
   align-items: center;
 }
-
-
 
 
 .documents-box {
