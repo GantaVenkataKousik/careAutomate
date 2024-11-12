@@ -35,7 +35,7 @@ const steps = [
 ];
 
 const PopupPage = () => {
-  const [showPopup, setShowPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(true);
   const [showScheduleConfirm, setShowScheduleConfirm] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [complete, setComplete] = useState(false);
@@ -137,12 +137,12 @@ const PopupPage = () => {
         </div>
       ) : (
         <>
-          <button
+          {/* <button
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
             onClick={togglePopup}
           >
             <i className="fas fa-info-circle mr-2"></i> Open Popup
-          </button>
+          </button> */}
 
           {showPopup && (
             <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center">

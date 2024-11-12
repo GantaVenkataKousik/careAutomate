@@ -1,33 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch, FaPlus, FaFilter, FaSort, FaCalendarAlt, FaBars, FaEnvelope, FaFileAlt } from 'react-icons/fa';
-import '../styles/tenants1.css';
-import '../styles/filter.css';
-import '../styles/sort.css';
+import { FaSearch, FaPlus, FaCalendarAlt, FaBars, FaEnvelope, FaFileAlt } from 'react-icons/fa';
 import tenantImage from '../images/tenant.jpg';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { he } from 'date-fns/locale';
 
 const Tenants = () => {
   const navigate = useNavigate();
   const [tenants, setTenants] = useState([]);
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
-  const [isSortVisible, setIsSortVisible] = useState(false);
 
   const handleAddTenantClick = () => {
     navigate('/tenants/createTenant');
-  };
-
-  const toggleFilter = () => {
-    setIsFilterVisible(!isFilterVisible);
-    if (!isFilterVisible) {
-      setIsSortVisible(false);
-    }
-  };
-
-  const toggleSort = () => {
-    setIsSortVisible(!isSortVisible);
-    setIsFilterVisible(true);
   };
 
   useEffect(() => {
@@ -37,7 +20,6 @@ const Tenants = () => {
         console.error('No token found in localStorage');
         return;
       }
-
       try {
         const response = await axios.post(
           'https://careautomate-backend.vercel.app/fetchAll/fetchAllHCMsTenants',
@@ -50,9 +32,8 @@ const Tenants = () => {
           }
         );
 
-        const tenantsData = response.data?.data?.tenants || []; // Extract tenants data
+        const tenantsData = response.data?.data?.tenants || [];
         setTenants(tenantsData);
-        console.log('Fetched tenants:', tenantsData);
       } catch (error) {
         console.error('Error fetching tenants:', error.response?.data || error.message);
       }
@@ -61,89 +42,169 @@ const Tenants = () => {
     fetchTenants();
   }, []);
 
-  const handleFilterChange = (event) => {
-    console.log(event.target.value);
-  };
-
   return (
-    <div className=''>
-      <h1>Tenants</h1>
+    <div style={styles.container}>
+      <h1 style={styles.header}>Tenants</h1>
 
-      <div className="tenants-header">
-        <div className="search-add-container">
-          <div className="search-bar1">
-            <FaSearch className="search-icon" />
-            <input type="text" placeholder="Search....." />
-          </div>
-
-          <button className="add-tenant-btn" onClick={handleAddTenantClick}>
-            <FaPlus className="plus-icon" /> Add New Tenant
-          </button>
+      <div style={styles.headerActions}>
+        <div style={styles.searchBar}>
+          <FaSearch style={styles.searchIcon} />
+          <input type="text" placeholder="Search..." style={styles.searchInput} />
         </div>
+
+        <button style={styles.addTenantBtn} onClick={handleAddTenantClick}>
+          <FaPlus style={styles.plusIcon} /> Add New Tenant
+        </button>
       </div>
 
-      {/* <div className="filters">
-        <button className="filter-btn" onClick={toggleFilter}>
-          <FaFilter className="filter-icon" /> Filter
-        </button>
-        <button className={`sort-btn ${isFilterVisible ? 'active' : ''}`} onClick={toggleSort}>
-          <FaSort className="sort-icon" /> Sort By
-        </button>
-      </div> */}
-      <br />
-
-      {/* Filter Box */}
-      {/* <div className={`filter-container ${isFilterVisible ? 'show' : ''}`}>
-        <div className="search-bar-filter">
-          <FaSearch className="search-icon1" />
-          <input type="text" placeholder="Search by PM/Name" onChange={handleFilterChange} />
-        </div>
-        {/* Filter options */}
-      {/* </div> */} 
-
-      {/* Sort Box */}
-      {/* <div className={`sort-container ${isSortVisible ? 'show' : ''}`}>
-        <div className="search-bar-sort">
-          <FaSearch className="search-icon1" />
-          <input type="text" placeholder="Search by PM/Name" />
-        </div>
-        {/* Sort options */}
-      {/* </div> */} 
-
-      {/* Tenant Profiles Grid */}
-      <div className={`tenant-grid ${isFilterVisible && isSortVisible ? 'shift-right-both' : isFilterVisible ? 'shift-right-filter' : ''}`}>
+      <div style={styles.tenantGrid}>
         {tenants.length > 0 ? (
           tenants.map((tenant, index) => (
-            <div key={tenant._id || index} className="tenant-box">
-              <div className="tenant-info">
-                <h3>{tenant?.name}</h3>
-                <p>{tenant?.phoneNo}</p>
-                <p>{tenant.email}</p>
-                <div className="tenant-icons">
-                  <FaCalendarAlt className="tenant-icon" />
-                  <FaBars className="tenant-icon" />
-                  <FaEnvelope className="tenant-icon" />
-                  <FaFileAlt className="tenant-icon" />
+            <div key={tenant._id || index} style={styles.tenantBox}>
+              <div style={styles.tenantInfo}>
+                <div>
+                  <div style={styles.tenantImage}>
+                    <img src={tenantImage} alt="Tenant" style={styles.image} />
+                  </div>
+                </div>
+                <div>
+                  <h3 style={styles.tenantName}>{tenant?.name}</h3>
+                  <p style={styles.tenantDetail}>{tenant?.phoneNo}</p>
+                  <p style={styles.tenantDetail}>{tenant.email}</p>
+                  {/* <div style={styles.tenantIcons}>
+                    <FaCalendarAlt style={styles.tenantIcon} />
+                    <FaBars style={styles.tenantIcon} />
+                    <FaEnvelope style={styles.tenantIcon} />
+                    <FaFileAlt style={styles.tenantIcon} />
+                  </div> */}
                 </div>
               </div>
-              <div className="tenant-image">
-                <img src={tenantImage} alt="Tenant" />
-              </div>
+
             </div>
           ))
         ) : (
-          <p>No data available</p> // Show message if no tenants data
+          <p style={styles.noDataText}>No data available</p>
         )}
       </div>
-
-      {isPopupVisible && (
-        <div className="popup">
-          <h2>Add New Tenant</h2>
-          <button className="close-btn" onClick={() => setIsPopupVisible(false)}>Close</button>
-        </div>
-      )}
     </div>
   );
+};
+
+const styles = {
+  container: {
+    padding: '20px',
+    fontFamily: 'Arial, sans-serif',
+    // backgroundColor: '#f5f7fa',
+    width: '1000px',
+  },
+  header: {
+    fontSize: '2em',
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: '20px',
+  },
+  headerActions: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
+  },
+  searchBar: {
+    display: 'flex',
+    alignItems: 'center',
+    borderRadius: '25px',
+    backgroundColor: '#fff',
+    padding: '5px 10px',
+    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+    width: '350px',
+    height: '45px',
+  },
+  searchIcon: {
+    color: '#555',
+    marginRight: '5px',
+  },
+  searchInput: {
+    border: 'none',
+    outline: 'none',
+    width: '100%',
+    fontSize: '16px',
+  },
+  addTenantBtn: {
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    padding: '8px 15px',
+    borderRadius: '25px',
+    border: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    transition: 'background-color 0.3s',
+  },
+  plusIcon: {
+    marginRight: '5px',
+  },
+  tenantGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '20px',
+  },
+  tenantBox: {
+    backgroundColor: '#fff',
+    borderRadius: '8px',
+    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '15px',
+  },
+  tenantInfo: {
+    textAlign: 'center',
+    marginBottom: '10px',
+    display: 'flex',
+    gap: '30px',
+  },
+  tenantName: {
+    fontSize: '1.25em',
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  tenantDetail: {
+    fontSize: '0.9em',
+    color: '#666',
+  },
+  tenantIcons: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: '10px',
+  },
+  tenantIcon: {
+    fontSize: '1.2em',
+    color: '#555',
+    margin: '0 8px',
+    cursor: 'pointer',
+    transition: 'color 0.3s',
+  },
+  tenantImage: {
+    width: '100px',
+    height: '100px',
+    borderRadius: '50%',
+    overflow: 'hidden',
+    marginTop: '15px',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  noDataText: {
+    textAlign: 'center',
+    color: '#999',
+    fontSize: '1.2em',
+  },
 };
 
 export default Tenants;

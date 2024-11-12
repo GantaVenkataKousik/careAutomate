@@ -4,7 +4,7 @@ import tenantImage from '../images/tenant.jpg';
 
 const Navbar = () => {
   const user = JSON.parse(localStorage.getItem('user'))
-   
+
 
 
   return (
@@ -13,13 +13,13 @@ const Navbar = () => {
         <h2>CareAutomate</h2>
       </div>
       <div className="navbar-right">
-        <div className="search-bar-navbar">
+        {/* <div className="search-bar-navbar">
           <input type="text" placeholder="Search..." />
-        </div>
+        </div> */}
         {/* <div className="notification-icon">🔔</div> */}
         <div className="notification-icon">
-  <span className="notification-badge">3</span> 
-</div>
+          <span className="notification-badge">3</span>
+        </div>
 
         <div className="user-profile">
           <img src={tenantImage} alt="User" />
