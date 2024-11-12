@@ -6,16 +6,10 @@
     justify-content: space-between;
     align-items: center;
     position: fixed;
-    /* Fixed position */
     top: 0;
-    /* Start from the top */
     left: 0;
-    /* Align to the left */
     width: 100%;
-    /* Full width of the viewport */
     z-index: 1000;
-    /* Ensure it stays above other content */
-
 }
 
 .navbar-left h2 {
@@ -102,7 +96,8 @@
 }
 
 .username {
-    font-size: 18px;
-    margin-left: -20px;
+    font-size: 1.2rem;
     margin-right: 35px;
+    font-weight: 500;
+    font-family: 'Poppins';
 }

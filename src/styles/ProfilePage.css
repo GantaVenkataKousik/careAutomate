@@ -428,10 +428,40 @@
   font-family: 'Poppins';
 }
 
+.profile-details .phone {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  display: block;
+  text-wrap: nowrap;
+  font-weight: 500;
+  font-family: 'Poppins';
+}
+
+.profile-details .email {
+  font-size: 1.2rem;
+  display: block;
+  text-wrap: nowrap;
+  font-weight: 500;
+  font-family: 'Poppins';
+}
+
+.item-title {
+  font-weight: 550;
+  font-size: 0.9rem;
+}
+
 .appointment-time {
-  font-size: 14px;
   color: #000;
   margin-bottom: 0px;
+  color: #6F84F8;
+  font-weight: 550;
+  font-size: 0.9rem;
+}
+
+.heading-viewmore .view-more {
+  font-weight: 550;
+  font-size: 1rem;
 }
 
 .appointment-item {

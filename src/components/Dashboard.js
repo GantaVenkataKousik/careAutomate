@@ -80,12 +80,12 @@ const ProfilePage = () => {
               <h1 className="profile-name"><strong>{user?.name}</strong></h1>
               <div className="contact-info" >
                 <div className="labels-row" style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex', gap: 10 }}>
-                    <p><strong>Phone</strong></p>
-                    <p className="phone">{user?.phoneNo}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <p><strong>Phone:</strong></p>
+                    <p className="phone">{user?.mobileNo}</p>
                   </div>
                   <div style={{ display: 'flex', gap: 10 }}>
-                    <p><strong>Email</strong></p>
+                    <p><strong>Email:</strong></p>
                     <p className="email">{user?.email}</p>
                   </div>
 
