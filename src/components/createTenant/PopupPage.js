@@ -190,9 +190,7 @@ const PopupPage = () => {
                   <span className="ml-1">Back</span>
                 </div>
 
-                <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700" onClick={handleSave}>
-                  Save
-                </button>
+
 
                 <div className="flex items-center cursor-pointer text-gray-400 hover:text-blue-500 hover:fill-blue-500" onClick={handleNext}>
                   <span className="flex items-center">
@@ -202,7 +200,11 @@ const PopupPage = () => {
                     </svg>
                   </span>
                 </div>
+                <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700" onClick={handleSave}>
+                  Save
+                </button>
               </div>
+
             </div>
           </Box>
         </Modal>

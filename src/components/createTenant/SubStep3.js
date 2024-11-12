@@ -1,4 +1,3 @@
-// SubStep3.js
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateContactInfo } from '../../redux/tenant/tenantSlice';
@@ -6,16 +5,12 @@ import { updateContactInfo } from '../../redux/tenant/tenantSlice';
 const SubStep3 = () => {
   const dispatch = useDispatch();
   const contactInfo = useSelector((state) => state.tenant.contactInfo);
-  const [contact, setContact] = useState({
-    homePhone: '',
-    cellPhone: '',
-    workPhone: '',
-    extension: '',
-    email: '',
-  });
+  const [contact, setContact] = useState(contactInfo);
+
   useEffect(() => {
     setContact(contactInfo);
   }, [contactInfo]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setContact({
@@ -23,90 +18,119 @@ const SubStep3 = () => {
       [name]: value,
     });
 
-    dispatch(updateContactInfo({ [name]: value })); // Dispatch to Redux store
+    dispatch(updateContactInfo({ [name]: value }));
   };
 
   return (
-    <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-      <h2 className="text-xl font-medium mb-4">Contact Information</h2>
-      <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-4">
+    <div style={styles.container}>
+      <h2 style={styles.title}>Contact Information</h2>
+      <div style={styles.grid}>
         <div>
-          <label className="block text-gray-700" htmlFor="homePhone">
-            Home Phone Number
-          </label>
+          <label style={styles.label} htmlFor="homePhone">Home Phone Number</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="text"
             id="homePhone"
             name="homePhone"
             value={contact.homePhone}
             onChange={handleChange}
-            placeholder=""
+            placeholder="Enter home phone"
           />
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="cellPhone">
-            Cell Phone Number
-          </label>
+          <label style={styles.label} htmlFor="cellPhone">Cell Phone Number</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="text"
             id="cellPhone"
             name="cellPhone"
             value={contact.cellPhone}
             onChange={handleChange}
-            placeholder=""
+            placeholder="Enter cell phone"
           />
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="workPhone">
-            Work Phone Number
-          </label>
+          <label style={styles.label} htmlFor="workPhone">Work Phone Number</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="text"
             id="workPhone"
             name="workPhone"
             value={contact.workPhone}
             onChange={handleChange}
-            placeholder=""
+            placeholder="Enter work phone"
           />
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="extension">
-            Ext
-          </label>
+          <label style={styles.label} htmlFor="extension">Extension</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="text"
             id="extension"
             name="extension"
             value={contact.extension}
             onChange={handleChange}
-            placeholder=""
+            placeholder="Extension"
           />
         </div>
 
-        <div className="col-span-2">
-          <label className="block text-gray-700" htmlFor="email">
-            Email
-          </label>
+        {/* <div style={styles.fullWidth}>
+          <label style={styles.label} htmlFor="email">Email</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="email"
             id="email"
             name="email"
             value={contact.email}
             onChange={handleChange}
-            placeholder=""
+            placeholder="Enter email"
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    maxHeight: "400px",
+    overflowY: "auto",
+    padding: "20px",
+    borderRadius: "10px",
+  },
+  title: {
+    fontSize: "1.5rem",
+    fontWeight: "500",
+    marginBottom: "1rem",
+    color: "#333",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "15px",
+  },
+  fullWidth: {
+    gridColumn: "1 / span 2",
+  },
+  label: {
+    display: "block",
+    marginBottom: "5px",
+    fontSize: "0.9rem",
+    color: "#555",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    border: "1px solid #ccc",
+    borderRadius: "25px",
+    fontSize: "1rem",
+    outline: "none",
+    backgroundColor: "#fff",
+    transition: "border-color 0.3s",
+  },
 };
 
 export default SubStep3;

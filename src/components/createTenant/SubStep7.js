@@ -22,102 +22,133 @@ const SubStep7 = () => {
   };
 
   return (
-    <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-      <h2 className="text-xl font-medium mb-4">Responsible Party Information</h2>
+    <div style={styles.container}>
+      <h2 style={styles.title}>Responsible Party Information</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div style={styles.grid}>
         <div>
-          <label className="block text-gray-700" htmlFor="firstName">
-            First Name
-          </label>
+          <label style={styles.label} htmlFor="firstName">First Name</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="text"
             id="firstName"
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
+            placeholder="Enter first name"
             required
           />
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="middleName">
-            Middle Name
-          </label>
+          <label style={styles.label} htmlFor="middleName">Middle Name</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="text"
             id="middleName"
             name="middleName"
             value={formData.middleName}
             onChange={handleChange}
+            placeholder="Enter middle name"
           />
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="lastName">
-            Last Name
-          </label>
+          <label style={styles.label} htmlFor="lastName">Last Name</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="text"
             id="lastName"
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
+            placeholder="Enter last name"
             required
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div style={styles.grid}>
         <div>
-          <label className="block text-gray-700" htmlFor="phoneNumber">
-            Phone Number
-          </label>
+          <label style={styles.label} htmlFor="phoneNumber">Phone Number</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
-            type="text"
+            style={styles.input}
+            type="tel"
             id="phoneNumber"
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleChange}
+            placeholder="Enter phone number"
             required
           />
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="email">
-            Email
-          </label>
+          <label style={styles.label} htmlFor="email">Email</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
-            type="text"
+            style={styles.input}
+            type="email"
             id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
+            placeholder="Enter email address"
           />
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="relationship">
-            Relationship
-          </label>
+          <label style={styles.label} htmlFor="relationship">Relationship</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="text"
             id="relationship"
             name="relationship"
             value={formData.relationship}
             onChange={handleChange}
+            placeholder="Enter relationship"
             required
           />
         </div>
       </div>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    maxHeight: "400px",
+    overflowY: "auto",
+    padding: "20px",
+    borderRadius: "10px",
+  },
+  title: {
+    fontSize: "1.5rem",
+    fontWeight: "500",
+    marginBottom: "1rem",
+    color: "#333",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "15px",
+    marginBottom: "1rem",
+  },
+  label: {
+    display: "block",
+    marginBottom: "5px",
+    fontSize: "0.9rem",
+    color: "#555",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    border: "1px solid #ccc",
+    borderRadius: "25px",
+    fontSize: "1rem",
+    outline: "none",
+    backgroundColor: "#fff",
+    transition: "border-color 0.3s",
+  },
 };
 
 export default SubStep7;
