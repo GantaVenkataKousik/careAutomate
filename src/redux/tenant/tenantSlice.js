@@ -87,6 +87,7 @@ const tenantSlice = createSlice({
       updateResponsiblePartyInfo: (state, action) => {
         state.responsiblePartyInfo = { ...state.responsiblePartyInfo, ...action.payload };
       },
+      resetTenantInfo: () => initialState,
       
     // Add reducers for other sub-steps
   },
@@ -98,7 +99,8 @@ export const { updatePersonalInfo,
                updateEmergencyContactInfo, 
                updateCaseManagerInfo, 
                updateLoginInfo,
-               updateResponsiblePartyInfo
+               updateResponsiblePartyInfo,
+               resetTenantInfo
                 } = tenantSlice.actions;
 
 export default tenantSlice.reducer;

@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
+import { resetTenantInfo } from '../../redux/tenant/tenantSlice';
 
 const steps = [
   {
@@ -93,6 +94,7 @@ const PopupPage = () => {
       );
 
       if (response.status >= 200 && response.status < 300) {
+        dispatch(resetTenantInfo());
         toast.success("Tenant data saved successfully");
         navigate('/tenants');
       } else {
