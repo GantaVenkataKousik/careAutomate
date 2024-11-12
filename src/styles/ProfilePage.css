@@ -3,6 +3,7 @@
   margin-top: 6rem;
   padding: 3.5rem;
   background: #fff;
+  padding-left: 4rem;
   font-weight: 500;
   font-family: 'Poppins';
 }
@@ -107,7 +108,9 @@
 .doc-list {
   list-style-type: none;
   padding-left: 0;
-  font-size: 14px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Poppins';
   color: #333;
 }
 
@@ -132,9 +135,9 @@
 .doc-list li {
   position: relative;
   padding-left: 20px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 16px;
-  font-weight: 400;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Poppins';
 }
 
 .doc-list li::before {
@@ -232,6 +235,10 @@
   color: #5970F4;
 }
 
+.email {
+  font-size: 0.8rem;
+}
+
 .labels-row p,
 .info-row p {
   font-family: 'Poppins', sans-serif;
@@ -256,6 +263,8 @@
 .action-buttons {
   display: flex;
   gap: 10px;
+  font-weight: 500;
+  font-family: 'Poppins';
 }
 
 .action-buttons button {
@@ -312,9 +321,13 @@
   gap: 5px;
   font-family: 'Poppins', sans-serif;
   font-size: 17px;
-  /* Font size */
-  font-weight: 300;
-  /* Font weight */
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.heading-viewmore {
+  display: flex;
+  justify-content: space-between;
 }
 
 .hcm-box {
@@ -322,21 +335,26 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px;
+  margin: 0.15rem 0;
   background-color: #fff;
-  /* Set background color */
-  border: 1px solid #ddd;
-  /* Keep existing border styling */
-  border-radius: 20px;
-  /* Keep existing border-radius */
+  border-radius: 1rem;
   width: 80%;
-  margin-right: 60px;
+  border: 1px solid #ccc;
+}
+
+.item-list {
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: 'Poppins';
 }
 
 .hcm-box1 {
   border-radius: 8px;
   padding: 5px;
   margin-bottom: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: 'Poppins';
 }
 
 .item-box {
@@ -345,7 +363,6 @@
   justify-content: flex-start;
   padding: 10px;
   background-color: #fff;
-  border: 1px solid #ddd;
   width: 110%;
   height: auto;
   border-radius: 1rem;
@@ -395,6 +412,7 @@
 
 .col-25 {
   padding: 15px;
+  padding-left: 1rem;
   background-color: #fff;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
@@ -422,7 +440,6 @@
   align-items: center;
   padding: 5px;
   background-color: #fff;
-  border: 1px solid #ddd;
   margin-bottom: 0px;
 }
 
@@ -553,7 +570,6 @@
 }
 
 .bills-payments-box .item-box {
-  border: 1px solid #ccc;
   border-radius: 1rem;
   padding: 5px;
   margin-bottom: 5px;

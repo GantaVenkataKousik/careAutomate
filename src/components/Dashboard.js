@@ -58,9 +58,6 @@ const ProfilePage = () => {
 
   return (
     <div className="profile-page">
-      <br />
-      <br />
-      <br />
       <div className="row first-row">
         <div className="col col-70">
           <div className="profile-header">
@@ -101,9 +98,7 @@ const ProfilePage = () => {
             </div>
 
             <div className="documents-box">
-              <div className="view-more-container">
-                <a href="/documents" className="view-more">View More</a>
-              </div>
+
               <p className="doc-date">27 Oct 2024</p>
               <ul className="doc-list">
                 <li>
@@ -139,8 +134,8 @@ const ProfilePage = () => {
 
         {/* 30% Column */}
         <div className="col col-30">
-          <h2 className="title">Assigned HCMs</h2>
-          <div className="view-more-container">
+          <div className='heading-viewmore'>
+            <h2 className="title">Assigned HCMs</h2>
             <a href="/assign-hcm" className="view-more">View More</a>
           </div>
 
@@ -160,10 +155,11 @@ const ProfilePage = () => {
       <div className="row second-row">
         {/* Appointments */}
         <div className="col col-25 appointment-box">
-          <h2 className="title">Appointments</h2>
+          <div className='heading-viewmore'>
+            <h2 className="title">Appointments</h2>
+            <a href="/appointments" className="view-more">View More</a></div>
           <div className="view-more-container">
             <span style={{ float: 'left' }}>Today</span>
-            <a href="/appointments" className="view-more">View More</a>
           </div>
 
           <div className="item-list">
@@ -181,8 +177,6 @@ const ProfilePage = () => {
                       </div>
                     </div>
                   </div>
-
-                  {/* Combined Footer Row */}
                   <div className="row item-footer" style={{ width: '100%', marginTop: '0px' }}>
                     <div className="check-housing" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                       <p style={{ margin: 0 }}>Check for Housing</p>
@@ -203,10 +197,11 @@ const ProfilePage = () => {
         </div>
         {/* Visits */}
         <div className="col col-25 ">
-          <h2 className="title">Visits</h2>
-          <div className="view-more-container">
-            <span style={{ float: 'left' }}>Today</span>
+          <div className='heading-viewmore'>
+            <h2 className="title">Visits</h2>
             <a href="/calendar" className="view-more">View More</a>
+          </div>
+          <div className="view-more-container">
           </div>
 
           <div className="item-list" >
@@ -215,7 +210,7 @@ const ProfilePage = () => {
                 <div className="appointment-time">8:00 AM - 10:00 AM</div>
                 <div className="item-box" style={{}}>
                   <div className="row item-header">
-                    <div className="item-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <div className="item-title">
                       <p>Robert John</p>
                       <div className="appointment-icons">
                         <FaMicrophone className="icon-small" aria-label="Microphone Icon" />
@@ -231,7 +226,6 @@ const ProfilePage = () => {
                     <div className="check-housing" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                       <p style={{ margin: 0 }}>Lease Agreement</p>
                       <div className="status-icons" style={{ display: 'flex', marginLeft: 'auto', gap: '5px' }}>
-
                       </div>
                       <a href="/sign-send" className="view-more blue-link" style={{ marginLeft: '0px' }}>Sign & Send</a>
                     </div>
@@ -244,8 +238,8 @@ const ProfilePage = () => {
 
 
         <div className="col col-25">
-          <h2 className="title">Communication</h2>
-          <div className="view-more-container">
+          <div className='heading-viewmore'>
+            <h2 className="title">Communication</h2>
             <a href="/messages" className="view-more" onClick={togglePopup}>View More</a>
           </div>
           <div className="item-list">
@@ -279,14 +273,14 @@ const ProfilePage = () => {
           )}
         </div>
 
-        <div className="col bills-box" style={{ border: '1px solid #ddd', background: '#fff' }}>
-          <h2 className="title">Bills & Payments</h2>
-          <div className="view-more-container">
-            <span style={{ float: 'left' }}>This Month</span>
+        <div className="col bills-box" style={{ background: '#fff' }}>
+          <div className='heading-viewmore'>
+            <h2 className="title">Bills & Payments</h2>
             <a href="/BillingPaymnets" className="view-more">View More</a>
           </div>
 
           <div className="item-list">
+            <span >This Month</span>
             {[...Array(3)].map((_, index) => (
               <div key={index} className="item-box" style={{ width: "230px", }}>
 
@@ -295,13 +289,13 @@ const ProfilePage = () => {
                 </div>
 
 
-                <div className="row item-details" style={{ display: 'flex', justifyContent: 'space-between', margin: '0', padding: '5px 0' }}>
+                <div className="row item-details" style={{ display: 'flex', justifyContent: 'space-between', margin: '0' }}>
                   <p style={{ margin: '0' }}>10:00 AM</p>
                   <p style={{ margin: '0', color: 'green', marginRight: "50px" }}>$20</p>
                 </div>
 
 
-                <div className="" style={{ marginTop: '0', padding: '5px 0' }}>
+                <div className="" style={{ marginTop: '0' }}>
                   <p style={{ margin: '0' }}>Hourly Pay</p>
                 </div>
               </div>
