@@ -7,6 +7,14 @@
 .content {
   margin-left: 200px;
   padding: 20px;
-  width: calc(100% - 200px);
   display: flex;
+}
+
+.careAutomate {
+  background: #fff;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

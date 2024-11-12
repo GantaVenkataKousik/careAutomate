@@ -25,11 +25,14 @@ const AppLayout = ({ children }) => {
 
   return (
     <>
-      {showNavAndSidebar && <Navbar />}
-      <div className="main-content">
-        {showNavAndSidebar && <Sidebar />}
-        <div className="content">{children}</div>
+      <div className='careAutomate'>
+        {showNavAndSidebar && <Navbar />}
+        <div className="main-content">
+          {showNavAndSidebar && <Sidebar />}
+          <div className="content">{children}</div>
+        </div>
       </div>
+
     </>
   );
 };

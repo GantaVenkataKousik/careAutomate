@@ -13,9 +13,6 @@ const Navbar = () => {
         <h2>CareAutomate</h2>
       </div>
       <div className="navbar-right">
-        <div className="notification-icon">
-          <span className="notification-badge">3</span>
-        </div>
 
         <div className="user-profile">
           <img src={tenantImage} alt="User" />

@@ -10,6 +10,7 @@
     left: 0;
     width: 100%;
     z-index: 1000;
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
 }
 
 .navbar-left h2 {
@@ -96,6 +97,7 @@
 }
 
 .username {
+    margin-left: -1rem;
     font-size: 1.2rem;
     margin-right: 35px;
     font-weight: 500;
