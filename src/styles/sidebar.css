@@ -1,50 +1,13 @@
-/* .sidebar {
-    background-color: #00000015;;
-    color: white;
-    width: 200px;
-    height: 100vh;
-    padding-top: 20px;
-    position: fixed;
-  }
-  
-  .sidebar-menu {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .sidebar-menu li {
-    padding: 15px;
-  }
-  
-  .sidebar-menu a {
-    color: black;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-  }
-  
-  .sidebar-menu li:hover {
-    background-color: #6F84F8;
-  }
-  
-  .sidebar-icon {
-    margin-right: 10px;
-  } */
 .sidebar {
     background-color: #ffff;
     color: white;
     width: 210px;
     height: 100vh;
-    /* Full height of the viewport */
     padding-top: 70px;
     position: fixed;
-    /* Fixed position */
     top: 0;
-    /* Start from the top */
     left: 0;
-    /* Align to the left */
     overflow-y: auto;
-    /* Enable scrolling if content overflows */
 }
 
 .sidebar-menu {
@@ -54,9 +17,13 @@
 
 .sidebar-menu li {
     padding: 10px 15px;
-    /* Adjust padding for spacing */
     margin-bottom: 1px;
-    /* Gap between menu items */
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-menu .sidebar-icon {
+    margin-right: 0.5rem;
 }
 
 .sidebar-menu a {
@@ -70,8 +37,17 @@
     background-color: #6F84F8;
 }
 
-.sidebar-icon {
-    margin-right: 10px;
+.sidebar-menu li:hover a {
+    color: white;
+}
+
+.sidebar-menu .active {
+    background-color: #6F84F8;
+    color: white;
+}
+
+.sidebar-menu .active a {
+    color: white;
 }
 
 /* Upgrade box styling remains unchanged */
