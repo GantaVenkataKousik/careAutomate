@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePersonalInfo } from "../../redux/tenant/tenantSlice";
 import usflag from "../../images/usa.png";
@@ -21,15 +21,16 @@ const SubStep1 = () => {
     });
     dispatch(updatePersonalInfo({ [name]: value }));
   };
-  return (
-    <div style={{ maxHeight: "400px", overflowY: "auto" }}>
-      <h2 className="text-xl font-medium mb-4">Basic Information</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+  return (
+    <div style={{ maxHeight: "400px", overflowY: "auto", padding: "20px", borderRadius: "10px" }}>
+      <h2 style={{ fontSize: "1.5rem", fontWeight: "500", marginBottom: "1rem", color: "#333" }}>Basic Information</h2>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "15px", marginBottom: "1rem" }}>
         <div>
-          <label className="block text-gray-700" htmlFor="firstName">First Name*</label>
+          <label style={styles.label} htmlFor="firstName">First Name*</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="text"
             id="firstName"
             name="firstName"
@@ -40,9 +41,9 @@ const SubStep1 = () => {
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="middleName">Middle Name</label>
+          <label style={styles.label} htmlFor="middleName">Middle Name</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="text"
             id="middleName"
             name="middleName"
@@ -52,9 +53,9 @@ const SubStep1 = () => {
         </div>
 
         <div>
-          <label className="block text-gray-700" htmlFor="lastName">Last Name*</label>
+          <label style={styles.label} htmlFor="lastName">Last Name*</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="text"
             id="lastName"
             name="lastName"
@@ -63,46 +64,48 @@ const SubStep1 = () => {
             required
           />
         </div>
+      </div>
 
-        <div className="col-span-2 grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-gray-700" htmlFor="dob">DOB*</label>
-            <input
-              className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
-              type="date"
-              id="dob"
-              name="dob"
-              value={personalInfo.dob}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700" htmlFor="gender">Gender*</label>
-            <select
-              className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
-              id="gender"
-              name="gender"
-              value={personalInfo.gender || ""}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px", marginBottom: "1rem" }}>
+        <div>
+          <label style={styles.label} htmlFor="dob">DOB*</label>
+          <input
+            style={styles.input}
+            type="date"
+            id="dob"
+            name="dob"
+            value={personalInfo.dob}
+            onChange={handleChange}
+            required
+          />
         </div>
+        <div>
+          <label style={styles.label} htmlFor="gender">Gender*</label>
+          <select
+            style={styles.input}
+            id="gender"
+            name="gender"
+            value={personalInfo.gender || ""}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+      </div>
 
-        <div className="col-span-2">
-          <label className="block text-gray-700" htmlFor="phoneNumber">Phone Number*</label>
-          <div className="flex">
-            <div className="flex items-center border border-gray-300 p-2 rounded-l focus:outline-none focus:border-blue-400">
-              <img src={usflag} alt="US Flag" className="us-icon mr-2" />
+      <div style={{ display: "grid", gridTemplateColumns: "0.5fr 1fr", gap: "15px", marginBottom: "1rem" }}>
+        <div>
+          <label style={styles.label} htmlFor="phoneNumber">Phone Number*</label>
+          <div style={{ display: "flex" }}>
+            <div style={{ ...styles.input, ...styles.prefix }}>
+              <img src={usflag} alt="US Flag" style={{ marginRight: "5px", height: "16px" }} />
               <span>+1</span>
             </div>
             <input
-              className="border border-gray-300 p-2 w-full rounded-r focus:outline-none focus:border-blue-400"
+              style={{ ...styles.input, borderRadius: "0 25px 25px 0" }}
               type="tel"
               id="phoneNumber"
               name="phoneNumber"
@@ -113,10 +116,10 @@ const SubStep1 = () => {
           </div>
         </div>
 
-        <div className="col-span-2">
-          <label className="block text-gray-700" htmlFor="email">Email*</label>
+        <div>
+          <label style={styles.label} htmlFor="email">Email*</label>
           <input
-            className="border border-gray-300 p-2 w-full rounded focus:outline-none focus:border-blue-400"
+            style={styles.input}
             type="email"
             id="email"
             name="email"
@@ -128,6 +131,29 @@ const SubStep1 = () => {
       </div>
     </div>
   );
+};
+
+const styles = {
+  label: {
+    display: "block",
+    fontSize: "0.9rem",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    border: "1px solid #ccc",
+    borderRadius: "25px",
+    fontSize: "1rem",
+    outline: "none",
+  },
+  prefix: {
+    display: "flex",
+    alignItems: "center",
+    padding: "10px",
+    border: "1px solid #ccc",
+    borderRight: "none",
+    borderRadius: "25px 0 0 25px",
+  },
 };
 
 export default SubStep1;
