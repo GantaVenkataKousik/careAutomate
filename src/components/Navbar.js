@@ -13,10 +13,6 @@ const Navbar = () => {
         <h2>CareAutomate</h2>
       </div>
       <div className="navbar-right">
-        {/* <div className="search-bar-navbar">
-          <input type="text" placeholder="Search..." />
-        </div> */}
-        {/* <div className="notification-icon">🔔</div> */}
         <div className="notification-icon">
           <span className="notification-badge">3</span>
         </div>

@@ -1,18 +1,24 @@
 .sidebar {
-    background-color: #ffff;
-    color: white;
-    width: 210px;
+    background-color: #fff;
+    color: #fff;
+    width: 250px;
     height: 100vh;
     padding-top: 70px;
     position: fixed;
     top: 0;
     left: 0;
     overflow-y: auto;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-menu {
     list-style: none;
     padding: 0;
+}
+
+.sidebar-menu li span {
+    font-size: 1.1rem;
+    font-weight: 500;
 }
 
 .sidebar-menu li {
@@ -23,7 +29,8 @@
 }
 
 .sidebar-menu .sidebar-icon {
-    margin-right: 0.5rem;
+    margin-right: 0.8rem;
+    font-size: 1.25rem;
 }
 
 .sidebar-menu a {
@@ -50,47 +57,6 @@
     color: white;
 }
 
-/* Upgrade box styling remains unchanged */
-.upgrade-box {
-    width: 180px;
-    /* Fixed width */
-    height: 200px;
-    /* Fixed height */
-    display: flex;
-    flex-direction: column;
-    /* Align items vertically */
-    align-items: center;
-    justify-content: center;
-    background-color: #6F84F8;
-    /* Background color of the box */
-    border-radius: 10px;
-    /* Rounded corners */
-    position: absolute;
-    /* Positioning to place it at the bottom */
-    bottom: 80px;
-    /* Position at the bottom of the sidebar */
-    left: 48%;
-    /* Center horizontally */
-    transform: translateX(-50%);
-    /* Center horizontally */
-    padding: 10px;
-    /* Padding inside the box */
-    box-sizing: border-box;
-    /* Include padding and border in the box's total width and height */
-    overflow: hidden;
-    /* Hide any content that overflows */
-}
-
-/* Inner component styles */
-.diamond-icon {
-    font-size: 64px;
-    /* Icon size */
-    color: #ffcc00;
-    /* Icon color */
-    margin-bottom: 5px;
-    /* Space between icon and text */
-}
-
 .upgrade-text {
     text-align: center;
     /* Center align text */
@@ -103,28 +69,4 @@
     /* Margin around paragraphs */
     font-size: 15px;
     /* Font size */
-}
-
-.upgrade-text .p1 {
-    font-size: 12px;
-}
-
-.view-plans-btn {
-    display: inline-block;
-    background-color: #FFFFFF80;
-    color: white;
-    padding: 6px 10px;
-    /* Padding */
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 10px;
-    /* Margin from text above */
-    font-size: 14px;
-    /* Font size */
-}
-
-.view-plans-btn:hover {
-    background-color: #5b6dff;
 }
