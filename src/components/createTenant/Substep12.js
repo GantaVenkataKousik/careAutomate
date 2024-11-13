@@ -27,28 +27,27 @@ const Substep1 = () => {
       {/* Documentation aligned left */}
       <h2 className="text-left mb-2">Documentation</h2>
 
-    
-      <div>
-      {/* Tab Navigation */}
-      <div className="flex space-x-4 mt-10 ml-6">
-        {tabs.map((tab) => (
-       
-        <span
-        key={tab}
-        onClick={() => setActiveTab(tab)}
-        className={`cursor-pointer px-4 py-2 rounded-t-md ${
-          activeTab === tab
-            ? 'text-white bg-[#92A1F2]'
-            : 'hover:text-white hover:bg-[#92A1F2]'
-        }`}
-      >
-        {tab}
-      </span>
-        ))}
-      </div>
 
-  
-    </div>
+      <div>
+        {/* Tab Navigation */}
+        <div className="flex space-x-4 mt-10 ml-6">
+          {tabs.map((tab) => (
+
+            <span
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`cursor-pointer px-4 py-2 rounded-t-md ${activeTab === tab
+                  ? 'text-white bg-[#92A1F2]'
+                  : 'hover:text-white hover:bg-[#92A1F2]'
+                }`}
+            >
+              {tab}
+            </span>
+          ))}
+        </div>
+
+
+      </div>
       <br />
 
       {/* File Icons and Years */}

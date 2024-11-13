@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import SubStep1 from './SubStep1';
-import SubStep2 from './SubStep2';
-import SubStep3 from './SubStep3';
-import SubStep4 from './SubStep4';
-import SubStep5 from './SubStep5';
-import SubStep6 from './SubStep6';
-import SubStep7 from './SubStep7';
 import Substep12 from './Substep12';
 import Substep22 from './Substep22';
 import ServiceSelection from './ServiceSelection';
@@ -17,11 +11,12 @@ import { toast } from 'react-toastify';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { resetTenantInfo } from '../../redux/tenant/tenantSlice';
+import { te } from 'date-fns/locale';
 
 const steps = [
   {
     name: "Personal Info",
-    subSteps: [SubStep1, SubStep2, SubStep3, SubStep4, SubStep5, SubStep6, SubStep7]
+    subSteps: [SubStep1]
   },
   {
     name: "Assign Services",
@@ -39,52 +34,47 @@ const steps = [
 
 const PopupPage = () => {
   const [showPopup, setShowPopup] = useState(true);
-  const [showScheduleConfirm, setShowScheduleConfirm] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [complete, setComplete] = useState(false);
-  const [currentSubStep, setCurrentSubStep] = useState(0);
-  const [subStepProgress, setSubStepProgress] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const tenantData = useSelector((state) => state.tenant);
 
-  const togglePopup = () => setShowPopup(!showPopup);
+  const togglePopup = () => {
+    navigate('/tenants');
+    setShowPopup(!showPopup);
+  };
 
   const handleNext = () => {
-    const currentStepSubSteps = steps[currentStep].subSteps.length;
-    if (currentSubStep < currentStepSubSteps - 1) {
-      setCurrentSubStep((prev) => prev + 1);
-      setSubStepProgress((prev) => prev + 1);
-    } else if (currentStep < steps.length - 1) {
-      if (steps[currentStep + 1].name === "Schedule") {
-        setShowScheduleConfirm(true);
-      } else {
-        setCurrentStep((prev) => prev + 1);
-        setCurrentSubStep(0);
-        setSubStepProgress((prev) => prev + 1);
-      }
+    if(tenantData.firstName === '' || tenantData.lastName === '' || tenantData.phoneNumber === '' || tenantData.email === ''){
+      toast.error('Please fill in all required fields');
+      return;
+    }
+     
+    if (currentStep === 0) {
+      handleSave(); // Save data when completing Step 1
+    }
+    if (currentStep < steps.length - 1) {
+      setCurrentStep((prev) => prev + 1);
     } else {
       setComplete(true);
     }
   };
 
-  const handleBack = () => {
-    if (currentSubStep > 0) {
-      setCurrentSubStep((prev) => prev - 1);
-      setSubStepProgress((prev) => prev - 1);
-    } else if (currentStep > 0) {
-      setCurrentStep((prev) => prev - 1);
-      setCurrentSubStep(steps[currentStep - 1].subSteps.length - 1);
-      setSubStepProgress((prev) => prev - 1);
-    }
-  };
-
   const handleSave = async () => {
+    if (!tenantData.firstName || !tenantData.lastName || !tenantData.phoneNumber|| !tenantData.email){
+      toast.error("Please fill in all required fields");
+      return;
+    }
     const token = localStorage.getItem("token");
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(tenantData)) {
+      formData.append(key, value);
+    }
     try {
       const response = await axios.post(
         "https://careautomate-backend.vercel.app/tenant/createTenant",
-        { tenantData },
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -104,9 +94,6 @@ const PopupPage = () => {
       console.error("Error during API call:", error);
     }
   };
-
-  const totalSubSteps = steps.reduce((total, step) => total + step.subSteps.length, 0);
-  const totalSubStepProgress = (subStepProgress / totalSubSteps) * 100;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
@@ -138,15 +125,14 @@ const PopupPage = () => {
             <div className="mb-6 -mx-6">
               <label className="block text-gray-700 mb-2 mx-4 -mt-2">New Tenant</label>
               <div className="w-full bg-gray-200 h-2 rounded-full">
-                <div className="h-2 bg-indigo-500 rounded-full" style={{ width: `${totalSubStepProgress}%` }}></div>
+                <div className="h-2 bg-indigo-500 rounded-full" style={{ width: `${(currentStep / steps.length) * 100}%` }}></div>
               </div>
             </div>
 
             <div className="flex justify-between items-center mb-6">
               {steps.map((step, i) => {
                 const isActive = i === currentStep;
-                const completedSubSteps = isActive ? currentSubStep : step.subSteps.length;
-                const widthPercentage = (completedSubSteps / step.subSteps.length) * 100;
+                const widthPercentage = 100;
 
                 return (
                   <React.Fragment key={i}>
@@ -179,32 +165,26 @@ const PopupPage = () => {
               })}
             </div>
 
-            <div>{steps[currentStep].subSteps[currentSubStep] && React.createElement(steps[currentStep].subSteps[currentSubStep])}</div>
+            <div>{steps[currentStep].subSteps[0] && React.createElement(steps[currentStep].subSteps[0])}</div>
 
             <div className="absolute bottom-4 left-4 right-4">
               <div className="flex justify-between mt-6">
-                <div className="flex items-center cursor-pointer text-gray-400 hover:text-blue-500 hover:fill-blue-500" onClick={handleBack}>
+                <div className="flex items-center cursor-pointer text-gray-400 hover:text-blue-500 hover:fill-blue-500" onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" className="fill-gray-400 hover:fill-blue-500">
                     <polygon points="10,0 0,10 10,20" />
                   </svg>
                   <span className="ml-1">Back</span>
                 </div>
 
-
-
                 <div className="flex items-center cursor-pointer text-gray-400 hover:text-blue-500 hover:fill-blue-500" onClick={handleNext}>
                   <span className="flex items-center">
-                    <span>{currentSubStep === steps[currentStep].subSteps.length - 1 ? "Next Step" : "Next Sub-Step"}</span>
+                    <span>{currentStep === steps.length - 1 ? "Finish" : "Next Step"}</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" className="ml-2 fill-gray-400 hover:fill-blue-500">
                       <polygon points="0,0 10,10 0,20" />
                     </svg>
                   </span>
                 </div>
-                <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700" onClick={handleSave}>
-                  Save
-                </button>
               </div>
-
             </div>
           </Box>
         </Modal>
