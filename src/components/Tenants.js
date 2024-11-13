@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch, FaPlus, FaCalendarAlt, FaBars, FaEnvelope, FaFileAlt } from 'react-icons/fa';
+import { FaSearch, FaPlus } from 'react-icons/fa';
 import tenantImage from '../images/tenant.jpg';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { he } from 'date-fns/locale';
 
 const Tenants = () => {
   const navigate = useNavigate();
@@ -62,24 +61,17 @@ const Tenants = () => {
           tenants.map((tenant, index) => (
             <div key={tenant._id || index} style={styles.tenantBox}>
               <div style={styles.tenantInfo}>
-                <div>
-                  <div style={styles.tenantImage}>
-                    <img src={tenantImage} alt="Tenant" style={styles.image} />
-                  </div>
+                <div style={styles.tenantImage}>
+                  <img src={tenantImage} alt="Tenant" style={styles.image} />
                 </div>
                 <div>
-                  <h3 style={styles.tenantName}>{tenant?.name}</h3>
-                  <p style={styles.tenantDetail}>{tenant?.phoneNo}</p>
-                  <p style={styles.tenantDetail}>{tenant.email}</p>
-                  {/* <div style={styles.tenantIcons}>
-                    <FaCalendarAlt style={styles.tenantIcon} />
-                    <FaBars style={styles.tenantIcon} />
-                    <FaEnvelope style={styles.tenantIcon} />
-                    <FaFileAlt style={styles.tenantIcon} />
-                  </div> */}
+                  <h3 style={styles.tenantName}>
+                    {tenant.tenantData?.firstName} {tenant.tenantData?.lastName}
+                  </h3>
+                  <p style={styles.tenantDetail}>{tenant.tenantData?.phoneNumber || tenant.phoneNo}</p>
+                  <p style={styles.tenantDetail}>{tenant.tenantData?.email || tenant.email}</p>
                 </div>
               </div>
-
             </div>
           ))
         ) : (
@@ -94,7 +86,6 @@ const styles = {
   container: {
     padding: '20px',
     fontFamily: 'Arial, sans-serif',
-    // backgroundColor: '#f5f7fa',
     width: '1000px',
   },
   header: {
@@ -175,18 +166,6 @@ const styles = {
   tenantDetail: {
     fontSize: '0.9em',
     color: '#666',
-  },
-  tenantIcons: {
-    display: 'flex',
-    justifyContent: 'center',
-    marginTop: '10px',
-  },
-  tenantIcon: {
-    fontSize: '1.2em',
-    color: '#555',
-    margin: '0 8px',
-    cursor: 'pointer',
-    transition: 'color 0.3s',
   },
   tenantImage: {
     width: '100px',
