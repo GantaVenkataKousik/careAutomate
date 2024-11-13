@@ -48,6 +48,12 @@ const ProfilePage = () => {
       name: 'Sarah',
       date: '08-11-2024, 4:00 PM',
       description: "Catch-up on the progress of ongoing tasks, please bring your reports.",
+    },
+    {
+      id: 4,
+      name: 'Saraheu',
+      date: '08-11-2024, 4:00 PM',
+      description: "Catch-up on the progress of ongoing tasks, please bring your reports.",
     }
   ];
 
@@ -150,11 +156,12 @@ const ProfilePage = () => {
       {/* Row 2: Four columns layout */}
       <div className="row second-row">
         {/* Appointments */}
-        <div className="col col-25 appointment-box">
+        <div className="col col-21 appointment-box">
           <div className='heading-viewmore'>
             <h2 className="title">Appointments</h2>
-            <a href="/appointments" className="view-more">View More</a></div>
+          </div>
           <div className="view-more-container">
+            <a href="/appointments" className="view-more">View More</a>
             <span style={{ float: 'left' }}>Today</span>
           </div>
 
@@ -195,13 +202,14 @@ const ProfilePage = () => {
         <div className="col col-25 ">
           <div className='heading-viewmore'>
             <h2 className="title">Visits</h2>
-            <a href="/calendar" className="view-more">View More</a>
           </div>
           <div className="view-more-container">
+            <span style={{ float: 'left' }}>Today</span>
+            <a href="/calendar" className="view-more">View More</a>
           </div>
-
+          <br></br>
           <div className="item-list" >
-            {[...Array(4)].map((_, index) => (
+            {[...Array(5)].map((_, index) => (
               <div key={index}>
                 <div className="appointment-time">8:00 AM - 10:00 AM</div>
                 <div className="item-box" style={{}}>
@@ -269,28 +277,22 @@ const ProfilePage = () => {
           )}
         </div>
 
-        <div className="col bills-box" style={{ background: '#fff' }}>
+        <div className="col col-29 " style={{ background: '#fff' }}>
           <div className='heading-viewmore'>
             <h2 className="title">Bills & Payments</h2>
-            <a href="/BillingPaymnets" className="view-more">View More</a>
           </div>
-
+          <a href="/BillingPaymnets" className="view-more">View More</a>
           <div className="item-list">
-            <span >This Month</span>
-            {[...Array(3)].map((_, index) => (
+            <p >This Month</p>
+            {[...Array(4)].map((_, index) => (
               <div key={index} className="item-box" style={{ width: "230px", }}>
-
                 <div className="row item-header" style={{ marginBottom: '0px' }}>
                   <p className="item-title" style={{ margin: '0', color: '#6F84F8' }}>Robert John</p>
                 </div>
-
-
+                <p style={{ margin: '0', color: 'green', marginRight: "50px" }}>$20</p>
                 <div className="row item-details" style={{ display: 'flex', justifyContent: 'space-between', margin: '0' }}>
                   <p style={{ margin: '0' }}>10:00 AM</p>
-                  <p style={{ margin: '0', color: 'green', marginRight: "50px" }}>$20</p>
                 </div>
-
-
                 <div className="" style={{ marginTop: '0' }}>
                   <p style={{ margin: '0' }}>Hourly Pay</p>
                 </div>
