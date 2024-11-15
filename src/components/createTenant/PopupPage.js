@@ -42,6 +42,7 @@ const PopupPage = () => {
 
   const togglePopup = () => {
     navigate('/tenants');
+    dispatch(resetTenantInfo());
     setShowPopup(!showPopup);
   };
 
@@ -84,9 +85,9 @@ const PopupPage = () => {
       );
 
       if (response.status >= 200 && response.status < 300) {
-        dispatch(resetTenantInfo());
+        // dispatch(resetTenantInfo());
         toast.success("Tenant data saved successfully");
-        navigate('/tenants');
+        // navigate('/tenants');
       } else {
         console.error("Failed to save data:", response.statusText);
       }
