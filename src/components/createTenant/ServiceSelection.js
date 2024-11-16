@@ -1,27 +1,65 @@
-import React, { useState } from 'react';
-import { FaTrash, FaUpload } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaUpload } from 'react-icons/fa';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
-// Sample services data
-const servicesData = [
-  { id: 1, description: "Housing Consultation", billRate: 174.22, procedureCode: "T2024", modifier: "U8", unit: "Per Session" },
-  { id: 2, description: "Housing Transition", billRate: 17.17, procedureCode: "H2015", modifier: "U8", unit: "15 minutes = 1 Unit" },
-  { id: 3, description: "Housing Sustaining", billRate: 17.17, procedureCode: "H2015", modifier: "U8 TS", unit: "15 minutes = 1 Unit" },
-  { id: 4, description: "Moving Expenses", billRate: 3000, procedureCode: "T2038", modifier: "U8", unit: "N/A" },
-  { id: 5, description: "RSC- TCM", billRate: 15.53, procedureCode: "T1017", modifier: "", unit: "15 minutes = 1 Unit" },
-  { id: 6, description: "Moving Home Minnesota", billRate: 16.63, procedureCode: "T1017", modifier: "U6", unit: "15 minutes = 1 Unit" },
+const serviceOptions = [
+  { value: 1, label: 'Housing Consultation', billRate: 174.22 },
+  { value: 2, label: 'Housing Transition', billRate: 17.17 },
+  { value: 3, label: 'Housing Sustaining', billRate: 17.17 },
+  { value: 4, label: 'Moving Expenses', billRate: 3000 },
+  { value: 5, label: 'RSC- TCM', billRate: 15.53 },
+  { value: 6, label: 'Moving Home Minnesota', billRate: 16.63 },
 ];
-
-const serviceOptions = servicesData.map((service) => ({
-  value: service.id,
-  label: service.description,
-  billRate: service.billRate,
-}));
 
 const ServiceSelection = ({ tenantID }) => {
   const [services, setServices] = useState([]);
+  const [submitResponse, setSubmitResponse] = useState([]);
+  const [allServices, setAllServices] = useState([]);
+
+  // Fetch existing services when component mounts
+  useEffect(() => {
+    const fetchServices = async () => {
+      if (!tenantID) {
+        toast.error('Tenant ID is missing!');
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          toast.error('Token is missing!');
+          return;
+        }
+
+        // Log tenantID for debugging
+        console.log('Fetching services for tenantID:', tenantID);
+
+        const response = await axios.post(
+          'https://careautomate-backend.vercel.app/tenant/get-services',
+          { tenantId: tenantID },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (response.data.success) {
+          setAllServices(response.data.services);
+        } else {
+          toast.error(response.data.message || 'Failed to fetch services');
+        }
+      } catch (error) {
+        console.error('Error fetching services:', error);
+        toast.error('Error fetching services.');
+      }
+    };
+
+    fetchServices();
+  }, [tenantID]);
 
   const handleServiceSelect = (selectedOptions) => {
     const selectedServices = selectedOptions.map((option) => ({
@@ -30,7 +68,10 @@ const ServiceSelection = ({ tenantID }) => {
       endDate: '',
       units: '',
       billRate: option.billRate,
-      document: '', // Store the base64 string for file
+      document: '',
+      uploadedFileName: '',
+      status: 'active', 
+      reviewStatus: 'approved',
     }));
     setServices(selectedServices);
   };
@@ -40,9 +81,7 @@ const ServiceSelection = ({ tenantID }) => {
     input.type = 'file';
     input.onchange = async (e) => {
       const file = e.target.files[0];
-
-      // Limit the file size (e.g., 5MB max)
-      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; // Max 5MB
       if (file.size > MAX_FILE_SIZE) {
         toast.error('File is too large. Max size is 5MB.');
         return;
@@ -50,10 +89,10 @@ const ServiceSelection = ({ tenantID }) => {
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        const base64File = reader.result.split(',')[1]; // Extract the base64 string
+        const base64File = reader.result.split(',')[1]; // Extract base64 string
         const updatedServices = [...services];
         updatedServices[index].uploadedFileName = file.name;
-        updatedServices[index].document = base64File; // Store the base64 string as document
+        updatedServices[index].document = base64File; // Store base64 string as document
         setServices(updatedServices);
       };
       reader.readAsDataURL(file);
@@ -68,32 +107,32 @@ const ServiceSelection = ({ tenantID }) => {
     setServices(updatedServices);
   };
 
-  const removeService = (index) => {
-    const updatedServices = services.filter((_, i) => i !== index);
-    setServices(updatedServices);
-  };
-
-  const handleSubmit = async () => {
+  const handleSubmit = async (index) => {
     if (!tenantID) {
       toast.error('Tenant ID is missing!');
       return;
     }
 
-    // Validate if all required fields are filled
-    if (services.some(service => !service.startDate || !service.endDate || !service.units)) {
+    const service = services[index];
+    if (!service.startDate || !service.endDate || !service.units) {
       toast.error('Please fill in all required fields');
       return;
     }
 
-    // Prepare the payload with only the required fields
-    const servicesPayload = services.map(service => ({
-      serviceType: service.serviceType,
-      startDate: service.startDate,
-      endDate: service.endDate,
-      units: service.units,
-      rate: service.billRate,
-      document: service.document || null,  // Store base64 or null
-    }));
+    const formData = new FormData();
+    formData.append('tenantId', tenantID);
+    formData.append('serviceType', service.serviceType);
+    formData.append('startDate', service.startDate);
+    formData.append('endDate', service.endDate);
+    formData.append('units', service.units);
+    formData.append('rate', service.billRate);
+    formData.append('status', service.status); 
+    formData.append('reviewStatus', service.reviewStatus);
+
+    // Append document (if exists)
+    if (service.document) {
+      formData.append('document', service.document); // Base64 file content
+    }
 
     try {
       const token = localStorage.getItem('token');
@@ -102,26 +141,43 @@ const ServiceSelection = ({ tenantID }) => {
         return;
       }
 
-      // Sending the request with the required data
+      // Log request payload for debugging
+      console.log('Submitting service with data:', formData);
+
       const response = await axios.post(
         'https://careautomate-backend.vercel.app/tenant/assign-services-documents',
-        { tenantId: tenantID, services: servicesPayload }, // Send only the required fields in the body
+        formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
 
-      // Handle success or error response
-      if (response.data.success) {
-        toast.success('Services and documents created successfully');
-      } else {
-        toast.error(response.data.message || 'Failed to create services and documents');
-      }
+      const updatedResponses = [...submitResponse];
+      const successMessage = response.data.success
+        ? 'Service created successfully'
+        : 'Failed to create service';
+
+      updatedResponses[index] = {
+        success: response.data.success,
+        message: response.data.message || successMessage,
+      };
+
+      setSubmitResponse(updatedResponses);
+
+      // Update status and reviewStatus based on the response
+      const updatedServices = [...services];
+      updatedServices[index].status = response.data.success ? 'active' : 'pending';
+      updatedServices[index].reviewStatus = response.data.success ? 'approved' : 'approved';
+
+      setServices(updatedServices);
+
+      toast[response.data.success ? 'success' : 'error'](updatedResponses[index].message);
     } catch (error) {
       console.error('Error during API call:', error);
-      toast.error('Error submitting services. Please try again.');
+      toast.error('Error submitting service. Please try again.');
     }
   };
 
@@ -144,7 +200,7 @@ const ServiceSelection = ({ tenantID }) => {
           <div key={index} className="grid grid-cols-12 gap-4 mb-10 mt-6">
             <div className="col-span-3 flex items-center">
               <button onClick={() => handleFileUpload(index)} className="flex items-center text-blue-500 mt-2 ml-2">
-                <FaUpload className="mr-1 ml-4 " />
+                <FaUpload className="mr-1 ml-4" />
                 <p>{service.uploadedFileName || 'Upload File'}</p>
               </button>
             </div>
@@ -195,19 +251,25 @@ const ServiceSelection = ({ tenantID }) => {
               />
             </div>
 
-            <div className="col-span-1 flex items-center">
-              <button onClick={() => removeService(index)} className="text-red-500">
-                <FaTrash />
+            <div className="col-span-1 mt-4">
+              <button
+                onClick={() => handleSubmit(index)}
+                className="bg-blue-500 text-white px-1 py-3 rounded-lg hover:bg-blue-700"
+              >
+                Submit
               </button>
+
+              {submitResponse[index] && (
+                <div className="mt-2">
+                  <p className="text-sm">{`File: ${service.uploadedFileName}`}</p>
+                  <p className={`text-sm ${submitResponse[index].success ? 'text-green-500' : 'text-red-500'}`}>
+                    {submitResponse[index].message}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         ))}
-      </div>
-
-      <div className="mt-6 flex justify-end">
-        <button onClick={handleSubmit} className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-          Submit
-        </button>
       </div>
     </div>
   );

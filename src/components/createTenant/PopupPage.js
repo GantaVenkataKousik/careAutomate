@@ -47,10 +47,10 @@ const PopupPage = () => {
   };
 
   const handleNext = async () => {
-    // if (!tenantData.firstName || !tenantData.lastName || !tenantData.phoneNumber || !tenantData.email) {
-    //   toast.error('Please fill in all required fields');
-    //   return;
-    // }
+    if (!tenantData.firstName || !tenantData.lastName || !tenantData.phoneNumber || !tenantData.email) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
 
     // Save data when completing Step 1
     if (currentStep === 0) {
@@ -73,7 +73,7 @@ const PopupPage = () => {
 
     try {
       const response = await axios.post(
-        'https://careautomate-backend.vercel.app/tenant/createTenant',
+        'https://careautomate-backend.vercel.app/tenant/create',
         formData,
         {
           headers: {
