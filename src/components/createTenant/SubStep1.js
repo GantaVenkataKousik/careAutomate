@@ -18,15 +18,16 @@ const SubStep1 = () => {
   return (
     <div style={styles.container}>
       <Section title="Basic Information">
-        <InputField label="First Name" name="firstName" value={tenantData.firstName} onChange={handleChange} onFocus={() => setFocusedField("firstName")} onBlur={() => setFocusedField(null)} focused={focusedField === "firstName"} required />
+        <InputField label="First Name *" name="firstName" value={tenantData.firstName} onChange={handleChange} onFocus={() => setFocusedField("firstName")} onBlur={() => setFocusedField(null)} focused={focusedField === "firstName"} required />
         <InputField label="Middle Name" name="middleName" value={tenantData.middleName} onChange={handleChange} onFocus={() => setFocusedField("middleName")} onBlur={() => setFocusedField(null)} focused={focusedField === "middleName"} />
-        <InputField label="Last Name" name="lastName" value={tenantData.lastName} onChange={handleChange} onFocus={() => setFocusedField("lastName")} onBlur={() => setFocusedField(null)} focused={focusedField === "lastName"} required />
+        <InputField label="Last Name *" name="lastName" value={tenantData.lastName} onChange={handleChange} onFocus={() => setFocusedField("lastName")} onBlur={() => setFocusedField(null)} focused={focusedField === "lastName"} required />
         <InputField label="Date of Birth" name="dob" value={tenantData.dob} onChange={handleChange} type="date" onFocus={() => setFocusedField("dob")} onBlur={() => setFocusedField(null)} focused={focusedField === "dob"} required />
         <InputField label="Gender" name="gender" value={tenantData.gender} onChange={handleChange} type="select" options={["Male", "Female"]} onFocus={() => setFocusedField("gender")} onBlur={() => setFocusedField(null)} focused={focusedField === "gender"} required />
+        <InputField label="MA PMI #" name="MAPMI#" value={tenantData.mapmi} onChange={handleChange}  onFocus={() => setFocusedField("mapmi")} onBlur={() => setFocusedField(null)} focused={focusedField === "mapmi"} required />
       </Section>
       <Section title="Contact Information">
-        <InputField label="Phone Number" name="phoneNumber" value={tenantData.phoneNumber} onChange={handleChange} required />
-        <InputField label="Email" name="email" value={tenantData.email} onChange={handleChange} type="email" required />
+        <InputField label="Phone Number *" name="phoneNumber" value={tenantData.phoneNumber} onChange={handleChange} required />
+        <InputField label="Email *" name="email" value={tenantData.email} onChange={handleChange} type="email" required />
         <InputField label="Home Phone" name="homePhone" value={tenantData.homePhone} onChange={handleChange} />
         <InputField label="Cell Phone" name="cellPhone" value={tenantData.cellPhone} onChange={handleChange} />
       </Section>
@@ -124,7 +125,7 @@ const InputField = ({ label, name, value, onChange, type = "text", options = [],
 const Section = ({ title, children }) => (
   <div style={{ marginBottom: "16px" }}>
     <h3 style={styles.sectionHeading}>{title}</h3>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-3 md:grid-cols-3 gap-4">
       {children}
     </div>
   </div>
@@ -140,30 +141,37 @@ const styles = {
   },
   sectionHeading: {
     fontSize: "1.25rem",
-    fontWeight: "500",
+    fontWeight: "700",
     color: "#555",
     marginBottom: "8px",
+    textDecoration: 'underline',
+
   },
+
   label: {
     display: "block",
-    fontSize: "0.9rem",
-    color: "#666",
+    fontSize: "1rem",
+    color: "#000080",
     marginBottom: "4px",
+    fontWeight: '600', 
   },
   input: {
-    width: "100%",
+    width: "80%",
     padding: "5px 10px",
     border: "1px solid #ddd",
-    borderRadius: "6px",
+    borderRadius: "25px",
     fontSize: "1rem",
     boxShadow: "0px 1px 3px rgba(0,0,0,0.05)",
     outline: "none",
     transition: "border-color 0.3s",
+    textAlign: 'center',
+    
   },
   inputFocused: {
     borderColor: "#4A90E2",
     boxShadow: "0px 0px 4px rgba(74, 144, 226, 0.5)",
   },
+  
 };
 
 export default SubStep1;

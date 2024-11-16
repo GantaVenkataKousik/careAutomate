@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { FaTrash, FaUpload } from 'react-icons/fa';
 import Select from 'react-select';
-import Modal from 'react-modal';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 // Sample services data
 const servicesData = [
@@ -13,70 +14,53 @@ const servicesData = [
   { id: 6, description: "Moving Home Minnesota", billRate: 16.63, procedureCode: "T1017", modifier: "U6", unit: "15 minutes = 1 Unit" },
 ];
 
-// Define options for service types
-const serviceOptions = servicesData.map(service => ({
+const serviceOptions = servicesData.map((service) => ({
   value: service.id,
   label: service.description,
-  billRate: service.billRate
+  billRate: service.billRate,
 }));
 
-// Utility function to calculate total days between two dates
-const calculateTotalDays = (startDate, endDate) => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  const timeDiff = end - start;
-  return Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Convert to days
-};
-
-// Main Service Selection Component
-const ServiceSelection = () => {
+const ServiceSelection = ({ tenantID }) => {
   const [services, setServices] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Handle multi-select dropdown for services
   const handleServiceSelect = (selectedOptions) => {
     const selectedServices = selectedOptions.map((option) => ({
-      id: option.value,
       serviceType: option.label,
       startDate: '',
       endDate: '',
       units: '',
       billRate: option.billRate,
-      uploadedFileName: '',
+      document: '', // Store the base64 string for file
     }));
     setServices(selectedServices);
   };
 
-  // Handler for file upload
   const handleFileUpload = (index) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.onchange = (e) => {
+    input.onchange = async (e) => {
       const file = e.target.files[0];
-      const fileName = file.name;
-      const updatedServices = [...services];
-      updatedServices[index].uploadedFileName = fileName;
 
-      // Extract dates from the uploaded file name
-      const { startDate, endDate } = extractDatesFromFileName(fileName);
-      updatedServices[index].startDate = startDate;
-      updatedServices[index].endDate = endDate;
+      // Limit the file size (e.g., 5MB max)
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error('File is too large. Max size is 5MB.');
+        return;
+      }
 
-      setServices(updatedServices);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64File = reader.result.split(',')[1]; // Extract the base64 string
+        const updatedServices = [...services];
+        updatedServices[index].uploadedFileName = file.name;
+        updatedServices[index].document = base64File; // Store the base64 string as document
+        setServices(updatedServices);
+      };
+      reader.readAsDataURL(file);
     };
     input.click();
   };
 
-  // Function to extract start and end dates from the file name
-  const extractDatesFromFileName = (fileName) => {
-    const datePattern = /(\d{4}-\d{2}-\d{2})/g; // Regex to match "YYYY-MM-DD" format
-    const matches = fileName.match(datePattern);
-    const startDate = matches && matches.length > 0 ? matches[0] : '';
-    const endDate = matches && matches.length > 1 ? matches[1] : '';
-    return { startDate, endDate };
-  };
-
-  // Handle input field changes
   const handleServiceChange = (index, e) => {
     const { name, value } = e.target;
     const updatedServices = [...services];
@@ -84,177 +68,148 @@ const ServiceSelection = () => {
     setServices(updatedServices);
   };
 
-  // Remove a service row
   const removeService = (index) => {
     const updatedServices = services.filter((_, i) => i !== index);
     setServices(updatedServices);
   };
 
-  // Open modal for summary table
-  const openSummaryModal = () => {
-    setIsModalOpen(true);
-  };
+  const handleSubmit = async () => {
+    if (!tenantID) {
+      toast.error('Tenant ID is missing!');
+      return;
+    }
 
-  // Close modal
-  const closeSummaryModal = () => {
-    setIsModalOpen(false);
+    // Validate if all required fields are filled
+    if (services.some(service => !service.startDate || !service.endDate || !service.units)) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    // Prepare the payload with only the required fields
+    const servicesPayload = services.map(service => ({
+      serviceType: service.serviceType,
+      startDate: service.startDate,
+      endDate: service.endDate,
+      units: service.units,
+      rate: service.billRate,
+      document: service.document || null,  // Store base64 or null
+    }));
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Token is missing');
+        return;
+      }
+
+      // Sending the request with the required data
+      const response = await axios.post(
+        'https://careautomate-backend.vercel.app/tenant/assign-services-documents',
+        { tenantId: tenantID, services: servicesPayload }, // Send only the required fields in the body
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Handle success or error response
+      if (response.data.success) {
+        toast.success('Services and documents created successfully');
+      } else {
+        toast.error(response.data.message || 'Failed to create services and documents');
+      }
+    } catch (error) {
+      console.error('Error during API call:', error);
+      toast.error('Error submitting services. Please try again.');
+    }
   };
 
   return (
-    <>
-      <div className="service-selection-section">
-        {/* Multi-Select Dropdown for Services */}
-        <div className="mb-6">
-          <label>Select Services:</label>
-          <Select
-            isMulti
-            name="services"
-            options={serviceOptions}
-            className="basic-multi-select"
-            classNamePrefix="select"
-            onChange={handleServiceSelect}
-          />
-        </div>
-
-        {/* Scrollable container for services */}
-        <div className="service-container overflow-y-auto h-64">
-          {services.map((service, index) => (
-            <div key={service.id} className="grid grid-cols-12 gap-4 mb-10 mt-6">
-              {/* File Upload with Icon */}
-              <div className="col-span-3 flex items-center">
-                <button onClick={() => handleFileUpload(index)} className="flex items-center text-blue-500 mt-2 ml-2">
-                  <FaUpload className="mr-1 ml-4 " />
-                  <p>{service.uploadedFileName || 'Upload File'}</p> {/* Display file name or default text */}
-                </button>
-              </div>
-
-              {/* Service Start Date */}
-              <div className="col-span-2">
-                <label>Start Date:</label>
-                <input
-                  type="date"
-                  name="startDate"
-                  value={service.startDate}
-                  onChange={(e) => handleServiceChange(index, e)}
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-
-              {/* Service End Date */}
-              <div className="col-span-2">
-                <label>End Date:</label>
-                <input
-                  type="date"
-                  name="endDate"
-                  value={service.endDate}
-                  onChange={(e) => handleServiceChange(index, e)}
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-
-              {/* Units */}
-              <div className="col-span-2">
-                <label>Units:</label>
-                <input
-                  type="number"
-                  name="units"
-                  placeholder="Units"
-                  value={service.units}
-                  onChange={(e) => handleServiceChange(index, e)}
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-
-              {/* Bill Rate */}
-              <div className="col-span-2">
-                <label>Bill Rate:</label>
-                <input
-                  type="number"
-                  name="billRate"
-                  placeholder="Bill Rate"
-                  value={service.billRate}
-                  readOnly // Set as read-only since it's based on the selected service
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-
-              {/* Remove Button */}
-              <div className="col-span-1 flex items-center">
-                <button onClick={() => removeService(index)} className="text-red-500">
-                  <FaTrash />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Next button to show the summary table in a popup */}
-        <div className="mt-6 flex justify-end">
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-            onClick={openSummaryModal}
-            disabled={services.length === 0} // Disable if no services selected
-          >
-            Next
-          </button>
-        </div>
-
-        {/* Modal for showing the summary table */}
-        <Modal
-          isOpen={isModalOpen}
-          onRequestClose={closeSummaryModal}
-          contentLabel="Service Summary"
-          style={{
-            content: {
-              top: '50%',
-              left: '50%',
-              right: 'auto',
-              bottom: 'auto',
-              transform: 'translate(-50%, -50%)',
-              width: '80%',
-              maxHeight: '80%',
-              overflowY: 'auto',
-            },
-          }}
-        >
-          <h2 className="text-lg font-bold">Service Summary</h2>
-          <table className="min-w-full mt-4">
-            <thead>
-              <tr>
-                <th className="p-2 border">Service Type</th>
-                <th className="p-2 border">Start Date</th>
-                <th className="p-2 border">End Date</th>
-                <th className="p-2 border">Total Days</th>
-                <th className="p-2 border">Total Bill Amount</th>
-                <th className="p-2 border">Units</th>
-              </tr>
-            </thead>
-            <tbody>
-              {services.map((service) => {
-                const totalDays = calculateTotalDays(service.startDate, service.endDate);
-                const totalBill = totalDays * (service.billRate * (service.units || 0));
-                return (
-                  <tr key={service.id}>
-                    <td className="p-2 border">{service.serviceType}</td>
-                    <td className="p-2 border">{service.startDate}</td>
-                    <td className="p-2 border">{service.endDate}</td>
-                    <td className="p-2 border">{totalDays}</td>
-                    <td className="p-2 border">${totalBill.toFixed(2)}</td>
-                    <td className="p-2 border">{service.units}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-
-          <div className="mt-4 flex justify-end">
-            <button onClick={closeSummaryModal} className="bg-red-500 text-white px-4 py-2 rounded">
-              Close
-            </button>
-          </div>
-        </Modal>
+    <div className="service-selection-section">
+      <div className="mb-6">
+        <label>Select Services:</label>
+        <Select
+          isMulti
+          name="services"
+          options={serviceOptions}
+          className="basic-multi-select"
+          classNamePrefix="select"
+          onChange={handleServiceSelect}
+        />
       </div>
-    </>
+
+      <div className="service-container overflow-y-auto h-64">
+        {services.map((service, index) => (
+          <div key={index} className="grid grid-cols-12 gap-4 mb-10 mt-6">
+            <div className="col-span-3 flex items-center">
+              <button onClick={() => handleFileUpload(index)} className="flex items-center text-blue-500 mt-2 ml-2">
+                <FaUpload className="mr-1 ml-4 " />
+                <p>{service.uploadedFileName || 'Upload File'}</p>
+              </button>
+            </div>
+
+            <div className="col-span-2">
+              <label>Start Date:</label>
+              <input
+                type="date"
+                name="startDate"
+                value={service.startDate}
+                onChange={(e) => handleServiceChange(index, e)}
+                className="border p-2 rounded w-full"
+              />
+            </div>
+
+            <div className="col-span-2">
+              <label>End Date:</label>
+              <input
+                type="date"
+                name="endDate"
+                value={service.endDate}
+                onChange={(e) => handleServiceChange(index, e)}
+                className="border p-2 rounded w-full"
+              />
+            </div>
+
+            <div className="col-span-2">
+              <label>Units:</label>
+              <input
+                type="number"
+                name="units"
+                placeholder="Units"
+                value={service.units}
+                onChange={(e) => handleServiceChange(index, e)}
+                className="border p-2 rounded w-full"
+              />
+            </div>
+
+            <div className="col-span-2">
+              <label>Bill Rate:</label>
+              <input
+                type="number"
+                name="billRate"
+                placeholder="Bill Rate"
+                value={service.billRate}
+                readOnly
+                className="border p-2 rounded w-full"
+              />
+            </div>
+
+            <div className="col-span-1 flex items-center">
+              <button onClick={() => removeService(index)} className="text-red-500">
+                <FaTrash />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6 flex justify-end">
+        <button onClick={handleSubmit} className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+          Submit
+        </button>
+      </div>
+    </div>
   );
 };
 

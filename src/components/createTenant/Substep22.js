@@ -10,6 +10,8 @@ export default function Substep22() {
             {/* Documentation aligned left */}
             <h2 className="text-left mb-2">Documentation</h2>
 
+           
+
             {/* Checklist links */}
             {/* <div className="flex space-x-4 mt-2">
                 <span className="text-blue-600 hover:underline cursor-pointer">Checklist</span>
