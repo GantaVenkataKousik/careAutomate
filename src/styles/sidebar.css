@@ -8,6 +8,7 @@
     top: 0;
     left: 0;
     overflow-y: auto;
+    margin-top: 30px;
     box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -15,6 +16,8 @@
     list-style: none;
     padding: 0;
 }
+
+
 
 .sidebar-menu li span {
     font-size: 1.1rem;
@@ -27,6 +30,8 @@
     margin-bottom: 1px;
     display: flex;
     align-items: center;
+    border-radius: 10px;
+
 }
 
 .sidebar-menu .sidebar-icon {
@@ -39,6 +44,8 @@
     text-decoration: none;
     display: flex;
     align-items: center;
+    gap: 10px;
+    
 }
 
 .sidebar-menu li:hover {

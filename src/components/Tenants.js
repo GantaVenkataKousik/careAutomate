@@ -46,10 +46,10 @@ const Tenants = () => {
       <h1 style={styles.header}>Tenants</h1>
 
       <div style={styles.headerActions}>
-        <div style={styles.searchBar}>
-          <FaSearch style={styles.searchIcon} />
-          <input type="text" placeholder="Search..." style={styles.searchInput} />
-        </div>
+          <div style={styles.searchBar}>
+            <FaSearch style={styles.searchIcon} />
+            <input type="text" placeholder="Search..." style={styles.searchInput} />
+          </div>
 
         <button style={styles.addTenantBtn} onClick={handleAddTenantClick}>
           <FaPlus style={styles.plusIcon} /> Add New Tenant
@@ -59,7 +59,7 @@ const Tenants = () => {
       <div style={styles.tenantGrid}>
         {tenants.length > 0 ? (
           tenants.map((tenant, index) => (
-            <div key={tenant._id || index} style={styles.tenantBox}>
+            <div key={tenant._id || index} style={styles.tenantBox} >
               <div style={styles.tenantInfo}>
                 <div style={styles.tenantImage}>
                   <img src={tenantImage} alt="Tenant" style={styles.image} />
@@ -84,9 +84,16 @@ const Tenants = () => {
 
 const styles = {
   container: {
-    padding: '20px',
+    padding: '10px',
     fontFamily: 'Arial, sans-serif',
+<<<<<<< HEAD
     width: '1000px',
+=======
+  
+    width: '1180px',
+    height: '80vh',
+  
+>>>>>>> a53f7dee61934603defe4118b292493e0c2cde86
   },
   header: {
     fontSize: '2em',
@@ -141,8 +148,10 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
     gap: '20px',
+    padding: '10px 10px 40px',
   },
   tenantBox: {
+    width:'23rem',
     backgroundColor: '#fff',
     borderRadius: '8px',
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
@@ -153,10 +162,11 @@ const styles = {
     padding: '15px',
   },
   tenantInfo: {
-    textAlign: 'center',
-    marginBottom: '10px',
     display: 'flex',
-    gap: '30px',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    gap: '20px',
+    width: '100%',
   },
   tenantName: {
     fontSize: '1.25em',
