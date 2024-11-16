@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SubStep1 from './SubStep1';
 import Substep12 from './Substep12';
 import Substep22 from './Substep22';
-import ServiceSelection from './ServiceSelection';
+import DragDropTenants from './DragDropTenants';
 import ScheduleAppointment from './ScheduleAppointment';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -18,8 +18,8 @@ const steps = [
     subSteps: [SubStep1],
   },
   {
-    name: "Assign Services",
-    subSteps: [ServiceSelection],
+    name: "Assign Tenants",
+    subSteps: [DragDropTenants],
   },
   {
     name: "Documentation",
@@ -39,6 +39,8 @@ const PopupPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const tenantData = useSelector((state) => state.tenant);
+  const assignedTenants = useSelector((state) => state.hcm.assignedTenants); // Access Redux state
+
 
   const togglePopup = () => {
     navigate('/HCM');
@@ -47,22 +49,24 @@ const PopupPage = () => {
   };
 
   const handleNext = async () => {
-    // if (!tenantData.firstName || !tenantData.lastName || !tenantData.phoneNumber || !tenantData.email) {
-    //   toast.error('Please fill in all required fields');
-    //   return;
-    // }
-
     // Save data when completing Step 1
     if (currentStep === 0) {
       await handleSave();
     }
-
+  
+    // Log assigned tenants from Redux at Step 2
+    if (currentStep === 1) {
+      console.log('Assigned Tenants:', assignedTenants);
+    }
+  
+    // Move to the next step
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
       setComplete(true);
     }
   };
+  
 
   const handleSave = async () => {
     const token = localStorage.getItem('token');

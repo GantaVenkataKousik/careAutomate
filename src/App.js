@@ -17,7 +17,7 @@ import PrivateRoute from './PrivateRoute';
 import { AuthProvider } from "./AuthContext";
 import Navbar from './components/Navbar.js';
 import Sidebar from './components/Sidebar';
-import PopupPageHCM from './components/createHCM/PopupPageHCM.js';
+import PopupPageHCM from './components/createhcm/PopupPageHCM.js';
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
