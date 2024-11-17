@@ -3,6 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     assignedTenants: [],
+    hcmId:null,
+    hcmName:null
 }
 
 const hcmSlice = createSlice({
@@ -11,9 +13,21 @@ const hcmSlice = createSlice({
     reducers: {
         updateAssignedTenants: (state, action) => {
             return { ...state, assignedTenants: action.payload }
-        }
+        },
+        createdHcm:(state,action) => {
+            return { ...state, hcmId: action.payload }
+        },
+        createdHcmName:(state,action) => {
+            return { ...state, hcmName: action.payload }
+        },
+        // createdTenant:(state,action) => {
+        //     return { ...state, tenantId: action.payload }
+        // },
+        // createdTenantName:(state,action) => {
+        //     return { ...state, tenantName: action.payload }
+        // }
     }
 })
 
-export const { updateAssignedTenants } = hcmSlice.actions;
+export const { updateAssignedTenants,createdHcm,createdHcmName } = hcmSlice.actions;
 export default hcmSlice.reducer;

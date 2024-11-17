@@ -35,7 +35,8 @@ const PopupPage = () => {
   const [showPopup, setShowPopup] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
   const [complete, setComplete] = useState(false);
-  const [tenantID, setTenantID] = useState(null); // Store tenant ID here
+  const [tenantID, setTenantID] = useState(null); 
+  const [tenantName, setTenantName] = useState(null); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const tenantData = useSelector((state) => state.tenant);
@@ -85,6 +86,10 @@ const PopupPage = () => {
 
       if (response.status >= 200 && response.status < 300) {
         const id = response.data?.tenantID;
+        const first =  response.data?.tenantData?.firstName 
+        const last = response.data?.tenantData?.lastName
+        const name = `${first + last}`
+        setTenantName(name)
         console.log(`Tenant ID saved: ${id}`);
         if (id) {
           setTenantID(id); // Store tenant ID in state
@@ -105,13 +110,13 @@ const PopupPage = () => {
     const SubStepComponent = steps[currentStep].subSteps[0];
     if (SubStepComponent) {
       console.log(`Rendering step ${currentStep + 1}, passing tenantID: ${tenantID}`);
-      return <SubStepComponent tenantID={tenantID} />;
+      return <SubStepComponent tenantID={tenantID} tenantName={tenantName} />;
     }
     return null;
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center justify-center ">
       {complete ? (
         <div className="p-8 bg-white rounded-lg shadow-lg text-center">
           <h2 className="text-2xl mb-4 text-green-500">Process Completed!</h2>
@@ -200,7 +205,7 @@ const PopupPage = () => {
             </div>
 
             <div className="absolute bottom-4 left-4 right-4">
-              <div className="flex justify-between mt-6">
+              <div className="flex  justify-between mt-6">
                 <div
                   className="flex items-center cursor-pointer text-gray-400 hover:text-blue-500 hover:fill-blue-500"
                   onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}

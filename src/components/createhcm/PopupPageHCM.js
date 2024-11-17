@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { resetTenantInfo } from '../../redux/tenant/tenantSlice';
+import { createdHcm, createdHcmName } from '../../redux/hcm/hcmSlice';
 
 const steps = [
   {
@@ -40,8 +41,10 @@ const PopupPage = () => {
   const navigate = useNavigate();
   const tenantData = useSelector((state) => state.tenant);
   const assignedTenants = useSelector((state) => state.hcm.assignedTenants); // Access Redux state
-
-
+  const hcmId = useSelector((state) => state.hcm.hcmId)
+  const hcmName = useSelector((state) => state.hcm.hcmName)
+  console.log(hcmName)
+  console.log("hcl id", hcmId);
   const togglePopup = () => {
     navigate('/HCM');
     dispatch(resetTenantInfo());
@@ -53,20 +56,50 @@ const PopupPage = () => {
     if (currentStep === 0) {
       await handleSave();
     }
-  
+
     // Log assigned tenants from Redux at Step 2
     if (currentStep === 1) {
-      console.log('Assigned Tenants:', assignedTenants);
+      console.log('Assigned Tenants in step2:', assignedTenants);
+      const token = localStorage.getItem('token');
+    const data = {
+      "hcmId": hcmId,
+      "tenantIds": assignedTenants,
     }
-  
+
+    try {
+      const response = await axios.post(
+        'https://careautomate-backend.vercel.app/hcm/assign-hcm',
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.status >= 200 && response.status < 300) {
+        toast.success('Assigned tenants saved successfully');
+      } else {
+        console.error('Failed to save assigned tenants:', response.statusText);
+        toast.error('Failed to save assigned tenants.');
+      }
+    } catch (error) {
+      console.error('Error during API call to save assigned tenants:', error);
+      toast.error('Error saving assigned tenants. Please try again.');
+    }
+    }
+
     // Move to the next step
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
+      // navigate('/HCM');
       setComplete(true);
     }
+    
   };
-  
+
 
   const handleSave = async () => {
     const token = localStorage.getItem('token');
@@ -87,11 +120,15 @@ const PopupPage = () => {
         }
       );
 
-      if (response.status >= 200 && response.status < 300) {
-        const id = response.data?.tenantID;
-        console.log(`Tenant ID saved: ${id}`);
+      if (response) {
+        const id = response.data?.hcmID;
+
+        const first = response.data?.hcmData?.firstName
+        const last = response.data?.hcmData?.lastName
+        const name = `${first + last}`
+        dispatch(createdHcmName(name));
         if (id) {
-          setTenantID(id); // Store tenant ID in state
+          dispatch(createdHcm(id));
           toast.success('Tenant data saved successfully');
         } else {
           console.error('Tenant ID not found in the response');
@@ -115,7 +152,7 @@ const PopupPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center justify-center ">
       {complete ? (
         <div className="p-8 bg-white rounded-lg shadow-lg text-center">
           <h2 className="text-2xl mb-4 text-green-500">Process Completed!</h2>
@@ -170,13 +207,12 @@ const PopupPage = () => {
                         </span>
                       </div>
                       <span
-                        className={`${
-                          i < currentStep
+                        className={`${i < currentStep
                             ? "text-green-500"
                             : isActive && complete
-                            ? "text-green-500"
-                            : "text-black"
-                        } text-sm`}
+                              ? "text-green-500"
+                              : "text-black"
+                          } text-sm`}
                       >
                         {step.name}
                       </span>
@@ -185,9 +221,8 @@ const PopupPage = () => {
                       <div className="flex-1 mx-2 -mt-10">
                         <div className="w-full h-2 bg-gray-300 rounded-full">
                           <div
-                            className={`h-2 rounded-full ${
-                              i < currentStep ? "bg-indigo-500" : "bg-gray-300"
-                            }`}
+                            className={`h-2 rounded-full ${i < currentStep ? "bg-indigo-500" : "bg-gray-300"
+                              }`}
                             style={{
                               width: `${i === currentStep ? 100 : i < currentStep ? 100 : 0}%`,
                             }}
@@ -205,7 +240,7 @@ const PopupPage = () => {
               {renderSubStep()}
             </div>
 
-            <div className="absolute bottom-4 left-4 right-4">
+            <div className=" bottom-[20px] left-4 right-4">
               <div className="flex justify-between mt-6">
                 <div
                   className="flex items-center cursor-pointer text-gray-400 hover:text-blue-500 hover:fill-blue-500"

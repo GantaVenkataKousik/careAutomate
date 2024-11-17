@@ -1,49 +1,87 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateAssignedTenants } from '../../redux/hcm/hcmSlice'; // Import the Redux action
+import { updateAssignedTenants } from '../../redux/hcm/hcmSlice';
 
 const DragDropTenants = () => {
   const dispatch = useDispatch();
-  const assignedTenantsRedux = useSelector((state) => state.hcm.assignedTenants); // Access Redux state
-  const [allTenants, setAllTenants] = useState([
-    'Abdi Fathima',
-    'Michael Ron',
-    'Frischer Bour',
-    'Christine Nate',
-    'Matt Hane',
-    'Vue Lee',
-  ]);
-
-  // Initialize the assigned tenants state from Redux
+  const assignedTenantsRedux = useSelector((state) => state.hcm.assignedTenants);
+  const [allTenants, setAllTenants] = useState([]);
   const [assignedTenants, setAssignedTenants] = useState(assignedTenantsRedux || []);
 
-  // Drag and Drop Handlers
+  useEffect(() => {
+    const fetchTenants = async () => {
+      try {
+        const token = localStorage.getItem('token'); // Ensure the token is correctly retrieved
+        if (!token) {
+          console.error('Authorization token is missing.');
+          return;
+        }
+
+        const response = await fetch(
+          'https://careautomate-backend.vercel.app/tenant/all',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}),
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.status === 200 && data.success) {
+          const tenantData = data.tenants.map((tenant) => ({
+            id: tenant._id,
+            name: tenant.name,
+          }));
+          setAllTenants(tenantData); // Update state with fetched tenants
+        } else {
+          console.error('Failed to fetch tenants:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching tenants:', error);
+      }
+    };
+
+    fetchTenants();
+  }, []);
+
   const handleDragStart = (e, tenant, source) => {
-    e.dataTransfer.setData('tenant', tenant);
+    e.dataTransfer.setData('tenant', JSON.stringify(tenant)); // Save entire tenant object for better handling
     e.dataTransfer.setData('source', source);
   };
 
   const handleDrop = (e, target) => {
     e.preventDefault();
-    const tenant = e.dataTransfer.getData('tenant');
+    const tenantData = JSON.parse(e.dataTransfer.getData('tenant')); // Retrieve the full tenant object
     const source = e.dataTransfer.getData('source');
 
     if (source === 'all' && target === 'assigned') {
-      const updatedAllTenants = allTenants.filter((name) => name !== tenant);
-      const updatedAssignedTenants = [...assignedTenants, tenant];
+      const updatedAllTenants = allTenants.filter((tenantObj) => tenantObj.id !== tenantData.id);
+      const updatedAssignedTenants = [...assignedTenants, tenantData];
+
       setAllTenants(updatedAllTenants);
       setAssignedTenants(updatedAssignedTenants);
 
-      // Update Redux state
-      dispatch(updateAssignedTenants(updatedAssignedTenants));
+      // Update Redux state with only tenant IDs
+      dispatch(updateAssignedTenants(updatedAssignedTenants.map((tenantObj) => tenantObj.id)));
+
+      // Log only tenant IDs
+      console.log('Assigned Tenant IDs:', updatedAssignedTenants.map((tenantObj) => tenantObj.id));
     } else if (source === 'assigned' && target === 'all') {
-      const updatedAssignedTenants = assignedTenants.filter((name) => name !== tenant);
-      const updatedAllTenants = [...allTenants, tenant];
+      const updatedAssignedTenants = assignedTenants.filter((tenantObj) => tenantObj.id !== tenantData.id);
+      const updatedAllTenants = [...allTenants, tenantData];
+
       setAssignedTenants(updatedAssignedTenants);
       setAllTenants(updatedAllTenants);
 
-      // Update Redux state
-      dispatch(updateAssignedTenants(updatedAssignedTenants));
+      // Update Redux state with only tenant IDs
+      dispatch(updateAssignedTenants(updatedAssignedTenants.map((tenantObj) => tenantObj.id)));
+
+      // Log only tenant IDs
+      console.log('Assigned Tenant IDs:', updatedAssignedTenants.map((tenantObj) => tenantObj.id));
     }
   };
 
@@ -62,14 +100,14 @@ const DragDropTenants = () => {
         >
           <h3 style={styles.boxHeading}>All Tenants</h3>
           <ul style={styles.tenantList}>
-            {allTenants.map((tenant, index) => (
+            {allTenants.map((tenant) => (
               <li
-                key={index}
+                key={tenant.id} // Ensure that the key is unique
                 draggable
                 onDragStart={(e) => handleDragStart(e, tenant, 'all')}
                 style={styles.tenantItem}
               >
-                {tenant}
+                {tenant.name}
               </li>
             ))}
           </ul>
@@ -85,14 +123,14 @@ const DragDropTenants = () => {
         >
           <h3 style={styles.boxHeading}>Assigned Tenants</h3>
           <ul style={styles.tenantList}>
-            {assignedTenants.map((tenant, index) => (
+            {assignedTenants.map((tenant) => (
               <li
-                key={index}
+                key={tenant.id} // Ensure that the key is unique
                 draggable
                 onDragStart={(e) => handleDragStart(e, tenant, 'assigned')}
                 style={styles.tenantItem}
               >
-                {tenant}
+                {tenant.name}
               </li>
             ))}
           </ul>
