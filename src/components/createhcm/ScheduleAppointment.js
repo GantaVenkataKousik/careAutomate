@@ -172,10 +172,11 @@ const ScheduleAppointment = () => {
 
   return (
     <div style={{ maxHeight: '200px' }} className="p-6 max-w-2xl mx-auto bg-white rounded-lg ">
+      <div className='flex flex-col pb-10 max-h-[24rem]'>
       <h5 className="text-2xl font-semibold mb-4">New Appointment</h5>
       <p className=" mb-6">Fill in the details to add a schedule</p>
 
-      <div className="space-y-6">
+      <div className="space-y-6 max-h-[40rem] overflow-y-auto">
         <div className="flex gap-4">
           <label className="text-sm font-medium flex items-center w-1/3">
             <GoPerson size={24} className="mr-2" />
@@ -374,12 +375,13 @@ const ScheduleAppointment = () => {
 
 
 
-      <button
+      {/* <button
         onClick={handleCreateAnother}
         className=" py-2 px-4 rounded-md mt-4  transition duration-300"
       >
         Create Another Schedule
-      </button>
+      </button> */}
+    </div>
     </div>
 
   );
