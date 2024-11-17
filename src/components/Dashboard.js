@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import '../styles/ProfilePage.css';
 import tenant from "../images/tenant.jpg";
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
-import { FaUserTie } from 'react-icons/fa';
+import { FaBars, FaCheck, FaDownload, FaFileAlt, FaMicrophone, FaTimes, FaUser, FaUserTie } from 'react-icons/fa';
 import { Document, Page } from 'react-pdf';
 import samplePDF from '../assets/sample_document.pdf';
 import { pdfjs } from 'react-pdf';
