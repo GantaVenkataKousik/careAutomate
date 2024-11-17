@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { FaPhone, FaEnvelope, FaMicrophone, FaDownload, FaEdit, FaBars, FaUser, FaCheck, FaTimes, FaCommentDots, FaBell, FaFileAlt } from 'react-icons/fa';
 import '../styles/ProfilePage.css';
 import tenant from "../images/tenant.jpg";
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
