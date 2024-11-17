@@ -17,7 +17,7 @@ import PrivateRoute from './PrivateRoute';
 import { AuthProvider } from "./AuthContext";
 import Navbar from './components/Navbar.js';
 import Sidebar from './components/Sidebar';
-import PopupPageHcm from './components/createHCM/PopupPageHCM.js'
+import PopupPageHCM from './components/createhcm/PopupPageHCM.js'
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -52,7 +52,7 @@ const App = () => {
             <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
             <Route path="/tenants" element={<AppLayout><Tenants /></AppLayout>} />
             <Route path="/tenants/createTenant" element={<AppLayout><PopupPage /></AppLayout>} />
-            <Route path="/hcm/createHcm" element={<AppLayout><PopupPageHcm /></AppLayout>} />
+            <Route path="/hcm/createHcm" element={<AppLayout><PopupPageHCM /></AppLayout>} />
             <Route path="/hcm" element={<AppLayout><HCM /></AppLayout>} />
             <Route path="/appointments" element={<AppLayout><Appointments /></AppLayout>} />
             <Route path="/visits" element={<AppLayout><Visits /></AppLayout>} />
