@@ -26,8 +26,8 @@ export default function Substep22() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`cursor-pointer px-4 py-2 rounded-t-md ${activeTab === tab
-                  ? 'text-white bg-[#92A1F2]'
-                  : 'hover:text-white hover:bg-[#92A1F2]'
+                ? 'text-white bg-[#92A1F2]'
+                : 'hover:text-white hover:bg-[#92A1F2]'
                 }`}
             >
               {tab}

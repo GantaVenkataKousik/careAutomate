@@ -16,7 +16,7 @@ const ServiceSelectionTable = ({ selectedServices, onServiceToggle }) => {
       <table className="w-auto bg-white rounded-md overflow-hidden shadow-lg">
         <thead>
           <tr>
-          <th className="border-r border-gray-300 px-4 py-2 text-center">Caregiver Name</th>
+            <th className="border-r border-gray-300 px-4 py-2 text-center">Caregiver Name</th>
             {services.map(service => (
               <th key={service} className="border-r border-gray-300 px-4 py-2 text-center">{service}</th>
             ))}
@@ -24,14 +24,14 @@ const ServiceSelectionTable = ({ selectedServices, onServiceToggle }) => {
         </thead>
         <tbody>
           {caregivers.map(caregiver => (
-           <tr key={caregiver.name} className="">
+            <tr key={caregiver.name} className="">
               <td className="border-r border-gray-300 px-4 py-2 text-center">{caregiver.name}</td>
               {services.map(service => (
-                 <td key={service} className="border-r border-gray-300 px-4 py-2 text-center">
+                <td key={service} className="border-r border-gray-300 px-4 py-2 text-center">
                   <label className="inline-flex items-center">
                     <input
                       type="checkbox"
-                      className="form-checkbox h-5 w-5 rounded-lg border border-gray-400" 
+                      className="form-checkbox h-5 w-5 rounded-lg border border-gray-400"
                       checked={selectedServices[caregiver.name]?.includes(service) || false}
                       onChange={() => onServiceToggle(caregiver.name, service)}
                     />
