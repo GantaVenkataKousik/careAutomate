@@ -41,10 +41,10 @@ const PopupPage = () => {
   const navigate = useNavigate();
   const tenantData = useSelector((state) => state.tenant);
   const assignedTenants = useSelector((state) => state.hcm.assignedTenants); // Access Redux state
-  const hcmId = useSelector((state)=>state.hcm.hcmId)
-  const hcmName = useSelector((state)=>state.hcm.hcmName)
+  const hcmId = useSelector((state) => state.hcm.hcmId)
+  const hcmName = useSelector((state) => state.hcm.hcmName)
   console.log(hcmName)
- console.log("hcl id",hcmId);
+  console.log("hcl id", hcmId);
   const togglePopup = () => {
     navigate('/HCM');
     dispatch(resetTenantInfo());
@@ -56,48 +56,49 @@ const PopupPage = () => {
     if (currentStep === 0) {
       await handleSave();
     }
-  
+
     // Log assigned tenants from Redux at Step 2
     if (currentStep === 1) {
       console.log('Assigned Tenants in step2:', assignedTenants);
+      const token = localStorage.getItem('token');
+    const data = {
+      "hcmId": hcmId,
+      "tenantIds": assignedTenants,
     }
-  
+
+    try {
+      const response = await axios.post(
+        'https://careautomate-backend.vercel.app/hcm/assign-hcm',
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.status >= 200 && response.status < 300) {
+        toast.success('Assigned tenants saved successfully');
+      } else {
+        console.error('Failed to save assigned tenants:', response.statusText);
+        toast.error('Failed to save assigned tenants.');
+      }
+    } catch (error) {
+      console.error('Error during API call to save assigned tenants:', error);
+      toast.error('Error saving assigned tenants. Please try again.');
+    }
+    }
+
     // Move to the next step
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
       setComplete(true);
     }
-     const token = localStorage.getItem('token');
-   const data ={
-    "hcmId":hcmId,
-     "tenantIds":assignedTenants,
-   }
-
-  try {
-    const response = await axios.post(
-      'https://careautomate-backend.vercel.app/hcm/assign-hcm', 
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    if (response.status >= 200 && response.status < 300) {
-      toast.success('Assigned tenants saved successfully');
-    } else {
-      console.error('Failed to save assigned tenants:', response.statusText);
-      toast.error('Failed to save assigned tenants.');
-    }
-  } catch (error) {
-    console.error('Error during API call to save assigned tenants:', error);
-    toast.error('Error saving assigned tenants. Please try again.');
-  }
+    
   };
-  
+
 
   const handleSave = async () => {
     const token = localStorage.getItem('token');
@@ -121,7 +122,7 @@ const PopupPage = () => {
       if (response) {
         const id = response.data?.hcmID;
 
-        const first =  response.data?.hcmData?.firstName 
+        const first = response.data?.hcmData?.firstName
         const last = response.data?.hcmData?.lastName
         const name = `${first + last}`
         dispatch(createdHcmName(name));
@@ -205,13 +206,12 @@ const PopupPage = () => {
                         </span>
                       </div>
                       <span
-                        className={`${
-                          i < currentStep
+                        className={`${i < currentStep
                             ? "text-green-500"
                             : isActive && complete
-                            ? "text-green-500"
-                            : "text-black"
-                        } text-sm`}
+                              ? "text-green-500"
+                              : "text-black"
+                          } text-sm`}
                       >
                         {step.name}
                       </span>
@@ -220,9 +220,8 @@ const PopupPage = () => {
                       <div className="flex-1 mx-2 -mt-10">
                         <div className="w-full h-2 bg-gray-300 rounded-full">
                           <div
-                            className={`h-2 rounded-full ${
-                              i < currentStep ? "bg-indigo-500" : "bg-gray-300"
-                            }`}
+                            className={`h-2 rounded-full ${i < currentStep ? "bg-indigo-500" : "bg-gray-300"
+                              }`}
                             style={{
                               width: `${i === currentStep ? 100 : i < currentStep ? 100 : 0}%`,
                             }}
