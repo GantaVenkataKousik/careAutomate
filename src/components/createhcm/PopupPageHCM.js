@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { resetTenantInfo } from '../../redux/tenant/tenantSlice';
+import { createdHcm } from '../../redux/hcm/hcmSlice';
 
 const steps = [
   {
@@ -40,8 +41,8 @@ const PopupPage = () => {
   const navigate = useNavigate();
   const tenantData = useSelector((state) => state.tenant);
   const assignedTenants = useSelector((state) => state.hcm.assignedTenants); // Access Redux state
-
-
+  const hcmId = useSelector((state)=>state.hcm.hcmId)
+ console.log("hcl id",hcmId);
   const togglePopup = () => {
     navigate('/HCM');
     dispatch(resetTenantInfo());
@@ -56,7 +57,7 @@ const PopupPage = () => {
   
     // Log assigned tenants from Redux at Step 2
     if (currentStep === 1) {
-      console.log('Assigned Tenants:', assignedTenants);
+      console.log('Assigned Tenants in step2:', assignedTenants);
     }
   
     // Move to the next step
@@ -65,6 +66,34 @@ const PopupPage = () => {
     } else {
       setComplete(true);
     }
+     const token = localStorage.getItem('token');
+   const data ={
+    "hcmId":hcmId,
+     "tenantIds":assignedTenants,
+   }
+
+  try {
+    const response = await axios.post(
+      'https://careautomate-backend.vercel.app/hcm/assign-hcm', 
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (response.status >= 200 && response.status < 300) {
+      toast.success('Assigned tenants saved successfully');
+    } else {
+      console.error('Failed to save assigned tenants:', response.statusText);
+      toast.error('Failed to save assigned tenants.');
+    }
+  } catch (error) {
+    console.error('Error during API call to save assigned tenants:', error);
+    toast.error('Error saving assigned tenants. Please try again.');
+  }
   };
   
 
@@ -88,10 +117,10 @@ const PopupPage = () => {
       );
 
       if (response.status >= 200 && response.status < 300) {
-        const id = response.data?.tenantID;
-        console.log(`Tenant ID saved: ${id}`);
+        const id = response.data?.hcmID;
+    
         if (id) {
-          setTenantID(id); // Store tenant ID in state
+          dispatch(createdHcm(id));
           toast.success('Tenant data saved successfully');
         } else {
           console.error('Tenant ID not found in the response');

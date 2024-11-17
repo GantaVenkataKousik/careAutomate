@@ -96,9 +96,10 @@ const ScheduleAppointment = () => {
   };
   return (
     <Box sx={{ p: 3, maxWidth: '600px', margin: 'auto' }}>
-      <Typography variant="h5" align="center" gutterBottom>
-        Schedule an Appointment
+      <Typography variant="h5" align="start" gutterBottom>
+        New Appointment
       </Typography>
+      <div>fill in the data to add a schedule</div>
 
       <div className="schedule-appointment-container">
         <Grid container spacing={2}>
