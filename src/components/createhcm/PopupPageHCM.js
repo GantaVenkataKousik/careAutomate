@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { resetTenantInfo } from '../../redux/tenant/tenantSlice';
-import { createdHcm } from '../../redux/hcm/hcmSlice';
+import { createdHcm, createdHcmName } from '../../redux/hcm/hcmSlice';
 
 const steps = [
   {
@@ -42,6 +42,8 @@ const PopupPage = () => {
   const tenantData = useSelector((state) => state.tenant);
   const assignedTenants = useSelector((state) => state.hcm.assignedTenants); // Access Redux state
   const hcmId = useSelector((state)=>state.hcm.hcmId)
+  const hcmName = useSelector((state)=>state.hcm.hcmName)
+  console.log(hcmName)
  console.log("hcl id",hcmId);
   const togglePopup = () => {
     navigate('/HCM');
@@ -116,9 +118,13 @@ const PopupPage = () => {
         }
       );
 
-      if (response.status >= 200 && response.status < 300) {
+      if (response) {
         const id = response.data?.hcmID;
-    
+
+        const first =  response.data?.hcmData?.firstName 
+        const last = response.data?.hcmData?.lastName
+        const name = `${first + last}`
+        dispatch(createdHcmName(name));
         if (id) {
           dispatch(createdHcm(id));
           toast.success('Tenant data saved successfully');
@@ -234,7 +240,7 @@ const PopupPage = () => {
               {renderSubStep()}
             </div>
 
-            <div className="absolute bottom-4 left-4 right-4">
+            <div className=" bottom-[20px] left-4 right-4">
               <div className="flex justify-between mt-6">
                 <div
                   className="flex items-center cursor-pointer text-gray-400 hover:text-blue-500 hover:fill-blue-500"

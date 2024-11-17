@@ -10,7 +10,7 @@ export default function HCM ()  {
   const [tenants, setTenants] = useState([]);
 
   const handleAddTenantClick = () => {
-    navigate('/hcm/createhcm');
+    navigate('/hcm/createHcm');
   };
 
   useEffect(() => {
@@ -96,6 +96,7 @@ const styles = {
     fontFamily: 'Arial, sans-serif',
     // backgroundColor: '#f5f7fa',
     width: '1180px',
+    height: '80vh',
   },
   header: {
     fontSize: '2em',
