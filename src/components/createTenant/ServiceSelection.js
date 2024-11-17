@@ -15,26 +15,22 @@ const serviceOptions = [
 
 const ServiceSelection = ({ tenantID }) => {
   const [services, setServices] = useState([]);
-  const [submitResponse, setSubmitResponse] = useState([]);
   const [allServices, setAllServices] = useState([]);
 
   // Fetch existing services when component mounts
   useEffect(() => {
     const fetchServices = async () => {
       if (!tenantID) {
-        toast.error('Tenant ID is missing!');
+        console.error('Tenant ID is missing!');
         return;
       }
 
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          toast.error('Token is missing!');
+          console.error('Token is missing!');
           return;
         }
-
-        // Log tenantID for debugging
-        console.log('Fetching services for tenantID:', tenantID);
 
         const response = await axios.post(
           'https://careautomate-backend.vercel.app/tenant/get-services',
@@ -50,11 +46,10 @@ const ServiceSelection = ({ tenantID }) => {
         if (response.data.success) {
           setAllServices(response.data.services);
         } else {
-          toast.error(response.data.message || 'Failed to fetch services');
+          console.log(response.data.message || 'Failed to fetch services');
         }
       } catch (error) {
         console.error('Error fetching services:', error);
-        toast.error('Error fetching services.');
       }
     };
 
@@ -70,7 +65,7 @@ const ServiceSelection = ({ tenantID }) => {
       billRate: option.billRate,
       document: '',
       uploadedFileName: '',
-      status: 'active', 
+      status: 'active',
       reviewStatus: 'approved',
     }));
     setServices(selectedServices);
@@ -81,21 +76,30 @@ const ServiceSelection = ({ tenantID }) => {
     input.type = 'file';
     input.onchange = async (e) => {
       const file = e.target.files[0];
-      const MAX_FILE_SIZE = 5 * 1024 * 1024; // Max 5MB
+      if (!file) return;
+
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
       if (file.size > MAX_FILE_SIZE) {
-        toast.error('File is too large. Max size is 5MB.');
+        toast.error('File is too large. Maximum size is 5MB');
         return;
       }
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64File = reader.result.split(',')[1]; // Extract base64 string
-        const updatedServices = [...services];
-        updatedServices[index].uploadedFileName = file.name;
-        updatedServices[index].document = base64File; // Store base64 string as document
-        setServices(updatedServices);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const updatedServices = [...services];
+          updatedServices[index] = {
+            ...updatedServices[index],
+            document: reader.result, // Store as data URL
+            uploadedFileName: file.name
+          };
+          setServices(updatedServices);
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error reading file:', error);
+        toast.error('Error processing file');
+      }
     };
     input.click();
   };
@@ -108,76 +112,64 @@ const ServiceSelection = ({ tenantID }) => {
   };
 
   const handleSubmit = async (index) => {
-    if (!tenantID) {
-      toast.error('Tenant ID is missing!');
-      return;
-    }
-
-    const service = services[index];
-    if (!service.startDate || !service.endDate || !service.units) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('tenantId', tenantID);
-    formData.append('serviceType', service.serviceType);
-    formData.append('startDate', service.startDate);
-    formData.append('endDate', service.endDate);
-    formData.append('units', service.units);
-    formData.append('rate', service.billRate);
-    formData.append('status', service.status); 
-    formData.append('reviewStatus', service.reviewStatus);
-
-    // Append document (if exists)
-    if (service.document) {
-      formData.append('document', service.document); // Base64 file content
-    }
-
     try {
+      const service = services[index];
       const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error('Token is missing');
-        return;
-      }
+      const formData = new FormData();
 
-      // Log request payload for debugging
-      console.log('Submitting service with data:', formData);
+      // Add basic service data
+      formData.append('tenantId', tenantID);
+      formData.append('serviceType', service.serviceType);
+      formData.append('startDate', service.startDate);
+      formData.append('endDate', service.endDate);
+      formData.append('units', service.units);
+      formData.append('rate', service.billRate);
+      formData.append('status', 'active');
+      formData.append('reviewStatus', 'approved');
+
+      // Handle file upload
+      if (service.document && service.uploadedFileName) {
+        // Convert base64 to File object
+        const base64Response = await fetch(service.document);
+        const blob = await base64Response.blob();
+        const file = new File([blob], service.uploadedFileName, {
+          type: blob.type || 'application/octet-stream'
+        });
+        formData.append('document', file);
+      }
 
       const response = await axios.post(
         'https://careautomate-backend.vercel.app/tenant/assign-services-documents',
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
-          },
+          }
         }
       );
 
-      const updatedResponses = [...submitResponse];
-      const successMessage = response.data.success
-        ? 'Service created successfully'
-        : 'Failed to create service';
+      if (response.data.success) {
+        toast.success('Service assigned successfully');
+        // Refresh services list
+        const fetchResponse = await axios.post(
+          'https://careautomate-backend.vercel.app/tenant/get-services',
+          { tenantId: tenantID },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        if (fetchResponse.data.success) {
+          setAllServices(fetchResponse.data.services);
+        }
+      }
 
-      updatedResponses[index] = {
-        success: response.data.success,
-        message: response.data.message || successMessage,
-      };
-
-      setSubmitResponse(updatedResponses);
-
-      // Update status and reviewStatus based on the response
-      const updatedServices = [...services];
-      updatedServices[index].status = response.data.success ? 'active' : 'pending';
-      updatedServices[index].reviewStatus = response.data.success ? 'approved' : 'approved';
-
-      setServices(updatedServices);
-
-      toast[response.data.success ? 'success' : 'error'](updatedResponses[index].message);
     } catch (error) {
-      console.error('Error during API call:', error);
-      toast.error('Error submitting service. Please try again.');
+      console.error('Error submitting service:', error);
+      toast.error(error.response?.data?.message || 'Failed to assign service');
     }
   };
 
@@ -258,15 +250,6 @@ const ServiceSelection = ({ tenantID }) => {
               >
                 Submit
               </button>
-
-              {submitResponse[index] && (
-                <div className="mt-2">
-                  <p className="text-sm">{`File: ${service.uploadedFileName}`}</p>
-                  <p className={`text-sm ${submitResponse[index].success ? 'text-green-500' : 'text-red-500'}`}>
-                    {submitResponse[index].message}
-                  </p>
-                </div>
-              )}
             </div>
           </div>
         ))}

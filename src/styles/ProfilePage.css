@@ -216,7 +216,7 @@
 .doc-list button {
   background: none;
   border: none;
-  color: #007bff;
+  color: #5970F4;
   cursor: pointer;
   text-decoration: underline;
   font-size: 14px;
@@ -588,7 +588,7 @@ col-29 .view-more {
 }
 
 .popup-content button {
-  background-color: #007bff;
+  background-color: #5970F4;
   color: white;
   border: none;
   padding: 10px 15px;

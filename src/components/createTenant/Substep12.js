@@ -15,42 +15,62 @@ const Substep12 = ({ tenantID }) => {
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState({});
-  const [fileToUpload, setFileToUpload] = useState(null); 
+  const [fileToUpload, setFileToUpload] = useState(null);
 
   const [fetchedDocuments, setFetchedDocuments] = useState([]); // State for fetched documents
-
   // Fetch the documents for the tenant
   useEffect(() => {
     const fetchDocuments = async () => {
+      if (!tenantID) {
+        console.log('Tenant ID is missing!');
+        return;
+      }
+
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `https://careautomate-backend.vercel.app/tenant/fetch-documents`,
+        const response = await axios.post(
+          'https://careautomate-backend.vercel.app/tenant/get-documents',
+          { tenantId: tenantID }, // Make sure the key is 'tenantId' to match backend
           {
             headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            params: {
-              tenantId: tenantID, // Pass tenantID in request
-            },
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json', // Explicitly set content type
+            }
           }
         );
 
         if (response.data.success) {
-          setFetchedDocuments(response.data.documents); // Assuming the API response contains 'documents'
-        } else {
-          toast.error(response.data.message);
+          setFetchedDocuments(response.data.documents);
+
+          // Organize documents by folder and year
+          const organizedFiles = {};
+          response.data.documents.forEach(doc => {
+            if (!organizedFiles[doc.folderName]) {
+              organizedFiles[doc.folderName] = {};
+            }
+            if (!organizedFiles[doc.folderName][doc.year]) {
+              organizedFiles[doc.folderName][doc.year] = [];
+            }
+            organizedFiles[doc.folderName][doc.year].push({
+              name: doc.document.originalName,
+              date: new Date(doc.createdAt).toLocaleDateString(),
+              id: doc._id
+            });
+          });
+          setUploadedFiles(organizedFiles);
         }
       } catch (error) {
         console.error("Error fetching documents:", error);
-        toast.error("Error fetching documents. Please try again.");
+        if (error.response?.status !== 404) { // Don't show error for no documents
+          toast.error("Error fetching documents");
+        }
       }
     };
 
     if (tenantID) {
       fetchDocuments();
     }
-  }, [tenantID]); // Re-fetch when tenantID changes
+  }, [tenantID]);
 
   const getYearFolders = () => {
     const currentYear = new Date().getFullYear();
@@ -88,28 +108,101 @@ const Substep12 = ({ tenantID }) => {
     setSelectedYear(null);
   };
 
-  const handleFileUpload = (e) => {
-    const files = Array.from(e.target.files).map((file) => ({
-      name: file.name,
-      date: new Date().toLocaleDateString(),
-    }));
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    if (selectedFolder && selectedYear) {
-      setUploadedFiles((prev) => ({
-        ...prev,
-        [selectedFolder]: {
-          ...(prev[selectedFolder] || {}),
-          [selectedYear]: [
-            ...(prev[selectedFolder]?.[selectedYear] || []),
-            ...files,
-          ],
-        },
-      }));
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error('File is too large. Maximum size is 5MB');
+      return;
     }
 
-    if (e.target.files.length > 0) {
-      setFileToUpload(e.target.files[0]);
-      handleFileSubmit(e.target.files[0]); // Automatically submit after file selection
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        await handleFileSubmit(file, reader.result);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error reading file:', error);
+      toast.error('Error processing file');
+    }
+  };
+
+  const handleFileSubmit = async (file, fileContent) => {
+    if (!file || !selectedFolder || !selectedYear) {
+      toast.error("Please select a file and specify a folder and year.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+
+      // Add document metadata
+      formData.append('tenantId', tenantID);
+      formData.append('folderName', selectedFolder);
+      formData.append('year', selectedYear);
+
+      // Convert base64 to File object
+      const base64Response = await fetch(fileContent);
+      const blob = await base64Response.blob();
+      const documentFile = new File([blob], file.name, {
+        type: blob.type || 'application/octet-stream'
+      });
+      formData.append('document', documentFile);
+
+      const response = await axios.post(
+        "https://careautomate-backend.vercel.app/tenant/upload-document",
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      );
+
+      if (response.data.success) {
+        toast.success('Document uploaded successfully');
+        // Update the UI
+        setUploadedFiles((prev) => ({
+          ...prev,
+          [selectedFolder]: {
+            ...(prev[selectedFolder] || {}),
+            [selectedYear]: [
+              ...(prev[selectedFolder]?.[selectedYear] || []),
+              {
+                name: file.name,
+                date: new Date().toLocaleDateString(),
+              }
+            ],
+          },
+        }));
+
+        // Refresh the documents list
+        const fetchResponse = await axios.post(
+          `https://careautomate-backend.vercel.app/tenant/get-documents`,
+          {
+            tenantId: tenantID
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          }
+        );
+
+        if (fetchResponse.data.success) {
+          setFetchedDocuments(fetchResponse.data.documents);
+        }
+      } else {
+        console.log(response.data.message || 'Failed to upload document');
+      }
+    } catch (error) {
+      console.error("Error uploading document:", error);
+      toast.error(error.response?.data?.message || "Error uploading the document. Please try again.");
     }
   };
 
@@ -137,46 +230,6 @@ const Substep12 = ({ tenantID }) => {
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
-  };
-
-  const handleFileSubmit = async (file) => {
-    if (!file || !selectedFolder || !selectedYear) {
-      toast.error("Please select a file and specify a folder and year.");
-      return;
-    }
-
-    console.log("step3", tenantID);
-    try {
-      const fileBase64 = await convertToBase64(file);
-
-      const data = {
-        tenantId: tenantID,
-        folderName: selectedFolder,
-        fileName: file.name,
-        document: fileBase64,
-      };
-
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        "https://careautomate-backend.vercel.app/tenant/upload-document",
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.data.success) {
-        toast.success(response.data.message);
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      console.error("Error uploading document:", error);
-      toast.error("Error uploading the document. Please try again.");
-    }
   };
 
   return (
