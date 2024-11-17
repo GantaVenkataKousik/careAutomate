@@ -29,7 +29,7 @@ const ScheduleAppointment = () => {
   const [allTenants, setAllTenants] = useState([]); // Store tenant data
   const [endTime, setEndTime] = useState('');
   const [serviceType, setServiceType] = useState('Housing Sustaining'); // Default value for service type
-const [methodOfContact, setMethodOfContact] = useState('Direct'); // Default value for method of contact
+  const [methodOfContact, setMethodOfContact] = useState('in-person'); // Default value for method of contact
 
 
   const hcmName = useSelector((state) => state.hcm.hcmName);
@@ -105,7 +105,7 @@ const [methodOfContact, setMethodOfContact] = useState('Direct'); // Default val
       reasonForRemote: reasonForRemote,
       placeOfService: planOfService || 'N/A',
       serviceType,
-      approved:false,
+      approved: false,
       status: 'pending',
     };
 
@@ -264,10 +264,6 @@ const [methodOfContact, setMethodOfContact] = useState('Direct'); // Default val
         </div>
 
 
-
-
-
-
         <div className="flex gap-4">
           <label className="text-sm font-medium flex items-center w-1/3">
             <BsCalendar2Date size={24} className="mr-2" />
@@ -276,10 +272,12 @@ const [methodOfContact, setMethodOfContact] = useState('Direct'); // Default val
           <input
             type="date"
             value={startDate || ''}
+            min={format(new Date(), 'yyyy-MM-dd')} // Disable previous dates
             onChange={(e) => setStartDate(e.target.value)} // Updates the date state
             className="border border-gray-300 rounded-md pointer p-2 w-2/3"
           />
         </div>
+
 
         <div className="flex gap-4">
           <label className="text-sm font-medium flex items-center w-1/3">
@@ -335,8 +333,8 @@ const [methodOfContact, setMethodOfContact] = useState('Direct'); // Default val
             onChange={(e) => setMethodOfContact(e.target.value)}
             className="border border-gray-300 rounded-md p-2 w-2/3"
           >
-            <option value="Direct">Direct</option>
-            <option value="Indirect">Indirect</option>
+            <option value="in-person">in-person</option>
+            <option value="remote">remote</option>
           </select>
         </div>
 
