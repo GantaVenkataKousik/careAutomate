@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const ScheduleAppointment = ({tenantID,tenantName}) => {
+const ScheduleAppointment = ({ tenantID, tenantName }) => {
   const [hcm, setHcm] = useState('');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -171,55 +171,61 @@ const ScheduleAppointment = ({tenantID,tenantName}) => {
   };
 
   return (
-    <div  className="p-1 max-w-2xl mx-auto bg-white rounded-lg  ">
-      <div className='flex flex-col pb-10 max-h-[24rem]'>
-      <h5 className="text-2xl font-semibold mb-4">New Appointment</h5>
-      <p className=" mb-6">Fill in the details to add a schedule</p>
+    <div className="p-1 max-w-2xl mx-auto bg-white rounded-lg  ">
+      {scheduleCreated ?
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-green-500">Appointment Created Successfully!</h2>
+          <p className="mt-4 text-gray-600">Your appointment has been successfully scheduled.</p>
+        </div> :
+        <div className='flex flex-col pb-10 max-h-[24rem]'>
 
-      <div className="space-y-6 max-h-[40rem] overflow-y-auto">
-        <div className="flex gap-4">
-          <label className="text-sm font-medium flex items-center w-1/3">
-            <GoPerson size={24} className="mr-2" />
-            Tenant
-          </label>
-          <input
-            type="text"
-            value={tenantName}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Hcm"
-            className="border border-gray-300 rounded-md p-2 w-2/3"
-          />
-        </div>
+          <h5 className="text-2xl font-semibold mb-4">New Appointment</h5>
+          <p className=" mb-6">Fill in the details to add a schedule</p>
 
-        <div className="flex gap-4">
-          <label className="text-sm font-medium flex items-center w-1/3">
-            <GoPerson size={24} className="mr-2" />
-            Assigned HCM
-          </label>
-          <select
-            value={hcm}
-            onChange={(e) => setHcm(e.target.value)}
-            className="border border-gray-300 rounded-md p-2 w-2/3"
-          >
-            <option value="" disabled>
-              Select a HCM
-            </option>
-            {allTenants.length > 0 ? (
-              allTenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>
-                  {tenant.name}
+          <div className="space-y-6 max-h-[40rem] overflow-y-auto">
+            <div className="flex gap-4">
+              <label className="text-sm font-medium flex items-center w-1/3">
+                <GoPerson size={24} className="mr-2" />
+                Tenant
+              </label>
+              <input
+                type="text"
+                value={tenantName}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Hcm"
+                className="border border-gray-300 rounded-md p-2 w-2/3"
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <label className="text-sm font-medium flex items-center w-1/3">
+                <GoPerson size={24} className="mr-2" />
+                Assigned HCM
+              </label>
+              <select
+                value={hcm}
+                onChange={(e) => setHcm(e.target.value)}
+                className="border border-gray-300 rounded-md p-2 w-2/3"
+              >
+                <option value="" disabled>
+                  Select a HCM
                 </option>
-              ))
-            ) : (
-              <option value="" disabled>
-                Loading tenants...
-              </option>
-            )}
-          </select>
-        </div>
+                {allTenants.length > 0 ? (
+                  allTenants.map((tenant) => (
+                    <option key={tenant.id} value={tenant.id}>
+                      {tenant.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    Loading tenants...
+                  </option>
+                )}
+              </select>
+            </div>
 
 
-        {/* <div className="flex gap-4">
+            {/* <div className="flex gap-4">
           <label className="text-sm font-medium flex items-center w-1/3">
             <GoPerson size={24} className="mr-2" />
             Designated Tenant
@@ -234,154 +240,155 @@ const ScheduleAppointment = ({tenantID,tenantName}) => {
         </div> */}
 
 
-        <div className="flex gap-4">
-          <label className="text-sm font-medium flex items-center w-1/3">
-            <RiServiceLine size={24} className="mr-2" />
-            Service Type
-          </label>
-          <select
-            value={serviceType}
-            onChange={(e) => setServiceType(e.target.value)}
-            className="border border-gray-300 rounded-md p-2 w-2/3"
-          >
-            <option value="Housing Sustaining">Housing Sustaining</option>
-            <option value="Housing Transition">Housing Transition</option>
-          </select>
-        </div>
+            <div className="flex gap-4">
+              <label className="text-sm font-medium flex items-center w-1/3">
+                <RiServiceLine size={24} className="mr-2" />
+                Service Type
+              </label>
+              <select
+                value={serviceType}
+                onChange={(e) => setServiceType(e.target.value)}
+                className="border border-gray-300 rounded-md p-2 w-2/3"
+              >
+                <option value="Housing Sustaining">Housing Sustaining</option>
+                <option value="Housing Transition">Housing Transition</option>
+              </select>
+            </div>
 
 
-        <div className="flex gap-4">
-          <label className="text-sm font-medium flex items-center w-1/3">
-            <SlNote size={24} className="mr-2" />
-            Activity
-          </label>
-          <input
-            type="text"
-            value={activity}
-            onChange={(e) => setActivity(e.target.value)}
-            placeholder="Enter Activity"
-            className="border border-gray-300 rounded-md p-2 w-2/3"
-          />
-        </div>
+            <div className="flex gap-4">
+              <label className="text-sm font-medium flex items-center w-1/3">
+                <SlNote size={24} className="mr-2" />
+                Activity
+              </label>
+              <input
+                type="text"
+                value={activity}
+                onChange={(e) => setActivity(e.target.value)}
+                placeholder="Enter Activity"
+                className="border border-gray-300 rounded-md p-2 w-2/3"
+              />
+            </div>
 
 
-        <div className="flex gap-4">
-          <label className="text-sm font-medium flex items-center w-1/3">
-            <BsCalendar2Date size={24} className="mr-2" />
-            Date
-          </label>
-          <input
-            type="date"
-            value={startDate || ''}
-            min={format(new Date(), 'yyyy-MM-dd')} // Disable previous dates
-            onChange={(e) => setStartDate(e.target.value)} // Updates the date state
-            className="border border-gray-300 rounded-md pointer p-2 w-2/3"
-          />
-        </div>
+            <div className="flex gap-4">
+              <label className="text-sm font-medium flex items-center w-1/3">
+                <BsCalendar2Date size={24} className="mr-2" />
+                Date
+              </label>
+              <input
+                type="date"
+                value={startDate || ''}
+                min={format(new Date(), 'yyyy-MM-dd')} // Disable previous dates
+                onChange={(e) => setStartDate(e.target.value)} // Updates the date state
+                className="border border-gray-300 rounded-md pointer p-2 w-2/3"
+              />
+            </div>
 
 
-        <div className="flex gap-4">
-          <label className="text-sm font-medium flex items-center w-1/3">
-            <MdOutlineAccessTime size={24} className="mr-2" />
-            Start Time
-          </label>
-          <input
-            type="time"
-            value={startTime || ''}
-            onChange={(e) => setStartTime(e.target.value)} // Updates the startTime state
-            className="border border-gray-300 rounded-md pointer p-2 w-2/3"
-          />
-        </div>
+            <div className="flex gap-4">
+              <label className="text-sm font-medium flex items-center w-1/3">
+                <MdOutlineAccessTime size={24} className="mr-2" />
+                Start Time
+              </label>
+              <input
+                type="time"
+                value={startTime || ''}
+                onChange={(e) => setStartTime(e.target.value)} // Updates the startTime state
+                className="border border-gray-300 rounded-md pointer p-2 w-2/3"
+              />
+            </div>
 
-        <div className="flex gap-4">
-          <label className="text-sm font-medium flex items-center w-1/3">
-            <MdOutlineAccessTime size={24} className="mr-2" />
-            End Time
-          </label>
-          <input
-            type="time"
-            value={endTime || ''}
-            onChange={(e) => setEndTime(e.target.value)} // Updates the endTime state
-            className="border border-gray-300 rounded-md pointer p-2 w-2/3"
-          />
-        </div>
+            <div className="flex gap-4">
+              <label className="text-sm font-medium flex items-center w-1/3">
+                <MdOutlineAccessTime size={24} className="mr-2" />
+                End Time
+              </label>
+              <input
+                type="time"
+                value={endTime || ''}
+                onChange={(e) => setEndTime(e.target.value)} // Updates the endTime state
+                className="border border-gray-300 rounded-md pointer p-2 w-2/3"
+              />
+            </div>
 
-        {/* Place of Service */}
-        <div className="flex gap-4">
-          <label className="text-sm font-medium flex items-center w-1/3">
-            <GrLocation size={24} className="mr-2" />
-            Place of Service
-          </label>
-          <input
-            type="text"
-            value={planOfService}
-            onChange={(e) => setPlanOfService(e.target.value)}
-            placeholder="Place of Service"
-            className="border border-gray-300 rounded-md p-2 w-2/3"
-          />
-        </div>
-
-
-
-        {/* Method of Contact */}
-        <div className="flex gap-4">
-          <label className="text-sm font-medium flex items-center w-1/3">
-            <MdOutlineAccessTime size={24} className="mr-2" />
-            Contact Method
-          </label>
-          <select
-            value={methodOfContact}
-            onChange={(e) => setMethodOfContact(e.target.value)}
-            className="border border-gray-300 rounded-md p-2 w-2/3"
-          >
-            <option value="in-person">in-person</option>
-            <option value="remote">remote</option>
-          </select>
-        </div>
-
-
-        <div className="flex gap-4">
-          <label className="text-sm font-medium flex items-center w-1/3">
-            <RiServiceLine size={24} className="mr-2" />
-            Reason for Remote
-          </label>
-          <input
-            type="text"
-            value={reasonForRemote}
-            onChange={(e) => setReasonForRemote(e.target.value)}
-            placeholder="Reason for Remote"
-            className="border border-gray-300 rounded-md p-2 w-2/3"
-          />
-        </div>
-
-
-        <div className="flex gap-4">
-          <button
-            onClick={handleCreateAppointment}
-            className="border py-3 px-6 rounded-md w-full mt-6  transition duration-300"
-          >
-            Create Appointment
-          </button>
-          <button
-            onClick={handleCancelAppointment}
-            className=" border py-3 px-6 rounded-md w-full mt-6  transition duration-300"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
+            {/* Place of Service */}
+            <div className="flex gap-4">
+              <label className="text-sm font-medium flex items-center w-1/3">
+                <GrLocation size={24} className="mr-2" />
+                Place of Service
+              </label>
+              <input
+                type="text"
+                value={planOfService}
+                onChange={(e) => setPlanOfService(e.target.value)}
+                placeholder="Place of Service"
+                className="border border-gray-300 rounded-md p-2 w-2/3"
+              />
+            </div>
 
 
 
+            {/* Method of Contact */}
+            <div className="flex gap-4">
+              <label className="text-sm font-medium flex items-center w-1/3">
+                <MdOutlineAccessTime size={24} className="mr-2" />
+                Contact Method
+              </label>
+              <select
+                value={methodOfContact}
+                onChange={(e) => setMethodOfContact(e.target.value)}
+                className="border border-gray-300 rounded-md p-2 w-2/3"
+              >
+                <option value="in-person">in-person</option>
+                <option value="remote">remote</option>
+              </select>
+            </div>
 
 
-      {/* <button
+            <div className="flex gap-4">
+              <label className="text-sm font-medium flex items-center w-1/3">
+                <RiServiceLine size={24} className="mr-2" />
+                Reason for Remote
+              </label>
+              <input
+                type="text"
+                value={reasonForRemote}
+                onChange={(e) => setReasonForRemote(e.target.value)}
+                placeholder="Reason for Remote"
+                className="border border-gray-300 rounded-md p-2 w-2/3"
+              />
+            </div>
+
+
+            <div className="flex gap-4">
+              <button
+                onClick={handleCreateAppointment}
+                className="border py-3 px-6 rounded-md w-full mt-6  transition duration-300"
+              >
+                Create Appointment
+              </button>
+              <button
+                onClick={handleCancelAppointment}
+                className=" border py-3 px-6 rounded-md w-full mt-6  transition duration-300"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+
+
+
+
+
+          {/* <button
         onClick={handleCreateAnother}
         className=" py-2 px-4 rounded-md mt-4  transition duration-300"
       >
         Create Another Schedule
       </button> */}
-    </div>
+        </div>
+      }
     </div>
   );
 };

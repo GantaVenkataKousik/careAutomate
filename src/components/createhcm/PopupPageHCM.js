@@ -94,6 +94,7 @@ const PopupPage = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
+      // navigate('/HCM');
       setComplete(true);
     }
     
@@ -151,7 +152,7 @@ const PopupPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center justify-center ">
       {complete ? (
         <div className="p-8 bg-white rounded-lg shadow-lg text-center">
           <h2 className="text-2xl mb-4 text-green-500">Process Completed!</h2>
