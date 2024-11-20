@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import '../styles/ProfilePage.css';
 import tenant from "../images/tenant.jpg";
