@@ -239,7 +239,7 @@ const PopupPage = () => {
               {renderSubStep()}
             </div>
 
-            <div className=" bottom-[20px] left-4 right-4">
+            <div className="absolute bottom-4 left-4 right-4">
               <div className="flex justify-between mt-6">
                 <div
                   className="flex items-center cursor-pointer text-gray-400 hover:text-blue-500 hover:fill-blue-500"

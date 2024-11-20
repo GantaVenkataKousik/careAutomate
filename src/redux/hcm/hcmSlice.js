@@ -20,14 +20,14 @@ const hcmSlice = createSlice({
         createdHcmName:(state,action) => {
             return { ...state, hcmName: action.payload }
         },
-        // createdTenant:(state,action) => {
-        //     return { ...state, tenantId: action.payload }
-        // },
-        // createdTenantName:(state,action) => {
-        //     return { ...state, tenantName: action.payload }
-        // }
+        createdTenant:(state,action) => {
+            return { ...state, tenantId: action.payload }
+        },
+        createdTenantName:(state,action) => {
+            return { ...state, tenantName: action.payload }
+        }
     }
 })
 
-export const { updateAssignedTenants,createdHcm,createdHcmName } = hcmSlice.actions;
+export const { updateAssignedTenants,createdHcm,createdHcmName,createdTenant,createdTenantName } = hcmSlice.actions;
 export default hcmSlice.reducer;

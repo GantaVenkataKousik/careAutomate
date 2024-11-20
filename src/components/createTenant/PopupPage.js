@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { resetTenantInfo } from '../../redux/tenant/tenantSlice';
+import { createdTenant, createdTenantName } from '../../redux/hcm/hcmSlice';
 
 const steps = [
   {
@@ -89,10 +90,12 @@ const PopupPage = () => {
         const first =  response.data?.tenantData?.firstName 
         const last = response.data?.tenantData?.lastName
         const name = `${first + last}`
+        dispatch(createdTenantName(name));
         setTenantName(name)
         console.log(`Tenant ID saved: ${id}`);
         if (id) {
           setTenantID(id); // Store tenant ID in state
+          dispatch(createdTenant(id));
           toast.success('Tenant data saved successfully');
         } else {
           console.error('Tenant ID not found in the response');

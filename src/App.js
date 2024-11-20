@@ -4,8 +4,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import Dashboard from './components/Dashboard';
 import Tenants from './components/Tenants';
 import HCM from './components/HCM';
-import Appointments from './components/Appointments';
-import Visits from './components/Visits';
+import Appointments from './components/Appointment/Appointments.js';
+import Visits from './components/visitpage/Visits.js';
 import Communication from './components/Communication';
 import Reports from './components/Reports';
 import Settings from './components/Settings';
