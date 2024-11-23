@@ -1,396 +1,235 @@
 import React, { useState, useEffect } from "react";
 import AppointmentModal from "./AppointModal";
-
-const appointmentsData = [
-  {
-    id: 1,
-    date: "Wed 28",
-    time: "11:15 – 12:15",
-    location: "Office",
-    with: "Robert John",
-    status: "Waiting on Decision",
-  },
-  {
-    id: 2,
-    date: "Wed 28",
-    time: "11:15 – 12:15",
-    location: "Office",
-    with: "Robert John",
-    status: "Waiting on Decision",
-  },
-  {
-    id: 3,
-    date: "Wed 28",
-    time: "11:15 – 12:15",
-    location: "Office",
-    with: "Robert John",
-    status: "Waiting on Decision",
-  },
-  {
-    id: 4,
-    date: "Wed 28",
-    time: "11:15 – 12:15",
-    location: "Office",
-    with: "Robert John",
-    status: "Waiting on Decision",
-  },
-
-  {
-    id: 1,
-    date: "Wed 28",
-    time: "11:15 – 12:15",
-    location: "Office",
-    with: "Robert John",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    date: "Wed 28",
-    time: "11:15 – 12:15",
-    location: "Office",
-    with: "Robert John",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    date: "Wed 28",
-    time: "11:15 – 12:15",
-    location: "Office",
-    with: "Robert John",
-    status: "Pending",
-  },
-  {
-    id: 4,
-    date: "Wed 28",
-    time: "11:15 – 12:15",
-    location: "Office",
-    with: "Robert John",
-    status: "Pending",
-  },
-
-  {
-    id: 1,
-    date: "Wed 28",
-    time: "11:15 – 12:15",
-    location: "Office",
-    with: "Robert John",
-    status: "Cancelled",
-  },
-  {
-    id: 2,
-    date: "Wed 28",
-    time: "11:15 – 12:15",
-    location: "Office",
-    with: "Robert John",
-    status: "Cancelled",
-  },
-  {
-    id: 3,
-    date: "Wed 28",
-    time: "11:15 – 12:15",
-    location: "Office",
-    with: "Robert John",
-    status: "Cancelled",
-  },
-  {
-    id: 4,
-    date: "Wed 28",
-    time: "11:15 – 12:15",
-    location: "Office",
-    with: "Robert John",
-    status: "Cancelled",
-  },
-];
-const handleConfirmDelete = () => {
-
-}
+import axios from "axios";
 
 const Appointment = () => {
+  const [appointments, setAppointments] = useState([]);
+  const [activeTab, setActiveTab] = useState("Completed");
   const [showPopup1, setShowPopup1] = useState(null);
-  const [showPopup2, setShowPopup2] = useState(null);
   const [showDeletePopup1, setShowDeletePopup1] = useState(false);
-  const [showDeletePopup2, setShowDeletePopup2] = useState(false);
-  const [visitData, setVisitData] = useState({});
-  const [activeTab, setActiveTab] = useState("Waiting on Decision");
-  const [openNewAppointPopup, setOpenNewAppointPopup] = useState(false);
-  const token = localStorage.getItem('token');
-  const payload = JSON.parse(atob(token.split('.')[1]));
-  const hcmId = payload._id;
-  // Fetch visit data on component mount
+  const [showModal, setShowModal] = useState(false);
+
+  const token = localStorage.getItem("token");
+
+  // Fetch appointments data on component mount
   useEffect(() => {
-    const fetchVisits = async () => {
+    const fetchAppointments = async () => {
       try {
-        const response = await fetch('https://careautomate-backend.vercel.app/visits/fetchAll/',
+        const response = await axios.post(
+          "https://careautomate-backend.vercel.app/tenant/get-appointments",
+          {},
           {
-            method: 'POST',
             headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ hcmId }),
           }
         );
-        const data = await response.json();
-        if (data.success) {
-          setVisitData(data.data);
+
+        if (response.data.appointments) {
+          // Map API data to match the desired structure
+          const mappedAppointments = response.data.appointments.map((apt) => ({
+            id: apt._id,
+            date: new Date(apt.date).toLocaleDateString("en-US", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+            }),
+            time: `${apt.startTime} – ${apt.endTime}`,
+            location: apt.placeOfService || "N/A",
+            from: apt.hcmDetails?.name || "Unknown",
+            service: apt.serviceType || "Unknown",
+            with: apt.tenantDetails?.name || "Unknown",
+            status: apt.status.charAt(0).toUpperCase() + apt.status.slice(1),
+          }));
+          setAppointments(mappedAppointments);
         } else {
-          console.error("Failed to fetch visit data");
+          console.error("Failed to fetch appointment data");
         }
       } catch (error) {
-        console.error("Error fetching visit data:", error);
+        console.error("Error fetching appointment data:", error);
       }
-      fetchVisits();
-    }
-  });
+    };
+
+    fetchAppointments();
+  }, [
+    appointments
+  ]);
+
   const togglePopup1 = (id) => {
     setShowPopup1((prevId) => (prevId === id ? null : id));
-  };
-  const togglePopup2 = (id) => {
-    setShowPopup2((prevId) => (prevId === id ? null : id));
   };
 
   const handleDeleteClick1 = (id) => {
     setShowDeletePopup1((prevId) => (prevId === id ? null : id));
   };
 
-  const handleDeleteClick2 = (id) => {
-    setShowDeletePopup2((prevId) => (prevId === id ? null : id));
-  };
-
-
   return (
-    <div className="p-6 w-fit mr-24">
-      {/* Tabs */}
-      <div>
-        {/* Add spacing */}
-      </div>
-      <div className="flex flex-row justify-between">
-        <h1 className="text-2xl font-bold mb-2">Visits</h1>
-        
-        <div>
-        <button  className="px-4 py-2 rounded-full text-white bg-blue-500 mr-14"
-          onClick={() => setOpenNewAppointPopup(true)}
-        >
-           New Appointment
-        </button>
-          <button className="px-4 py-2 rounded-full text-white bg-blue-500 mr-14">
-            <i className="fa-solid fa-sliders"></i>&nbsp;Filters
-          </button>
-        </div>
-      </div>
-      <div className="flex space-x-4 mb-6 rounded-2xl bg-gray-100 w-fit">
-        {["Waiting on Decision", "Pending", "Cancelled"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-full font-medium ${activeTab === tab
-              ? "bg-blue-500 text-white"
-              : "bg-gray-100 text-gray-500"
-              }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      {/* Today Section */}
-      <h2 className="text-lg font-semibold mb-4">Today</h2>
-      <div className="space-y-4">
-        {appointmentsData.map(
-          (appointment) =>
-            activeTab === appointment.status && (
-              <div
-                key={appointment.id}
-                className="relative flex items-center justify-center space-x-36 bg-white p-4 shadow-lg rounded-3xl"
+    <div style={{ width: '1000px' }}>
+      <div style={{ width: '1000px' }}>
+        {/* Fixed Header and Tabs */}
+        <div className="p-4 shadow-sm w-1000px">
+          <div className="flex flex-row justify-between items-center">
+            <h1 className="text-2xl font-bold">Appointments</h1>
+            <div>
+              <button
+                className="px-4 py-2 rounded-full text-white bg-blue-500 mr-4"
+                onClick={() => { setShowModal(true) }}
               >
-                <div className="flex items-center space-x-4 ml-12">
-                  <div className="text-center">
-                    <div className="text-gray-500">Wed</div>
-                    <div className="text-2xl font-semibold text-blue-500">
-                      {appointment.date.split(" ")[1]}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-4xl text-blue-500">|</p>
-                  </div>
-                  <div>
-                    <div className="flex items-center space-x-2 text-gray-600">
-                      <i className="fa-regular fa-clock"></i>
-                      <div className="text-blue-500">
-                        <span>{appointment.time}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2 text-gray-600">
-                      <div className="w-4 h-4"><img src="Place.png" /></div>
-                      <div className="text-blue-500">
-                        <span>{appointment.location}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div>with</div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-1 text-gray-600">
-                    <div className="w-4 h-4"><img src="Person.png" /></div>
-                    <a href="#" className="text-blue-500 underline">
-                      {appointment.with}
-                    </a>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-
-
-                  <div className="flex items-center space-x-10 mr-12">
-                    <button
-                      className="text-gray-600 w-5 h-5"
-                      onClick={() => togglePopup1(appointment.id)}
-                    >
-                      <img src="Edit.png" />
-                    </button>
-                    <button
-                      className="text-gray-600 w-5 h-5"
-                      onClick={() => handleDeleteClick1(appointment.id)} // Update this line
-                    >
-                      <img src="Delete.png" />
-                    </button>
-                    {showDeletePopup1 === appointment.id && (
-                      <div className="fixed inset-0 flex items-center justify-center shadow-3xl z-20">
-                        <div className="bg-white p-8 w-80 rounded shadow-lg">
-                          <p>Are you sure you want to delete this appointment?</p>
-                          <div className="mt-4 flex justify-center space-x-4">
-                            <button
-                              className="px-4 py-2 bg-red-500 text-white rounded"
-                              onClick={() => {
-                                // Handle deletion logic here
-                                setShowDeletePopup1(false);
-                              }}
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              className="px-4 py-2 bg-green-500 rounded"
-                              onClick={() => setShowDeletePopup1(false)}
-                            >
-                              Confirm
-                            </button>
-                          </div>
-                          <br></br>
-                          <div><p><let className="text-blue-800">Note:</let>&nbsp;Respective HCM will be notified about this</p></div>
-                        </div>
-                      </div>
-                    )}
-
-
-                    {/* Popup */}
-                    {showPopup1 === appointment.id && (
-                      <div className="absolute top-full right-0 mt-2 w-48 p-4 bg-white border rounded shadow-lg z-10">
-                        <button className="w-full py-2 px-4 mb-2 text-left text-sm text-gray-700 hover:bg-gray-100 rounded" onClick={() => setShowPopup1(false)}>
-                          <i className="fa-regular fa-clock"></i>&nbsp;Reschedule Appointment
-                        </button>
-                        <button className="w-full py-2 px-4 text-left text-sm text-gray-700 hover:bg-gray-100 rounded" onClick={() => setShowPopup1(false)}>
-                          <i class="fa-solid fa-paper-plane"></i>&nbsp;Rerequest Appointment
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )
-        )}
-      </div>
-
-      {/* Next Month Section */}
-      <h2 className="text-lg font-semibold mt-8 mb-4">November</h2>
-      <div className="space-y-4">
-        {Object.keys(visitData).map((date) => (
-          <div key={date}>
-            <h2 className="text-lg font-semibold mb-4">{new Date(date).toLocaleDateString()}</h2>
-            <div className="space-y-4">
-              {visitData[date].map((visit) => (
-                <div
-                  key={visit._id}
-                  className="relative flex items-center justify-center space-x-36 bg-white p-4 shadow-lg rounded-3xl"
-                >
-                  <div className="flex items-center space-x-4 ml-12">
-                    <div className="text-center">
-                      <div className="text-gray-500">{new Date(visit.visitDate).toLocaleString('en-US', { weekday: 'short' })}</div>
-                      <div className="text-2xl font-semibold text-blue-500">
-                        {new Date(visit.visitDate).getDate()}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-4xl text-blue-500">|</p>
-                    </div>
-                    <div>
-                      <div className="flex items-center space-x-2 text-gray-600">
-                        <i className="fa-regular fa-clock"></i>
-                        <div className="text-blue-500">
-                          <span>09:00 AM</span> {/* Replace with dynamic time if available */}
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-2 text-gray-600">
-                        <div className="w-4 h-4"><img src="Place.png" alt="Location" /></div>
-                        <div className="text-blue-500">
-                          <span>Remote</span> {/* Replace with dynamic location if available */}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <div>with</div>
-                    <div className="flex items-center space-x-1 text-gray-600">
-                      <div className="w-4 h-4"><img src="Person.png" alt="HCM" /></div>
-                      <a href="#" className="text-blue-500 underline">
-                        {visit.hcm}
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-10 mr-12">
-                    <button
-                      className="text-gray-600 w-5 h-5"
-                      onClick={() => togglePopup1(visit._id)}
-                    >
-                      <img src="Edit.png" alt="Edit" />
-                    </button>
-                    <button
-                      className="text-gray-600 w-5 h-5"
-                      onClick={() => handleDeleteClick1(visit._id)}
-                    >
-                      <img src="Delete.png" alt="Delete" />
-                    </button>
-                    {showDeletePopup1 === visit._id && (
-                      <div className="fixed inset-0 flex items-center justify-center shadow-3xl z-20">
-                        <div className="bg-white p-8 w-80 rounded shadow-lg">
-                          <p>Are you sure you want to delete this visit?</p>
-                          <div className="mt-4 flex justify-center space-x-4">
-                            <button
-                              className="px-4 py-2 bg-red-500 text-white rounded"
-                              onClick={() => setShowDeletePopup1(false)}
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              className="px-4 py-2 bg-green-500 text-white rounded"
-                              onClick={() => handleConfirmDelete(visit._id)}
-                            >
-                              Confirm
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
+                New Appointment
+              </button>
+              <button className="px-4 py-2 rounded-full text-white bg-blue-500">
+                <i className="fa-solid fa-sliders"></i>&nbsp;Filters
+              </button>
             </div>
           </div>
-        ))}
+          <div className="flex space-x-4 mt-4 rounded-2xl bg-gray-100 w-fit">
+            {["Completed", "Pending", "Cancelled"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 rounded-full font-medium ${activeTab === tab
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-100 text-gray-500"
+                  }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
-      <AppointmentModal isOpen={openNewAppointPopup} onClose={()=>setOpenNewAppointPopup(false)}/>
+
+
+      {/* Dynamic Content */}
+      {/* <h2 className="text-lg font-semibold mt-6">Today</h2> */}
+      <div className="space-y-4">
+        {appointments
+          .filter((appointment) => appointment.status === activeTab)
+          .map((appointment) => (
+            <AppointmentCard
+              key={appointment.id}
+              appointment={appointment}
+              togglePopup1={togglePopup1}
+              handleDeleteClick1={handleDeleteClick1}
+              showPopup1={showPopup1}
+              showDeletePopup1={showDeletePopup1}
+              setShowDeletePopup1={setShowDeletePopup1}
+            />
+          ))}
+
+
+      </div>
+      <AppointmentModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)} // Close the modal
+      />
     </div>
   );
-};
+
+}
+const AppointmentCard = ({
+  appointment,
+  togglePopup1,
+  handleDeleteClick1,
+  showPopup1,
+  showDeletePopup1,
+  setShowDeletePopup1,
+}) => {
+  return (
+    <div
+      key={appointment.id}
+      className="relative flex  items-center justify-between bg-white px-4 mt-4 py-2  shadow-lg rounded-3xl max-w-4xl mx-auto space-y-4 lg:space-y-0"
+    >
+      {/* Date and Time */}
+      <div className="flex items-center space-x-4">
+        <div className="text-center">
+          <div className="text-gray-500">
+            {new Date(appointment.date).toLocaleDateString("en-US", { weekday: "short" })}
+          </div>
+          <div className="text-2xl font-semibold text-blue-500">
+            {new Date(appointment.date).getDate()}
+          </div>
+        </div>
+        <div>
+          <p className="text-2xl text-blue-500">|</p>
+        </div>
+        <div className="w-[200px]">
+          <div>
+            <div className="text-gray-600">{appointment.service}</div>
+          </div>
+          <div className="flex gap-2">
+            <div className="flex items-center space-x-2 text-gray-600">
+              <i className="fa-regular fa-clock"></i>
+              <span className="text-blue-500">{appointment.time}</span>
+            </div>
+            <div className="flex items-center space-x-2 text-gray-600">
+              <img src="Place.png" alt="Place" className="w-4 h6" />
+              <span className="text-blue-500">{appointment.location}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Person Information */}
+      <div className="justify-between flex w-[50%]">
+        <div className="flex items-center space-x-2 text-gray-600 w-1/2">
+          <img src="Person.png" alt="Person" className="w-4 h-4" />
+          <div className="text-blue-500 underline">{appointment.from}</div>
+        </div>
+        <div className=" content-center text-gray-600 mr-4">with</div>
+        <div className="flex items-center space-x-2 text-gray-600 w-1/2">
+          <img src="Person.png" alt="Person" className="w-4 h-4" />
+          <div className="text-blue-500 underline">{appointment.with}</div>
+        </div>
+
+      </div>
+
+
+      {/* Action Buttons */}
+      <div className="flex items-center space-x-6">
+        <button
+          className="text-gray-600 w-5 h-5"
+          onClick={() => togglePopup1(appointment.id)}
+        >
+          <img src="Edit.png" alt="Edit" />
+        </button>
+        <button
+          className="text-gray-600 w-5 h-5"
+          onClick={() => handleDeleteClick1(appointment.id)}
+        >
+          <img src="Delete.png" alt="Delete" />
+        </button>
+        {showDeletePopup1 === appointment.id && (
+          <div className="fixed inset-0 flex items-center justify-center z-20">
+            <div className="bg-white p-8 w-80 rounded shadow-lg">
+              <p>Are you sure you want to delete this appointment?</p>
+              <div className="mt-4 flex justify-center space-x-4">
+                <button
+                  className="px-4 py-2 bg-red-500 text-white rounded"
+                  onClick={() => setShowDeletePopup1(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 bg-green-500 text-white rounded"
+                  onClick={() => setShowDeletePopup1(false)}
+                >
+                  Confirm
+                </button>
+              </div>
+              <br />
+              <div>
+                <p>
+                  <span className="text-blue-800">Note:</span>&nbsp;Respective HCM will be notified about this.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+
+  );
+}
 
 export default Appointment;
