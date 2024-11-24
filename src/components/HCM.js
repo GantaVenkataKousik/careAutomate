@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { he } from 'date-fns/locale';
 
-export default function HCM ()  {
+export default function HCM() {
   const navigate = useNavigate();
   const [tenants, setTenants] = useState([]);
 
@@ -153,7 +153,7 @@ const styles = {
     gap: '20px',
   },
   tenantBox: {
-    width:'23rem',
+    width: '23rem',
     backgroundColor: '#fff',
     borderRadius: '8px',
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
