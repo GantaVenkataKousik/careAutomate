@@ -94,6 +94,7 @@ const styles = {
 
     width: '1180px',
     height: '80vh',
+    marginLeft: '250px',
 
   },
   header: {

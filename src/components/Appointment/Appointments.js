@@ -64,7 +64,7 @@ const Appointment = () => {
   };
 
   return (
-    <div style={{ width: '1000px' }}>
+    <div style={{ width: '1000px',marginLeft:'250px' }}>
       <div style={{ width: '1000px' }}>
         {/* Fixed Header and Tabs */}
         <div className="p-4 shadow-sm w-1000px">
@@ -138,7 +138,7 @@ const AppointmentCard = ({
   return (
     <div
       key={appointment.id}
-      className="relative flex  items-center justify-between bg-white px-4 mt-4 py-2  shadow-lg rounded-3xl max-w-4xl mx-auto space-y-4 lg:space-y-0"
+      className="relative  flex  items-center justify-between bg-white px-4 mt-4 py-2  shadow-lg rounded-3xl max-w-4xl mx-auto space-y-4 lg:space-y-0"
     >
       {/* Date and Time */}
       <div className="flex items-center space-x-4">

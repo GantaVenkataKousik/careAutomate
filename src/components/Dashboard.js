@@ -61,7 +61,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className=" flex flex-col h-[80vh] gap-10  ">
+    <div className=" flex flex-col h-[100vh] ml-[250px] overflow-y-auto gap-10  ">
       <div className="flex gap-6">
         {/* 70% Column */}
         <div className=" bg-white p-6 rounded-[20px] shadow-lg w-[56rem]">

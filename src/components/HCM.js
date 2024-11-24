@@ -97,6 +97,7 @@ const styles = {
     // backgroundColor: '#f5f7fa',
     width: '1180px',
     height: '80vh',
+    marginLeft: '250px',
   },
   header: {
     fontSize: '2em',
