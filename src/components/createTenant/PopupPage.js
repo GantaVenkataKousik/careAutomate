@@ -36,8 +36,8 @@ const PopupPage = () => {
   const [showPopup, setShowPopup] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
   const [complete, setComplete] = useState(false);
-  const [tenantID, setTenantID] = useState(null); 
-  const [tenantName, setTenantName] = useState(null); 
+  const [tenantID, setTenantID] = useState(null);
+  const [tenantName, setTenantName] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const tenantData = useSelector((state) => state.tenant);
@@ -87,7 +87,7 @@ const PopupPage = () => {
 
       if (response.status >= 200 && response.status < 300) {
         const id = response.data?.tenantID;
-        const first =  response.data?.tenantData?.firstName 
+        const first = response.data?.tenantData?.firstName
         const last = response.data?.tenantData?.lastName
         const name = `${first + last}`
         dispatch(createdTenantName(name));
@@ -175,10 +175,10 @@ const PopupPage = () => {
                       </div>
                       <span
                         className={`${i < currentStep
+                          ? "text-green-500"
+                          : isActive && complete
                             ? "text-green-500"
-                            : isActive && complete
-                              ? "text-green-500"
-                              : "text-black"
+                            : "text-black"
                           } text-sm`}
                       >
                         {step.name}
@@ -208,28 +208,28 @@ const PopupPage = () => {
             </div>
 
             <div className="absolute bottom-4 left-4 right-4">
-              <div className="flex  justify-between mt-6">
-                <div
-                  className="flex items-center cursor-pointer text-gray-400 hover:text-blue-500 hover:fill-blue-500"
+              <div className="flex justify-between mt-6">
+                <button
+                  className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
                   onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" className="fill-gray-400 hover:fill-blue-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" className="fill-current">
                     <polygon points="10,0 0,10 10,20" />
                   </svg>
                   <span className="ml-1">Back</span>
-                </div>
+                </button>
 
-                <div
-                  className="flex items-center cursor-pointer text-gray-400 hover:text-blue-500 hover:fill-blue-500"
+                <button
+                  className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
                   onClick={handleNext}
                 >
                   <span className="flex items-center">
                     <span>{currentStep === steps.length - 1 ? 'Finish' : 'Next Step'}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" className="ml-2 fill-gray-400 hover:fill-blue-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" className="ml-2 fill-current">
                       <polygon points="0,0 10,10 0,20" />
                     </svg>
                   </span>
-                </div>
+                </button>
               </div>
             </div>
           </Box>

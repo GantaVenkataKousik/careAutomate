@@ -12,6 +12,10 @@ const Tenants = () => {
     navigate('/tenants/createTenant');
   };
 
+  const handleTenantClick = (tenantId) => {
+    navigate(`/tenantProfile`);
+  };
+
   useEffect(() => {
     const fetchTenants = async () => {
       const token = localStorage.getItem('token');
@@ -49,23 +53,24 @@ const Tenants = () => {
         <div style={styles.searchBar}>
           <FaSearch style={styles.searchIcon} />
           <input type="text" placeholder="Search..." style={styles.searchInput} />
+          <button style={styles.searchButton}>Search</button>
         </div>
 
         <button style={styles.addTenantBtn} onClick={handleAddTenantClick}>
-          <FaPlus style={styles.plusIcon} /> Add New Tenant
+          <FaPlus style={styles.plusIcon} /> New Tenant
         </button>
       </div>
 
       <div style={styles.tenantGrid}>
         {tenants.length > 0 ? (
           tenants.map((tenant, index) => (
-            <div key={tenant._id || index} style={styles.tenantBox} >
+            <div key={tenant._id || index} style={styles.tenantBox}>
               <div style={styles.tenantInfo}>
-                <div style={styles.tenantImage}>
+                <div style={styles.tenantImage} onClick={() => handleTenantClick(tenant._id)}>
                   <img src={tenantImage} alt="Tenant" style={styles.image} />
                 </div>
                 <div>
-                  <h3 style={styles.tenantName}>
+                  <h3 style={styles.tenantName} onClick={() => handleTenantClick(tenant._id)}>
                     {tenant.tenantData?.firstName} {tenant.tenantData?.lastName}
                   </h3>
                   <p style={styles.tenantDetail}>{tenant.tenantData?.phoneNumber || tenant.phoneNo}</p>
@@ -168,6 +173,7 @@ const styles = {
     fontSize: '1.25em',
     fontWeight: 'bold',
     color: '#333',
+    cursor: 'pointer',
   },
   tenantDetail: {
     fontSize: '0.9em',
@@ -179,6 +185,7 @@ const styles = {
     borderRadius: '50%',
     overflow: 'hidden',
     marginTop: '15px',
+    cursor: 'pointer',
   },
   image: {
     width: '100%',

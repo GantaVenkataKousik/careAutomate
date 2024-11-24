@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../styles/ProfilePage.css';
 import tenant from "../images/tenant.jpg";
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
-import { FaBars, FaCheck, FaDownload, FaFileAlt, FaMicrophone, FaTimes, FaUser, FaUserTie } from 'react-icons/fa';
+import { FaBars, FaCheck, FaDownload, FaFileAlt, FaMicrophone, FaTimes, FaUser, FaUserTie, FaCalendarAlt, FaEnvelope, FaUserEdit, FaWalking } from 'react-icons/fa';
 import { Document, Page } from 'react-pdf';
 import samplePDF from '../assets/sample_document.pdf';
 import { pdfjs } from 'react-pdf';
@@ -90,6 +90,13 @@ const ProfilePage = () => {
                 <h1 className="text-2xl font-bold text-gray-800">{user?.name}</h1>
               </div>
 
+              <div className="flex space-x-4 mt-4">
+                <FaCalendarAlt className="text-2xl text-blue-500 cursor-pointer" title="Appointments" />
+                <FaEnvelope className="text-2xl text-blue-500 cursor-pointer" title="Messages" />
+                <FaWalking className="text-2xl text-blue-500 cursor-pointer" title="Visits" />
+                <FaUserEdit className="text-2xl text-blue-500 cursor-pointer" title="Edit Profile" />
+              </div>
+
               {/* Contact Info */}
               <div className="w-full space-y-4 text-gray-700">
                 <div className="flex justify-between flex-col">
@@ -126,7 +133,6 @@ const ProfilePage = () => {
                   </ul>
                 </li>
               </ul>
-
               {openModal && (
                 <div className="modal fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
                   <div className="modal-content bg-white p-6 rounded-lg shadow-lg">

@@ -2,17 +2,39 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateTenantInfo } from '../../redux/tenant/tenantSlice';
 import Switch from '@mui/material/Switch';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import InputMask from 'react-input-mask';
 
 const SubStep1 = () => {
   const dispatch = useDispatch();
   const tenantData = useSelector((state) => state.tenant);
   const [hasResponsibleParty, setHasResponsibleParty] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordMatch, setPasswordMatch] = useState(true);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const inputValue = type === 'checkbox' ? checked : value;
     dispatch(updateTenantInfo({ [name]: inputValue }));
+  };
+
+  const handlePasswordChange = (e) => {
+    const { value } = e.target;
+    setPassword(value);
+    setPasswordMatch(value === confirmPassword);
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    const { value } = e.target;
+    setConfirmPassword(value);
+    setPasswordMatch(password === value);
+  };
+
+  const handleDateChange = (date) => {
+    dispatch(updateTenantInfo({ dob: date }));
   };
 
   return (
@@ -21,15 +43,15 @@ const SubStep1 = () => {
         <InputField label="First Name *" name="firstName" value={tenantData.firstName} onChange={handleChange} onFocus={() => setFocusedField("firstName")} onBlur={() => setFocusedField(null)} focused={focusedField === "firstName"} required />
         <InputField label="Middle Name" name="middleName" value={tenantData.middleName} onChange={handleChange} onFocus={() => setFocusedField("middleName")} onBlur={() => setFocusedField(null)} focused={focusedField === "middleName"} />
         <InputField label="Last Name *" name="lastName" value={tenantData.lastName} onChange={handleChange} onFocus={() => setFocusedField("lastName")} onBlur={() => setFocusedField(null)} focused={focusedField === "lastName"} required />
-        <InputField label="Date of Birth" name="dob" value={tenantData.dob} onChange={handleChange} type="date" onFocus={() => setFocusedField("dob")} onBlur={() => setFocusedField(null)} focused={focusedField === "dob"} required />
-        <InputField label="Gender" name="gender" value={tenantData.gender} onChange={handleChange} type="select" options={["Male", "Female"]} onFocus={() => setFocusedField("gender")} onBlur={() => setFocusedField(null)} focused={focusedField === "gender"} required />
-        <InputField label="MA PMI #" name="MAPMI#" value={tenantData.mapmi} onChange={handleChange}  onFocus={() => setFocusedField("mapmi")} onBlur={() => setFocusedField(null)} focused={focusedField === "mapmi"} required />
+        <InputField label="Date of Birth" name="dob" value={tenantData.dob} onChange={handleDateChange} type="date" onFocus={() => setFocusedField("dob")} onBlur={() => setFocusedField(null)} focused={focusedField === "dob"} required />
+        <InputField label="Gender" name="gender" value={tenantData.gender} onChange={handleChange} type="select" options={["Male", "Female", "Other"]} onFocus={() => setFocusedField("gender")} onBlur={() => setFocusedField(null)} focused={focusedField === "gender"} required />
+        <InputField label="MA PMI #" name="mapmi" value={tenantData.mapmi} onChange={handleChange} maxLength={8} onFocus={() => setFocusedField("mapmi")} onBlur={() => setFocusedField(null)} focused={focusedField === "mapmi"} required />
       </Section>
       <Section title="Contact Information">
-        <InputField label="Phone Number *" name="phoneNumber" value={tenantData.phoneNumber} onChange={handleChange} required />
+        <InputField label="Phone Number *" name="phoneNumber" value={tenantData.phoneNumber} onChange={handleChange} type="tel" mask="(999)-999-9999" required />
         <InputField label="Email *" name="email" value={tenantData.email} onChange={handleChange} type="email" required />
-        <InputField label="Home Phone" name="homePhone" value={tenantData.homePhone} onChange={handleChange} />
-        <InputField label="Cell Phone" name="cellPhone" value={tenantData.cellPhone} onChange={handleChange} />
+        <InputField label="Home Phone" name="homePhone" value={tenantData.homePhone} onChange={handleChange} type="tel" mask="(999)-999-9999" />
+        <InputField label="Cell Phone" name="cellPhone" value={tenantData.cellPhone} onChange={handleChange} type="tel" mask="(999)-999-9999" />
       </Section>
 
       <Section title="Address Information">
@@ -44,7 +66,7 @@ const SubStep1 = () => {
         <InputField label="Emergency First Name" name="emergencyFirstName" value={tenantData.emergencyFirstName} onChange={handleChange} required />
         <InputField label="Emergency Middle Name" name="emergencyMiddleName" value={tenantData.emergencyMiddleName} onChange={handleChange} />
         <InputField label="Emergency Last Name" name="emergencyLastName" value={tenantData.emergencyLastName} onChange={handleChange} required />
-        <InputField label="Emergency Phone Number" name="emergencyPhoneNumber" value={tenantData.emergencyPhoneNumber} onChange={handleChange} required />
+        <InputField label="Emergency Phone Number" name="emergencyPhoneNumber" value={tenantData.emergencyPhoneNumber} onChange={handleChange} type="tel" mask="(999)-999-9999" required />
         <InputField label="Emergency Email" name="emergencyEmail" value={tenantData.emergencyEmail} onChange={handleChange} type="email" required />
         <InputField label="Relationship" name="emergencyRelationship" value={tenantData.emergencyRelationship} onChange={handleChange} required />
       </Section>
@@ -53,38 +75,39 @@ const SubStep1 = () => {
         <InputField label="First Name" name="caseManagerFirstName" value={tenantData.caseManagerFirstName} onChange={handleChange} required />
         <InputField label="Middle Initial" name="caseManagerMiddleInitial" value={tenantData.caseManagerMiddleInitial} onChange={handleChange} />
         <InputField label="Last Name" name="caseManagerLastName" value={tenantData.caseManagerLastName} onChange={handleChange} required />
-        <InputField label="Phone Number" name="caseManagerPhoneNumber" value={tenantData.caseManagerPhoneNumber} onChange={handleChange} required />
+        <InputField label="Phone Number" name="caseManagerPhoneNumber" value={tenantData.caseManagerPhoneNumber} onChange={handleChange} type="tel" mask="(999)-999-9999" required />
         <InputField label="Email" name="caseManagerEmail" value={tenantData.caseManagerEmail} onChange={handleChange} type="email" required />
       </Section>
 
       <Section title="Login Information">
         <InputField label="Username" name="userName" value={tenantData.userName} onChange={handleChange} required />
-        <InputField label="Password" name="password" value={tenantData.password} onChange={handleChange} type="password" required />
+        <InputField label="Password" name="password" value={password} onChange={handlePasswordChange} type="password" required />
+        <InputField label="Confirm Password" name="confirmPassword" value={confirmPassword} onChange={handleConfirmPasswordChange} type="password" required />
+        <p style={{ color: passwordMatch ? 'green' : 'red' }}>
+          {passwordMatch ? 'Passwords match' : 'Passwords do not match'}
+        </p>
       </Section>
-      {/* Other sections as before */}
 
-      {/* <Section title="Responsible Party Information"> */}
-        <div className="flex items-center mb-4">
-          <label className="text-gray-700 mr-2">Do you have a responsible party?</label>
-          <Switch checked={hasResponsibleParty} onChange={() => setHasResponsibleParty(!hasResponsibleParty)} />
+      <div className="flex items-center mb-4">
+        <label className="text-gray-700 mr-2">Does the tenant have a responsible party?</label>
+        <Switch checked={hasResponsibleParty} onChange={() => setHasResponsibleParty(!hasResponsibleParty)} />
+      </div>
+      {hasResponsibleParty && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <InputField label="Responsible First Name" name="responsibleFirstName" value={tenantData.responsibleFirstName} onChange={handleChange} onFocus={() => setFocusedField("responsibleFirstName")} onBlur={() => setFocusedField(null)} focused={focusedField === "responsibleFirstName"} required />
+          <InputField label="Responsible Middle Name" name="responsibleMiddleName" value={tenantData.responsibleMiddleName} onChange={handleChange} onFocus={() => setFocusedField("responsibleMiddleName")} onBlur={() => setFocusedField(null)} focused={focusedField === "responsibleMiddleName"} />
+          <InputField label="Responsible Last Name" name="responsibleLastName" value={tenantData.responsibleLastName} onChange={handleChange} onFocus={() => setFocusedField("responsibleLastName")} onBlur={() => setFocusedField(null)} focused={focusedField === "responsibleLastName"} required />
+          <InputField label="Responsible Phone Number" name="responsiblePhoneNumber" value={tenantData.responsiblePhoneNumber} onChange={handleChange} type="tel" mask="(999)-999-9999" onFocus={() => setFocusedField("responsiblePhoneNumber")} onBlur={() => setFocusedField(null)} focused={focusedField === "responsiblePhoneNumber"} required />
+          <InputField label="Responsible Email" name="responsibleEmail" value={tenantData.responsibleEmail} onChange={handleChange} type="email" onFocus={() => setFocusedField("responsibleEmail")} onBlur={() => setFocusedField(null)} focused={focusedField === "responsibleEmail"} required />
+          <InputField label="Relationship" name="responsibleRelationship" value={tenantData.responsibleRelationship} onChange={handleChange} onFocus={() => setFocusedField("responsibleRelationship")} onBlur={() => setFocusedField(null)} focused={focusedField === "responsibleRelationship"} required />
         </div>
-        {hasResponsibleParty && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <InputField label="Responsible First Name" name="responsibleFirstName" value={tenantData.responsibleFirstName} onChange={handleChange} onFocus={() => setFocusedField("responsibleFirstName")} onBlur={() => setFocusedField(null)} focused={focusedField === "responsibleFirstName"} required />
-            <InputField label="Responsible Middle Name" name="responsibleMiddleName" value={tenantData.responsibleMiddleName} onChange={handleChange} onFocus={() => setFocusedField("responsibleMiddleName")} onBlur={() => setFocusedField(null)} focused={focusedField === "responsibleMiddleName"} />
-            <InputField label="Responsible Last Name" name="responsibleLastName" value={tenantData.responsibleLastName} onChange={handleChange} onFocus={() => setFocusedField("responsibleLastName")} onBlur={() => setFocusedField(null)} focused={focusedField === "responsibleLastName"} required />
-            <InputField label="Responsible Phone Number" name="responsiblePhoneNumber" value={tenantData.responsiblePhoneNumber} onChange={handleChange} onFocus={() => setFocusedField("responsiblePhoneNumber")} onBlur={() => setFocusedField(null)} focused={focusedField === "responsiblePhoneNumber"} required />
-            <InputField label="Responsible Email" name="responsibleEmail" value={tenantData.responsibleEmail} onChange={handleChange} type="email" onFocus={() => setFocusedField("responsibleEmail")} onBlur={() => setFocusedField(null)} focused={focusedField === "responsibleEmail"} required />
-            <InputField label="Relationship" name="responsibleRelationship" value={tenantData.responsibleRelationship} onChange={handleChange} onFocus={() => setFocusedField("responsibleRelationship")} onBlur={() => setFocusedField(null)} focused={focusedField === "responsibleRelationship"} required />
-          </div>
-        )}
-      {/* </Section> */}
+      )}
     </div>
   );
 };
 
 // Reusable input component
-const InputField = ({ label, name, value, onChange, type = "text", options = [], required = false, focused, onFocus, onBlur }) => (
+const InputField = ({ label, name, value, onChange, type = "text", options = [], required = false, focused, onFocus, onBlur, maxLength, pattern, placeholder, mask }) => (
   <div style={{ marginBottom: "2px" }}>
     <label style={styles.label} htmlFor={name}>
       {label}
@@ -106,6 +129,26 @@ const InputField = ({ label, name, value, onChange, type = "text", options = [],
           </option>
         ))}
       </select>
+    ) : type === "date" ? (
+      <DatePicker
+        selected={value}
+        onChange={onChange}
+        dateFormat="MM-dd-yyyy"
+        placeholderText="MM-DD-YYYY"
+        style={{ ...styles.input, ...(focused ? styles.inputFocused : {}) }}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        required={required}
+      />
+    ) : mask ? (
+      <InputMask
+        mask={mask}
+        value={value}
+        onChange={onChange}
+        name={name}
+        style={{ ...styles.input, ...(focused ? styles.inputFocused : {}) }}
+        required={required}
+      />
     ) : (
       <input
         type={type}
@@ -116,6 +159,9 @@ const InputField = ({ label, name, value, onChange, type = "text", options = [],
         onBlur={onBlur}
         style={{ ...styles.input, ...(focused ? styles.inputFocused : {}) }}
         required={required}
+        maxLength={maxLength}
+        pattern={pattern}
+        placeholder={placeholder}
       />
     )}
   </div>
@@ -153,7 +199,7 @@ const styles = {
     fontSize: "1rem",
     color: "#000080",
     marginBottom: "4px",
-    fontWeight: '600', 
+    fontWeight: '600',
   },
   input: {
     width: "80%",
@@ -165,13 +211,24 @@ const styles = {
     outline: "none",
     transition: "border-color 0.3s",
     textAlign: 'center',
-    
+
   },
   inputFocused: {
     borderColor: "#4A90E2",
     boxShadow: "0px 0px 4px rgba(74, 144, 226, 0.5)",
   },
-  
+
+  datePicker: {
+    width: '80%',
+    padding: '5px 10px',
+    border: '1px solid #ddd',
+    borderRadius: '25px',
+    fontSize: '1rem',
+    boxShadow: '0px 1px 3px rgba(0,0,0,0.05)',
+    outline: 'none',
+    transition: 'border-color 0.3s',
+    textAlign: 'center',
+  },
 };
 
 export default SubStep1;
