@@ -17,6 +17,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import VisitModal from './VisitModal'; // Ensure VisitModal is correctly implemented and imported
 import axios from 'axios';
+import { GrLocation } from 'react-icons/gr';
 
 const VisitList = () => {
   const [startDate, setStartDate] = useState('');
@@ -47,17 +48,22 @@ const VisitList = () => {
         );
         if (response.data.visits) {
           const mappedVisits = response.data.visits.map((visit) => ({
+            _id: visit._id,
             title: visit.title,
             startDate: visit.dateOfService, // Adjusted field name
             endDate: visit.dateOfService,   // Assuming same day for start and end
             typeMethod: visit.methodOfVisit,
-            hcm: visit.hcmDetails?.name || 'N/A',
+            hcm: visit.hcmId?.name || 'N/A',
             scheduledDate: visit.scheduledDate,
             dos: visit.dateOfService,
             duration: `${visit.startTime} - ${visit.endTime}`,
             details: visit.detailsOfVisit,
             signature: visit.signature,
             status: visit.status,
+            serviceType: visit.serviceType,
+            placeOfService: visit.placeOfService,
+            approved: visit.approved,
+            rejected: visit.rejected,
           }));
           setVisitData(mappedVisits);
         } else {
@@ -85,16 +91,7 @@ const VisitList = () => {
     setOpenNewVisitPopup(true);
   };
 
-  const handleDeleteClick = (index) => {
-    const updatedData = visitData.filter((_, i) => i !== index);
-    setVisitData(updatedData);
-  };
 
-  const handleStatusUpdate = (index, status) => {
-    const updatedData = [...visitData];
-    updatedData[index].status = status;
-    setVisitData(updatedData);
-  };
 
   const handleFilterIconClick = (event) => {
     setFilterAnchorEl(event.currentTarget);
@@ -104,24 +101,89 @@ const VisitList = () => {
     setFilterAnchorEl(null);
   };
 
+  const handleStatusUpdate = async (index, isApproved) => {
+    console.log('Updating visit status:', index);
+    const visit = visitData[index];
+    console.log('Visit:', visit);
+
+    const token = localStorage.getItem('token');
+    const url = `https://careautomate-backend.vercel.app/visit/${visit._id}`;
+
+    try {
+      // Prepare the payload based on the button clicked
+      const payload = isApproved
+        ? { approved: true, rejected: false }
+        : { approved: false, rejected: true };
+
+      const response = await axios.put(
+        url,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const updatedData = [...visitData];
+        updatedData[index] = {
+          ...updatedData[index],
+          ...payload,
+          status: isApproved ? 'Approved' : 'Rejected', // Update the status
+        };
+        setVisitData(updatedData);
+      } else {
+        console.error('Failed to update visit status');
+      }
+    } catch (error) {
+      console.error('Error updating visit status:', error);
+    }
+  };
+
+  const handleDeleteClick = async (index) => {
+    const visit = visitData[index];
+    const token = localStorage.getItem('token');
+    const url = `https://careautomate-backend.vercel.app/visit/${visit._id}`;
+  
+    try {
+      const response = await axios.delete(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (response.status === 200) {
+        console.log('Visit deleted successfully:', response.data);
+        const updatedData = visitData.filter((_, i) => i !== index);
+        setVisitData(updatedData);
+      } else {
+        console.error('Failed to delete visit:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error deleting visit:', error);
+    }
+  };
+  
+
   return (
-    <div className='w-[1000px] ml-[250px] mt-10'>
+    <div className='w-[1100px] ml-[250px] mt-10' style={{ maxHeight: '700px', overflowY: 'auto' }}>
       {/* Header Section */}
       <div className=''>
         <div className="flex items-center justify-between" >
           <h1 className="text-3xl font-bold">Visits</h1>
           <div className="flex items-center justify-center gap-2">
             <Button
-              variant="outlined"
+              variant="contained"
               color="primary"
               sx={{ marginRight: '10px', borderRadius: '20px' }}
               onClick={() => setOpenNewVisitPopup(true)}
             >
               + New Visit
             </Button>
-            <Button variant="outlined" sx={{ borderRadius: '20px' }}>
+            {/* <Button variant="outlined" sx={{ borderRadius: '20px' }}>
               Export
-            </Button>
+            </Button> */}
             {/* Filter Icon and Dropdown */}
             <div>
               <IconButton onClick={handleFilterIconClick}>
@@ -170,34 +232,34 @@ const VisitList = () => {
         </div>
       </div>
       {/* Visit List */}
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col  w-full ">
         {visitData.map((visit, index) => (
           <Box
             key={index}
             sx={{
               marginBottom: '20px',
-              padding: '15px',
+              padding: '10px',
               borderRadius: '8px',
               backgroundColor:
-                visit.status === 'Approved'
+                visit.approved && !visit.rejected
                   ? 'lightgreen'
-                  : visit.status === 'Rejected'
+                  : !visit.approved && visit.rejected
                     ? 'lightcoral'
                     : 'lightblue',
             }}
           >
             {/* Title and Date/Duration Row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3>{visit.title}</h3>
+              <h3>{visit?.serviceType ? visit.serviceType : "no service"}</h3>
               {/* Date and Duration in a Single Row */}
-              <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+              {/* <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
                 <span>
                   <strong>Date:</strong> {visit.startDate.split('T')[0]}
                 </span>
                 <span>
                   <strong>Time:</strong> {visit.duration}
                 </span>
-              </div>
+              </div> */}
             </div>
 
             {/* HCM and DOS Row */}
@@ -206,7 +268,16 @@ const VisitList = () => {
                 <strong>HCM:</strong> {visit.hcm}
               </p>
               <p>
-                <strong>Method:</strong> {visit.typeMethod}
+                <strong>DOS:</strong> {visit.dos.split('T')[0]}
+              </p>
+              <p>
+                <strong>Duration</strong> {visit.duration}
+              </p>
+              <p style={{ display: 'flex' }}>
+                <strong><GrLocation size={24} className="mr-2" /></strong> {visit.placeOfService}
+              </p>
+              <p>
+                {visit.typeMethod}
               </p>
             </div>
 
@@ -230,30 +301,33 @@ const VisitList = () => {
               </span>
               <div className="flex gap-10 mt-5">
                 {/* Conditional Rendering of Approve/Reject Buttons */}
-                {visit.status === 'pending' && (
+                {!visit.approved
+                  && !visit.rejected
+                 &&  (
                   <div className="flex gap-4">
                     <Button
                       variant="contained"
                       color="success"
-                      onClick={() => handleStatusUpdate(index, 'Approved')}
+                      onClick={() => handleStatusUpdate(index, true)} // Approve action
                     >
                       Approve
                     </Button>
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={() => handleStatusUpdate(index, 'Rejected')}
+                      onClick={() => handleStatusUpdate(index, false)} // Reject action
                     >
                       Reject
                     </Button>
                   </div>
                 )}
+
                 {/* Display Status if not Pending */}
-                {visit.status !== 'pending' && (
+                {/* {visit.status !== 'pending' && (
                   <span>
                     <strong>Status:</strong> {visit.status}
                   </span>
-                )}
+                )} */}
 
                 {/* Edit and Delete Icons */}
                 <div>
