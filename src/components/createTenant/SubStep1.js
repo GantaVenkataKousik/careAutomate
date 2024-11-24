@@ -10,6 +10,7 @@ const SubStep1 = () => {
   const dispatch = useDispatch();
   const tenantData = useSelector((state) => state.tenant);
   const [hasResponsibleParty, setHasResponsibleParty] = useState(false);
+  const [needsMobileAccess, setNeedsMobileAccess] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -79,14 +80,21 @@ const SubStep1 = () => {
         <InputField label="Email" name="caseManagerEmail" value={tenantData.caseManagerEmail} onChange={handleChange} type="email" required />
       </Section>
 
-      <Section title="Login Information">
-        <InputField label="Username" name="userName" value={tenantData.userName} onChange={handleChange} required />
-        <InputField label="Password" name="password" value={password} onChange={handlePasswordChange} type="password" required />
-        <InputField label="Confirm Password" name="confirmPassword" value={confirmPassword} onChange={handleConfirmPasswordChange} type="password" required />
-        <p style={{ color: passwordMatch ? 'green' : 'red' }}>
-          {passwordMatch ? 'Passwords match' : 'Passwords do not match'}
-        </p>
-      </Section>
+      <div className="flex items-center mb-4">
+        <label className="text-gray-700 mr-2">Does the tenant need mobile app access?</label>
+        <Switch checked={needsMobileAccess} onChange={() => setNeedsMobileAccess(!needsMobileAccess)} />
+      </div>
+
+      {needsMobileAccess && (
+        <Section title="Login Information">
+          <InputField label="Username" name="userName" value={tenantData.userName} onChange={handleChange} required />
+          <InputField label="Password" name="password" value={password} onChange={handlePasswordChange} type="password" required />
+          <InputField label="Confirm Password" name="confirmPassword" value={confirmPassword} onChange={handleConfirmPasswordChange} type="password" required />
+          <p style={{ color: passwordMatch ? 'green' : 'red' }}>
+            {passwordMatch ? 'Passwords match' : 'Passwords do not match'}
+          </p>
+        </Section>
+      )}
 
       <div className="flex items-center mb-4">
         <label className="text-gray-700 mr-2">Does the tenant have a responsible party?</label>

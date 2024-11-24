@@ -232,6 +232,11 @@ const Substep12 = ({ tenantID }) => {
     });
   };
 
+  const handleSaveAndClose = () => {
+    // Save any necessary data here
+    closeFolder();
+  };
+
   return (
     <div className="p-6">
       <div className="flex justify-between p-2">
@@ -375,6 +380,15 @@ const Substep12 = ({ tenantID }) => {
                 </div>
               </div>
             )}
+
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={handleSaveAndClose}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Save and Close
+              </button>
+            </div>
           </div>
         </div>
       )}
