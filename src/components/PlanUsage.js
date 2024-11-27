@@ -22,12 +22,15 @@ export default function PlanUsage() {
         remainingHours: 0,
         workedHcms: []
     });
+    const [noServiceData, setNoServiceData] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchUnitsData = async () => {
             const token = localStorage.getItem('token');
             if (!token) {
                 console.error('No token found in localStorage');
+                setLoading(false);
                 return;
             }
 
@@ -43,10 +46,16 @@ export default function PlanUsage() {
                     }
                 });
 
-                console.log(response.data);
-                setUnitsData(response.data);
+                if (response.data === 'Service tracking data not found') {
+                    setNoServiceData(true);
+                } else {
+                    setUnitsData(response.data);
+                    setNoServiceData(false);
+                }
             } catch (error) {
                 console.error('Error fetching units data:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -92,27 +101,37 @@ export default function PlanUsage() {
                 <span>to</span>
                 <input type="date" style={styles.dateInput} value="2023-12-31" readOnly />
             </div>
-            <div style={styles.actions}>
-                <FaDownload style={styles.icon} onClick={handleDownloadClick} />
-                <button style={styles.activePlanButton}>Active Plan</button>
-            </div>
-            <div id="planUsageGrid" style={styles.grid}>
-                <div style={styles.card}>
-                    <h3 style={styles.cardTitle}>Allotted</h3>
-                    <p>Units <span style={styles.value}>{unitsData.allottedUnits}</span></p>
-                    <p>Hours <span style={styles.value}>{unitsData.allottedHours}</span></p>
-                </div>
-                <div style={styles.card}>
-                    <h3 style={styles.cardTitle}>Worked</h3>
-                    <p>Units <span style={styles.value}>{unitsData.workedUnits}</span></p>
-                    <p>Hours <span style={styles.value}>{unitsData.workedHours}</span></p>
-                </div>
-                <div style={styles.card}>
-                    <h3 style={styles.cardTitle}>Remaining</h3>
-                    <p>Units <span style={styles.value}>{unitsData.remainingUnits}</span></p>
-                    <p>Hours <span style={styles.value}>{unitsData.remainingHours}</span></p>
-                </div>
-            </div>
+
+            {loading ? (
+                <p style={styles.loadingMessage}>Loading service information...</p>
+            ) : noServiceData ? (
+                <p style={styles.noServiceData}>No services have been done for this tenant.</p>
+            ) : (
+                <>
+                    <div style={styles.actions}>
+                        <FaDownload style={styles.icon} onClick={handleDownloadClick} />
+                        <button style={styles.activePlanButton}>Active Plan</button>
+                    </div>
+                    <div id="planUsageGrid" style={styles.grid}>
+                        <div style={styles.card}>
+                            <h3 style={styles.cardTitle}>Allotted</h3>
+                            <p>Units <span style={styles.value}>{unitsData.allottedUnits}</span></p>
+                            <p>Hours <span style={styles.value}>{unitsData.allottedHours}</span></p>
+                        </div>
+                        <div style={styles.card}>
+                            <h3 style={styles.cardTitle}>Worked</h3>
+                            <p>Units <span style={styles.value}>{unitsData.workedUnits}</span></p>
+                            <p>Hours <span style={styles.value}>{unitsData.workedHours}</span></p>
+                        </div>
+                        <div style={styles.card}>
+                            <h3 style={styles.cardTitle}>Remaining</h3>
+                            <p>Units <span style={styles.value}>{unitsData.remainingUnits}</span></p>
+                            <p>Hours <span style={styles.value}>{unitsData.remainingHours}</span></p>
+                        </div>
+                    </div>
+                </>
+
+            )}
 
             <Modal
                 isOpen={isModalOpen}
@@ -191,6 +210,18 @@ const styles = {
     value: {
         fontWeight: 'bold',
         color: '#4CAF50',
+    },
+    noServiceData: {
+        color: 'red',
+        fontSize: '1.2em',
+        textAlign: 'center',
+        marginTop: '20px',
+    },
+    loadingMessage: {
+        color: '#333',
+        fontSize: '1.2em',
+        textAlign: 'center',
+        marginTop: '20px',
     },
     buttonContainer: {
         display: 'flex',
