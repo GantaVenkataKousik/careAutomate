@@ -13,7 +13,7 @@ const Tenants = () => {
   };
 
   const handleTenantClick = (tenantId) => {
-    navigate(`/tenantProfile`);
+    navigate('/tenants/tenantProfile', { state: { tenantId } });
   };
 
   useEffect(() => {

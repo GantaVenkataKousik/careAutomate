@@ -9,22 +9,22 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <ul className="sidebar-menu">
-        <li className={location.pathname === '/dashboard' ? 'active' : ''}>
+        <li className={location.pathname.startsWith('/dashboard') ? 'active' : ''}>
           <Link to="/dashboard">
             <FaTachometerAlt className="sidebar-icon" />
             <span>Dashboard</span>
           </Link>
         </li>
-        <li className={location.pathname === '/tenants' ? 'active' : ''}>
+        <li className={location.pathname.startsWith('/tenants') ? 'active' : ''}>
           <Link to="/tenants">
             <FaUsers className="sidebar-icon" />
             <span>Tenants</span>
           </Link>
         </li>
-        <li className={location.pathname === '/HCM' ? 'active' : ''}>
-          <Link to="/HCM">
+        <li className={location.pathname.startsWith('/hcms') ? 'active' : ''}>
+          <Link to="/hcms">
             <FaUsers className="sidebar-icon" />
-            <span>HCM</span>
+            <span>Hcms</span>
           </Link>
         </li>
         <li className={location.pathname === '/appointments' ? 'active' : ''}>

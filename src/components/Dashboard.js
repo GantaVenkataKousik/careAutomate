@@ -6,13 +6,23 @@ import { FaBars, FaCheck, FaDownload, FaFileAlt, FaMicrophone, FaTimes, FaUser, 
 import { Document, Page } from 'react-pdf';
 import samplePDF from '../assets/sample_document.pdf';
 import { pdfjs } from 'react-pdf';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const ProfilePage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { tenantId } = location.state || {};
+
+  const handlePlanUsageClick = () => {
+    navigate('/tenants/planUsage', { state: { tenantId } });
+  };
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedDescription, setSelectedDescription] = useState('');
   const [openModal, setOpenModal] = useState(false);
   const user = JSON.parse(localStorage.getItem('user'));
+
 
   const openDocument = () => {
     setOpenModal(true);
@@ -75,7 +85,7 @@ const ProfilePage = () => {
             <div className="flex space-x-4">
               <button className="  text-blue-500 py-2 px-4 rounded-[20px] border border-blue-500 border-2">Notes</button>
               <button className="  text-blue-500 py-2 px-4 rounded-[20px] border border-blue-500 border-2">Eligibility</button>
-              <button className="  text-blue-500 py-2 px-4 rounded-[20px] border border-blue-500 border-2">This Year</button>
+              <button className="  text-blue-500 py-2 px-4 rounded-[20px] border border-blue-500 border-2" onClick={handlePlanUsageClick}>Plan Usage</button>
               <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-[20px] flex items-center">
                 <FaDownload className="mr-2" /> Download Info
               </button>
