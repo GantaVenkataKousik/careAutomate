@@ -10,14 +10,13 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { IoMdTime } from "react-icons/io";
-const AppointmentModal = ({ isOpen, onClose }) => {
+const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
   const [startDate, setStartDate] = useState(null);
   const [planOfService, setPlanOfService] = useState('');
 
   const [reasonForRemote, setReasonForRemote] = useState('');
   const [title, setTitle] = useState('');
   const [scheduleCreated, setScheduleCreated] = useState(false);
-  const [activity, setActivity] = useState('');
   const [startTime, setStartTime] = useState('');
   const [showCreateScheduleDialog, setShowCreateScheduleDialog] = useState(false);
   const [showCreateAnotherDialog, setShowCreateAnotherDialog] = useState(false);
@@ -35,7 +34,7 @@ const AppointmentModal = ({ isOpen, onClose }) => {
 
   const tenantName = useSelector((state) => state.hcm.tenantName);
   const tenantId = useSelector((state) => state.hcm.tenantId);
-
+  const [activity, setActivity] = useState("");
   console.log('Hcm Name in step4:', tenantName);
   console.log('Hcm ID in step4:', tenantId);
 
@@ -129,10 +128,7 @@ const AppointmentModal = ({ isOpen, onClose }) => {
       return;
     }
 
-    console.log("Date:", startDate);
-    console.log("Start Time:", startTime);
-    console.log("End Time:", endTime);
-
+    
     const payload = {
       tenantId: selectedTenantId || 'Unknown',
       hcmId: selectedHcmId || 'N/A',
@@ -165,6 +161,7 @@ const AppointmentModal = ({ isOpen, onClose }) => {
       if (response.status >= 200 && response.status < 300) {
         toast.success('Appointment created successfully.');
         setScheduleCreated(true);
+        onAptCreated();
         setShowCreateScheduleDialog(true);
         onClose();
       } else {
@@ -180,6 +177,48 @@ const AppointmentModal = ({ isOpen, onClose }) => {
     resetFormState();
   };
 
+  const activities = {
+    "Housing Transition": [
+      "Developing a housing transition plan",
+      "Supporting the person in applying for benefits to afford their housing",
+      "Assisting the person with the housing search and application process",
+      "Assisting the person with tenant screening and housing assessments",
+      "Providing transportation with the person receiving services present and discussing housing related issues",
+      "Helping the person understand and develop a budget",
+      "Helping the person understand and negotiate a lease",
+      "Helping the person meet and build a relationship with a prospective landlord",
+      "Promoting/supporting cultural practice needs and understandings with prospective landlords, property managers",
+      "Helping the person find funding for deposits",
+      "Helping the person organize their move",
+      "Researching possible housing options for the person",
+      "Contacting possible housing options for the person",
+      "Identifying resources to pay for deposits or home goods",
+      "Identifying resources to cover moving expenses",
+      "Completing housing applications on behalf of the service recipient",
+      "Working to expunge records or access reasonable accommodations",
+      "Identifying services and benefits that will support the person with housing instability",
+      "Ensuring the new living arrangement is safe for the person and ready for move-in",
+      "Arranging for adaptive house related accommodations required by the person",
+      "Arranging for assistive technology required by the person",
+    ],
+    "Housing Sustaining": [
+      "Developing, updating and modifying the housing support and crisis/safety plan on a regular basis",
+      "Preventing and early identification of behaviors that may jeopardize continued housing",
+      "Educating and training on roles, rights, and responsibilities of the tenant and property manager",
+      "Transportation with the person receiving services present and discussing housing related issues",
+      "Promoting/supporting cultural practice needs and understandings with landlords, property managers and neighbors",
+      "Coaching to develop and maintain key relationships with property managers and neighbors",
+      "Advocating with community resources to prevent eviction when housing is at risk and maintain person’s safety",
+      "Assistance with the housing recertification processes",
+      "Continued training on being a good tenant, lease compliance, and household management",
+      "Supporting the person to apply for benefits to retain housing",
+      "Supporting the person to understand and maintain/increase income and benefits to retain housing",
+      "Supporting the building of natural housing supports and resources in the community including building supports and resources related to a person’s culture and identity",
+      "Working with property manager or landlord to promote housing retention",
+      "Arranging for assistive technology",
+      "Arranging for adaptive house related accommodations",
+    ],
+  };
 
   const resetFormState = () => {
     setSelectedTenantId("");
@@ -289,7 +328,7 @@ const AppointmentModal = ({ isOpen, onClose }) => {
         </div> */}
 
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 mb-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <RiServiceLine size={24} className="mr-2" />
               Service Type
@@ -310,13 +349,18 @@ const AppointmentModal = ({ isOpen, onClose }) => {
               <SlNote size={24} className="mr-2" />
               Activity
             </label>
-            <input
-              type="text"
+            <select
               value={activity}
               onChange={(e) => setActivity(e.target.value)}
-              placeholder="Enter Activity"
               className="border border-gray-300 rounded-md p-2 w-2/3"
-            />
+            >
+              <option value="">Select an activity</option>
+              {activities[serviceType].map((activity, index) => (
+                <option key={index} value={activity}>
+                  {activity}
+                </option>
+              ))}
+            </select>
           </div>
 
 
@@ -356,7 +400,7 @@ const AppointmentModal = ({ isOpen, onClose }) => {
               <div className="flex gap-2 ">
                 <label className="text-sm font-medium flex items-center mb-1">
                   {/* <MdOutlineAccessTime size={24} className="mr-2" /> */}
-                  End 
+                  End
                 </label>
                 <input
                   type="time"
@@ -370,54 +414,93 @@ const AppointmentModal = ({ isOpen, onClose }) => {
 
 
 
-
-          {/* Place of Service */}
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <GrLocation size={24} className="mr-2" />
               Place of Service
             </label>
-            <input
-              type="text"
+            <select
               value={planOfService}
               onChange={(e) => setPlanOfService(e.target.value)}
-              placeholder="Place of Service"
               className="border border-gray-300 rounded-md p-2 w-2/3"
-            />
+            >
+              <option value="" disabled>
+                Select a place of service
+              </option>
+              <option value="Office">Office</option>
+              <option value="Home">Home</option>
+              <option value="Institution">Institution</option>
+              <option value="Community">Community</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
-
 
 
           {/* Method of Contact */}
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <MdOutlineAccessTime size={24} className="mr-2" />
-              Contact Method
+              Method of Visit
             </label>
             <select
               value={methodOfContact}
               onChange={(e) => setMethodOfContact(e.target.value)}
               className="border border-gray-300 rounded-md p-2 w-2/3"
             >
-              <option value="in-person">in-person</option>
-              <option value="remote">remote</option>
+              <option value="" disabled>
+                Select a method
+              </option>
+              <option value="in-person">Direct</option>
+              <option value="remote">Indirect</option>
             </select>
           </div>
+          {methodOfContact === "remote" && (
+            <div className="flex flex-col gap-2 items-center">
+              <div className="flex items-center gap-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="indirectOption"
+                    value="remote"
+                    checked={reasonForRemote === "remote"}
+                    onChange={() => setReasonForRemote("remote")}
+                    className="mr-2"
+                  />
+                  Remote
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="indirectOption"
+                    value="in-person"
+                    checked={reasonForRemote === "in-person"}
+                    onChange={() => setReasonForRemote("in-person")}
+                    className="mr-2"
+                  />
+                  In-Person
+                </label>
+              </div>
 
+              {/* Conditional rendering for Reason for Remote */}
 
-          <div className="flex gap-4">
-            <label className="text-sm font-medium flex items-center w-1/3">
-              <RiServiceLine size={24} className="mr-2" />
-              Reason for Remote
-            </label>
-            <input
-              type="text"
-              value={reasonForRemote}
-              onChange={(e) => setReasonForRemote(e.target.value)}
-              placeholder="Reason for Remote"
-              className="border border-gray-300 rounded-md p-2 w-2/3"
-            />
-          </div>
+            </div>
+          )}
+
+          {reasonForRemote === "remote" && (
+            <div className="flex gap-4">
+              <label className="text-sm font-medium flex items-center w-1/3">
+                <RiServiceLine size={24} className="mr-2" />
+                Reason for Remote
+              </label>
+              <input
+                type="text"
+                value={reasonForRemote}
+                onChange={(e) => setReasonForRemote(e.target.value)}
+                placeholder="Enter reason for remote"
+                className="border border-gray-300 rounded-md p-2 w-2/3"
+              />
+            </div>
+          )}
 
           {/* <div className="flex gap-4">
         <label className="text-sm font-medium flex items-center w-1/3">
