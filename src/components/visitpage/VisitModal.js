@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { IoMdTime } from "react-icons/io";
-const VisitModal = ({ isOpen, onClose }) => {
+const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
   const [hcm, setHcm] = useState('');
   const [startDate, setStartDate] = useState(null);
   const [planOfService, setPlanOfService] = useState('');
@@ -35,7 +35,7 @@ const VisitModal = ({ isOpen, onClose }) => {
   const [hcmList, setHcmList] = useState([]); // List of HCMs
   const [selectedTenantId, setSelectedTenantId] = useState(""); // Selected tenant ID
   const [selectedHcmId, setSelectedHcmId] = useState("");
-
+  const [detailsOfVisit, setDetailsOfVisit] = useState('');
   const tenantName = useSelector((state) => state.hcm.tenantName);
   const tenantId = useSelector((state) => state.hcm.tenantId);
 
@@ -170,7 +170,7 @@ const VisitModal = ({ isOpen, onClose }) => {
       methodOfVisit:
         methodOfContact === "indirect" ? (reasonForRemote === "remote" ? "remote" : "in-person") : "in-person",
       reasonForRemote: reasonForRemote || null,
-      detailsOfVisit: activity || "N/A",
+      detailsOfVisit: detailsOfVisit || "N/A",
       travel: travel.toLowerCase(),
       totalMiles: travel === "Yes" ? totalMiles : null,
       travelWithTenant: milesWithTenant || null,
@@ -192,17 +192,61 @@ const VisitModal = ({ isOpen, onClose }) => {
       );
 
       if (response.status >= 200 && response.status < 300) {
-        toast.success("Appointment created successfully.");
+        toast.success("Visit created successfully.");
+        onVisitCreated();
         setScheduleCreated(true);
         setShowCreateScheduleDialog(true);
       } else {
-        console.error("Failed to create appointment:", response.statusText);
-        toast.error("Failed to create appointment.");
+        console.error("Failed to create Visit:", response.statusText);
+        toast.error("Failed to create Visit.");
       }
     } catch (error) {
       console.error("Error during API call:", error);
-      toast.error("Error creating appointment. Please try again.");
+      toast.error("Error creating Visit. Please try again.");
     }
+  };
+
+  const activities = {
+    "Housing Transition": [
+      "Developing a housing transition plan",
+      "Supporting the person in applying for benefits to afford their housing",
+      "Assisting the person with the housing search and application process",
+      "Assisting the person with tenant screening and housing assessments",
+      "Providing transportation with the person receiving services present and discussing housing related issues",
+      "Helping the person understand and develop a budget",
+      "Helping the person understand and negotiate a lease",
+      "Helping the person meet and build a relationship with a prospective landlord",
+      "Promoting/supporting cultural practice needs and understandings with prospective landlords, property managers",
+      "Helping the person find funding for deposits",
+      "Helping the person organize their move",
+      "Researching possible housing options for the person",
+      "Contacting possible housing options for the person",
+      "Identifying resources to pay for deposits or home goods",
+      "Identifying resources to cover moving expenses",
+      "Completing housing applications on behalf of the service recipient",
+      "Working to expunge records or access reasonable accommodations",
+      "Identifying services and benefits that will support the person with housing instability",
+      "Ensuring the new living arrangement is safe for the person and ready for move-in",
+      "Arranging for adaptive house related accommodations required by the person",
+      "Arranging for assistive technology required by the person",
+    ],
+    "Housing Sustaining": [
+      "Developing, updating and modifying the housing support and crisis/safety plan on a regular basis",
+      "Preventing and early identification of behaviors that may jeopardize continued housing",
+      "Educating and training on roles, rights, and responsibilities of the tenant and property manager",
+      "Transportation with the person receiving services present and discussing housing related issues",
+      "Promoting/supporting cultural practice needs and understandings with landlords, property managers and neighbors",
+      "Coaching to develop and maintain key relationships with property managers and neighbors",
+      "Advocating with community resources to prevent eviction when housing is at risk and maintain person’s safety",
+      "Assistance with the housing recertification processes",
+      "Continued training on being a good tenant, lease compliance, and household management",
+      "Supporting the person to apply for benefits to retain housing",
+      "Supporting the person to understand and maintain/increase income and benefits to retain housing",
+      "Supporting the building of natural housing supports and resources in the community including building supports and resources related to a person’s culture and identity",
+      "Working with property manager or landlord to promote housing retention",
+      "Arranging for assistive technology",
+      "Arranging for adaptive house related accommodations",
+    ],
   };
 
   const handleCancelAppointment = () => {
@@ -317,7 +361,7 @@ const VisitModal = ({ isOpen, onClose }) => {
           </div> */}
 
 
-          <div className="flex gap-4">
+          <div className="flex gap-4" >
             <label className="text-sm font-medium flex items-center w-1/3">
               <RiServiceLine size={24} className="mr-2" />
               Service Type
@@ -360,7 +404,7 @@ const VisitModal = ({ isOpen, onClose }) => {
                 <input
                   type="date"
                   value={startDate || ''}
-                  min={format(new Date(), 'yyyy-MM-dd')}
+                  max={format(new Date(), 'yyyy-MM-dd')}
                   onChange={(e) => setStartDate(e.target.value)}
                   className="border border-gray-300 rounded-md p-2 w-full"
                 />
@@ -491,6 +535,20 @@ const VisitModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
+          <div className="flex gap-4">
+            <label className="text-sm font-medium flex items-center w-1/3">
+
+              Details of Visit
+            </label>
+            <input
+              type="text"
+              value={detailsOfVisit}
+              onChange={(e) => setDetailsOfVisit(e.target.value)}
+              placeholder="Enter details of visit"
+              className="border border-gray-300 rounded-md p-2 w-2/3"
+            />
+          </div>
+
           <div className="flex gap-4 items-center">
             <label className="text-sm font-medium flex items-center w-1/3">
               Travel
@@ -603,3 +661,4 @@ const VisitModal = ({ isOpen, onClose }) => {
 };
 
 export default VisitModal;
+

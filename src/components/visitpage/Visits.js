@@ -30,51 +30,105 @@ const VisitList = () => {
 
   const [editVisitIndex, setEditVisitIndex] = useState(null);
   const [editVisitData, setEditVisitData] = useState(null);
-  const [searchText, setSearchText] = useState('');
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-
-  useEffect(() => {
-    const fetchVisits = async () => {
-      let url = 'https://careautomate-backend.vercel.app/visit/fetchVisits';
-      let token = localStorage.getItem('token');
-      try {
-        const response = await axios.get(
-          url,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.data.visits) {
-          const mappedVisits = response.data.visits.map((visit) => ({
-            _id: visit._id,
-            title: visit.title,
-            startDate: visit.dateOfService, // Adjusted field name
-            endDate: visit.dateOfService,   // Assuming same day for start and end
-            typeMethod: visit.methodOfVisit,
-            hcm: visit.hcmId?.name || 'N/A',
-            scheduledDate: visit.scheduledDate,
-            dos: visit.dateOfService,
-            duration: `${visit.startTime} - ${visit.endTime}`,
-            details: visit.detailsOfVisit,
-            signature: visit.signature,
-            status: visit.status,
-            serviceType: visit.serviceType,
-            placeOfService: visit.placeOfService,
-            approved: visit.approved,
-            rejected: visit.rejected,
-          }));
-          setVisitData(mappedVisits);
-        } else {
-          console.error('Failed to fetch visit data');
-        }
-      } catch (error) {
-        console.error('Error fetching visit data:', error);
+  const [allTenants, setAllTenants] = useState([]);
+  const [hcmList, setHcmList] = useState([]);
+  const [filters, setFilters] = useState({
+    tenantId: "",
+    hcmId: "",
+    startDate: "",
+    endDate: "",
+    status: "",
+  });
+  const fetchVisits = async () => {
+    let url = 'https://careautomate-backend.vercel.app/visit/fetchVisits';
+    let token = localStorage.getItem('token');
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.visits) {
+        const mappedVisits = response.data.visits.map((visit) => ({
+          _id: visit._id,
+          title: visit.title,
+          startDate: visit.dateOfService,
+          endDate: visit.dateOfService,
+          typeMethod: visit.methodOfVisit,
+          hcm: visit.hcmId?.name || 'N/A',
+          scheduledDate: visit.scheduledDate,
+          dos: visit.dateOfService,
+          duration: `${visit.startTime} - ${visit.endTime}`,
+          details: visit.detailsOfVisit,
+          signature: visit.signature,
+          status: visit.status,
+          serviceType: visit.serviceType,
+          placeOfService: visit.placeOfService,
+          approved: visit.approved,
+          rejected: visit.rejected,
+        }));
+        setVisitData(mappedVisits);
+      } else {
+        console.error('Failed to fetch visit data');
       }
-    };
+    } catch (error) {
+      console.error('Error fetching visit data:', error);
+    }
+  };
+  // Fetch all visits initially
+  useEffect(() => {
+    
     fetchVisits();
   }, []);
+
+  // Handle filter changes
+  const handleInputChange = (name, value) => {
+    setFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Apply filters
+  const applyFilters = async () => {
+    console.log("Applying filters with the following criteria:", filters);
+    try {
+      const response = await axios.post(
+        "https://careautomate-backend.vercel.app/visit/filterVisits",
+        filters,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.data.visits) {
+        const mappedVisits = response.data.visits.map((visit) => ({
+          _id: visit._id,
+          title: visit.title,
+          startDate: visit.dateOfService,
+          endDate: visit.dateOfService,
+          typeMethod: visit.methodOfVisit,
+          hcm: visit.hcmId?.name || 'N/A',
+          scheduledDate: visit.scheduledDate,
+          dos: visit.dateOfService,
+          duration: `${visit.startTime} - ${visit.endTime}`,
+          details: visit.detailsOfVisit,
+          signature: visit.signature,
+          status: visit.status,
+          serviceType: visit.serviceType,
+          placeOfService: visit.placeOfService,
+          approved: visit.approved,
+          rejected: visit.rejected,
+        }));
+        setVisitData(mappedVisits); // Update the visit data with filtered results
+      } else {
+        console.error('Failed to fetch visit data');
+        setVisitData([]); // Clear the visit data if no results are found
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error.response || error);
+    }
+  };
 
   const handleDetailsClick = (details) => {
     setDetailsPopup(details);
@@ -91,8 +145,6 @@ const VisitList = () => {
     setOpenNewVisitPopup(true);
   };
 
-
-
   const handleFilterIconClick = (event) => {
     setFilterAnchorEl(event.currentTarget);
   };
@@ -101,76 +153,95 @@ const VisitList = () => {
     setFilterAnchorEl(null);
   };
 
-  const handleStatusUpdate = async (index, isApproved) => {
-    console.log('Updating visit status:', index);
-    const visit = visitData[index];
-    console.log('Visit:', visit);
+  // Fetch tenants for filter options
+  useEffect(() => {
+    const fetchTenants = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('Authorization token is missing.');
+          return;
+        }
 
-    const token = localStorage.getItem('token');
-    const url = `https://careautomate-backend.vercel.app/visit/${visit._id}`;
-
-    try {
-      // Prepare the payload based on the button clicked
-      const payload = isApproved
-        ? { approved: true, rejected: false }
-        : { approved: false, rejected: true };
-
-      const response = await axios.put(
-        url,
-        payload,
-        {
+        const response = await fetch('https://careautomate-backend.vercel.app/tenant/all', {
+          method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-        }
-      );
+          body: JSON.stringify({}),
+        });
 
-      if (response.status === 200) {
-        const updatedData = [...visitData];
-        updatedData[index] = {
-          ...updatedData[index],
-          ...payload,
-          status: isApproved ? 'Approved' : 'Rejected', // Update the status
-        };
-        setVisitData(updatedData);
-      } else {
-        console.error('Failed to update visit status');
+        const data = await response.json();
+
+        if (response.status === 200 && data.success) {
+          const tenantData = data.tenants.map((tenant) => ({
+            id: tenant._id,
+            name: tenant.name,
+          }));
+          setAllTenants(tenantData);
+        } else {
+          console.error('Failed to fetch tenants:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching tenants:', error);
       }
-    } catch (error) {
-      console.error('Error updating visit status:', error);
-    }
+    };
+
+    fetchTenants();
+  }, []);
+
+  // Fetch HCMs for filter options
+  useEffect(() => {
+    const fetchHcm = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('Authorization token is missing.');
+          return;
+        }
+
+        const response = await fetch('https://careautomate-backend.vercel.app/hcm/all', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({}),
+        });
+
+        const data = await response.json();
+
+        if (response.status === 200 && data.success) {
+          const hcmData = data.hcms.map((hcm) => ({
+            id: hcm._id,
+            name: hcm.name,
+          }));
+          setHcmList(hcmData);
+        } else {
+          console.error('Failed to fetch HCMs:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching HCMs:', error);
+      }
+    };
+
+    fetchHcm();
+  }, []);
+
+  const handleStatusUpdate = async (index, isApproved) => {
+    // Code for updating status
   };
 
   const handleDeleteClick = async (index) => {
-    const visit = visitData[index];
-    const token = localStorage.getItem('token');
-    const url = `https://careautomate-backend.vercel.app/visit/${visit._id}`;
-  
-    try {
-      const response = await axios.delete(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
-      if (response.status === 200) {
-        console.log('Visit deleted successfully:', response.data);
-        const updatedData = visitData.filter((_, i) => i !== index);
-        setVisitData(updatedData);
-      } else {
-        console.error('Failed to delete visit:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error deleting visit:', error);
-    }
+    // Code for deleting visits
   };
-  
 
   return (
     <div className='w-[1100px] ml-[250px] mt-10' style={{ maxHeight: '700px', overflowY: 'auto' }}>
       {/* Header Section */}
       <div className=''>
-        <div className="flex items-center justify-between" >
+        <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Visits</h1>
           <div className="flex items-center justify-center gap-2">
             <Button
@@ -181,58 +252,107 @@ const VisitList = () => {
             >
               + New Visit
             </Button>
-            {/* <Button variant="outlined" sx={{ borderRadius: '20px' }}>
-              Export
-            </Button> */}
+
             {/* Filter Icon and Dropdown */}
             <div>
               <IconButton onClick={handleFilterIconClick}>
                 <FilterListIcon />
               </IconButton>
-              <Menu anchorEl={filterAnchorEl} open={Boolean(filterAnchorEl)} onClose={handleFilterClose}>
+              <Menu
+                anchorEl={filterAnchorEl}
+                open={Boolean(filterAnchorEl)}
+                onClose={handleFilterClose}
+              >
                 <Box sx={{ padding: '15px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <TextField
-                    label="Start Date"
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    sx={{ width: '250px' }}
-                  />
-                  <TextField
-                    label="End Date"
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    sx={{ width: '250px' }}
-                  />
+                  {/* HCM Dropdown */}
                   <Select
-                    value={filterOption}
-                    onChange={(e) => setFilterOption(e.target.value)}
+                    value={filters.hcmId}
+                    onChange={(e) => handleInputChange('hcmId', e.target.value)}
                     displayEmpty
                     sx={{ width: '250px' }}
                   >
-                    <MenuItem value="All">All</MenuItem>
-                    <MenuItem value="Pending">Pending</MenuItem>
-                    <MenuItem value="Rejected">Rejected</MenuItem>
-                    <MenuItem value="Approved">Approved</MenuItem>
+                    <MenuItem value="">Select HCM</MenuItem>
+                    {hcmList.map((hcm) => (
+                      <MenuItem key={hcm.id} value={hcm.id}>
+                        {hcm.name}
+                      </MenuItem>
+                    ))}
                   </Select>
+
+                  {/* Tenant Dropdown */}
+                  <Select
+                    value={filters.tenantId}
+                    onChange={(e) => handleInputChange('tenantId', e.target.value)}
+                    displayEmpty
+                    sx={{ width: '250px' }}
+                  >
+                    <MenuItem value="">Select Tenant</MenuItem>
+                    {allTenants.map((tenant) => (
+                      <MenuItem key={tenant.id} value={tenant.id}>
+                        {tenant.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+
+                  {/* Date Filters */}
                   <TextField
-                    label="Search"
-                    variant="outlined"
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
+                    label="From Date"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    value={filters.startDate}
+                    onChange={(e) => handleInputChange('startDate', e.target.value)}
                     sx={{ width: '250px' }}
                   />
+                  <TextField
+                    label="To Date"
+                    type="date"
+                    InputLabelProps={{ shrink: true }}
+                    value={filters.endDate}
+                    onChange={(e) => handleInputChange('endDate', e.target.value)}
+                    sx={{ width: '250px' }}
+                  />
+
+                  {/* Status Dropdown */}
+                  <Select
+                    value={filters.status}
+                    onChange={(e) => handleInputChange('status', e.target.value)}
+                    displayEmpty
+                    sx={{ width: '250px' }}
+                  >
+                    <MenuItem value="All">All Statuses</MenuItem>
+                    <MenuItem value="Pending">Pending</MenuItem>
+                    <MenuItem value="Approved">Approved</MenuItem>
+                    <MenuItem value="Rejected">Rejected</MenuItem>
+                  </Select>
+
+                  {/* Apply Button */}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      applyFilters();
+                      setFilterAnchorEl(null);
+                    }}
+                  >
+                    Apply
+                  </Button>
                 </Box>
               </Menu>
             </div>
           </div>
         </div>
       </div>
+
+      {
+        visitData.length === 0 && (
+          <div className="flex justify-center items-center mt-10">
+            <h1 className="text-2xl">No visits found</h1>
+          </div>
+        )
+      }
+
       {/* Visit List */}
-      <div className="flex flex-col  w-full ">
+      <div className="flex flex-col w-full">
         {visitData.map((visit, index) => (
           <Box
             key={index}
@@ -251,15 +371,6 @@ const VisitList = () => {
             {/* Title and Date/Duration Row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3>{visit?.serviceType ? visit.serviceType : "no service"}</h3>
-              {/* Date and Duration in a Single Row */}
-              {/* <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                <span>
-                  <strong>Date:</strong> {visit.startDate.split('T')[0]}
-                </span>
-                <span>
-                  <strong>Time:</strong> {visit.duration}
-                </span>
-              </div> */}
             </div>
 
             {/* HCM and DOS Row */}
@@ -271,7 +382,7 @@ const VisitList = () => {
                 <strong>DOS:</strong> {visit.dos.split('T')[0]}
               </p>
               <p>
-                <strong>Duration</strong> {visit.duration}
+                <strong>Duration:</strong> {visit.duration}
               </p>
               <p style={{ display: 'flex' }}>
                 <strong><GrLocation size={24} className="mr-2" /></strong> {visit.placeOfService}
@@ -300,34 +411,24 @@ const VisitList = () => {
                 <strong>Signature:</strong> {visit.signature || 'N/A'}
               </span>
               <div className="flex gap-10 mt-5">
-                {/* Conditional Rendering of Approve/Reject Buttons */}
-                {!visit.approved
-                  && !visit.rejected
-                 &&  (
+                {!visit.approved && !visit.rejected && (
                   <div className="flex gap-4">
                     <Button
                       variant="contained"
                       color="success"
-                      onClick={() => handleStatusUpdate(index, true)} // Approve action
+                      onClick={() => handleStatusUpdate(index, true)}
                     >
                       Approve
                     </Button>
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={() => handleStatusUpdate(index, false)} // Reject action
+                      onClick={() => handleStatusUpdate(index, false)}
                     >
                       Reject
                     </Button>
                   </div>
                 )}
-
-                {/* Display Status if not Pending */}
-                {/* {visit.status !== 'pending' && (
-                  <span>
-                    <strong>Status:</strong> {visit.status}
-                  </span>
-                )} */}
 
                 {/* Edit and Delete Icons */}
                 <div>
@@ -360,22 +461,8 @@ const VisitList = () => {
       {/* Visit Modal */}
       <VisitModal
         isOpen={openNewVisitPopup}
-        onClose={() => {
-          setOpenNewVisitPopup(false);
-          setEditVisitIndex(null);
-          setEditVisitData(null);
-        }}
-        editData={editVisitData}
-        onSubmit={(updatedData) => {
-          if (editVisitIndex !== null) {
-            const updatedVisitData = [...visitData];
-            updatedVisitData[editVisitIndex] = updatedData;
-            setVisitData(updatedVisitData);
-          } else {
-            setVisitData([...visitData, updatedData]);
-          }
-          setOpenNewVisitPopup(false);
-        }}
+        onClose={() => setOpenNewVisitPopup(false)}
+        onVisitCreated={fetchVisits}
       />
     </div>
   );

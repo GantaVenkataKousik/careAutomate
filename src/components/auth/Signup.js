@@ -210,7 +210,7 @@ const Signup = () => {
           <img src={mobile} alt="Signup Illustration" className="signup-image" />
         </div>
         <div className="right-section">
-          <h3>A Small Step To Begin Automation Of<br />Your Housing Services</h3>
+          <h3 className='text-center'>A Small Step To Begin Automation Of<br />Your Housing Services</h3>
           <form className="signup-form" onSubmit={handleSubmit}>
             {errors.apiError && <p className="error-message" style={{
               color: 'red',
@@ -219,6 +219,7 @@ const Signup = () => {
             }}>{errors.apiError}</p>}
 
             <div className="form-group">
+              <label htmlFor="firstName">First Name *</label>
               <input
                 type="text"
                 name="firstName"
@@ -231,6 +232,7 @@ const Signup = () => {
               {errors.firstName && <p className="error-message">{errors.firstName}</p>}
             </div>
             <div className="form-group">
+              <label htmlFor="lastName">Last Name *</label>
               <input
                 type="text"
                 name="lastName"
@@ -243,18 +245,7 @@ const Signup = () => {
               {errors.lastName && <p className="error-message">{errors.lastName}</p>}
             </div>
             <div className="form-group">
-              <input
-                type="email"
-                name="email"
-                placeholder="Email *"
-                value={formData.email}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                required
-              />
-              {errors.email && <p className="error-message">{errors.email}</p>}
-            </div>
-            <div className="form-group">
+              <label htmlFor="companyName">Company Name *</label>
               <input
                 type="text"
                 name="companyName"
@@ -265,23 +256,6 @@ const Signup = () => {
                 required
               />
               {errors.companyName && <p className="error-message">{errors.companyName}</p>}
-            </div>
-            <div className="form-group">
-              <select
-                name="state"
-                value={formData.state}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                required
-                className="state-dropdown"
-              // style={{ color: formData.state ? 'black' : 'red' }}
-              >
-                <option value="" disabled style={{ color: "red" }}>State *</option>
-                {states.map((state) => (
-                  <option key={state} value={state}>{state}</option>
-                ))}
-              </select>
-              {errors.state && <p className="error-message">{errors.state}</p>}
             </div>
             <div className="form-group mobile-group">
               <div className="input-with-prefix">
@@ -302,8 +276,42 @@ const Signup = () => {
               </div>
               {errors.mobileNumber && <p className="error-message">{errors.mobileNumber}</p>}
             </div>
+            <div className="form-group">
+              <label htmlFor="email">Email *</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Email *"
+                value={formData.email}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                required
+              />
+              {errors.email && <p className="error-message">{errors.email}</p>}
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="state">State *</label>
+              <select
+                name="state"
+                value={formData.state}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                required
+                className="state-dropdown"
+              // style={{ color: formData.state ? 'black' : 'red' }}
+              >
+                <option value="" disabled style={{ color: "red" }}>State *</option>
+                {states.map((state) => (
+                  <option key={state} value={state}>{state}</option>
+                ))}
+              </select>
+              {errors.state && <p className="error-message">{errors.state}</p>}
+            </div>
+            
             <div className="form-group password-group">
               <div style={{ position: 'relative' }}>
+                <label htmlFor="password">Password *</label>
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
@@ -322,6 +330,7 @@ const Signup = () => {
             </div>
             <div className="form-group password-group">
               <div style={{ position: 'relative' }}>
+                <label htmlFor="confirmPassword">Confirm Password *</label>
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
@@ -333,23 +342,26 @@ const Signup = () => {
                   onPaste={handlePaste}
                   required
                 />
-                <button type="button" onClick={toggleConfirmPasswordVisibility} className="toggle-password">
+                <button type="button" onClick={toggleConfirmPasswordVisibility} className="toggle-password ">
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
               {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
             </div>
-            <motion.button
-              className="signup-btn"
-              initial={{ x: '-100vw' }}
-              animate={{ x: 0 }}
-              transition={{ type: 'tween', duration: 0.8 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              type="submit"
-            >
-              Sign Up
-            </motion.button>
+            <div className=' flex  justify-center '>
+              <motion.button
+                className="signup-btn "
+                initial={{ x: '-100vw' }}
+                animate={{ x: 0 }}
+                transition={{ type: 'tween', duration: 0.8 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                type="submit"
+              >
+                Sign Up
+              </motion.button>
+            </div>
+
           </form>
           <p className="signin-link">
             Already have an account? <a href="/login">Sign In</a>
