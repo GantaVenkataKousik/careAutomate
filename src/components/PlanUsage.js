@@ -13,17 +13,11 @@ export default function PlanUsage() {
     const location = useLocation();
     const { tenantId } = location.state || {};
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [unitsData, setUnitsData] = useState({
-        allottedUnits: 0,
-        allottedHours: 0,
-        workedUnits: 0,
-        workedHours: 0,
-        remainingUnits: 0,
-        remainingHours: 0,
-        workedHcms: []
-    });
-    const [noServiceData, setNoServiceData] = useState(false);
+    const [unitsData, setUnitsData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [selectedYear, setSelectedYear] = useState('');
+    const [yearOptions, setYearOptions] = useState([]);
+    const [currentPlanType, setCurrentPlanType] = useState('');
 
     useEffect(() => {
         const fetchUnitsData = async () => {
@@ -35,10 +29,8 @@ export default function PlanUsage() {
             }
 
             try {
-                console.log(tenantId);
                 const response = await axios.post(API_ROUTES.HCM_UNITS_STATS, {
                     tenantId: tenantId,
-                    serviceType: 'Housing Transition'
                 }, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -46,11 +38,14 @@ export default function PlanUsage() {
                     }
                 });
 
-                if (response.data === 'Service tracking data not found') {
-                    setNoServiceData(true);
-                } else {
-                    setUnitsData(response.data);
-                    setNoServiceData(false);
+                setUnitsData(response.data);
+
+                const transitionYears = Object.keys(response.data['Housing Transition'] || {});
+                const sustainingYears = Object.keys(response.data['Housing Sustaining'] || {});
+                const allYears = Array.from(new Set([...transitionYears, ...sustainingYears])).sort();
+                setYearOptions(allYears);
+                if (allYears.length > 0) {
+                    setSelectedYear(allYears[0]);
                 }
             } catch (error) {
                 console.error('Error fetching units data:', error);
@@ -64,73 +59,120 @@ export default function PlanUsage() {
         }
     }, [tenantId]);
 
-    const handleDownloadClick = () => {
+    const handleDownloadClick = (planType) => {
+        setCurrentPlanType(planType);
         setIsModalOpen(true);
     };
 
     const handleDownloadFormat = (format) => {
-        const element = document.querySelector('#planUsageGrid');
+        const element = document.querySelector(`#${currentPlanType}Grid`);
 
-        if (format === 'image') {
-            html2canvas(element).then((canvas) => {
+        if (!element) {
+            console.error('Element not found for download');
+            return;
+        }
+
+        html2canvas(element).then((canvas) => {
+            if (format === 'image') {
                 const link = document.createElement('a');
                 link.href = canvas.toDataURL('image/png');
-                link.setAttribute('download', 'plan_usage.png');
+                link.setAttribute('download', `${currentPlanType}_usage.png`);
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-            });
-        } else if (format === 'pdf') {
-            html2canvas(element).then((canvas) => {
+            } else if (format === 'pdf') {
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF();
                 pdf.addImage(imgData, 'PNG', 10, 10, 180, 160);
-                pdf.save('plan_usage.pdf');
-            });
+                pdf.save(`${currentPlanType}_usage.pdf`);
+            }
+        }).catch((error) => {
+            console.error('Error generating download:', error);
+        });
+    };
+
+    const renderPlanData = (planType) => {
+        const data = unitsData[planType]?.[selectedYear];
+        if (!data || data.message) {
+            return <p style={styles.noServiceData}>No services have been done for this tenant.</p>;
         }
 
-        setIsModalOpen(false);
+        return (
+            <div id={`${planType}Grid`} style={styles.grid}>
+                <div style={styles.card}>
+                    <h3 style={styles.cardTitle}>Allotted</h3>
+                    <p>Units <span style={styles.value}>{data.allottedUnits}</span></p>
+                    <p>Hours <span style={styles.value}>{data.allottedHours}</span></p>
+                </div>
+                <div style={styles.card}>
+                    <h3 style={styles.cardTitle}>Worked</h3>
+                    <p>Units <span style={styles.value}>{data.workedUnits}</span></p>
+                    <p>Hours <span style={styles.value}>{data.workedHours}</span></p>
+                </div>
+                <div style={styles.card}>
+                    <h3 style={styles.cardTitle}>Remaining</h3>
+                    <p>Units <span style={styles.value}>{data.remainingUnits}</span></p>
+                    <p>Hours <span style={styles.value}>{data.remainingHours}</span></p>
+                </div>
+                <div style={styles.card}>
+                    <h3 style={styles.cardTitle}>Scheduled</h3>
+                    <p>Units <span style={styles.value}>{data.scheduledUnits}</span></p>
+                    <p>Hours <span style={styles.value}>{data.scheduledHours}</span></p>
+                </div>
+            </div>
+        );
     };
 
     return (
         <div style={styles.container}>
             <h2 style={styles.title}>Plan Usage :</h2>
             <div style={styles.dateRange}>
-                <span>Housing Transition :</span>
-                <input type="date" style={styles.dateInput} value="2023-01-01" readOnly />
-                <span>to</span>
-                <input type="date" style={styles.dateInput} value="2023-12-31" readOnly />
+                <label htmlFor="yearSelect">Select Year: </label>
+                <select
+                    id="yearSelect"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                >
+                    {yearOptions.map((year, index) => (
+                        <option key={index} value={year}>{year}</option>
+                    ))}
+                </select>
             </div>
 
             {loading ? (
                 <p style={styles.loadingMessage}>Loading service information...</p>
-            ) : noServiceData ? (
-                <p style={styles.noServiceData}>No services have been done for this tenant.</p>
             ) : (
                 <>
-                    <div style={styles.actions}>
-                        <FaDownload style={styles.icon} onClick={handleDownloadClick} />
-                        <button style={styles.activePlanButton}>Active Plan</button>
-                    </div>
-                    <div id="planUsageGrid" style={styles.grid}>
-                        <div style={styles.card}>
-                            <h3 style={styles.cardTitle}>Allotted</h3>
-                            <p>Units <span style={styles.value}>{unitsData.allottedUnits}</span></p>
-                            <p>Hours <span style={styles.value}>{unitsData.allottedHours}</span></p>
-                        </div>
-                        <div style={styles.card}>
-                            <h3 style={styles.cardTitle}>Worked</h3>
-                            <p>Units <span style={styles.value}>{unitsData.workedUnits}</span></p>
-                            <p>Hours <span style={styles.value}>{unitsData.workedHours}</span></p>
-                        </div>
-                        <div style={styles.card}>
-                            <h3 style={styles.cardTitle}>Remaining</h3>
-                            <p>Units <span style={styles.value}>{unitsData.remainingUnits}</span></p>
-                            <p>Hours <span style={styles.value}>{unitsData.remainingHours}</span></p>
+                    <div style={styles.planHeader}>
+                        <h3 style={styles.title}>Housing Transition</h3>
+                        <div style={styles.actions}>
+                            {selectedYear === new Date().getFullYear().toString() && (
+                                <button style={styles.activePlanButton}>Active</button>
+                            )}
+                            {unitsData['Housing Transition']?.[selectedYear] && !unitsData['Housing Transition']?.[selectedYear].message && (
+                                <button style={styles.downloadButton} onClick={() => handleDownloadClick('Housing Transition')}>
+                                    <FaDownload /> Download
+                                </button>
+                            )}
                         </div>
                     </div>
-                </>
+                    {renderPlanData('Housing Transition')}
 
+                    <div style={styles.planHeader}>
+                        <h3 style={styles.title}>Housing Sustaining</h3>
+                        <div style={styles.actions}>
+                            {selectedYear === new Date().getFullYear().toString() && (
+                                <button style={styles.activePlanButton}>Active</button>
+                            )}
+                            {unitsData['Housing Sustaining']?.[selectedYear] && !unitsData['Housing Sustaining']?.[selectedYear].message && (
+                                <button style={styles.downloadButton} onClick={() => handleDownloadClick('Housing Sustaining')}>
+                                    <FaDownload /> Download
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    {renderPlanData('Housing Sustaining')}
+                </>
             )}
 
             <Modal
@@ -163,17 +205,16 @@ const styles = {
         alignItems: 'center',
         marginBottom: '20px',
     },
-    dateInput: {
-        margin: '0 10px',
-        padding: '5px',
-        borderRadius: '5px',
-        border: '1px solid #ccc',
+    planHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: '10px',
     },
     actions: {
         display: 'flex',
-        justifyContent: 'flex-start',
         alignItems: 'center',
-        marginBottom: '20px',
+        gap: '10px',
     },
     icon: {
         fontSize: '1.5em',
@@ -192,7 +233,7 @@ const styles = {
     },
     grid: {
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gridTemplateColumns: 'repeat(4, 1fr)',
         gap: '20px',
     },
     card: {
@@ -201,6 +242,8 @@ const styles = {
         boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
         padding: '20px',
         textAlign: 'center',
+        width: '200px',
+        margin: '0.4rem',
     },
     cardTitle: {
         fontSize: '1.2em',
@@ -230,15 +273,16 @@ const styles = {
         gap: '10px',
     },
     downloadButton: {
-        backgroundColor: '#4CAF50',
-        color: '#fff',
+        color: '#000',
         padding: '10px 20px',
         borderRadius: '5px',
         border: 'none',
         cursor: 'pointer',
         fontSize: '16px',
         fontWeight: 'bold',
-        width: '100px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '5px',
     },
 };
 
