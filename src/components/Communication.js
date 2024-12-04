@@ -3,88 +3,95 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import tenant from '../images/tenant.jpg';
 
-const Communication = ({ userId }) => {
+const Communication = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [conversationId, setConversationId] = useState(null);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
-  const socket = io('http://localhost:9003'); // Replace with your server URL
+  const storedUser = localStorage.getItem('user');
+  const userId = storedUser ? JSON.parse(storedUser)._id : null;
+  const socket = io('http://localhost:9000');
 
-  // Fetch users on component mount
   useEffect(() => {
-    const fetchUsers = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.error('No token found in localStorage');
-        return;
-      }
-
+    const fetchConversations = async () => {
       try {
-        const response = await axios.post('https://careautomate-backend.vercel.app/fetchAll/fetchAllHCMsTenants', {}, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+        const response = await axios.get('https://careautomate-backend.vercel.app/api/conversations/all');
+        const conversations = response.data;
+
+        const conversationUsers = conversations.map(conv => {
+          const user = conv.senderId._id === userId ? conv.receiverId : conv.senderId;
+          return { ...user, lastMessage: conv.lastMessage, conversationId: conv._id };
         });
-        const { hcm, tenants } = response.data.data;
-        setUsers([...hcm, ...tenants]);
+
+        setUsers(conversationUsers);
+
+        if (conversationUsers.length > 0) {
+          setSelectedUser(conversationUsers[0]._id);
+        }
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching conversations:', error);
       }
     };
 
-    fetchUsers();
-  }, []);
+    fetchConversations();
+  }, [userId]);
 
-  // Fetch messages when a user is selected
   useEffect(() => {
     const fetchMessages = async () => {
       if (!selectedUser) return;
 
       try {
-        const response = await axios.get('http://localhost:9003/api/messages', {
-          params: { userId, selectedUserId: selectedUser }
-        });
-        setMessages(response.data);
+        const selectedConversation = users.find(user => user._id === selectedUser);
+        if (selectedConversation) {
+          console.log('Fetching messages for conversation ID:', selectedConversation.conversationId);
+          setConversationId(selectedConversation.conversationId);
+          const messagesResponse = await axios.get(`https://careautomate-backend.vercel.app/api/messages/${selectedConversation.conversationId}`);
+          console.log('Messages fetched:', messagesResponse.data);
+          setMessages(messagesResponse.data);
+        }
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
     };
-
     fetchMessages();
-  }, [selectedUser]);
+  }, [selectedUser, users]);
 
-  // Handle incoming messages via Socket.IO
-  useEffect(() => {
-    socket.on('chat message', (msg) => {
-      if ((msg.sender === userId && msg.receiver === selectedUser) || (msg.sender === selectedUser && msg.receiver === userId)) {
-        setMessages((prevMessages) => [...prevMessages, msg]);
-      }
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [selectedUser, userId]);
-
-  // Send a new message
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (message.trim() && selectedUser) {
-      const newMessage = {
-        text: message,
-        sender: userId,
-        receiver: selectedUser,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages([...messages, newMessage]);
-      socket.emit('chat message', newMessage);
+      try {
+        let currentConversationId = conversationId;
 
-      // Save message to backend
-      axios.post('http://localhost:9003/api/messages', newMessage)
-        .catch(error => console.error('Error saving message:', error));
+        if (!currentConversationId) {
+          const conversationResponse = await axios.post('https://careautomate-backend.vercel.app/api/conversations', {
+            senderId: userId,
+            receiverId: selectedUser
+          });
+          currentConversationId = conversationResponse.data._id;
+          setConversationId(currentConversationId);
+        }
+
+        const newMessage = {
+          text: message,
+          senderId: userId,
+          receiverId: selectedUser,
+          conversationId: currentConversationId,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+
+        setMessages([...messages, newMessage]);
+
+        socket.emit('sendMessage', newMessage);
+
+        await axios.post(`https://careautomate-backend.vercel.app/api/messages`, newMessage);
+      } catch (error) {
+        console.error('Error sending message:', error);
+      }
 
       setMessage('');
+    } else {
+      console.log('Message not sent. Check conditions.');
     }
   };
 
@@ -95,7 +102,6 @@ const Communication = ({ userId }) => {
   return (
     <div className="p-8 w-[1200px] h-full justify-center items-center">
       <div className="flex gap-4">
-        {/* Chat List Component */}
         <div className="relative w-full h-full p-4">
           <h1 className="text-2xl font-bold mb-2">Communications</h1>
           <div className="flex justify-between items-center mb-4">
@@ -142,15 +148,13 @@ const Communication = ({ userId }) => {
                 <img src={tenant} alt={user.name} className="w-11 h-11 rounded-full mr-3 ml-2" />
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                  <p className="text-xs text-gray-400">Last message time</p>
-                  <p className="text-sm text-gray-600 truncate">Last message preview...</p>
+                  <p className="text-xs text-gray-400">{user.lastMessage}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Chat Screen Component */}
         <div className="w-full h-[600px] bg-white rounded-lg shadow-lg flex flex-col mt-8">
           <div className="flex items-center p-4 border-b h-20">
             <img src={tenant} alt="profile" className="rounded-full w-10 h-10" />
@@ -160,16 +164,14 @@ const Communication = ({ userId }) => {
           </div>
           <div className="flex-1 p-4 space-y-2 overflow-y-auto pb-8 text-sm">
             {messages.map((msg, index) => (
-              <div key={index} className={msg.sender === userId ? 'flex justify-end' : 'flex'}>
-                <div className={`bg-${msg.sender === userId ? 'blue' : 'gray'}-200 rounded-3xl ${msg.sender === userId ? 'rounded-tr-none' : 'rounded-tl-none'} px-3 py-1 text-sm text-gray-900 max-w-xs`}>
+              <div key={index} className={msg.senderId === userId ? 'flex justify-end' : 'flex'}>
+                <div className={`bg-${msg.senderId === userId ? 'blue' : 'gray'}-200 rounded-3xl ${msg.senderId === userId ? 'rounded-tr-none' : 'rounded-tl-none'} px-3 py-1 text-sm text-gray-900 max-w-xs`}>
                   <div>{msg.text}</div>
-                  <div className="text-xs text-gray-500 text-right">{msg.timestamp}</div>
+                  <div className="text-xs text-gray-500 text-right">{new Date(msg.createdAt).toLocaleTimeString()}</div>
                 </div>
               </div>
             ))}
           </div>
-
-          {/* Message Input */}
           <div className="p-2 flex items-center">
             <div className="relative w-full">
               <input
@@ -178,6 +180,11 @@ const Communication = ({ userId }) => {
                 className="w-full p-2 pl-4 pr-10 border rounded-3xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSendMessage();
+                  }
+                }}
               />
               <button className="absolute right-12 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5">
                 <img src="Attach.png" alt="Attach" />
