@@ -22,7 +22,7 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('https://careautomate-backend.vercel.app/auth/login', { // Updated URL
+      const response = await fetch('https://careautomate-backend.vercel.app/auth/login/', { // Updated URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
