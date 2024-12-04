@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
@@ -9,16 +9,20 @@ import mobile from '../../images/mobilepic.png';
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showOtpPopup, setShowOtpPopup] = useState(false);
+  const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
   const { login } = useAuth();
+  const otpRefs = useRef([]);
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading
+    setLoading(true);
 
     try {
-      const response = await fetch('https://careautomate-backend.vercel.app/auth/login/', {
+      const response = await fetch('http://localhost:9003/auth/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -26,31 +30,83 @@ const LoginForm = () => {
         body: JSON.stringify({ email, password }),
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.error || 'Invalid credentials');
+        return;
+      }
+
       const data = await response.json();
 
-      if (!response.ok) {
-        toast.error(data.error || 'Invalid credentials');
-      } else if (data.token) {
-
-        login(data.user, data.token);
-        toast.success('Login successful');
-        // Pass token and user data to update context
-        navigate('/dashboard');
+      if (data.token) {
+        toast.success('Login successful. Please verify your email.');
+        setUserData(data);
+        setShowOtpPopup(true);
+        await fetch('http://localhost:9003/auth/request-verification-code/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        });
       }
     } catch (error) {
       toast.error('An error occurred. Please try again.');
       console.error(error);
     } finally {
-      setLoading(false); // End loading
+      setLoading(false);
     }
   };
 
+  const handleVerifyEmail = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:9003/auth/verify-email/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, code: otp }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || 'Invalid verification code.');
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success('Email verified successfully.');
+        login(userData.user, userData.token);
+        navigate('/dashboard');
+      } else {
+        toast.error(data.message || 'Invalid verification code.');
+      }
+    } catch (error) {
+      toast.error('Error verifying email.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOtpChange = (value, index) => {
+    const newOtp = otp.split('');
+    newOtp[index] = value;
+    setOtp(newOtp.join(''));
+
+    if (value && index < otpRefs.current.length - 1) {
+      otpRefs.current[index + 1].focus();
+    }
+  };
 
   return (
     <div className="login-container">
       <div className="login-box">
         <h1>Welcome to Care Automate!</h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleLogin}>
           <input
             type="email"
             placeholder="Email"
@@ -75,7 +131,7 @@ const LoginForm = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             type="submit"
-            disabled={loading} // Disable button when loading
+            disabled={loading}
           >
             {loading ? 'Loading...' : 'Login'}
           </motion.button>
@@ -85,6 +141,37 @@ const LoginForm = () => {
           <p>Don't have an account? <a href="/signup">Sign Up</a></p>
         </div>
       </div>
+
+      {showOtpPopup && (
+        <div className="otp-popup">
+          <div className="otp-popup-content">
+            <h2>Enter OTP</h2>
+            <div className="otp-inputs">
+              {[...Array(6)].map((_, i) => (
+                <input
+                  key={i}
+                  type="text"
+                  maxLength="1"
+                  className="otp-input"
+                  ref={(el) => (otpRefs.current[i] = el)}
+                  value={otp[i] || ''}
+                  onChange={(e) => handleOtpChange(e.target.value, i)}
+                  required
+                />
+              ))}
+            </div>
+            <motion.button
+              className="login-btn"
+              onClick={handleVerifyEmail}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              disabled={loading}
+            >
+              {loading ? 'Verifying...' : 'Proceed'}
+            </motion.button>
+          </div>
+        </div>
+      )}
 
       <div className="login-image-container">
         <img src={mobile} alt="smartphone" className="signup-image" />

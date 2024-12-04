@@ -43,9 +43,25 @@ export default function PlanUsage() {
                 const transitionYears = Object.keys(response.data['Housing Transition'] || {});
                 const sustainingYears = Object.keys(response.data['Housing Sustaining'] || {});
                 const allYears = Array.from(new Set([...transitionYears, ...sustainingYears])).sort();
-                setYearOptions(allYears);
-                if (allYears.length > 0) {
-                    setSelectedYear(allYears[0]);
+
+                // Generate random periods for each year
+                const formattedPeriods = allYears.map(year => {
+                    const startMonth = Math.floor(Math.random() * 6) + 1; // Start month between 1 and 6
+                    const startDay = Math.floor(Math.random() * 28) + 1;
+                    const endMonth = startMonth + 7; // End month 7 months later
+                    const endDay = Math.floor(Math.random() * 28) + 1;
+                    const startDate = new Date(year, startMonth - 1, startDay);
+                    const endDate = new Date(year, endMonth - 1, endDay);
+
+                    return {
+                        period: `${startDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]}`,
+                        year
+                    };
+                });
+
+                setYearOptions(formattedPeriods);
+                if (formattedPeriods.length > 0) {
+                    setSelectedYear(formattedPeriods[0].year);
                 }
             } catch (error) {
                 console.error('Error fetching units data:', error);
@@ -133,8 +149,8 @@ export default function PlanUsage() {
                     value={selectedYear}
                     onChange={(e) => setSelectedYear(e.target.value)}
                 >
-                    {yearOptions.map((year, index) => (
-                        <option key={index} value={year}>{year}</option>
+                    {yearOptions.map((option, index) => (
+                        <option key={index} value={option.year}>{option.period}</option>
                     ))}
                 </select>
             </div>
