@@ -1,36 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { FaSearch, FaPlus } from 'react-icons/fa';
-import tenantImage from '../images/tenant.jpg';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { FaSearch, FaPlus } from "react-icons/fa";
+import tenantImage from "../images/tenant.jpg";
+import { useNavigate } from "react-router-dom";
+import { CiCalendarDate } from "react-icons/ci";
+import { IoIosMenu } from "react-icons/io";
+import { TbMessage } from "react-icons/tb";
+import { IoDocumentTextOutline } from "react-icons/io5";
+
+import axios from "axios";
 
 const Tenants = () => {
   const navigate = useNavigate();
   const [tenants, setTenants] = useState([]);
 
   const handleAddTenantClick = () => {
-    navigate('/tenants/createTenant');
+    navigate("/tenants/createTenant");
   };
 
   const handleTenantClick = (tenantId) => {
-    navigate('/tenants/tenantProfile', { state: { tenantId } });
+    navigate("/tenants/tenantProfile", { state: { tenantId } });
   };
 
   useEffect(() => {
     const fetchTenants = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        console.error('No token found in localStorage');
+        console.error("No token found in localStorage");
         return;
       }
       try {
         const response = await axios.post(
-          'https://careautomate-backend.vercel.app/fetchAll/fetchAllHCMsTenants',
+          "https://careautomate-backend.vercel.app/fetchAll/fetchAllHCMsTenants",
           {},
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
           }
         );
@@ -38,7 +43,10 @@ const Tenants = () => {
         const tenantsData = response.data?.data?.tenants || [];
         setTenants(tenantsData);
       } catch (error) {
-        console.error('Error fetching tenants:', error.response?.data || error.message);
+        console.error(
+          "Error fetching tenants:",
+          error.response?.data || error.message
+        );
       }
     };
 
@@ -52,33 +60,66 @@ const Tenants = () => {
       <div style={styles.headerActions}>
         <div style={styles.searchBar}>
           <FaSearch style={styles.searchIcon} />
-          <input type="text" placeholder="Search..." style={styles.searchInput} />
+          <input
+            type="text"
+            placeholder="Search..."
+            style={styles.searchInput}
+          />
           <button style={styles.searchButton}>Search</button>
         </div>
 
         <button style={styles.addTenantBtn} onClick={handleAddTenantClick}>
-          <FaPlus style={styles.plusIcon} /> New Tenant
+          <FaPlus style={styles.plusIcon} />
+          Add New Tenant
         </button>
       </div>
 
       <div style={styles.tenantGrid}>
         {tenants.length > 0 ? (
-          tenants.map((tenant, index) => (
-            <div key={tenant._id || index} style={styles.tenantBox}>
-              <div style={styles.tenantInfo}>
-                <div style={styles.tenantImage} onClick={() => handleTenantClick(tenant._id)}>
-                  <img src={tenantImage} alt="Tenant" style={styles.image} />
+          tenants
+            .filter(
+              (tenant) =>
+                tenant.tenantData?.firstName &&
+                tenant.tenantData?.lastName &&
+                (tenant.tenantData?.phoneNumber || tenant.phoneNo) &&
+                (tenant.tenantData?.email || tenant.email)
+            )
+            .map((tenant, index) => (
+              <div style={styles.tenantCard} key={tenant._id || index}>
+                <div style={styles.tenantCardUpperContainer}>
+                  <div style={styles.tenantDetails}>
+                    <p
+                      style={styles.tenantNameUI}
+                      onClick={() => handleTenantClick(tenant._id)}
+                    >
+                      {tenant.tenantData?.firstName}{" "}
+                      {tenant.tenantData?.lastName}
+                    </p>
+                    <p style={styles.tenantSubNameUI}>
+                      {" "}
+                      {tenant.tenantData?.phoneNumber || tenant.phoneNo}
+                    </p>
+                    <p style={styles.tenantSubNameUI}>
+                      {" "}
+                      {tenant.tenantData?.email || tenant.email}
+                    </p>
+                  </div>
+                  <div>
+                    <img
+                      style={styles.tenantImg}
+                      onClick={() => handleTenantClick(tenant._id)}
+                      src={tenantImage}
+                    ></img>
+                  </div>
                 </div>
-                <div>
-                  <h3 style={styles.tenantName} onClick={() => handleTenantClick(tenant._id)}>
-                    {tenant.tenantData?.firstName} {tenant.tenantData?.lastName}
-                  </h3>
-                  <p style={styles.tenantDetail}>{tenant.tenantData?.phoneNumber || tenant.phoneNo}</p>
-                  <p style={styles.tenantDetail}>{tenant.tenantData?.email || tenant.email}</p>
+                <div style={styles.tenantIconsContainer}>
+                  <CiCalendarDate style={styles.tenantIcon} />
+                  <IoIosMenu style={styles.tenantIcon} />
+                  <TbMessage style={styles.tenantIcon} />
+                  <IoDocumentTextOutline style={styles.tenantIcon} />
                 </div>
               </div>
-            </div>
-          ))
+            ))
         ) : (
           <p style={styles.noDataText}>No data available</p>
         )}
@@ -89,114 +130,123 @@ const Tenants = () => {
 
 const styles = {
   container: {
-    padding: '10px',
-    fontFamily: 'Arial, sans-serif',
-
-    width: '1180px',
-    height: '80vh',
-    marginLeft: '250px',
-
+    padding: "10px",
+    fontFamily: "Arial, sans-serif",
+    margin: "1rem",
+    fontFamily: "Poppins",
   },
   header: {
-    fontSize: '2em',
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
-    marginBottom: '20px',
+    fontSize: "2em",
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: "20px",
   },
   headerActions: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "20px",
   },
   searchBar: {
-    display: 'flex',
-    alignItems: 'center',
-    borderRadius: '25px',
-    backgroundColor: '#fff',
-    padding: '5px 10px',
-    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
-    width: '350px',
-    height: '45px',
+    display: "flex",
+    alignItems: "center",
+    borderRadius: "25px",
+    backgroundColor: "#fff",
+    padding: "5px 15px",
+    boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
+    width: "350px",
+    height: "45px",
+    marginRight: "1rem",
   },
   searchIcon: {
-    color: '#555',
-    marginRight: '5px',
+    color: "#555",
+    marginRight: "10px",
+    fontSize: "1.5rem",
   },
   searchInput: {
-    border: 'none',
-    outline: 'none',
-    width: '100%',
-    fontSize: '16px',
+    border: "none",
+    outline: "none",
+    width: "100%",
+    fontSize: "16px",
   },
   addTenantBtn: {
-    backgroundColor: '#4CAF50',
-    color: '#fff',
-    padding: '8px 15px',
-    borderRadius: '25px',
-    border: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    transition: 'background-color 0.3s',
+    backgroundColor: "#6F84F8",
+    color: "#fff",
+    padding: "8px 25px",
+    borderRadius: "25px",
+    border: "none",
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
+    fontSize: "16px",
+    transition: "background-color 0.3s",
   },
   plusIcon: {
-    marginRight: '5px',
+    marginRight: "5px",
   },
   tenantGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '20px',
-    padding: '10px 10px 40px',
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gap: "20px",
+    padding: "10px 10px 40px",
   },
-  tenantBox: {
-    width: '23rem',
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-    overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '15px',
+  tenantCard: {
+    boxShadow: "0px 0px 9px rgba(0, 0, 0, 0.25)",
+    backgroundColor: "#fff",
+    borderRadius: "1rem",
+    padding: "0.5rem 1rem",
   },
-  tenantInfo: {
-    display: 'flex',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    gap: '20px',
-    width: '100%',
+  tenantDetails: {
+    flex: "1",
+    marginRight: "1rem",
   },
-  tenantName: {
-    fontSize: '1.25em',
-    fontWeight: 'bold',
-    color: '#333',
-    cursor: 'pointer',
+  tenantNameUI: {
+    fontWeight: "bold",
+    fontSize: "1.2rem",
+    color: "rgba(0, 0, 0, 0.73)",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: "150px",
+    cursor: "pointer",
   },
-  tenantDetail: {
-    fontSize: '0.9em',
-    color: '#666',
+
+  tenantSubNameUI: {
+    fontSize: "0.8rem",
+    color: "rgba(0, 0, 0, 0.73)",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: "150px",
   },
-  tenantImage: {
-    width: '100px',
-    height: '100px',
-    borderRadius: '50%',
-    overflow: 'hidden',
-    marginTop: '15px',
-    cursor: 'pointer',
+  tenantImg: {
+    width: "70px",
+    height: "70px",
+    borderRadius: "50%",
+    objectFit: "cover",
+    margin: "1rem",
+    cursor: "pointer",
   },
-  image: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
+  tenantCardUpperContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
+  tenantIconsContainer: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "1rem",
+  },
+  tenantIcon: {
+    fontSize: "1.3rem",
+    marginRight: "0.6rem",
+    color: "rgba(0, 0, 0, 0.73)",
+    cursor: "pointer",
+  },
+
   noDataText: {
-    textAlign: 'center',
-    color: '#999',
-    fontSize: '1.2em',
+    textAlign: "center",
+    color: "#999",
+    fontSize: "1.2em",
   },
 };
 

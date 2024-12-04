@@ -1,8 +1,15 @@
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   background-color: #f0f0f0;
   margin: 0;
   padding: 0;
+  /* display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; */
+}
+
+.login-outer-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -49,7 +56,7 @@ form {
 }
 
 .login-btn {
-  background-color: #6F84F8;
+  background-color: #6f84f8;
   margin-top: 25px;
   color: white;
   padding: 12px;
@@ -58,7 +65,9 @@ form {
   border-radius: 30px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
   /* Subtle shadow for depth */
 }
@@ -68,10 +77,6 @@ form {
   font-size: 14px;
   color: #888;
 }
-
-
-
-
 
 .signup-link {
   margin-top: 50px;
@@ -85,7 +90,7 @@ form {
 /* New extended section for the image */
 .login-image-container {
   flex: 1;
-  background-color: #6F84F8;
+  background-color: #6f84f8;
   /* Same color as login button */
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
