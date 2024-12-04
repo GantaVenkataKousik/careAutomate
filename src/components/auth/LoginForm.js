@@ -22,7 +22,7 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:9003/auth/login/', {
+      const response = await fetch('https://careautomate-backend.vercel.app/auth/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ const LoginForm = () => {
         toast.success('Login successful. Please verify your email.');
         setUserData(data);
         setShowOtpPopup(true);
-        await fetch('http://localhost:9003/auth/request-verification-code/', {
+        await fetch('https://careautomate-backend.vercel.app/auth/request-verification-code/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ const LoginForm = () => {
   const handleVerifyEmail = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:9003/auth/verify-email/', {
+      const response = await fetch('https://careautomate-backend.vercel.app/auth/verify-email/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

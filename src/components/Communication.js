@@ -17,7 +17,7 @@ const Communication = () => {
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const response = await axios.get('http://localhost:9003/api/conversations/all');
+        const response = await axios.get('https://careautomate-backend.vercel.app/api/conversations/all');
         const conversations = response.data;
 
         const conversationUsers = conversations.map(conv => {
@@ -47,7 +47,7 @@ const Communication = () => {
         if (selectedConversation) {
           console.log('Fetching messages for conversation ID:', selectedConversation.conversationId);
           setConversationId(selectedConversation.conversationId);
-          const messagesResponse = await axios.get(`http://localhost:9003/api/messages/${selectedConversation.conversationId}`);
+          const messagesResponse = await axios.get(`https://careautomate-backend.vercel.app/api/messages/${selectedConversation.conversationId}`);
           console.log('Messages fetched:', messagesResponse.data);
           setMessages(messagesResponse.data);
         }
@@ -64,7 +64,7 @@ const Communication = () => {
         let currentConversationId = conversationId;
 
         if (!currentConversationId) {
-          const conversationResponse = await axios.post('http://localhost:9003/api/conversations', {
+          const conversationResponse = await axios.post('https://careautomate-backend.vercel.app/api/conversations', {
             senderId: userId,
             receiverId: selectedUser
           });
@@ -84,7 +84,7 @@ const Communication = () => {
 
         socket.emit('sendMessage', newMessage);
 
-        await axios.post(`http://localhost:9003/api/messages`, newMessage);
+        await axios.post(`https://careautomate-backend.vercel.app/api/messages`, newMessage);
       } catch (error) {
         console.error('Error sending message:', error);
       }
