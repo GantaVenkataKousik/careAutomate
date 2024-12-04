@@ -1,9 +1,9 @@
-.careAutomate {
+/* .careAutomate {
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-}
+} */
 
 .navbar {
   position: fixed;
@@ -21,7 +21,7 @@
 }
 
 .main-content {
-  display: flex;
+  /* display: flex; */
   height: calc(100vh - 60px);
   margin-top: 60px;
 }
@@ -35,7 +35,8 @@
   background-color: #343a40;
   color: white;
   padding: 20px;
-
   overflow-y: auto;
 }
-
+.content {
+  margin-left: 250px;
+}
