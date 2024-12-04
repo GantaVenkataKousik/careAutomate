@@ -1,106 +1,67 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { motion } from 'framer-motion';
-import { useAuth } from '../../AuthContext';
-import './Login.css';
-import mobile from '../../images/mobilepic.png';
+import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import { useAuth } from "../../AuthContext";
+import "./Login.css";
+import mobile from "../../images/mobilepic.png";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [otp, setOtp] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  // const [otp, setOtp] = useState(''); // Commented out OTP state
   const [loading, setLoading] = useState(false);
-  const [showOtpPopup, setShowOtpPopup] = useState(false);
+  // const [showOtpPopup, setShowOtpPopup] = useState(false); // Commented out OTP popup state
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
   const { login } = useAuth();
-  const otpRefs = useRef([]);
+  // const otpRefs = useRef([]); // Commented out OTP refs
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await fetch('https://careautomate-backend.vercel.app/auth/login/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        "https://careautomate-backend.vercel.app/auth/login/",
+        {
+          // Updated URL
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
-        toast.error(errorData.error || 'Invalid credentials');
+        toast.error(errorData.error || "Invalid credentials");
         return;
       }
 
       const data = await response.json();
 
       if (data.token) {
-        toast.success('Login successful. Please verify your email.');
-        setUserData(data);
-        setShowOtpPopup(true);
-        await fetch('https://careautomate-backend.vercel.app/auth/request-verification-code/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email }),
-        });
+        toast.success("Login successful.");
+        login(data.user, data.token);
+        navigate("/dashboard");
       }
     } catch (error) {
-      toast.error('An error occurred. Please try again.');
+      toast.error("An error occurred. Please try again.");
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVerifyEmail = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('https://careautomate-backend.vercel.app/auth/verify-email/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, code: otp }),
-      });
+  // const handleVerifyEmail = async () => {
+  //   // Commented out OTP verification logic
+  // };
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message || 'Invalid verification code.');
-        return;
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success('Email verified successfully.');
-        login(userData.user, userData.token);
-        navigate('/dashboard');
-      } else {
-        toast.error(data.message || 'Invalid verification code.');
-      }
-    } catch (error) {
-      toast.error('Error verifying email.');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOtpChange = (value, index) => {
-    const newOtp = otp.split('');
-    newOtp[index] = value;
-    setOtp(newOtp.join(''));
-
-    if (value && index < otpRefs.current.length - 1) {
-      otpRefs.current[index + 1].focus();
-    }
-  };
+  // const handleOtpChange = (value, index) => {
+  //   // Commented out OTP change handler
+  // };
 
   return (
     <div className="login-container">
@@ -125,24 +86,27 @@ const LoginForm = () => {
           />
           <motion.button
             className="login-btn"
-            initial={{ x: '-100vw' }}
+            initial={{ x: "-100vw" }}
             animate={{ x: 0 }}
-            transition={{ type: 'tween', duration: 0.8 }}
+            transition={{ type: "tween", duration: 0.8 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             type="submit"
             disabled={loading}
           >
-            {loading ? 'Loading...' : 'Login'}
+            {loading ? "Loading..." : "Login"}
           </motion.button>
         </form>
 
         <div className="signup-link">
-          <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+          <p>
+            Don't have an account? <a href="/signup">Sign Up</a>
+          </p>
         </div>
       </div>
 
-      {showOtpPopup && (
+      {/* Commented out OTP popup */}
+      {/* {showOtpPopup && (
         <div className="otp-popup">
           <div className="otp-popup-content">
             <h2>Enter OTP</h2>
@@ -171,7 +135,7 @@ const LoginForm = () => {
             </motion.button>
           </div>
         </div>
-      )}
+      )} */}
 
       <div className="login-image-container">
         <img src={mobile} alt="smartphone" className="signup-image" />
