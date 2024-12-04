@@ -22,7 +22,7 @@
 
 .main-content {
   /* display: flex; */
-  height: calc(100vh - 60px);
+  height: calc(100vh - 80px);
   margin-top: 60px;
 }
 
@@ -39,4 +39,5 @@
 }
 .content {
   margin-left: 250px;
+  margin-top: 85px;
 }

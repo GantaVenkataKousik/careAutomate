@@ -18,7 +18,14 @@ const Tenants = () => {
   };
 
   const handleTenantClick = (tenantId) => {
-    navigate("/tenants/tenantProfile", { state: { tenantId } });
+    const tenant = tenants.find((t) => t._id === tenantId); // Find the tenant by ID
+    if (tenant) {
+      navigate("/tenants/tenantProfile", {
+        state: { tenantId, tenantData: tenant },
+      });
+    } else {
+      console.error("Tenant not found!");
+    }
   };
 
   useEffect(() => {
@@ -42,6 +49,7 @@ const Tenants = () => {
 
         const tenantsData = response.data?.data?.tenants || [];
         setTenants(tenantsData);
+        console.log(tenantsData);
       } catch (error) {
         console.error(
           "Error fetching tenants:",
