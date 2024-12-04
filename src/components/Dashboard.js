@@ -158,7 +158,7 @@ const ProfilePage = () => {
 
   return (
     <div
-      className=" flex flex-col h-[100vh] ml-[250px] overflow-y-auto gap-10"
+      className=" flex flex-col  ml-4  overflow-y-auto gap-10"
       style={{ fontFamily: "Poppins" }}
     >
       <div className="flex gap-6">

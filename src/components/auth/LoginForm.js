@@ -64,49 +64,50 @@ const LoginForm = () => {
   // };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h1>Welcome to Care Automate!</h1>
-        <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Email"
-            className="login-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="login-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <motion.button
-            className="login-btn"
-            initial={{ x: "-100vw" }}
-            animate={{ x: 0 }}
-            transition={{ type: "tween", duration: 0.8 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? "Loading..." : "Login"}
-          </motion.button>
-        </form>
+    <div className="login-outer-container">
+      <div className="login-container">
+        <div className="login-box">
+          <h1>Welcome to Care Automate!</h1>
+          <form onSubmit={handleLogin}>
+            <input
+              type="email"
+              placeholder="Email"
+              className="login-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="login-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <motion.button
+              className="login-btn"
+              initial={{ x: "-100vw" }}
+              animate={{ x: 0 }}
+              transition={{ type: "tween", duration: 0.8 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "Login"}
+            </motion.button>
+          </form>
 
-        <div className="signup-link">
-          <p>
-            Don't have an account? <a href="/signup">Sign Up</a>
-          </p>
+          <div className="signup-link">
+            <p>
+              Don't have an account? <a href="/signup">Sign Up</a>
+            </p>
+          </div>
         </div>
-      </div>
 
-      {/* Commented out OTP popup */}
-      {/* {showOtpPopup && (
+        {/* Commented out OTP popup */}
+        {/* {showOtpPopup && (
         <div className="otp-popup">
           <div className="otp-popup-content">
             <h2>Enter OTP</h2>
@@ -137,8 +138,9 @@ const LoginForm = () => {
         </div>
       )} */}
 
-      <div className="login-image-container">
-        <img src={mobile} alt="smartphone" className="signup-image" />
+        <div className="login-image-container">
+          <img src={mobile} alt="smartphone" className="signup-image" />
+        </div>
       </div>
     </div>
   );

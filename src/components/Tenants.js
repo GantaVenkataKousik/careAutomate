@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import { FaSearch, FaPlus } from "react-icons/fa";
 import tenantImage from "../images/tenant.jpg";
 import { useNavigate } from "react-router-dom";
+import { CiCalendarDate } from "react-icons/ci";
+import { IoIosMenu } from "react-icons/io";
+import { TbMessage } from "react-icons/tb";
+import { IoDocumentTextOutline } from "react-icons/io5";
+
 import axios from "axios";
 
 const Tenants = () => {
@@ -72,38 +77,57 @@ const Tenants = () => {
         </div>
 
         <button style={styles.addTenantBtn} onClick={handleAddTenantClick}>
-          <FaPlus style={styles.plusIcon} /> New Tenant
+          <FaPlus style={styles.plusIcon} />
+          Add New Tenant
         </button>
       </div>
 
       <div style={styles.tenantGrid}>
         {tenants.length > 0 ? (
-          tenants.map((tenant, index) => (
-            <div key={tenant._id || index} style={styles.tenantBox}>
-              <div style={styles.tenantInfo}>
-                <div
-                  style={styles.tenantImage}
-                  onClick={() => handleTenantClick(tenant._id)}
-                >
-                  <img src={tenantImage} alt="Tenant" style={styles.image} />
+          tenants
+            .filter(
+              (tenant) =>
+                tenant.tenantData?.firstName &&
+                tenant.tenantData?.lastName &&
+                (tenant.tenantData?.phoneNumber || tenant.phoneNo) &&
+                (tenant.tenantData?.email || tenant.email)
+            )
+            .map((tenant, index) => (
+              <div style={styles.tenantCard} key={tenant._id || index}>
+                <div style={styles.tenantCardUpperContainer}>
+                  <div style={styles.tenantDetails}>
+                    <p
+                      style={styles.tenantNameUI}
+                      onClick={() => handleTenantClick(tenant._id)}
+                    >
+                      {tenant.tenantData?.firstName}{" "}
+                      {tenant.tenantData?.lastName}
+                    </p>
+                    <p style={styles.tenantSubNameUI}>
+                      {" "}
+                      {tenant.tenantData?.phoneNumber || tenant.phoneNo}
+                    </p>
+                    <p style={styles.tenantSubNameUI}>
+                      {" "}
+                      {tenant.tenantData?.email || tenant.email}
+                    </p>
+                  </div>
+                  <div>
+                    <img
+                      style={styles.tenantImg}
+                      onClick={() => handleTenantClick(tenant._id)}
+                      src={tenantImage}
+                    ></img>
+                  </div>
                 </div>
-                <div>
-                  <h3
-                    style={styles.tenantName}
-                    onClick={() => handleTenantClick(tenant._id)}
-                  >
-                    {tenant.tenantData?.firstName} {tenant.tenantData?.lastName}
-                  </h3>
-                  <p style={styles.tenantDetail}>
-                    {tenant.tenantData?.phoneNumber || tenant.phoneNo}
-                  </p>
-                  <p style={styles.tenantDetail}>
-                    {tenant.tenantData?.email || tenant.email}
-                  </p>
+                <div style={styles.tenantIconsContainer}>
+                  <CiCalendarDate style={styles.tenantIcon} />
+                  <IoIosMenu style={styles.tenantIcon} />
+                  <TbMessage style={styles.tenantIcon} />
+                  <IoDocumentTextOutline style={styles.tenantIcon} />
                 </div>
               </div>
-            </div>
-          ))
+            ))
         ) : (
           <p style={styles.noDataText}>No data available</p>
         )}
@@ -116,21 +140,17 @@ const styles = {
   container: {
     padding: "10px",
     fontFamily: "Arial, sans-serif",
-
-    width: "1180px",
-    height: "80vh",
-    marginLeft: "250px",
+    margin: "1rem",
+    fontFamily: "Poppins",
   },
   header: {
     fontSize: "2em",
     fontWeight: "bold",
     color: "#333",
-    textAlign: "center",
     marginBottom: "20px",
   },
   headerActions: {
     display: "flex",
-    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "20px",
   },
@@ -139,14 +159,16 @@ const styles = {
     alignItems: "center",
     borderRadius: "25px",
     backgroundColor: "#fff",
-    padding: "5px 10px",
+    padding: "5px 15px",
     boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
     width: "350px",
     height: "45px",
+    marginRight: "1rem",
   },
   searchIcon: {
     color: "#555",
-    marginRight: "5px",
+    marginRight: "10px",
+    fontSize: "1.5rem",
   },
   searchInput: {
     border: "none",
@@ -155,16 +177,15 @@ const styles = {
     fontSize: "16px",
   },
   addTenantBtn: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#6F84F8",
     color: "#fff",
-    padding: "8px 15px",
+    padding: "8px 25px",
     borderRadius: "25px",
     border: "none",
     display: "flex",
     alignItems: "center",
     cursor: "pointer",
     fontSize: "16px",
-    fontWeight: "bold",
     transition: "background-color 0.3s",
   },
   plusIcon: {
@@ -176,47 +197,60 @@ const styles = {
     gap: "20px",
     padding: "10px 10px 40px",
   },
-  tenantBox: {
-    width: "23rem",
+  tenantCard: {
+    boxShadow: "0px 0px 9px rgba(0, 0, 0, 0.25)",
     backgroundColor: "#fff",
-    borderRadius: "8px",
-    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-    overflow: "hidden",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: "15px",
+    borderRadius: "1rem",
+    padding: "0.5rem 1rem",
   },
-  tenantInfo: {
-    display: "flex",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    gap: "20px",
-    width: "100%",
+  tenantDetails: {
+    flex: "1",
+    marginRight: "1rem",
   },
-  tenantName: {
-    fontSize: "1.25em",
+  tenantNameUI: {
     fontWeight: "bold",
-    color: "#333",
-    cursor: "pointer",
-  },
-  tenantDetail: {
-    fontSize: "0.9em",
-    color: "#666",
-  },
-  tenantImage: {
-    width: "100px",
-    height: "100px",
-    borderRadius: "50%",
+    fontSize: "1.2rem",
+    color: "rgba(0, 0, 0, 0.73)",
+    whiteSpace: "nowrap",
     overflow: "hidden",
-    marginTop: "15px",
+    textOverflow: "ellipsis",
+    maxWidth: "150px",
     cursor: "pointer",
   },
-  image: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
+
+  tenantSubNameUI: {
+    fontSize: "0.8rem",
+    color: "rgba(0, 0, 0, 0.73)",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: "150px",
   },
+  tenantImg: {
+    width: "70px",
+    height: "70px",
+    borderRadius: "50%",
+    objectFit: "cover",
+    margin: "1rem",
+    cursor: "pointer",
+  },
+  tenantCardUpperContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  tenantIconsContainer: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "1rem",
+  },
+  tenantIcon: {
+    fontSize: "1.3rem",
+    marginRight: "0.6rem",
+    color: "rgba(0, 0, 0, 0.73)",
+    cursor: "pointer",
+  },
+
   noDataText: {
     textAlign: "center",
     color: "#999",
