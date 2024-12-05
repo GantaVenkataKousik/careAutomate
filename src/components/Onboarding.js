@@ -42,7 +42,7 @@ const SetupAccount = () => {
                     <div style={styles.row}>
                         <InputField label="Username" />
                         <InputField label="Password" type="password" />
-                        <button type="button" style={styles.updateButton}>Update</button>
+                        {/* <button type="button" style={styles.updateButton}>Update</button> */}
                     </div>
                 </div>
                 <div>
@@ -50,7 +50,7 @@ const SetupAccount = () => {
                     <div style={styles.row}>
                         <InputField label="Username" />
                         <InputField label="Password" type="password" />
-                        <button type="button" style={styles.updateButton}>Update</button>
+                        {/* <button type="button" style={styles.updateButton}>Update</button> */}
                     </div>
                 </div>
                 <div style={styles.buttonRow}>
@@ -239,14 +239,14 @@ const styles = {
         borderRadius: "25px",
         cursor: "pointer",
     },
-    updateButton: {
-        padding: "5px 10px",
-        background: "#2196f3",
-        color: "#fff",
-        border: "none",
-        borderRadius: "5px",
-        cursor: "pointer",
-    },
+    // updateButton: {
+    //     padding: "5px 10px",
+    //     background: "#2196f3",
+    //     color: "#fff",
+    //     border: "none",
+    //     borderRadius: "5px",
+    //     cursor: "pointer",
+    // },
 };
 
 export default SetupAccount;
