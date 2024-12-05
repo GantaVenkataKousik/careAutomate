@@ -15,6 +15,8 @@ import {
   FaEnvelope,
   FaUserEdit,
   FaWalking,
+  FaRegFolder,
+  FaRegFilePdf,
 } from "react-icons/fa";
 import { Document, Page } from "react-pdf";
 import samplePDF from "../assets/sample_document.pdf";
@@ -250,96 +252,58 @@ const ProfilePage = () => {
               </div>
             </div>
             {/* Documents */}
-            <div className="mt-8 bg-white-100 p-6 rounded-[20px] shadow-[0_0_46.5px_rgba(0,0,0,0.25)] w-[23.2rem]">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-[20px] font-semibold text-[#6F84F8]">
-                  Documents
-                </h2>
-                <a
-                  href="/assign-hcm"
-                  className="text-[#6F84F8] hover:underline"
-                >
+            <div class="bg-white p-6 rounded-lg shadow-md w-96">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-blue-500">Documents</h2>
+                <a href="/assign-hcm" class="text-blue-500 hover:underline">
                   View More
                 </a>
               </div>
-              <p className=" text-sm text-[#6F84F8]">27 Oct 2024</p>
-              <ul className="mt-4 space-y-2 doc-list">
-                <li>
-                  <button
-                    className="text-gray-500 hover:underline"
-                    onClick={openDocument}
-                  >
-                    tenant_krishna.pdf
+              <p class="text-sm text-blue-500">27 Oct 2024</p>
+              <ul class="mt-4 space-y-2">
+                <li class="relative pl-4">
+                  <div class="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
+                  <div class="absolute left-0 top-5 w-4 border-t-2 border-gray-300"></div>
+                  <button class="flex items-center text-gray-800 font-semibold hover:underline">
+                    <FaRegFolder class="mr-2" />
+                    tenant_street_group
                   </button>
-                  <ul className="pl-4 space-y-2 doc-list">
-                    <li>
-                      <button
-                        className="text-gray-500 hover:underline"
-                        onClick={openDocument}
-                      >
-                        tenant_street_group
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="text-gray-500 hover:underline"
-                        onClick={openDocument}
-                      >
+                  <ul class="mt-2 space-y-2 pl-6">
+                    <li class="relative pl-6">
+                      <div class="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
+                      <div class="absolute left-0 top-5 w-4 border-t-2 border-gray-300"></div>
+                      <button class="flex items-center text-gray-600 hover:underline">
+                        <FaRegFilePdf class="mr-2" />
                         tenant_krishna.pdf
                       </button>
                     </li>
-                    <li>
-                      <button
-                        className="text-gray-500 hover:underline"
-                        onClick={openDocument}
-                      >
+                    <li class="relative pl-6">
+                      <div class="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
+                      <div class="absolute left-0 top-5 w-4 border-t-2 border-gray-300"></div>
+                      <button class="flex items-center text-gray-600 hover:underline">
+                        <FaRegFilePdf class="mr-2" />
                         tenant_krishna.pdf
                       </button>
-                    </li>
-                    <li>
-                      <button
-                        className="text-gray-500 hover:underline"
-                        onClick={openDocument}
-                      >
-                        tenant_krishna.pdf
-                      </button>
-                      <ul className="pl-4 space-y-2">
-                        <li>
-                          <button
-                            className="text-gray-500 hover:underline"
-                            onClick={openDocument}
-                          >
-                            tenant_krishna.pdf
-                          </button>
-                        </li>
-                        <li>
-                          <button
-                            className="text-gray-500 hover:underline"
-                            onClick={openDocument}
-                          >
-                            tenant_krishna.pdf
-                          </button>
-                        </li>
-                      </ul>
                     </li>
                   </ul>
                 </li>
+                <li class="relative pl-4">
+                  <div class="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
+                  <div class="absolute left-0 top-5 w-4 border-t-2 border-gray-300"></div>
+                  <button class="flex items-center text-gray-600 hover:underline">
+                    <FaRegFilePdf class="mr-2" />
+                    tenant_krishna.pdf
+                  </button>
+                </li>
+                <li class="relative pl-4">
+                  <div class="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
+                  <div class="absolute left-0 top-5 w-4 border-t-2 border-gray-300"></div>
+                  <button class="flex items-center text-gray-600 hover:underline">
+                    <FaRegFilePdf class="mr-2" />
+                    tenant_krishna.pdf
+                  </button>
+                </li>
               </ul>
-              {openModal && (
-                <div className="modal fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                  <div className="modal-content bg-white p-6 rounded-lg shadow-lg">
-                    <span
-                      className="text-gray-600 text-xl cursor-pointer absolute top-2 right-2"
-                      onClick={closeModal}
-                    >
-                      &times;
-                    </span>
-                    <Document file={samplePDF}>
-                      <Page pageNumber={1} />
-                    </Document>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
