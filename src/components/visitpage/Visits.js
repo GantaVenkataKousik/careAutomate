@@ -230,6 +230,19 @@ const VisitList = () => {
   }, []);
 
   const handleStatusUpdate = async (index, isApproved) => {
+    const visitId = visitData[index]._id;
+    const url = `https://careautomate-backend.vercel.app/visit/${visitId}`;
+    const response = await axios.put(url,{approved: isApproved, rejected: !isApproved}, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+    if (response) {
+      fetchVisits();
+    } else {
+      console.error('Failed to update visit status:', response.data.message);
+    }
+
     // Code for updating status
   };
 
