@@ -32,7 +32,6 @@ const LoginForm = () => {
           body: JSON.stringify({ email, password }),
         }
       );
-
       if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.error || "Invalid credentials");
