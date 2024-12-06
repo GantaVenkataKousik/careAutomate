@@ -23,6 +23,7 @@ import samplePDF from "../assets/sample_document.pdf";
 import { pdfjs } from "react-pdf";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API_ROUTES } from "../routes";
+import { formatTime, monthNames, today } from "../utils/timeFilter";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -33,21 +34,7 @@ const ProfilePage = () => {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const today = new Date();
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+
   console.log(tenantData);
   useEffect(() => {
     const fetchAppointments = async (tenantId) => {
@@ -145,17 +132,6 @@ const ProfilePage = () => {
   const togglePopup = (description) => {
     setSelectedDescription(description);
     setIsPopupOpen(!isPopupOpen);
-  };
-
-  const formatTime = (timeString) => {
-    const date = new Date(timeString); // Create a Date object from the time string
-    let hours = date.getHours();
-    const minutes = date.getMinutes();
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12; // Convert to 12-hour format
-    hours = hours ? hours : 12; // The hour '0' should be '12'
-    const formattedTime = `${hours}:${minutes < 10 ? "0" + minutes : minutes} ${ampm}`;
-    return formattedTime;
   };
 
   return (
