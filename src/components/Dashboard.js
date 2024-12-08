@@ -33,11 +33,51 @@ const ProfilePage = () => {
   const { tenantId, tenantData } = location.state || {};
   const [appointments, setAppointments] = useState([]);
   const [visits, setVisits] = useState([]);
+  const [documents, setDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // console.log(tenantData);
-  // console.log("visits", visits.visits[0]?.hcmId?.name);
+  console.log("tent", tenantData);
+
+  const fetchDocuments = async (tenantData) => {
+    try {
+      const token = localStorage.getItem("token");
+      const id = tenantData._id;
+
+      console.log("user", id);
+      if (!token) {
+        throw new Error("Authorization token not found");
+      }
+
+      const response = await fetch(`${API_ROUTES.DOCUMENTS}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ tenantId: id }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch documents");
+      }
+
+      const data = await response.json();
+
+      // Set the documents state to the correct array
+      if (data.success && Array.isArray(data.documents)) {
+        setDocuments(data.documents);
+      } else {
+        console.error("Invalid data format", data);
+        setDocuments([]); // Fallback to an empty array if the structure is unexpected
+      }
+    } catch (err) {
+      console.error(err.message);
+      setDocuments([]); // Fallback to an empty array on error
+    } finally {
+      setIsLoading(false); // Ensure loading state is reset
+    }
+  };
 
   const fetchVisits = async (tenantData) => {
     try {
@@ -105,6 +145,7 @@ const ProfilePage = () => {
 
     fetchAppointments();
     fetchVisits(tenantData);
+    fetchDocuments(tenantData);
   }, []);
 
   const handlePlanUsageClick = () => {
@@ -260,57 +301,51 @@ const ProfilePage = () => {
               </div>
             </div>
             {/* Documents */}
-            <div class="bg-white p-6 rounded-lg shadow-md w-96">
-              <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-[#5970F4]">Documents</h2>
-                <a href="/assign-hcm" class="text-[#5970F4] hover:underline">
+            <div className="bg-white p-6 rounded-lg shadow-md w-96">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-[#5970F4]">
+                  Documents
+                </h2>
+                <a
+                  href="/assign-hcm"
+                  className="text-[#5970F4] hover:underline"
+                >
                   View More
                 </a>
               </div>
-              <p class="text-sm text-[#5970F4]">27 Oct 2024</p>
-              <ul class="mt-4 space-y-2">
-                <li class="relative pl-4">
-                  <div class="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
-                  <div class="absolute left-0 top-5 w-4 border-t-2 border-gray-300"></div>
-                  <button class="flex items-center text-gray-800 font-semibold hover:underline">
-                    <FaRegFolder class="mr-2" />
-                    tenant_street_group
-                  </button>
-                  <ul class="mt-2 space-y-2 pl-6">
-                    <li class="relative pl-6">
-                      <div class="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
-                      <div class="absolute left-0 top-5 w-4 border-t-2 border-gray-300"></div>
-                      <button class="flex items-center text-gray-600 hover:underline">
-                        <FaRegFilePdf class="mr-2" />
-                        tenant_krishna.pdf
-                      </button>
-                    </li>
-                    <li class="relative pl-6">
-                      <div class="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
-                      <div class="absolute left-0 top-5 w-4 border-t-2 border-gray-300"></div>
-                      <button class="flex items-center text-gray-600 hover:underline">
-                        <FaRegFilePdf class="mr-2" />
-                        tenant_krishna.pdf
-                      </button>
-                    </li>
-                  </ul>
-                </li>
-                <li class="relative pl-4">
-                  <div class="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
-                  <div class="absolute left-0 top-5 w-4 border-t-2 border-gray-300"></div>
-                  <button class="flex items-center text-gray-600 hover:underline">
-                    <FaRegFilePdf class="mr-2" />
-                    tenant_krishna.pdf
-                  </button>
-                </li>
-                <li class="relative pl-4">
-                  <div class="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
-                  <div class="absolute left-0 top-5 w-4 border-t-2 border-gray-300"></div>
-                  <button class="flex items-center text-gray-600 hover:underline">
-                    <FaRegFilePdf class="mr-2" />
-                    tenant_krishna.pdf
-                  </button>
-                </li>
+              <p className="text-sm text-[#5970F4]">
+                {new Date("2024-10-27T00:00:00Z").toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </p>
+              <ul className="mt-4 space-y-2">
+                {documents.map((doc, index) => (
+                  <li className="relative pl-4" key={doc._id}>
+                    <div className="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
+                    <div className="absolute left-0 top-5 w-4 border-t-2 border-gray-300"></div>
+                    <button className="flex items-center text-gray-800 font-semibold hover:underline">
+                      <FaRegFolder className="mr-2" />
+                      {doc.folderName}
+                    </button>
+                    <ul className="mt-2 space-y-2 pl-6">
+                      <li className="relative pl-6">
+                        <div className="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
+                        <div className="absolute left-0 top-5 w-4 border-t-2 border-gray-300"></div>
+                        <a
+                          href={doc.filePath}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center text-gray-600 hover:underline"
+                        >
+                          <FaRegFilePdf className="mr-2" />
+                          {doc.originalName}
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
