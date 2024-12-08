@@ -262,12 +262,12 @@ const ProfilePage = () => {
             {/* Documents */}
             <div class="bg-white p-6 rounded-lg shadow-md w-96">
               <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-blue-500">Documents</h2>
-                <a href="/assign-hcm" class="text-blue-500 hover:underline">
+                <h2 class="text-lg font-semibold text-[#5970F4]">Documents</h2>
+                <a href="/assign-hcm" class="text-[#5970F4] hover:underline">
                   View More
                 </a>
               </div>
-              <p class="text-sm text-blue-500">27 Oct 2024</p>
+              <p class="text-sm text-[#5970F4]">27 Oct 2024</p>
               <ul class="mt-4 space-y-2">
                 <li class="relative pl-4">
                   <div class="absolute left-0 top-0 h-full border-l-2 border-gray-300"></div>
@@ -317,12 +317,12 @@ const ProfilePage = () => {
         </div>
 
         {/* 30% Column */}
-        <div className="bg-white p-5 rounded-[20px] shadow-lg w-[22rem]">
+        <div className="bg-white p-5 rounded-[20px] shadow-lg max-w-lg mx-auto">
           {/* Assigned HCMs Header */}
           <div className="flex flex-col mb-6">
             <div className="flex items-center gap-3">
               <div className="bg-[#6F84F8] w-3 rounded-[20px] h-10"></div>
-              <h2 className="text-2xl font-semibold text-[#6F84F8]">
+              <h2 className="text-2xl px-10 font-semibold text-[#6F84F8]">
                 Assigned HCM's
               </h2>
             </div>
@@ -373,7 +373,7 @@ const ProfilePage = () => {
               </a>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 overflow-y-auto max-h-[calc(5*7rem)] mt-2 tenant-visits-scrollbar">
               {/* Loop through upcoming appointments */}
               {appointments?.["appointments"]?.["upcoming"]?.[
                 today.getFullYear()
@@ -450,7 +450,9 @@ const ProfilePage = () => {
               </a>
             </div>
 
-            <div className="space-y-2">
+            <div
+              className="space-y-2 overflow-y-auto max-h-[calc(5*7rem)] mt-2 tenant-visits-scrollbar" // Adjust height to show 5-6 items
+            >
               {visits?.visits?.length > 0 ? (
                 visits.visits.map((visit) => (
                   <div key={visit.id} className="p-2">
@@ -476,7 +478,6 @@ const ProfilePage = () => {
                           {visit.endTime.length > 6
                             ? formatTime(visit.endTime)
                             : visit.endTime}
-                          {/* {visit.startTime || "N/A"} - {visit.endTime || "N/A"} */}
                         </p>
                         <p className="text-sm text-gray-600">
                           {visit.serviceType || "No Purpose"}
@@ -499,7 +500,7 @@ const ProfilePage = () => {
         </div>
 
         {/* Communication */}
-        <div className="w-[21rem] bg-white p-6 shadow-lg rounded-[20px]">
+        <div className="w-[24rem] bg-white p-6 shadow-lg rounded-2xl">
           <div className="flex   items-center  pb-1">
             <div className="flex justify-center items-center gap-2">
               <div className="bg-[#6F84F8] w-3 rounded-[20px] h-10"></div>
@@ -516,7 +517,7 @@ const ProfilePage = () => {
               View More
             </a>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 overflow-y-auto max-h-[calc(5*7rem)] mt-2 tenant-visits-scrollbar">
             {sampleRecords.map((record) => (
               <div
                 key={record.id}
@@ -554,7 +555,7 @@ const ProfilePage = () => {
         </div>
 
         {/* Bills & Payments */}
-        <div className="w-[18rem]  bg-white p-6 shadow-lg rounded-[20px]">
+        <div className="w-[19rem]  bg-white p-6 shadow-lg rounded-[20px]">
           <div className="flex justify-between items-center  pb-3 ">
             <div className="flex justify-center items-center gap-2">
               <div className="bg-[#6F84F8] w-3 rounded-[20px] h-10"></div>
@@ -572,7 +573,7 @@ const ProfilePage = () => {
             </a>
           </div>
           <p className="text-[#6F84F8] mb-4 text-xl font-bold">This Month</p>
-          <div className="space-y-4">
+          <div className="space-y-4 overflow-y-auto max-h-[calc(5*7rem)] mt-2 tenant-visits-scrollbar">
             {[...Array(5)].map((_, index) => (
               <div key={index} className="">
                 <div className="flex justify-between items-center">
