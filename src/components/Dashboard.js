@@ -32,10 +32,41 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const { tenantId, tenantData } = location.state || {};
   const [appointments, setAppointments] = useState([]);
+  const [visits, setVisits] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  console.log(tenantData);
+  // console.log(tenantData);
+  // console.log("visits", visits.visits[0]?.hcmId?.name);
+
+  const fetchVisits = async (tenantData) => {
+    try {
+      const token = localStorage.getItem("token");
+      const id = tenantData._id;
+      console.log("user", id);
+      if (!token) {
+        throw new Error("Authorization token not found");
+      }
+
+      const response = await fetch(`${API_ROUTES.VISITS}/filtervisits`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ tenantId: id }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch appointments");
+      }
+      const data = await response.json();
+      setVisits(data);
+      setIsLoading(false);
+    } catch (err) {
+      console.error(err.message);
+      setIsLoading(false); // Handle loading state in case of error
+    }
+  };
   useEffect(() => {
     const fetchAppointments = async (tenantId) => {
       try {
@@ -73,6 +104,7 @@ const ProfilePage = () => {
     };
 
     fetchAppointments();
+    fetchVisits(tenantData);
   }, []);
 
   const handlePlanUsageClick = () => {
@@ -136,12 +168,12 @@ const ProfilePage = () => {
 
   return (
     <div
-      className=" flex flex-col  ml-4  overflow-y-auto gap-10"
+      className=" flex flex-col  m-2 overflow-y-auto gap-10"
       style={{ fontFamily: "Poppins" }}
     >
       <div className="flex gap-6">
         {/* 70% Column */}
-        <div className=" bg-white p-6 rounded-[20px] shadow-lg w-[56rem]">
+        <div className=" bg-white p-6 rounded-[20px] shadow-lg w-[60rem]">
           {/* Profile Header */}
           <div className="flex justify-between items-center mb-1 ">
             <div className="flex justify-center items-center gap-3">
@@ -285,7 +317,7 @@ const ProfilePage = () => {
         </div>
 
         {/* 30% Column */}
-        <div className="bg-white p-5 rounded-[20px] shadow-lg w-[20rem]">
+        <div className="bg-white p-5 rounded-[20px] shadow-lg w-[22rem]">
           {/* Assigned HCMs Header */}
           <div className="flex flex-col mb-6">
             <div className="flex items-center gap-3">
@@ -323,7 +355,7 @@ const ProfilePage = () => {
       {/* Row 2: Four columns layout */}
       <div className="w-full flex gap-1 gap-3  pb-10 ">
         {/* Appointments */}
-        <div className="flex w-[36rem] bg-white p-4 shadow-lg rounded-[20px] gap-5">
+        <div className="flex w-[43rem] bg-white p-4 shadow-lg rounded-[20px] gap-5">
           <div className="w-[19rem] p-1">
             <div className="flex gap-2 items-center pb-3">
               <div className="bg-[#6F84F8] w-3 rounded-[20px] h-10"></div>
@@ -419,32 +451,49 @@ const ProfilePage = () => {
             </div>
 
             <div className="space-y-2">
-              {[...Array(4)].map((_, index) => (
-                <div key={index} className="p-2">
-                  <div className="flex justify-between items-center mt-3">
-                    <p className="font-medium text-[#6F84F8]">Robert John</p>
+              {visits?.visits?.length > 0 ? (
+                visits.visits.map((visit) => (
+                  <div key={visit.id} className="p-2">
+                    <div className="flex justify-between items-center mt-3">
+                      <p className="font-medium text-[#6F84F8]">
+                        {visit?.hcmId?.name || "Unknown Name"}
+                      </p>
 
-                    <div className="flex space-x-3 text-gray-500">
-                      <FaMicrophone />
-                      <FaUser />
-                      <FaFileAlt />
-                      <FaBars />
+                      <div className="flex space-x-3 text-gray-500">
+                        <FaMicrophone />
+                        <FaUser />
+                        <FaFileAlt />
+                        <FaBars />
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center mt-2">
+                      <div>
+                        <p className="text-gray-800">
+                          {visit.startTime.length > 6
+                            ? formatTime(visit.startTime)
+                            : visit.startTime}{" "}
+                          -{" "}
+                          {visit.endTime.length > 6
+                            ? formatTime(visit.endTime)
+                            : visit.endTime}
+                          {/* {visit.startTime || "N/A"} - {visit.endTime || "N/A"} */}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {visit.serviceType || "No Purpose"}
+                        </p>
+                      </div>
+                      <a
+                        href="/sign-send"
+                        className="text-[#6F84F8] hover:underline text-[15px]"
+                      >
+                        Sign & Send
+                      </a>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center mt-2">
-                    <div>
-                      <p className="text-gray-800">8:00 AM - 10:00 AM</p>
-                      <p className="text-sm text-gray-600">Lease Agreement</p>
-                    </div>
-                    <a
-                      href="/sign-send"
-                      className="text-[#6F84F8] hover:underline text-[15px]"
-                    >
-                      Sign & Send
-                    </a>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-gray-500 text-center">No visits available</p>
+              )}
             </div>
           </div>
         </div>
