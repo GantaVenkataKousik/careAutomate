@@ -16,7 +16,6 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   // const otpRefs = useRef([]); // Commented out OTP refs
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -33,7 +32,6 @@ const LoginForm = () => {
           body: JSON.stringify({ email, password }),
         }
       );
-
       if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.error || "Invalid credentials");

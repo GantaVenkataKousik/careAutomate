@@ -21,6 +21,7 @@ import PopupPageHCM from './components/createhcm/PopupPageHCM.js'
 import DummyDashboard from './components/DummyDashboard';
 import { FaDownload } from 'react-icons/fa';
 import PlanUsage from './components/PlanUsage';
+import Onboarding from './components/Onboarding.js';
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -62,6 +63,7 @@ const App = () => {
             <Route path="/communication" element={<AppLayout><Communication /></AppLayout>} />
             <Route path="/reports" element={<AppLayout><Reports /></AppLayout>} />
             <Route path="/settings" element={<AppLayout><Settings /></AppLayout>} />
+            <Route path="/onBoarding" element={<Onboarding />} />
             <Route path="/tenants/planUsage" element={<AppLayout><PlanUsage /></AppLayout>} />
           </Route>
         </Routes>
