@@ -5,4 +5,6 @@ export const API_ROUTES = {
   // Add other routes here
   COMMUNICATION: `${BASE_URL}/communication/`,
   APPOINTMENTS: `${BASE_URL}/appointment`,
+  VISITS: `${BASE_URL}/visit`,
+  DOCUMENTS: `${BASE_URL}/tenant/get-documents/`,
 };
