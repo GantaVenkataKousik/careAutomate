@@ -19,7 +19,6 @@ const LoginForm = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       const response = await fetch(
         "https://careautomate-backend.vercel.app/auth/login/",
