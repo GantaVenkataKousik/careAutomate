@@ -11,10 +11,6 @@ import {
   FaTimes,
   FaUser,
   FaUserTie,
-  FaCalendarAlt,
-  FaEnvelope,
-  FaUserEdit,
-  FaWalking,
   FaRegFolder,
   FaRegFilePdf,
 } from "react-icons/fa";
@@ -35,7 +31,7 @@ const ProfilePage = () => {
   const [visits, setVisits] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
 
   console.log("tent", tenantData);
 
@@ -301,7 +297,7 @@ const ProfilePage = () => {
               </div>
             </div>
             {/* Documents */}
-            <div className="bg-white p-6 rounded-lg shadow-md w-96">
+            <div className="bg-white p-6 rounded-xl shadow-xl w-[26rem]">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold text-[#5970F4]">
                   Documents
@@ -337,7 +333,7 @@ const ProfilePage = () => {
                           href={doc.filePath}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center text-gray-600 hover:underline"
+                          className="flex items-center text-gray-600 hover:underline  truncate overflow-hidden text-ellipsis"
                         >
                           <FaRegFilePdf className="mr-2" />
                           {doc.originalName}
@@ -390,8 +386,8 @@ const ProfilePage = () => {
       {/* Row 2: Four columns layout */}
       <div className="w-full flex gap-1 gap-3  pb-10 ">
         {/* Appointments */}
-        <div className="flex w-[43rem] bg-white p-4 shadow-lg rounded-[20px] gap-5">
-          <div className="w-[19rem] p-1">
+        <div className="flex w-[38rem] bg-white p-4 shadow-lg rounded-[20px] gap-5">
+          <div className="w-[18rem] p-1">
             <div className="flex gap-2 items-center pb-3">
               <div className="bg-[#6F84F8] w-3 rounded-[20px] h-10"></div>
               <h2 className="text-2xl font-semibold text-[#6F84F8]">
@@ -470,7 +466,7 @@ const ProfilePage = () => {
           <div className="border-dotted border-2 border-[#6F84F8]"></div>
 
           {/* Visits */}
-          <div className="w-[21rem] p-1">
+          <div className="w-[20rem] p-1">
             <div className="flex gap-3 items-center pb-3">
               <div className="bg-[#6F84F8] w-3 rounded-[20px] h-10"></div>
               <h2 className="text-2xl font-semibold text-[#6F84F8]">Visits</h2>

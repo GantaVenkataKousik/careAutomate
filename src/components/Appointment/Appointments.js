@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import AppointmentModal from "./AppointModal";
 import axios from "axios";
-import { IoFilterOutline } from "react-icons/io5";
+import { IoFilterOutline, IoCalendar, IoList } from "react-icons/io5";
+
 import AppointmentCard from "./AppointmentCard";
+import AppointmentCalendarView from "./AppointmentCalendarView";
 
 const Appointment = () => {
   const [appointments, setAppointments] = useState([]);
@@ -10,8 +12,10 @@ const Appointment = () => {
   const [showPopup1, setShowPopup1] = useState(null);
   const [showDeletePopup1, setShowDeletePopup1] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isListView, setIsListView] = useState(true);
+
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [showFilter, setShowFilter] = useState(false); // Added missing state for filter visibility
+  const [showFilter, setShowFilter] = useState(false);
   const token = localStorage.getItem("token");
   const [hcmList, setHcmList] = useState([]);
   const [allTenants, setAllTenants] = useState([]);
@@ -22,8 +26,6 @@ const Appointment = () => {
     endDate: "",
     status: "",
   });
-
-  // Fetch appointments data on component mount
   const fetchAppointments = async () => {
     try {
       const response = await axios.post(
@@ -37,7 +39,6 @@ const Appointment = () => {
       );
 
       if (response.data.appointments) {
-        // Map API data to match the desired structure
         const mappedAppointments = response.data.appointments.map((apt) => ({
           id: apt._id,
           date: new Date(apt.date).toLocaleDateString("en-US", {
@@ -52,7 +53,7 @@ const Appointment = () => {
           with: apt.tenantDetails?.name || "Unknown",
           status: apt.status.charAt(0).toUpperCase() + apt.status.slice(1),
         }));
-        setAppointments(mappedAppointments);
+        setAppointments(mappedAppointments); // This will update both list and calendar views
       } else {
         console.error("Failed to fetch appointment data");
       }
@@ -66,14 +67,48 @@ const Appointment = () => {
   }, []);
 
   useEffect(() => {
-    const fetchHcm = async () => {
+    const fetchTenants = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          console.error("Authorization token is missing.");
+          console.error("No token found in localStorage");
           return;
         }
 
+        const response = await fetch(
+          "https://careautomate-backend.vercel.app/fetchAll/fetchAllHCMsTenants",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({}),
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.status === 200 && data.success) {
+          const tenantsData = data.data.tenants.map((tenant) => ({
+            id: tenant._id,
+            name: tenant.name,
+          }));
+          setAllTenants(tenantsData);
+        } else {
+          console.error("Failed to fetch tenants:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching tenants:", error.message || error);
+      }
+    };
+
+    fetchTenants();
+  }, []);
+
+  useEffect(() => {
+    const fetchHcm = async () => {
+      try {
         const response = await fetch(
           "https://careautomate-backend.vercel.app/hcm/all",
           {
@@ -109,7 +144,6 @@ const Appointment = () => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Apply filters
   const applyFilters = async () => {
     console.log("Applying filters with the following criteria:", filters);
     try {
@@ -122,15 +156,20 @@ const Appointment = () => {
           },
         }
       );
+      // console.log(response)
 
       if (response.data.visits) {
-        setAppointments(response.data.visits); // Use filtered results
+        setAppointments(response.data.visits);
       } else {
-        setAppointments([]); // Clear appointments if no results
+        setAppointments([]);
       }
     } catch (error) {
       console.error("Error fetching data:", error.response || error);
     }
+  };
+
+  const handleToggle = () => {
+    setIsListView(!isListView);
   };
 
   const handleFilterIconClick = (event) => {
@@ -158,34 +197,86 @@ const Appointment = () => {
       }}
     >
       <div>
-        {/* Fixed Header and Tabs */}
         <div className="p-4 shadow-sm ">
           <div className="flex flex-row justify-between items-center">
             <h1 className="text-2xl font-bold">Appointments</h1>
-            <div className="flex items-center">
-              {/* <div className="flex items-center"> */}
-              <button
-                className="px-4 py-2 rounded-full text-white bg-[#6F84F8] mr-4"
-                onClick={() => {
-                  setShowModal(true);
-                }}
+            <button
+              className="px-4 py-2 rounded-full text-white bg-[#6F84F8] mr-4"
+              onClick={() => {
+                setShowModal(true);
+              }}
+            >
+              New Appointment
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex space-x-4 rounded-full bg-gray-200 w-fit p-2">
+              {["Completed", "Pending", "Cancelled"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 py-2 rounded-full font-medium ${
+                    activeTab === tab
+                      ? "bg-[#6F84F8] text-white"
+                      : "bg-gray-200 text-gray-600"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-between mt-4">
+              {/* <button
+                onClick={handleToggle}
+                className="flex items-center gap-2 px-6 py-2 text-white bg-[#6F84F8] rounded-full mr-4 shadow-md hover:bg-[#5b72d8] focus:outline-none focus:ring-2 focus:ring-[#6F84F8] transition-colors"
               >
-                New Appointment
-              </button>
+                {isListView ? (
+                  <>
+                    <IoList className="text-lg" />
+                    <span>List</span>
+                  </>
+                ) : (
+                  <>
+                    <IoCalendar className="text-lg" />
+                    <span>Calendar</span>
+                  </>
+                )}
+              </button> */}
+              <div className="flex bg-gray-200 rounded-2xl p-1  w-fit mr-6">
+                {/* Calendar Button */}
+                <button
+                  onClick={() => setIsListView(false)}
+                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
+                    !isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                  }`}
+                >
+                  <IoCalendar className="text-2xl" />
+                </button>
 
-              <div>
-                {/* Filter Button */}
-                {/* <button> */}
-                <IoFilterOutline
+                {/* List Button */}
+                <button
+                  onClick={() => setIsListView(true)}
+                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
+                    isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                  }`}
+                >
+                  <IoList className="text-2xl" />
+                </button>
+              </div>
+
+              <div className="relative">
+                <button
                   onClick={() => setShowFilter(!showFilter)}
-                  className="text-2xl cursor-pointer"
-                />
-                {/* </div> */}
+                  className="flex items-center gap-2 px-4 py-2 bg-[#6F84F8] text-white rounded-full shadow-md transition-all duration-300 ease-in-out hover:bg-[#5b72d8] focus:ring focus:ring-[#6F84F8]"
+                >
+                  <IoFilterOutline className="text-lg" />
+                  Filters
+                </button>
 
-                {/* Filter Popup */}
                 {showFilter && (
-                  <div className="absolute mt-7 right-2 p-4 bg-white rounded-xl shadow-lg flex flex-col gap-4 w-72 ">
-                    {/* HCM Dropdown */}
+                  <div className="absolute mt-7 right-2 p-4 bg-white rounded-xl shadow-lg flex flex-col gap-4 w-72 z-50">
                     <select
                       value={filters.hcmId}
                       onChange={(e) =>
@@ -201,7 +292,6 @@ const Appointment = () => {
                       ))}
                     </select>
 
-                    {/* Tenant Dropdown */}
                     <select
                       value={filters.tenantId}
                       onChange={(e) =>
@@ -217,7 +307,6 @@ const Appointment = () => {
                       ))}
                     </select>
 
-                    {/* Date Filters */}
                     <input
                       type="date"
                       value={filters.startDate}
@@ -235,7 +324,6 @@ const Appointment = () => {
                       className="p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]"
                     />
 
-                    {/* Status Dropdown */}
                     <select
                       value={filters.status}
                       onChange={(e) =>
@@ -249,7 +337,6 @@ const Appointment = () => {
                       <option value="Rejected">Rejected</option>
                     </select>
 
-                    {/* Apply Button */}
                     <button
                       onClick={applyFilters}
                       className="bg-[#6F84F8] text-white p-2 rounded-lg w-full font-bold uppercase transition-all duration-300 ease-in-out hover:bg-[#5b72d8] focus:ring focus:ring-[#6F84F8]"
@@ -261,51 +348,37 @@ const Appointment = () => {
               </div>
             </div>
           </div>
-
-          <div className="flex space-x-4 mt-4 rounded-full bg-gray-200 w-fit p-2">
-            {["Completed", "Pending", "Cancelled"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-full font-medium ${
-                  activeTab === tab
-                    ? "bg-[#6F84F8] text-white"
-                    : "bg-gray-200 text-gray-600"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
         </div>
       </div>
 
       {/* Dynamic Content */}
-      {/* Display Appointment Cards */}
-      {/* <h2 className="text-lg font-semibold mt-6">Today</h2> */}
-      <div className="space-y-4 h-[200px]">
-        {appointments.filter((appointment) => appointment.status === activeTab)
-          .length > 0 ? (
-          appointments
-            .filter((appointment) => appointment.status === activeTab)
-            .map((appointment) => (
-              <AppointmentCard
-                key={appointment.id}
-                appointment={appointment}
-                togglePopup1={togglePopup1}
-                handleDeleteClick1={handleDeleteClick1}
-                showPopup1={showPopup1}
-                showDeletePopup1={showDeletePopup1}
-                setShowDeletePopup1={setShowDeletePopup1}
-              />
-            ))
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-600">
-            No {activeTab} appointments are available
-          </div>
-        )}
-      </div>
-
+      {isListView ? (
+        <div className="space-y-4 h-[200px]">
+          {appointments.filter(
+            (appointment) => appointment.status === activeTab
+          ).length > 0 ? (
+            appointments
+              .filter((appointment) => appointment.status === activeTab)
+              .map((appointment) => (
+                <AppointmentCard
+                  key={appointment.id}
+                  appointment={appointment}
+                  togglePopup1={togglePopup1}
+                  handleDeleteClick1={handleDeleteClick1}
+                  showPopup1={showPopup1}
+                  showDeletePopup1={showDeletePopup1}
+                  setShowDeletePopup1={setShowDeletePopup1}
+                />
+              ))
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-600">
+              No {activeTab} appointments are available
+            </div>
+          )}
+        </div>
+      ) : (
+        <AppointmentCalendarView appointments={appointments} />
+      )}
       <AppointmentModal
         isOpen={showModal}
         onClose={() => setShowModal(false)} // Close the modal
