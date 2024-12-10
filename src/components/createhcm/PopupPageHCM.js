@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SubStep1 from "./SubStep1";
 import Substep12 from "./Substep12";
 import Substep22 from "./Substep22";
-import DragDropTenants from "./DragDropTenants";
+import ChecklistTenants from "./DragDropTenants";
 import LoginInfo from "./LoginInfo";
 import ScheduleAppointment from "./ScheduleAppointment";
 import axios from "axios";
@@ -25,7 +25,7 @@ const steps = [
   },
   {
     name: "Assign Tenants",
-    subSteps: [DragDropTenants],
+    subSteps: [ChecklistTenants],
   },
   {
     name: "Documentation",
@@ -51,7 +51,7 @@ const PopupPage = () => {
   console.log(hcmName);
   console.log("hcl id", hcmId);
   const togglePopup = () => {
-    navigate("/HCM");
+    navigate("/hcms");
     dispatch(resetTenantInfo());
     setShowPopup(!showPopup);
   };
@@ -285,7 +285,7 @@ const PopupPage = () => {
 
             <div className="flex justify-between mt-6">
               <button
-                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                className="flex items-center px-4 py-2 bg-[#6F84F8] text-white rounded hover:bg-[#6F84F8]"
                 onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
               >
                 <svg
@@ -301,7 +301,7 @@ const PopupPage = () => {
               </button>
 
               <button
-                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                className="flex items-center px-4 py-2 bg-[#6F84F8] text-white rounded hover:bg-[#6F84F8]"
                 onClick={handleNext}
               >
                 <span className="flex items-center">

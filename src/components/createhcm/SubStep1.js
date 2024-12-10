@@ -163,6 +163,44 @@ const SubStep1 = () => {
           onChange={handleChange}
           required
         />
+        <br></br>
+        <div>
+          <h1 style={{ color: "#000080", fontSize: "1rem", fontWeight: "600" }}>
+            Mailing Address:
+          </h1>
+          <div style={{ display: "flex" }}>
+            <div style={{ marginRight: "1rem" }}>
+              <label>
+                <input
+                  type="radio"
+                  name="mailingAddressOption"
+                  value="same"
+                  checked={tenantData.mailingAddress === "same"}
+                  onChange={() =>
+                    dispatch(updateTenantInfo({ mailingAddress: "same" }))
+                  }
+                  style={{ marginRight: "1rem" }}
+                />
+                Same as above
+              </label>
+            </div>
+            <div>
+              <label>
+                <input
+                  type="radio"
+                  name="mailingAddressOption"
+                  value="different"
+                  checked={tenantData.mailingAddress === "different"}
+                  onChange={() =>
+                    dispatch(updateTenantInfo({ mailingAddress: "different" }))
+                  }
+                  style={{ marginRight: "1rem" }}
+                />
+                Different
+              </label>
+            </div>
+          </div>
+        </div>
       </Section>
 
       <Section title="Emergency Contact Information">
@@ -432,7 +470,7 @@ const styles = {
   label: {
     display: "block",
     fontSize: "1rem",
-    color: "#000080",
+    color: "#6F84F8",
     marginBottom: "4px",
     fontWeight: "600",
   },
@@ -446,7 +484,7 @@ const styles = {
     transition: "border-color 0.3s",
   },
   inputFocused: {
-    borderColor: "#4A90E2",
+    borderColor: "#6F84F8",
     boxShadow: "0px 0px 4px rgba(74, 144, 226, 0.5)",
   },
 
