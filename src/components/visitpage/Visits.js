@@ -540,7 +540,7 @@ active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
               <h3 style={{ marginRight: "2rem" }}>
                 {visit?.serviceType ? visit.serviceType : "no service"}
               </h3>
-              <p
+              {/* <p
                 style={{
                   color:
                     visit.approved && !visit.rejected
@@ -556,7 +556,7 @@ active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
                       return `${new Date(start.trim()).toLocaleDateString("en-US")} - ${new Date(end.trim()).toLocaleDateString("en-US")}`;
                     })()
                   : "No Date"}
-              </p>
+              </p> */}
               <span style={{ marginLeft: "auto" }}>
                 Signature:{" "}
                 <span
