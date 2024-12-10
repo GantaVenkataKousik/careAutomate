@@ -4,6 +4,7 @@ import SubStep1 from "./SubStep1";
 import Substep12 from "./Substep12";
 import Substep22 from "./Substep22";
 import DragDropTenants from "./DragDropTenants";
+import LoginInfo from "./LoginInfo";
 import ScheduleAppointment from "./ScheduleAppointment";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +18,10 @@ const steps = [
   {
     name: "Personal Info",
     subSteps: [SubStep1],
+  },
+  {
+    name: "Login Info",
+    subSteps: [LoginInfo],
   },
   {
     name: "Assign Tenants",
@@ -46,7 +51,7 @@ const PopupPage = () => {
   console.log(hcmName);
   console.log("hcl id", hcmId);
   const togglePopup = () => {
-    navigate("/hcms");
+    navigate("/HCM");
     dispatch(resetTenantInfo());
     setShowPopup(!showPopup);
   };
@@ -212,9 +217,25 @@ const PopupPage = () => {
                           ></i>
                         ) : (
                           <i
-                            className="fa-solid fa-circle-xmark fa-xl"
-                            style={{ color: "#ff0000" }}
-                          ></i>
+                            className="fa-solid fa-circle fa-xl"
+                            style={{
+                              color: "#d3d3d3", // Light grey for the outer circle
+                              position: "relative",
+                            }}
+                          >
+                            <span
+                              style={{
+                                position: "absolute",
+                                top: "50%",
+                                left: "50%",
+                                transform: "translate(-50%, -50%)",
+                                width: "12px",
+                                height: "12px",
+                                borderRadius: "50%",
+                                backgroundColor: "#808080", // Darker grey for the inner circle
+                              }}
+                            ></span>
+                          </i>
                         )}
                       </div>
                       <div>
@@ -262,48 +283,42 @@ const PopupPage = () => {
               {renderSubStep()}
             </div>
 
-            <div className="absolute bottom-4 left-4 right-4">
-              <div className="flex justify-between mt-6">
-                <div
-                  className="flex items-center cursor-pointer text-gray-400 hover:text-blue-500 hover:fill-blue-500"
-                  onClick={() =>
-                    setCurrentStep((prev) => Math.max(prev - 1, 0))
-                  }
+            <div className="flex justify-between mt-6">
+              <button
+                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  className="fill-current"
                 >
+                  <polygon points="10,0 0,10 10,20" />
+                </svg>
+                <span className="ml-1">Back</span>
+              </button>
+
+              <button
+                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                onClick={handleNext}
+              >
+                <span className="flex items-center">
+                  <span>
+                    {currentStep === steps.length - 1 ? "Finish" : "Next Step"}
+                  </span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
                     height="20"
                     viewBox="0 0 20 20"
-                    className="fill-gray-400 hover:fill-blue-500"
+                    className="ml-2 fill-current"
                   >
-                    <polygon points="10,0 0,10 10,20" />
+                    <polygon points="0,0 10,10 0,20" />
                   </svg>
-                  <span className="ml-1">Back</span>
-                </div>
-
-                <div
-                  className="flex items-center cursor-pointer text-gray-400 hover:text-blue-500 hover:fill-blue-500"
-                  onClick={handleNext}
-                >
-                  <span className="flex items-center">
-                    <span>
-                      {currentStep === steps.length - 1
-                        ? "Finish"
-                        : "Next Step"}
-                    </span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      className="ml-2 fill-gray-400 hover:fill-blue-500"
-                    >
-                      <polygon points="0,0 10,10 0,20" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
+                </span>
+              </button>
             </div>
           </Box>
         </Modal>
