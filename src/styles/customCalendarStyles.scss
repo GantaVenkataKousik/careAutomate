@@ -33,9 +33,11 @@
   background-color: #ffffff; // Consistent background
   border-radius: 8px;
   margin-bottom: 4px;
-  padding: 4px;
+  // padding: 1rem;
 }
-
+.rbc-timeslot-group{
+  // padding-top:5rem
+}
 // Event Styling
 .rbc-event {
   border-radius: 10px; // Rounded corners for events
@@ -131,5 +133,6 @@
 
 // Event Container Padding
 .rbc-event-container {
-  padding-top: 5rem;
+  padding-top: 10rem;
+  // height:20rem;
 }
