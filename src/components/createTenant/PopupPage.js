@@ -49,14 +49,32 @@ const PopupPage = () => {
   };
 
   const handleNext = async () => {
-    if (
-      !tenantData.firstName ||
-      !tenantData.lastName ||
-      !tenantData.phoneNumber ||
-      !tenantData.email
-    ) {
-      toast.error("Please fill in all required fields");
-      return;
+    const requiredFields = [
+      { key: "firstName", label: "First Name" },
+      { key: "lastName", label: "Last Name" },
+      { key: "dob", label: "Date of Birth" },
+      { key: "gender", label: "Gender" },
+      { key: "mapmi", label: "Mapmi" },
+      { key: "addressLine1", label: "Address Line 1" },
+      { key: "city", label: "City" },
+      { key: "state", label: "State" },
+      { key: "zipCode", label: "Zipcode" },
+      { key: "phoneNumber", label: "Phone Number" },
+      { key: "email", label: "Email" },
+      { key: "insuranceType", label: "Insurance Type" },
+      { key: "insuranceNumber", label: "Insurance Number" },
+      { key: "diagnosisCode", label: "Diagnosis Code" },
+      { key: "caseManagerFirstName", label: "Case Manager First Name" },
+      { key: "caseManagerLastName", label: "Case Manager Last Name" },
+      { key: "caseManagerPhoneNumber", label: "Case Manager Phone Number" },
+      { key: "caseManagerEmail", label: "Case Manager Email" },
+    ];
+
+    for (let field of requiredFields) {
+      if (!tenantData[field.key]) {
+        toast.error(`Please fill in the ${field.label}`);
+        return;
+      }
     }
 
     // Save data when completing Step 1

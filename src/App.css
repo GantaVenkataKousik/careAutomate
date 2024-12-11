@@ -58,3 +58,7 @@
 .tenant-visits-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #4f6dce; /* Color of the thumb on hover */
 }
+
+label span.required {
+  color: red;
+}
