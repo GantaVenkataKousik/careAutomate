@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTenantInfo } from "../../redux/tenant/tenantSlice";
 import Switch from "@mui/material/Switch";
@@ -15,7 +15,7 @@ const SubStep1 = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordMatch, setPasswordMatch] = useState(true);
-  const [isMailingAddress, setIsMailingAddress] = useState(false); // state for checkbox
+  const [isMailingAddress, setIsMailingAddress] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -51,7 +51,11 @@ const SubStep1 = () => {
     <div style={styles.container}>
       <Section title="Basic Information">
         <InputField
-          label="First Name *"
+          label={
+            <>
+              First Name <span className="required">*</span>
+            </>
+          }
           name="firstName"
           value={tenantData.firstName}
           onChange={handleChange}
@@ -70,7 +74,11 @@ const SubStep1 = () => {
           focused={focusedField === "middleName"}
         />
         <InputField
-          label="Last Name *"
+          label={
+            <>
+              Last Name <span className="required">*</span>
+            </>
+          }
           name="lastName"
           value={tenantData.lastName}
           onChange={handleChange}
@@ -80,7 +88,11 @@ const SubStep1 = () => {
           required
         />
         <InputField
-          label="Date of Birth"
+          label={
+            <>
+              Date of Birth <span className="required">*</span>
+            </>
+          }
           name="dob"
           value={tenantData.dob ? formatDateToMMDDYYYY(tenantData.dob) : ""}
           onChange={(date) =>
@@ -93,7 +105,11 @@ const SubStep1 = () => {
           required
         />
         <InputField
-          label="Gender"
+          label={
+            <>
+              Gender <span className="required">*</span>
+            </>
+          }
           name="gender"
           value={tenantData.gender}
           onChange={handleChange}
@@ -105,7 +121,11 @@ const SubStep1 = () => {
           required
         />
         <InputField
-          label="MA PMI #"
+          label={
+            <>
+              MA PMI # <span className="required">*</span>
+            </>
+          }
           name="mapmi"
           value={tenantData.mapmi}
           onChange={handleChange}
@@ -121,7 +141,11 @@ const SubStep1 = () => {
       ></hr>
       <Section title="Address Information">
         <InputField
-          label="Address Line 1"
+          label={
+            <>
+              Address Line 1 <span className="required">*</span>
+            </>
+          }
           name="addressLine1"
           value={tenantData.addressLine1}
           onChange={handleChange}
@@ -134,21 +158,33 @@ const SubStep1 = () => {
           onChange={handleChange}
         />
         <InputField
-          label="City"
+          label={
+            <>
+              City <span className="required">*</span>
+            </>
+          }
           name="city"
           value={tenantData.city}
           onChange={handleChange}
           required
         />
         <InputField
-          label="State"
+          label={
+            <>
+              State <span className="required">*</span>
+            </>
+          }
           name="state"
           value={tenantData.state}
           onChange={handleChange}
           required
         />
         <InputField
-          label="Zip Code"
+          label={
+            <>
+              Zip Code <span className="required">*</span>
+            </>
+          }
           name="zipCode"
           value={tenantData.zipCode}
           onChange={handleChange}
@@ -245,7 +281,11 @@ const SubStep1 = () => {
       ></hr>
       <Section title="Contact Information">
         <InputField
-          label="Phone Number *"
+          label={
+            <>
+              Phone Number <span className="required">*</span>
+            </>
+          }
           name="phoneNumber"
           value={tenantData.phoneNumber}
           onChange={handleChange}
@@ -254,7 +294,11 @@ const SubStep1 = () => {
           required
         />
         <InputField
-          label="Email *"
+          label={
+            <>
+              Email <span className="required">*</span>
+            </>
+          }
           name="email"
           value={tenantData.email}
           onChange={handleChange}
@@ -427,7 +471,6 @@ const SubStep1 = () => {
           name="emergencyFirstName"
           value={tenantData.emergencyFirstName}
           onChange={handleChange}
-          required
         />
         <InputField
           label="Emergency Middle Name"
@@ -440,7 +483,6 @@ const SubStep1 = () => {
           name="emergencyLastName"
           value={tenantData.emergencyLastName}
           onChange={handleChange}
-          required
         />
         <InputField
           label="Emergency Phone Number"
@@ -449,7 +491,6 @@ const SubStep1 = () => {
           onChange={handleChange}
           type="tel"
           mask="(999)-999-9999"
-          required
         />
         <InputField
           label="Emergency Email"
@@ -457,14 +498,12 @@ const SubStep1 = () => {
           value={tenantData.emergencyEmail}
           onChange={handleChange}
           type="email"
-          required
         />
         <InputField
           label="Relationship"
           name="emergencyRelationship"
           value={tenantData.emergencyRelationship}
           onChange={handleChange}
-          required
         />
       </Section>
       <hr
@@ -472,7 +511,11 @@ const SubStep1 = () => {
       ></hr>
       <Section title="Admission Information">
         <InputField
-          label="Insurance"
+          label={
+            <>
+              Insurance <span className="required">*</span>
+            </>
+          }
           name="insuranceType"
           value={tenantData.insuranceType}
           onChange={handleChange}
@@ -491,7 +534,11 @@ const SubStep1 = () => {
           required
         />
         <InputField
-          label="Insurance Number"
+          label={
+            <>
+              Insurance Number <span className="required">*</span>
+            </>
+          }
           name="insuranceNumber"
           value={tenantData.insuranceNumber}
           onChange={handleChange}
@@ -521,7 +568,6 @@ const SubStep1 = () => {
           onFocus={() => setFocusedField("insuranceIntakeDate")}
           onBlur={() => setFocusedField(null)}
           focused={focusedField === "insuranceIntakeDate"}
-          required
         />
         <InputField
           label="Let go Date"
@@ -541,7 +587,6 @@ const SubStep1 = () => {
           onFocus={() => setFocusedField("insuranceLetGoDate")}
           onBlur={() => setFocusedField(null)}
           focused={focusedField === "insuranceLetGoDate"}
-          required
         />
         <InputField
           label="Let go Reason"
@@ -550,7 +595,11 @@ const SubStep1 = () => {
           onChange={handleChange}
         />
         <InputField
-          label="Diagnosis Code"
+          label={
+            <>
+              Diagnosis Code <span className="required">*</span>
+            </>
+          }
           name="diagnosisCode"
           value={tenantData.diagnosisCode}
           onChange={handleChange}
@@ -573,7 +622,11 @@ const SubStep1 = () => {
       ></hr>
       <Section title="Case Manager Information">
         <InputField
-          label="First Name"
+          label={
+            <>
+              First Name <span className="required">*</span>
+            </>
+          }
           name="caseManagerFirstName"
           value={tenantData.caseManagerFirstName}
           onChange={handleChange}
@@ -586,14 +639,21 @@ const SubStep1 = () => {
           onChange={handleChange}
         />
         <InputField
-          label="Last Name"
+          label={
+            <>
+              Last Name <span className="required">*</span>
+            </>
+          }
           name="caseManagerLastName"
           value={tenantData.caseManagerLastName}
           onChange={handleChange}
-          required
         />
         <InputField
-          label="Phone Number"
+          label={
+            <>
+              Phone Number <span className="required">*</span>
+            </>
+          }
           name="caseManagerPhoneNumber"
           value={tenantData.caseManagerPhoneNumber}
           onChange={handleChange}
@@ -602,7 +662,11 @@ const SubStep1 = () => {
           required
         />
         <InputField
-          label="Email"
+          label={
+            <>
+              Email <span className="required">*</span>
+            </>
+          }
           name="caseManagerEmail"
           value={tenantData.caseManagerEmail}
           onChange={handleChange}
@@ -626,14 +690,22 @@ const SubStep1 = () => {
       {needsMobileAccess && (
         <Section title="Login Information">
           <InputField
-            label="Username"
+            label={
+              <>
+                Username <span className="required">*</span>
+              </>
+            }
             name="userName"
             value={tenantData.userName}
             onChange={handleChange}
             required
           />
           <InputField
-            label="Password"
+            label={
+              <>
+                Password <span className="required">*</span>
+              </>
+            }
             name="password"
             value={password}
             onChange={handlePasswordChange}
@@ -641,7 +713,11 @@ const SubStep1 = () => {
             required
           />
           <InputField
-            label="Confirm Password"
+            label={
+              <>
+                Confirm Password <span className="required">*</span>
+              </>
+            }
             name="confirmPassword"
             value={confirmPassword}
             onChange={handleConfirmPasswordChange}
@@ -666,7 +742,11 @@ const SubStep1 = () => {
       {hasResponsibleParty && (
         <Section title="Responsible Party Information">
           <InputField
-            label="Responsible First Name"
+            label={
+              <>
+                Responsible First Name <span className="required">*</span>
+              </>
+            }
             name="responsibleFirstName"
             value={tenantData.responsibleFirstName}
             onChange={handleChange}
@@ -685,7 +765,11 @@ const SubStep1 = () => {
             focused={focusedField === "responsibleMiddleName"}
           />
           <InputField
-            label="Responsible Last Name"
+            label={
+              <>
+                Responsible Last Name <span className="required">*</span>
+              </>
+            }
             name="responsibleLastName"
             value={tenantData.responsibleLastName}
             onChange={handleChange}
@@ -695,7 +779,11 @@ const SubStep1 = () => {
             required
           />
           <InputField
-            label="Responsible Phone Number"
+            label={
+              <>
+                Responsible Phone Number <span className="required">*</span>
+              </>
+            }
             name="responsiblePhoneNumber"
             value={tenantData.responsiblePhoneNumber}
             onChange={handleChange}
@@ -707,7 +795,11 @@ const SubStep1 = () => {
             required
           />
           <InputField
-            label="Responsible Email"
+            label={
+              <>
+                Responsible Email <span className="required">*</span>
+              </>
+            }
             name="responsibleEmail"
             value={tenantData.responsibleEmail}
             onChange={handleChange}
@@ -718,7 +810,11 @@ const SubStep1 = () => {
             required
           />
           <InputField
-            label="Relationship"
+            label={
+              <>
+                Relationship <span className="required">*</span>
+              </>
+            }
             name="responsibleRelationship"
             value={tenantData.responsibleRelationship}
             onChange={handleChange}
@@ -734,6 +830,7 @@ const SubStep1 = () => {
 };
 
 // Reusable input component
+
 const InputField = ({
   label,
   name,
@@ -808,7 +905,6 @@ const InputField = ({
     )}
   </div>
 );
-
 // Reusable Section component to wrap sections with a title
 const Section = ({ title, children }) => (
   <div style={{ marginBottom: "16px" }}>
