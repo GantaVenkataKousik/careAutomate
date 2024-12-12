@@ -108,7 +108,7 @@ const styles = {
   label: {
     display: "block",
     fontSize: "1rem",
-    color: "#000080",
+    color: "#6F84F8",
     marginBottom: "4px",
     fontWeight: "600",
   },

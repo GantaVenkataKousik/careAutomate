@@ -1,29 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateAssignedTenants } from '../../redux/hcm/hcmSlice';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateAssignedTenants } from "../../redux/hcm/hcmSlice";
+import { FaArrowRightLong } from "react-icons/fa6";
 
-const DragDropTenants = () => {
+const ChecklistTenants = () => {
   const dispatch = useDispatch();
-  const assignedTenantsRedux = useSelector((state) => state.hcm.assignedTenants);
+  const assignedTenantsRedux = useSelector(
+    (state) => state.hcm.assignedTenants
+  );
   const [allTenants, setAllTenants] = useState([]);
-  const [assignedTenants, setAssignedTenants] = useState(assignedTenantsRedux || []);
+  const [selectedTenants, setSelectedTenants] = useState(
+    assignedTenantsRedux || []
+  );
+  const [searchQuery, setSearchQuery] = useState(""); // Search query state
 
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const token = localStorage.getItem('token'); // Ensure the token is correctly retrieved
+        const token = localStorage.getItem("token");
         if (!token) {
-          console.error('Authorization token is missing.');
+          console.error("Authorization token is missing.");
           return;
         }
 
         const response = await fetch(
-          'https://careautomate-backend.vercel.app/tenant/all',
+          "https://careautomate-backend.vercel.app/tenant/all",
           {
-            method: 'POST',
+            method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({}),
           }
@@ -36,100 +42,112 @@ const DragDropTenants = () => {
             id: tenant._id,
             name: tenant.name,
           }));
-          setAllTenants(tenantData); // Update state with fetched tenants
+          setAllTenants(tenantData);
         } else {
-          console.error('Failed to fetch tenants:', data.message);
+          console.error("Failed to fetch tenants:", data.message);
         }
       } catch (error) {
-        console.error('Error fetching tenants:', error);
+        console.error("Error fetching tenants:", error);
       }
     };
 
     fetchTenants();
   }, []);
 
-  const handleDragStart = (e, tenant, source) => {
-    e.dataTransfer.setData('tenant', JSON.stringify(tenant)); // Save entire tenant object for better handling
-    e.dataTransfer.setData('source', source);
-  };
-
-  const handleDrop = (e, target) => {
-    e.preventDefault();
-    const tenantData = JSON.parse(e.dataTransfer.getData('tenant')); // Retrieve the full tenant object
-    const source = e.dataTransfer.getData('source');
-
-    if (source === 'all' && target === 'assigned') {
-      const updatedAllTenants = allTenants.filter((tenantObj) => tenantObj.id !== tenantData.id);
-      const updatedAssignedTenants = [...assignedTenants, tenantData];
-
-      setAllTenants(updatedAllTenants);
-      setAssignedTenants(updatedAssignedTenants);
-
-      // Update Redux state with only tenant IDs
-      dispatch(updateAssignedTenants(updatedAssignedTenants.map((tenantObj) => tenantObj.id)));
-
-      // Log only tenant IDs
-      console.log('Assigned Tenant IDs:', updatedAssignedTenants.map((tenantObj) => tenantObj.id));
-    } else if (source === 'assigned' && target === 'all') {
-      const updatedAssignedTenants = assignedTenants.filter((tenantObj) => tenantObj.id !== tenantData.id);
-      const updatedAllTenants = [...allTenants, tenantData];
-
-      setAssignedTenants(updatedAssignedTenants);
-      setAllTenants(updatedAllTenants);
-
-      // Update Redux state with only tenant IDs
-      dispatch(updateAssignedTenants(updatedAssignedTenants.map((tenantObj) => tenantObj.id)));
-
-      // Log only tenant IDs
-      console.log('Assigned Tenant IDs:', updatedAssignedTenants.map((tenantObj) => tenantObj.id));
+  const handleCheckboxChange = (tenant) => {
+    if (selectedTenants.some((t) => t.id === tenant.id)) {
+      const updatedTenants = selectedTenants.filter((t) => t.id !== tenant.id);
+      setSelectedTenants(updatedTenants);
+      dispatch(updateAssignedTenants(updatedTenants.map((t) => t.id)));
+    } else {
+      const updatedTenants = [...selectedTenants, tenant];
+      setSelectedTenants(updatedTenants);
+      dispatch(updateAssignedTenants(updatedTenants.map((t) => t.id)));
     }
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
+  const handleSelectAllToggle = () => {
+    if (selectedTenants.length === allTenants.length) {
+      // Deselect All
+      setSelectedTenants([]);
+      dispatch(updateAssignedTenants([]));
+    } else {
+      // Select All
+      setSelectedTenants(allTenants);
+      dispatch(updateAssignedTenants(allTenants.map((tenant) => tenant.id)));
+    }
   };
+
+  // Filter tenants based on search query
+  const filteredTenants = allTenants.filter((tenant) =>
+    tenant.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div style={styles.container}>
       <h2 style={styles.heading}>Step 2: Designate Tenants</h2>
-      <div style={styles.dragDropSection}>
-        <div
-          style={styles.tenantBox}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, 'all')}
-        >
-          <h3 style={styles.boxHeading}>All Tenants</h3>
+
+      <div style={styles.checklistSection}>
+        <div style={styles.tenantBox}>
+          <div style={styles.boxHeader}>
+            <h3 style={styles.boxHeading}>All Tenants</h3>
+            <button
+              style={styles.selectAllButton}
+              onClick={handleSelectAllToggle}
+            >
+              {selectedTenants.length === allTenants.length
+                ? "Deselect All"
+                : "Select All"}
+            </button>
+          </div>
+          {/* Search bar inside the All Tenants section */}
+          <div style={styles.searchContainer}>
+            <input
+              type="text"
+              placeholder="Search tenants..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={styles.searchInput}
+            />
+          </div>
           <ul style={styles.tenantList}>
-            {allTenants.map((tenant) => (
+            {filteredTenants.map((tenant) => (
               <li
-                key={tenant.id} // Ensure that the key is unique
-                draggable
-                onDragStart={(e) => handleDragStart(e, tenant, 'all')}
-                style={styles.tenantItem}
+                key={tenant.id}
+                style={{
+                  ...styles.tenantItem,
+                  backgroundColor: selectedTenants.some(
+                    (t) => t.id === tenant.id
+                  )
+                    ? "#6F84F8"
+                    : "#fff",
+                  color: selectedTenants.some((t) => t.id === tenant.id)
+                    ? "#fff"
+                    : "#000",
+                }}
+                onClick={() => handleCheckboxChange(tenant)} // Handle selection on click
               >
-                {tenant.name}
+                <label style={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={selectedTenants.some((t) => t.id === tenant.id)}
+                    onChange={() => handleCheckboxChange(tenant)}
+                    style={styles.hiddenCheckbox} // Hide the checkbox
+                  />
+                  {tenant.name}
+                </label>
               </li>
             ))}
           </ul>
         </div>
         <div style={styles.arrows}>
-          <span>&#8594;</span>
-          <span>&#8592;</span>
+          <FaArrowRightLong />
         </div>
-        <div
-          style={styles.tenantBox}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, 'assigned')}
-        >
-          <h3 style={styles.boxHeading}>Assigned Tenants</h3>
+        <div style={styles.tenantBox}>
+          <h3 style={styles.boxHeading}>Selected Tenants</h3>
           <ul style={styles.tenantList}>
-            {assignedTenants.map((tenant) => (
-              <li
-                key={tenant.id} // Ensure that the key is unique
-                draggable
-                onDragStart={(e) => handleDragStart(e, tenant, 'assigned')}
-                style={styles.tenantItem}
-              >
+            {selectedTenants.map((tenant) => (
+              <li key={tenant.id} style={styles.tenantItem}>
                 {tenant.name}
               </li>
             ))}
@@ -143,53 +161,87 @@ const DragDropTenants = () => {
 // Internal CSS Styles
 const styles = {
   container: {
-    fontFamily: 'Arial, sans-serif',
-    maxWidth: '800px',
-    margin: '0 auto',
+    fontFamily: "Arial, sans-serif",
+    maxWidth: "800px",
+    margin: "0 auto",
+    fontFamily: "Poppins",
   },
   heading: {
-    textAlign: 'center',
-    marginBottom: '20px',
+    textAlign: "center",
+    marginBottom: "20px",
   },
-  dragDropSection: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  searchContainer: {
+    marginBottom: "16px",
+    textAlign: "center",
+  },
+  searchInput: {
+    padding: "0.5rem 0.5rem",
+    borderRadius: "30px",
+    fontSize: "16px",
+    width: "100%",
+    // borderRadius: "4px",
+    border: "1px solid #ccc",
+    margin: "0 auto",
+  },
+  checklistSection: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   tenantBox: {
-    width: '45%',
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    padding: '16px',
-    backgroundColor: '#f9f9f9',
-    minHeight: '200px',
+    width: "45%",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    padding: "16px",
+    backgroundColor: "#f9f9f9",
+    minHeight: "200px",
+  },
+  boxHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   boxHeading: {
-    marginBottom: '16px',
-    textAlign: 'center',
+    marginBottom: "16px",
+    fontSize: "1.2rem",
+    fontFamily: "Poppins",
+  },
+  selectAllButton: {
+    padding: "8px 12px",
+    backgroundColor: "#6F84F8",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    transition: "background-color 0.3s",
   },
   tenantList: {
-    listStyle: 'none',
-    padding: '0',
-    margin: '0',
+    listStyle: "none",
+    padding: "0",
+    margin: "0",
   },
   tenantItem: {
-    margin: '8px 0',
-    padding: '8px',
-    backgroundColor: '#fff',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    cursor: 'grab',
-    transition: 'background-color 0.3s',
+    margin: "8px 0",
+    padding: "0.7rem 1rem",
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "30px",
+    transition: "background-color 0.3s",
+  },
+  checkboxLabel: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    cursor: "pointer",
   },
   arrows: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '24px',
-    margin: '0 16px',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "24px",
+    margin: "0 16px",
   },
 };
 
-export default DragDropTenants;
+export default ChecklistTenants;
