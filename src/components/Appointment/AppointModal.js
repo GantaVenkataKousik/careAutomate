@@ -133,13 +133,13 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
     }
 
     // Combine startDate and startTime into a single Date object
-    const startDateTime = new Date(`${startDate}T ${startTime}:00`);
-    const endDateTime = new Date(`${startDate}T ${endTime}:00`);
+    const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
+    const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
 
     // Format the times to the desired string format
-    const formattedStartTime = startDateTime.toString();
-    const formattedEndTime = endDateTime.toString();
-
+    const formattedStartTime = startDateTime.toISOString();
+    const formattedEndTime = endDateTime.toISOString();
+    // console.log("time", new Date(`${startDate}T${startTime}:00`), endTime);
     const payload = {
       tenantId: selectedTenantId || "Unknown",
       hcmId: selectedHcmId || "N/A",
