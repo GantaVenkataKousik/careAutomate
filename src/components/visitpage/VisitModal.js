@@ -41,6 +41,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
   const [detailsOfVisit, setDetailsOfVisit] = useState("");
   const tenantName = useSelector((state) => state.hcm.tenantName);
   const tenantId = useSelector((state) => state.hcm.tenantId);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userName = user?.name;
 
   console.log("Hcm Name in step4:", tenantName);
   console.log("Hcm ID in step4:", tenantId);
@@ -624,13 +626,9 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
             <label className="text-sm font-medium flex items-center w-1/3">
               Signature
             </label>
-            <input
-              type="text"
-              value={signature}
-              onChange={(e) => setSignature(e.target.value)}
-              placeholder="Enter your signature"
-              className="border border-gray-300 rounded-md p-2 w-2/3"
-            />
+            <div className="border border-gray-300 rounded-md p-2 w-2/3 bg-gray-100 text-gray-700">
+              {user?.name || "No name available"}
+            </div>
           </div>
 
           <div className="flex gap-4">
