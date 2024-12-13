@@ -22,7 +22,7 @@ import DummyDashboard from './components/DummyDashboard';
 import { FaDownload } from 'react-icons/fa';
 import PlanUsage from './components/PlanUsage';
 import Onboarding from './components/Onboarding.js';
-
+import BillsAndPayments from './components/BillsAndPayments';
 const AppLayout = ({ children }) => {
   const location = useLocation();
   const noNavSidebarRoutes = ['/login', '/signup'];
@@ -65,6 +65,7 @@ const App = () => {
             <Route path="/settings" element={<AppLayout><Settings /></AppLayout>} />
             <Route path="/onBoarding" element={<Onboarding />} />
             <Route path="/tenants/planUsage" element={<AppLayout><PlanUsage /></AppLayout>} />
+            <Route path="/tenants/billsAndPayments" element={<AppLayout><BillsAndPayments /></AppLayout>} />
           </Route>
         </Routes>
       </Router>

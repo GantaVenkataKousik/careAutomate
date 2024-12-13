@@ -552,9 +552,9 @@ active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
               >
                 {visit?.duration
                   ? (() => {
-                      const [start, end] = visit.duration.split(" - ");
-                      return `${new Date(start.trim()).toLocaleDateString("en-US")} - ${new Date(end.trim()).toLocaleDateString("en-US")}`;
-                    })()
+                    const [start, end] = visit.duration.split(" - ");
+                    return `${new Date(start.trim()).toLocaleDateString("en-US")} - ${new Date(end.trim()).toLocaleDateString("en-US")}`;
+                  })()
                   : "No Date"}
               </p>
               <span style={{ marginLeft: "auto" }}>

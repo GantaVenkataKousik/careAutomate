@@ -10,7 +10,10 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { IoMdTime } from "react-icons/io";
-const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
+const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
   const [hcm, setHcm] = useState('');
   const [startDate, setStartDate] = useState(null);
   const [planOfService, setPlanOfService] = useState('');
@@ -464,10 +467,6 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
               <option value="Other">Other</option>
             </select>
           </div>
-
-
-
-
           {/* Method of Contact */}
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
@@ -537,15 +536,23 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
 
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
-
               Details of Visit
             </label>
-            <input
-              type="text"
+            <ReactQuill
               value={detailsOfVisit}
-              onChange={(e) => setDetailsOfVisit(e.target.value)}
-              placeholder="Enter details of visit"
-              className="border border-gray-300 rounded-md p-2 w-2/3"
+              onChange={setDetailsOfVisit}
+              className="w-2/3"
+              theme="snow"
+              modules={{
+                toolbar: [
+                  ['bold', 'italic', 'underline', 'strike'],        // Basic formatting
+                  [{ 'header': 1 }, { 'header': 2 }],               // Headers
+                  [{ 'list': 'ordered' }, { 'list': 'bullet' }],     // Lists
+                  [{ 'align': [] }],                                // Alignment
+                  ['link', 'image'],                                // Links and images
+                  ['clean']                                         // Remove formatting
+                ]
+              }}
             />
           </div>
 
@@ -644,11 +651,6 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
             </button>
           </div>
         </div>
-
-
-
-
-
         {/* <button
           onClick={handleCreateAnother}
           className=" py-2 px-4 rounded-md mt-4  transition duration-300"
