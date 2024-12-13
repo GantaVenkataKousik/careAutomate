@@ -15,7 +15,7 @@ const Substep12 = ({ tenantID }) => {
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState({});
-  const [fileToUpload, setFileToUpload] = useState(null); 
+  const [fileToUpload, setFileToUpload] = useState(null);
 
   const [fetchedDocuments, setFetchedDocuments] = useState([]); // State for fetched documents
 
@@ -188,7 +188,7 @@ const Substep12 = ({ tenantID }) => {
         <div className="flex items-center mb-6">
           <button
             onClick={addFolder}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="px-4 py-2 bg-[#6F84F8] text-white rounded hover:bg-[#6F84F8]"
           >
             Create Folder
           </button>

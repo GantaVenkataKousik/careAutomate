@@ -1,60 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import { format } from 'date-fns';
-import { GoPerson } from 'react-icons/go';
-import { RiServiceLine } from 'react-icons/ri';
-import { SlNote } from 'react-icons/sl';
-import { BsCalendar2Date } from 'react-icons/bs';
-import { MdOutlineAccessTime } from 'react-icons/md';
-import { GrLocation } from 'react-icons/gr';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import React, { useEffect, useState } from "react";
+import { format } from "date-fns";
+import { GoPerson } from "react-icons/go";
+import { RiServiceLine } from "react-icons/ri";
+import { SlNote } from "react-icons/sl";
+import { BsCalendar2Date } from "react-icons/bs";
+import { MdOutlineAccessTime } from "react-icons/md";
+import { GrLocation } from "react-icons/gr";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { toast } from "react-toastify";
+import DatePicker from "react-datepicker";
 
 const ScheduleAppointment = () => {
-  const [hcm, setHcm] = useState('');
+  const [hcm, setHcm] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [timeSlot, setTimeSlot] = useState('');
-  const [timePeriod, setTimePeriod] = useState('');
-  const [timeDuration, setTimeDuration] = useState('');
-  const [planOfService, setPlanOfService] = useState('');
-  const [visitMethod, setVisitMethod] = useState('');
-  const [reasonForRemote, setReasonForRemote] = useState('');
-  const [title, setTitle] = useState('');
+  const [timeSlot, setTimeSlot] = useState("");
+  const [timePeriod, setTimePeriod] = useState("");
+  const [timeDuration, setTimeDuration] = useState("");
+  const [planOfService, setPlanOfService] = useState("");
+  const [visitMethod, setVisitMethod] = useState("");
+  const [reasonForRemote, setReasonForRemote] = useState("");
+  const [title, setTitle] = useState("");
   const [scheduleCreated, setScheduleCreated] = useState(false);
-  const [activity, setActivity] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [showCreateScheduleDialog, setShowCreateScheduleDialog] = useState(false);
+  const [activity, setActivity] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [showCreateScheduleDialog, setShowCreateScheduleDialog] =
+    useState(false);
   const [showCreateAnotherDialog, setShowCreateAnotherDialog] = useState(false);
   const [allTenants, setAllTenants] = useState([]); // Store tenant data
-  const [endTime, setEndTime] = useState('');
-  const [serviceType, setServiceType] = useState('Housing Sustaining'); // Default value for service type
-  const [methodOfContact, setMethodOfContact] = useState('in-person'); // Default value for method of contact
-
+  const [endTime, setEndTime] = useState("");
+  const [serviceType, setServiceType] = useState("Housing Sustaining"); // Default value for service type
+  const [methodOfContact, setMethodOfContact] = useState("in-person"); // Default value for method of contact
 
   const hcmName = useSelector((state) => state.hcm.hcmName);
   const hcmId = useSelector((state) => state.hcm.hcmId);
 
-  console.log('Hcm Name in step4:', hcmName);
-  console.log('Hcm ID in step4:', hcmId);
+  console.log("Hcm Name in step4:", hcmName);
+  console.log("Hcm ID in step4:", hcmId);
 
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (!token) {
-          console.error('Authorization token is missing.');
+          console.error("Authorization token is missing.");
           return;
         }
 
-        const response = await fetch('https://careautomate-backend.vercel.app/tenant/all', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({}),
-        });
+        const response = await fetch(
+          "https://careautomate-backend.vercel.app/tenant/all",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({}),
+          }
+        );
 
         const data = await response.json();
 
@@ -65,10 +69,10 @@ const ScheduleAppointment = () => {
           }));
           setAllTenants(tenantData);
         } else {
-          console.error('Failed to fetch tenants:', data.message);
+          console.error("Failed to fetch tenants:", data.message);
         }
       } catch (error) {
-        console.error('Error fetching tenants:', error);
+        console.error("Error fetching tenants:", error);
       }
     };
 
@@ -95,44 +99,44 @@ const ScheduleAppointment = () => {
     console.log("End Time:", endTime);
 
     const payload = {
-      tenantId: hcm || 'Unknown',
-      hcmId: hcmId || 'N/A',
+      tenantId: hcm || "Unknown",
+      hcmId: hcmId || "N/A",
       date: startDate, // Send date separately
       startTime, // Send start time as time only
       endTime, // Send end time as time only
-      activity: activity || 'N/A',
+      activity: activity || "N/A",
       methodOfContact,
       reasonForRemote: reasonForRemote,
-      placeOfService: planOfService || 'N/A',
+      placeOfService: planOfService || "N/A",
       serviceType,
       approved: false,
-      status: 'pending',
+      status: "pending",
     };
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.post(
-        'https://careautomate-backend.vercel.app/tenant/create-appointment',
+        "https://careautomate-backend.vercel.app/tenant/create-appointment",
         payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
 
       if (response) {
-        toast.success('Appointment created successfully.');
+        toast.success("Appointment created successfully.");
         setScheduleCreated(true);
         setShowCreateScheduleDialog(true);
       } else {
-        console.error('Failed to create appointment:', response.statusText);
-        toast.error('Failed to create appointment.');
+        console.error("Failed to create appointment:", response.statusText);
+        toast.error("Failed to create appointment.");
       }
     } catch (error) {
-      console.error('Error during API call:', error);
-      toast.error('Error creating appointment. Please try again.');
+      console.error("Error during API call:", error);
+      toast.error("Error creating appointment. Please try again.");
     }
   };
 
@@ -146,46 +150,47 @@ const ScheduleAppointment = () => {
   };
 
   const resetFormState = () => {
-    setHcm('');
-    setServiceType('');
+    setHcm("");
+    setServiceType("");
     setStartDate(null);
     setEndDate(null);
-    setTimeSlot('');
-    setTimePeriod('');
-    setTimeDuration('');
-    setPlanOfService('');
-    setVisitMethod('');
-    setMethodOfContact('');
-    setReasonForRemote('');
-    setStartTime('');
-    setActivity('');
-    setTitle('');
+    setTimeSlot("");
+    setTimePeriod("");
+    setTimeDuration("");
+    setPlanOfService("");
+    setVisitMethod("");
+    setMethodOfContact("");
+    setReasonForRemote("");
+    setStartTime("");
+    setActivity("");
+    setTitle("");
   };
 
   const calculateEndTime = (startTime, duration) => {
     if (!startTime || !duration) return startTime;
     const time = new Date(startTime);
-    const durationMinutes = parseInt(duration.split(' ')[0], 10) || 0;
+    const durationMinutes = parseInt(duration.split(" ")[0], 10) || 0;
     time.setMinutes(time.getMinutes() + durationMinutes);
     return time;
   };
 
   return (
-    <div style={{ maxHeight: '200px' }} className="p-6 max-w-2xl mx-auto bg-white rounded-lg ">
-      {scheduleCreated ?
+    <div className="p-[20px]  mx-auto bg-white rounded-lg ">
+      {scheduleCreated ? (
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-green-500">Appointment Created Successfully!</h2>
-          <p className="mt-4 text-gray-600">Your appointment has been successfully scheduled.</p>
-          </div> 
-          :
-
-
-        <div className='flex flex-col pb-10 max-h-[24rem]'>
-
+          <h2 className="text-2xl font-bold text-green-500">
+            Appointment Created Successfully!
+          </h2>
+          <p className="mt-4 text-gray-600">
+            Your appointment has been successfully scheduled.
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col">
           <h5 className="text-2xl font-semibold mb-4">New Appointment</h5>
           <p className=" mb-6">Fill in the details to add a schedule</p>
 
-          <div className="space-y-6 max-h-[40rem] overflow-y-auto">
+          <div className="space-y-6 overflow-y-auto px-[5vw]">
             <div className="flex gap-4">
               <label className="text-sm font-medium flex items-center w-1/3">
                 <GoPerson size={24} className="mr-2" />
@@ -227,7 +232,6 @@ const ScheduleAppointment = () => {
               </select>
             </div>
 
-
             {/* <div className="flex gap-4">
           <label className="text-sm font-medium flex items-center w-1/3">
             <GoPerson size={24} className="mr-2" />
@@ -241,7 +245,6 @@ const ScheduleAppointment = () => {
             className="border border-gray-300 rounded-md p-2 w-2/3"
           />
         </div> */}
-
 
             <div className="flex gap-4">
               <label className="text-sm font-medium flex items-center w-1/3">
@@ -258,7 +261,6 @@ const ScheduleAppointment = () => {
               </select>
             </div>
 
-
             <div className="flex gap-4">
               <label className="text-sm font-medium flex items-center w-1/3">
                 <SlNote size={24} className="mr-2" />
@@ -273,21 +275,20 @@ const ScheduleAppointment = () => {
               />
             </div>
 
-
             <div className="flex gap-4">
               <label className="text-sm font-medium flex items-center w-1/3">
                 <BsCalendar2Date size={24} className="mr-2" />
                 Date
               </label>
-              <input
-                type="date"
-                value={startDate || ''}
-                min={format(new Date(), 'yyyy-MM-dd')} // Disable previous dates
-                onChange={(e) => setStartDate(e.target.value)} // Updates the date state
-                className="border border-gray-300 rounded-md pointer p-2 w-2/3"
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                minDate={new Date()}
+                dateFormat="MM-dd-yyyy"
+                className="border border-gray-300 rounded-md p-2 w-full"
+                placeholderText="MM-DD-YYYY"
               />
             </div>
-
 
             <div className="flex gap-4">
               <label className="text-sm font-medium flex items-center w-1/3">
@@ -296,7 +297,7 @@ const ScheduleAppointment = () => {
               </label>
               <input
                 type="time"
-                value={startTime || ''}
+                value={startTime || ""}
                 onChange={(e) => setStartTime(e.target.value)} // Updates the startTime state
                 className="border border-gray-300 rounded-md pointer p-2 w-2/3"
               />
@@ -309,7 +310,7 @@ const ScheduleAppointment = () => {
               </label>
               <input
                 type="time"
-                value={endTime || ''}
+                value={endTime || ""}
                 onChange={(e) => setEndTime(e.target.value)} // Updates the endTime state
                 className="border border-gray-300 rounded-md pointer p-2 w-2/3"
               />
@@ -330,8 +331,6 @@ const ScheduleAppointment = () => {
               />
             </div>
 
-
-
             {/* Method of Contact */}
             <div className="flex gap-4">
               <label className="text-sm font-medium flex items-center w-1/3">
@@ -348,7 +347,6 @@ const ScheduleAppointment = () => {
               </select>
             </div>
 
-
             <div className="flex gap-4">
               <label className="text-sm font-medium flex items-center w-1/3">
                 <RiServiceLine size={24} className="mr-2" />
@@ -363,26 +361,29 @@ const ScheduleAppointment = () => {
               />
             </div>
 
-
             <div className="flex gap-4">
               <button
                 onClick={handleCreateAppointment}
-                className="border py-3 px-6 rounded-md w-full mt-6  transition duration-300"
+                className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg
+              border-blue-600
+              border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
+              active:border-b-[2px] active:brightness-90 active:translate-y-[2px]  py-3 px-6 w-full mt-6"
               >
                 Create Appointment
               </button>
               <button
                 onClick={handleCancelAppointment}
-                className=" border py-3 px-6 rounded-md w-full mt-6  transition duration-300"
+                className=" cursor-pointer transition-all bg-[#F57070] text-white 
+              px-6 py-2 rounded-lg 
+              border-red-700 border-b-[4px] 
+              hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] 
+              active:border-b-[2px] active:brightness-90 active:translate-y-[2px] 
+              py-3 px-6 w-full mt-6"
               >
                 Cancel
               </button>
             </div>
           </div>
-
-
-
-
 
           {/* <button
         onClick={handleCreateAnother}
@@ -391,9 +392,8 @@ const ScheduleAppointment = () => {
         Create Another Schedule
       </button> */}
         </div>
-      }
+      )}
     </div>
-
   );
 };
 

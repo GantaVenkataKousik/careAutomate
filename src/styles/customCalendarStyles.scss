@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+@import 'react-big-calendar/lib/sass/styles';
+
+// Calendar Container
+.rbc-calendar {
+  background-color: #ffffff; // White background
+  border-radius: 16px; // Rounded corners for the entire calendar
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); // Subtle shadow for a lifted effect
+  padding: 16px; // Padding around the calendar
+}
+
+// Header (Days of the Week)
+.rbc-header {
+  background-color: #f8f9fa; // Light gray for headers
+  color: #333333; // Darker text color for contrast
+  font-weight: 600; // Bold text
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0; // Subtle divider line
+  padding: 8px 0; // Add padding for space
+}
+
+// Day Slots
+.rbc-day-bg {
+  background-color: #ffffff; // White background for individual cells
+  border-radius: 8px; // Rounded corners for day cells
+  margin: 4px; // Space between cells
+  border: 1px solid #e0e0e0; // Subtle border
+  overflow: hidden; // Ensures content fits well
+}
+
+// Time Slots (Optional)
+.rbc-time-slot {
+  background-color: #ffffff; // Consistent background
+  border-radius: 8px;
+  margin-bottom: 4px;
+  // padding: 1rem;
+}
+.rbc-timeslot-group{
+  // padding-top:5rem
+}
+// Event Styling
+.rbc-event {
+  border-radius: 10px; // Rounded corners for events
+  margin: 4px 8px; // Add space around events
+  padding: 6px 10px; // Add internal padding
+  font-size: 0.9rem; // Adjust font size
+  font-weight: 500;
+  color: white; // Default text color
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); // Subtle shadow for events
+
+  // Custom event colors based on status
+  &.blue {
+    background-color: #6F84F8 !important; // Purple for Upcoming
+  }
+  &.red {
+    background-color: red !important; // Red for Cancelled
+  }
+  &.green {
+    background-color: green !important; // Green for Completed
+  }
+
+  // Hover effect
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+// Highlight Current Day
+.rbc-current {
+  background-color: #eaf4fc; // Light blue highlight for the current day
+  border-radius: 8px;
+}
+
+// Time Indicator (Current Time Line)
+.rbc-current-time {
+  border-top: 2px solid #ff6b6b; // Red line for current time
+  z-index: 10; // Ensure it’s above other elements
+}
+
+// Break Time Row
+.break-time {
+  background: linear-gradient(135deg, #f7f7f7 25%, #ffffff 25%);
+  height: 50px;
+  border-radius: 8px;
+  text-align: center;
+  line-height: 50px;
+  color: #aaaaaa;
+  font-style: italic;
+  margin: 8px 0; // Add spacing
+}
+
+// Toolbar Styling
+.rbc-toolbar {
+  margin-bottom: 24px; // Add spacing below the toolbar
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+// Toolbar Buttons
+.rbc-toolbar button {
+  border-radius: 12px; // Rounded buttons
+  margin: 0 8px; // Spacing between buttons
+  padding: 8px 16px; // Button padding
+  border: 1px solid #ddd; // Light border
+  background-color: transparent; // Transparent background
+  color: gray; // Default text color
+  font-weight: 600; // Bold text
+  transition: background-color 0.3s ease, color 0.3s ease; // Smooth transitions
+
+  // Active state
+  &.rbc-active {
+    background-color: #6F84F8 !important; // Purple background
+    color: white !important; // White text
+    border: none; // Remove border
+  }
+
+  // Hover effect
+  &:hover {
+    background-color: #6F84F8; // Purple background
+    color: white; // White text
+  }
+}
+
+// Event Description
+.event-description {
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 350;
+}
+
+// Event Container Padding
+.rbc-event-container {
+  padding-top: 10rem;
+  // height:20rem;
+}

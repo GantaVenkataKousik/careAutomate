@@ -41,3 +41,24 @@
   margin-left: 250px;
   margin-top: 85px;
 }
+/* Customize scrollbar for the specific component */
+.tenant-visits-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+.tenant-visits-scrollbar::-webkit-scrollbar-track {
+  background: white; /* Color of the track (the background area) */
+}
+
+.tenant-visits-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #6f84f8; /* Color of the thumb (the draggable part) */
+  border-radius: 10px; /* Optional: rounded corners for the thumb */
+}
+
+.tenant-visits-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #4f6dce; /* Color of the thumb on hover */
+}
+
+label span.required {
+  color: red;
+}
