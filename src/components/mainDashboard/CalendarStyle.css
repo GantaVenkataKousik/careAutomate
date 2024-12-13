@@ -1,0 +1,86 @@
+/* Base calendar container styles */
+.react-calendar {
+  max-width: 380px;
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Customize the day tile styles */
+.react-calendar__tile {
+  border-radius: 50%;
+  font-size: 1.25rem;
+  font-family: "Poppins", sans-serif;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Highlight the current day */
+.react-calendar__tile--now {
+  background-color: #00bcd4;
+  color: white;
+  font-weight: bold;
+}
+
+/* Hover effect on date tiles */
+.react-calendar__tile:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+/* Highlight individual marked days */
+.highlight-today {
+  background-color: #6f84f8; /* Blue color for marked days */
+  color: white;
+  font-weight: bold;
+}
+
+/* Unified range selection */
+.react-calendar__tile--range {
+  background-color: #6f84f8; /* Same color for the entire range */
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+}
+
+/* Style for the header navigation (month, arrows) */
+.react-calendar__navigation {
+  background-color: #f0f0f0;
+  border-radius: 1rem;
+}
+
+.react-calendar__navigation__label {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #333;
+}
+
+.react-calendar__navigation__arrow {
+  color: #333;
+}
+
+/* Style the day labels (Su, Mo, Tu, etc.) */
+.react-calendar__month-view__days__day {
+  font-weight: normal;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* Tooltip customization */
+.tooltip {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px;
+  background-color: #333;
+  color: white;
+  border-radius: 5px;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  z-index: 1000;
+}

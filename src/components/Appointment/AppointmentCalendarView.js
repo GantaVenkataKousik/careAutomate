@@ -35,8 +35,8 @@ const AppointmentCalendarView = ({ appointments }) => {
         events={events}
         startAccessor="start"
         endAccessor="end"
-        defaultView="week"
-        views={["month", "week", "day"]}
+        defaultView="month"
+        views={["month", "week", "day", "agenda"]}
         style={{ height: "80vh" }}
         eventPropGetter={(event) => {
           let color = "";
