@@ -29,6 +29,23 @@ const SubStep1 = () => {
   const handleDateChange = (name, date) => {
     dispatch(updateTenantInfo({ [name]: date }));
   };
+  // const DateInputField = ({ label, name, value, onChange, required }) => {
+  //   return (
+  //     <div style={{ marginBottom: "1rem" }}>
+  //       <label style={{ fontWeight: "600", color: "#333" }}>
+  //         {label}
+  //         {required && " *"}
+  //       </label>
+  //       <DatePicker
+  //         selected={value ? new Date(value) : null}
+  //         onChange={(date) => onChange({ target: { name, value: date } })}
+  //         dateFormat="MM-dd-yyyy"
+  //         className="date-picker"
+  //         style={{ display: "block", marginTop: "0.5rem", width: "100%" }}
+  //       />
+  //     </div>
+  //   );
+  // };
 
   return (
     <div style={styles.container}>
@@ -87,7 +104,7 @@ const SubStep1 = () => {
           focused={focusedField === "gender"}
           required
         />
-        <InputField
+        {/* <InputField
           label="MA PMI #"
           name="MAPMI#"
           value={tenantData.mapmi}
@@ -96,7 +113,7 @@ const SubStep1 = () => {
           onBlur={() => setFocusedField(null)}
           focused={focusedField === "mapmi"}
           required
-        />
+        /> */}
       </Section>
       <Section title="Contact Information">
         <InputField
@@ -203,7 +220,7 @@ const SubStep1 = () => {
         </div>
       </Section>
 
-      <Section title="Emergency Contact Information">
+      {/* <Section title="Emergency Contact Information">
         <InputField
           label="Emergency First Name"
           name="emergencyFirstName"
@@ -246,6 +263,66 @@ const SubStep1 = () => {
           onChange={handleChange}
           required
         />
+      </Section> */}
+
+      <Section title="Employment Information">
+        <InputField
+          label="Employment Title"
+          name="employmentTitle"
+          value={tenantData.employmentTitle}
+          onChange={handleChange}
+          required
+        />
+        <InputField
+          label="Hire Date"
+          name="hireDate"
+          value={
+            tenantData.hireDate ? formatDateToMMDDYYYY(tenantData.hireDate) : ""
+          }
+          onChange={(date) =>
+            handleDateChange("hireDate", date ? formatDateToMMDDYYYY(date) : "")
+          }
+          type="date"
+        />
+        <InputField
+          label="Termination Date"
+          name="terminationDate"
+          value={
+            tenantData.terminationDate
+              ? formatDateToMMDDYYYY(tenantData.terminationDate)
+              : ""
+          }
+          onChange={(date) =>
+            handleDateChange(
+              "terminationDate",
+              date ? formatDateToMMDDYYYY(date) : ""
+            )
+          }
+          type="date"
+          // onChange={handleChange}
+          required
+        />
+        <InputField
+          label="SSN"
+          name="ssn"
+          value={tenantData.ssn}
+          onChange={handleChange}
+          required
+        />
+        <InputField
+          label="Rate of Pay"
+          name="rateOfPay"
+          value={tenantData.rateOfPay}
+          onChange={handleChange}
+          required
+        />
+        {/* <InputField
+          label="Relationship"
+          name="emergencyRelationship"
+          value={tenantData.emergencyRelationship}
+          onChange={handleChange}
+          required
+        /> */}
       </Section>
 
       <Section title="Case Manager Information">

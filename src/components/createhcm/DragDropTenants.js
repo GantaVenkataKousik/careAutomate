@@ -89,18 +89,6 @@ const ChecklistTenants = () => {
 
       <div style={styles.checklistSection}>
         <div style={styles.tenantBox}>
-          <div style={styles.boxHeader}>
-            <h3 style={styles.boxHeading}>All Tenants</h3>
-            <button
-              style={styles.selectAllButton}
-              onClick={handleSelectAllToggle}
-            >
-              {selectedTenants.length === allTenants.length
-                ? "Deselect All"
-                : "Select All"}
-            </button>
-          </div>
-          {/* Search bar inside the All Tenants section */}
           <div style={styles.searchContainer}>
             <input
               type="text"
@@ -110,6 +98,14 @@ const ChecklistTenants = () => {
               style={styles.searchInput}
             />
           </div>
+          <button
+            style={styles.selectAllButton} // Reusing tenantItem styles
+            onClick={handleSelectAllToggle}
+          >
+            {selectedTenants.length === allTenants.length
+              ? "Deselect All"
+              : "Select All"}
+          </button>
           <ul style={styles.tenantList}>
             {filteredTenants.map((tenant) => (
               <li
@@ -207,11 +203,12 @@ const styles = {
     fontFamily: "Poppins",
   },
   selectAllButton: {
-    padding: "8px 12px",
-    backgroundColor: "#6F84F8",
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
+    margin: "8px 0",
+    padding: "0.7rem 1rem",
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "30px",
+    width: "100%",
     cursor: "pointer",
     transition: "background-color 0.3s",
   },
