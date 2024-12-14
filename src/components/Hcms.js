@@ -33,6 +33,7 @@ export default function Hcms() {
       console.error("HCM not found for ID:", hcmId);
       return;
     }
+    console.log(hcmId);
     navigate("/hcms/hcmProfile", {
       state: { hcms: Hcms, hcmId: hcmId },
     });
