@@ -10,7 +10,7 @@ const Navbar = () => {
         <h2>CareAutomate</h2>
       </div>
       <div className=" flex gap-10">
-        <div style={styles.searchBar}>
+        {/* <div style={styles.searchBar}>
           <FaSearch style={styles.searchIcon} />
           <input
             type="text"
@@ -18,7 +18,7 @@ const Navbar = () => {
             style={styles.searchInput}
           />
           <button style={styles.searchButton}>Search</button>
-        </div>
+        </div> */}
         <div className="user-profile">
           <img
             src={tenantImage}
