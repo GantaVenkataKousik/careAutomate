@@ -21,16 +21,6 @@ import Signup from "./components/auth/Signup.js";
 import "./App.css";
 import PrivateRoute from "./PrivateRoute";
 import { AuthProvider } from "./AuthContext";
-<<<<<<< HEAD
-import Navbar from './components/Navbar.js';
-import Sidebar from './components/Sidebar';
-import PopupPageHCM from './components/createhcm/PopupPageHCM.js'
-import DummyDashboard from './components/DummyDashboard';
-import { FaDownload } from 'react-icons/fa';
-import PlanUsage from './components/PlanUsage';
-import Onboarding from './components/Onboarding.js';
-import BillsAndPayments from './components/BillsAndPayments';
-=======
 import Navbar from "./components/Navbar.js";
 import Sidebar from "./components/Sidebar";
 import PopupPageHCM from "./components/createhcm/PopupPageHCM.js";
@@ -40,7 +30,6 @@ import PlanUsage from "./components/PlanUsage";
 import Onboarding from "./components/Onboarding.js";
 import MainDashboard from "./components/mainDashboard/MainDashBoard.js";
 
->>>>>>> fecc595e274e7c2ef096c177a7cc2674ce67f07c
 const AppLayout = ({ children }) => {
   const location = useLocation();
   const noNavSidebarRoutes = ["/login", "/signup"];
@@ -159,10 +148,6 @@ const App = () => {
               }
             />
             <Route path="/onBoarding" element={<Onboarding />} />
-<<<<<<< HEAD
-            <Route path="/tenants/planUsage" element={<AppLayout><PlanUsage /></AppLayout>} />
-            <Route path="/tenants/billsAndPayments" element={<AppLayout><BillsAndPayments /></AppLayout>} />
-=======
             <Route
               path="/tenants/planUsage"
               element={
@@ -171,7 +156,6 @@ const App = () => {
                 </AppLayout>
               }
             />
->>>>>>> fecc595e274e7c2ef096c177a7cc2674ce67f07c
           </Route>
         </Routes>
       </Router>
