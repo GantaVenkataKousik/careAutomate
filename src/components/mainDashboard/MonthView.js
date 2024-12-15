@@ -1,43 +1,58 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
+import axios from "axios";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-
+import { appointmentFilter } from "../../utils/appointmentsFilter";
 // Create a localizer for the calendar using moment.js
 const localizer = momentLocalizer(moment);
 
 const MonthView = () => {
   // Example events with title, start and end time, and description
-  const events = [
-    {
-      title: "House Sustaining",
-      start: new Date(2024, 11, 10, 10, 0), // December 10th, 2024, 10:00 AM
-      end: new Date(2024, 11, 10, 11, 0), // December 10th, 2024, 11:00 AM
-      description: "Alex with Bob",
-      status: "Pending",
-    },
-    {
-      title: "House Transition",
-      start: new Date(2024, 11, 12, 14, 30), // December 12th, 2024, 2:30 PM
-      end: new Date(2024, 11, 12, 16, 0), // December 12th, 2024, 4:00 PM
-      description: "Sarah with John",
-      status: "Completed",
-    },
-    {
-      title: "House Sustaining",
-      start: new Date(2024, 11, 15, 9, 0), // December 15th, 2024, 9:00 AM
-      end: new Date(2024, 11, 15, 10, 30), // December 15th, 2024, 10:30 AM
-      description: "Mike with Lisa",
-      status: "Cancelled",
-    },
-    {
-      title: "House Transition",
-      start: new Date(2024, 11, 18, 13, 0), // December 18th, 2024, 1:00 PM
-      end: new Date(2024, 11, 18, 15, 0), // December 18th, 2024, 3:00 PM
-      description: "Emma with Chris",
-      status: "Pending",
-    },
-  ];
+  const [appointments, setAppointments] = useState([]);
+  const token = localStorage.getItem("token");
+
+  const fetchAppointments = async () => {
+    try {
+      const response = await axios.post(
+        "https://careautomate-backend.vercel.app/tenant/get-appointments",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.appointments) {
+        const mappedAppointments = response.data.appointments.map((apt) => ({
+          id: apt._id,
+          date: new Date(apt.date).toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          }),
+          time: `${apt.startTime} – ${apt.endTime}`,
+          location: apt.placeOfService || "N/A",
+          from: apt.hcmDetails?.name || "Unknown",
+          service: apt.serviceType || "Unknown",
+          with: apt.tenantDetails?.name || "Unknown",
+          status: apt.status.charAt(0).toUpperCase() + apt.status.slice(1),
+        }));
+        setAppointments(mappedAppointments); // This will update both list and calendar views
+      } else {
+        console.error("Failed to fetch appointment data");
+      }
+    } catch (error) {
+      console.error("Error fetching appointment data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const events = appointmentFilter(appointments);
 
   return (
     <div>
@@ -46,9 +61,9 @@ const MonthView = () => {
         events={events}
         startAccessor="start"
         endAccessor="end"
-        // defaultView="month"
-        views={"week"}
-        // style={{ height: "80vh" }}
+        defaultView="month"
+        views={""}
+        style={{ width: "60vh" }}
         eventPropGetter={(event) => {
           let color = "";
           switch (event.status) {
