@@ -212,7 +212,7 @@ const Appointment = () => {
 
           <div className="flex items-center justify-between mt-4">
             <div className="flex space-x-4 rounded-full bg-gray-200 w-fit p-2">
-              {["Completed", "Pending", "Cancelled"].map((tab) => (
+              {["All", "Completed", "Pending", "Cancelled"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -352,13 +352,31 @@ const Appointment = () => {
       </div>
 
       {/* Dynamic Content */}
-      {isListView ? (
+      {!isListView ? (
+        (() => {
+          const filteredAppointments = appointments.filter(
+            (appointment) =>
+              appointment.status === activeTab || activeTab === "All"
+          );
+          return filteredAppointments.length > 0 ? (
+            <AppointmentCalendarView appointments={filteredAppointments} />
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-600">
+              No {activeTab} appointments are available.
+            </div>
+          );
+        })()
+      ) : (
         <div className="space-y-4 h-[200px]">
           {appointments.filter(
-            (appointment) => appointment.status === activeTab
+            (appointment) =>
+              appointment.status === activeTab || activeTab === "All"
           ).length > 0 ? (
             appointments
-              .filter((appointment) => appointment.status === activeTab)
+              .filter(
+                (appointment) =>
+                  appointment.status === activeTab || activeTab === "All"
+              )
               .map((appointment) => (
                 <AppointmentCard
                   key={appointment.id}
@@ -372,13 +390,12 @@ const Appointment = () => {
               ))
           ) : (
             <div className="flex items-center justify-center h-full text-gray-600">
-              No {activeTab} appointments are available
+              No {activeTab} appointments are available.
             </div>
           )}
         </div>
-      ) : (
-        <AppointmentCalendarView appointments={appointments} />
       )}
+
       <AppointmentModal
         isOpen={showModal}
         onClose={() => setShowModal(false)} // Close the modal

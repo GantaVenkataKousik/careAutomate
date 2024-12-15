@@ -27,6 +27,17 @@ export default function Hcms() {
   const handleHcmNameClick = () => {
     navigate("/hcms/planUsage");
   };
+  const handleHcmClick = (hcmId) => {
+    const selectedHcm = Hcms.find((hcm) => hcm._id === hcmId);
+    if (!selectedHcm) {
+      console.error("HCM not found for ID:", hcmId);
+      return;
+    }
+    console.log(hcmId);
+    navigate("/hcms/hcmProfile", {
+      state: { hcms: Hcms, hcmId: hcmId },
+    });
+  };
 
   useEffect(() => {
     const fetchHcms = async () => {
@@ -86,12 +97,22 @@ export default function Hcms() {
             <div key={Hcm._id || index} style={styles.HcmCard}>
               <div style={styles.HcmCardUpperContainer}>
                 <div style={styles.HcmDetails}>
-                  <h3 style={styles.HcmNameUI}>{Hcm?.name}</h3>
+                  <h3
+                    style={styles.HcmNameUI}
+                    onClick={() => handleHcmClick(Hcm?._id)}
+                  >
+                    {Hcm?.name}
+                  </h3>
                   <p style={styles.HcmSubNameUI}>{Hcm?.phoneNo}</p>
                   <p style={styles.HcmSubNameUI}>{Hcm.email}</p>
                 </div>
                 <div>
-                  <img src={HcmImage} alt="Hcm" style={styles.HcmImg} />
+                  <img
+                    src={HcmImage}
+                    alt="Hcm"
+                    style={styles.HcmImg}
+                    onClick={() => handleHcmClick(Hcm._id)}
+                  />
                 </div>
               </div>
               <div style={styles.HcmIconsContainer}>
