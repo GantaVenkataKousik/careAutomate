@@ -467,7 +467,7 @@ const ProfilePage = () => {
           </div>
           <div className="flex justify-end">
             <a
-              href="/BillingPayments"
+              href="/tenants/billsAndPayments"
               className="text-[#6F84F8] hover:underline"
             >
               View More

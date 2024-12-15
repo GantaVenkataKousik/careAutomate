@@ -12,6 +12,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
 import { IoMdTime } from "react-icons/io";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
   const [hcm, setHcm] = useState("");
   const [startDate, setStartDate] = useState(null);
@@ -475,7 +478,6 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
               <option value="Other">Other</option>
             </select>
           </div>
-
           {/* Method of Contact */}
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
@@ -496,51 +498,55 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
           </div>
 
           {/* Conditional rendering for radio buttons */}
-          {methodOfContact === "indirect" && (
-            <div className="flex flex-col gap-2 items-center">
-              <div className="flex items-center gap-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="indirectOption"
-                    value="remote"
-                    checked={reasonForRemote === "remote"}
-                    onChange={() => setReasonForRemote("remote")}
-                    className="mr-2"
-                  />
-                  Remote
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="indirectOption"
-                    value="in-person"
-                    checked={reasonForRemote === "in-person"}
-                    onChange={() => setReasonForRemote("in-person")}
-                    className="mr-2"
-                  />
-                  In-Person
-                </label>
-              </div>
+          {
+            methodOfContact === "indirect" && (
+              <div className="flex flex-col gap-2 items-center">
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="indirectOption"
+                      value="remote"
+                      checked={reasonForRemote === "remote"}
+                      onChange={() => setReasonForRemote("remote")}
+                      className="mr-2"
+                    />
+                    Remote
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="indirectOption"
+                      value="in-person"
+                      checked={reasonForRemote === "in-person"}
+                      onChange={() => setReasonForRemote("in-person")}
+                      className="mr-2"
+                    />
+                    In-Person
+                  </label>
+                </div>
 
-              {/* Conditional rendering for Reason for Remote */}
-            </div>
-          )}
-          {reasonForRemote === "remote" && (
-            <div className="flex gap-4">
-              <label className="text-sm font-medium flex items-center w-1/3">
-                <RiServiceLine size={24} className="mr-2" />
-                Reason for Remote
-              </label>
-              <input
-                type="text"
-                value={reasonForRemote}
-                onChange={(e) => setReasonForRemote(e.target.value)}
-                placeholder="Enter reason for remote"
-                className="border border-gray-300 rounded-md p-2 w-2/3"
-              />
-            </div>
-          )}
+                {/* Conditional rendering for Reason for Remote */}
+              </div>
+            )
+          }
+          {
+            reasonForRemote === "remote" && (
+              <div className="flex gap-4">
+                <label className="text-sm font-medium flex items-center w-1/3">
+                  <RiServiceLine size={24} className="mr-2" />
+                  Reason for Remote
+                </label>
+                <input
+                  type="text"
+                  value={reasonForRemote}
+                  onChange={(e) => setReasonForRemote(e.target.value)}
+                  placeholder="Enter reason for remote"
+                  className="border border-gray-300 rounded-md p-2 w-2/3"
+                />
+              </div>
+            )
+          }
 
           <div className="flex gap-4">
             <label className="text-sm font-medium flex w-1/3">
@@ -553,7 +559,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
               rows="5"
               className="border border-gray-300 rounded-md p-2 w-2/3"
             />
-          </div>
+          </div >
 
           <div className="flex gap-4 items-center">
             <label className="text-sm font-medium flex items-center w-1/3">
@@ -577,7 +583,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
                   value={
                     travel === "Yes"
                       ? parseFloat(milesWithTenant || 0) +
-                        parseFloat(milesWithoutTenant || 0)
+                      parseFloat(milesWithoutTenant || 0)
                       : 0
                   }
                   readOnly
@@ -587,40 +593,42 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
             </div>
           </div>
 
-          {travel === "Yes" && (
-            <>
-              <div className="flex gap-4">
-                <label className="text-sm font-medium flex items-center w-1/3">
-                  Travel with Tenant (miles)
-                </label>
-                <input
-                  type="number"
-                  value={milesWithTenant}
-                  onChange={(e) => setMilesWithTenant(e.target.value)}
-                  placeholder="Enter miles"
-                  className="border border-gray-300 rounded-md p-2 w-2/3"
-                />
-              </div>
+          {
+            travel === "Yes" && (
+              <>
+                <div className="flex gap-4">
+                  <label className="text-sm font-medium flex items-center w-1/3">
+                    Travel with Tenant (miles)
+                  </label>
+                  <input
+                    type="number"
+                    value={milesWithTenant}
+                    onChange={(e) => setMilesWithTenant(e.target.value)}
+                    placeholder="Enter miles"
+                    className="border border-gray-300 rounded-md p-2 w-2/3"
+                  />
+                </div>
 
-              <div className="flex gap-4">
-                <label className="text-sm font-medium flex items-center w-1/3">
-                  Travel without Tenant (miles)
-                </label>
-                <input
-                  type="number"
-                  value={milesWithoutTenant}
-                  onChange={(e) => setMilesWithoutTenant(e.target.value)}
-                  placeholder="Enter miles"
-                  className="border border-gray-300 rounded-md p-2 w-2/3 appearance-none"
-                  style={{
-                    appearance: "none",
-                    MozAppearance: "textfield",
-                    WebkitAppearance: "none",
-                  }}
-                />
-              </div>
-            </>
-          )}
+                <div className="flex gap-4">
+                  <label className="text-sm font-medium flex items-center w-1/3">
+                    Travel without Tenant (miles)
+                  </label>
+                  <input
+                    type="number"
+                    value={milesWithoutTenant}
+                    onChange={(e) => setMilesWithoutTenant(e.target.value)}
+                    placeholder="Enter miles"
+                    className="border border-gray-300 rounded-md p-2 w-2/3 appearance-none"
+                    style={{
+                      appearance: "none",
+                      MozAppearance: "textfield",
+                      WebkitAppearance: "none",
+                    }}
+                  />
+                </div>
+              </>
+            )
+          }
 
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
@@ -653,16 +661,15 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
               Cancel
             </button>
           </div>
-        </div>
-
+        </div >
         {/* <button
           onClick={handleCreateAnother}
           className=" py-2 px-4 rounded-md mt-4  transition duration-300"
         >
           Create Another Schedule
         </button> */}
-      </div>
-    </div>
+      </div >
+    </div >
   ) : null;
 };
 
