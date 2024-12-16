@@ -1,25 +1,16 @@
 import React, { useState, useEffect } from "react";
 import {
-  TextField,
   Button,
-  Menu,
-  MenuItem,
-  Select,
-  Box,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import VisitModal from "./VisitModal"; // Ensure VisitModal is correctly implemented and imported
 import axios from "axios";
-import { GrLocation } from "react-icons/gr";
-import { FaPlus } from "react-icons/fa";
-import { CiCalendarDate } from "react-icons/ci";
+import VisitCard from "./VisitCard";
+import VisitCalendarView from "./VisitCalendarView";
+import VisitHeader from "./VisitHeader";
 
 const VisitList = () => {
   const [startDate, setStartDate] = useState("");
@@ -29,7 +20,7 @@ const VisitList = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const [openNewVisitPopup, setOpenNewVisitPopup] = useState(false);
   const [visitData, setVisitData] = useState([]);
-
+  const [isListView, setIsListView] = useState(true);
   const [editVisitIndex, setEditVisitIndex] = useState(null);
   const [editVisitData, setEditVisitData] = useState(null);
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
@@ -52,7 +43,13 @@ const VisitList = () => {
         },
       });
       if (response.data.visits) {
-        const mappedVisits = response.data.visits.map((visit) => ({
+        // Sorting the visits by the createdAt date (most recent first)
+        const sortedVisits = response.data.visits.sort((a, b) => {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        // Mapping the sorted visits
+        const mappedVisits = sortedVisits.map((visit) => ({
           _id: visit._id,
           title: visit.title,
           startDate: visit.dateOfService,
@@ -70,6 +67,7 @@ const VisitList = () => {
           approved: visit.approved,
           rejected: visit.rejected,
         }));
+
         setVisitData(mappedVisits);
       } else {
         console.error("Failed to fetch visit data");
@@ -78,6 +76,7 @@ const VisitList = () => {
       console.error("Error fetching visit data:", error);
     }
   };
+
   // Fetch all visits initially
   useEffect(() => {
     fetchVisits();
@@ -154,87 +153,87 @@ const VisitList = () => {
     setFilterAnchorEl(null);
   };
 
-  // Fetch tenants for filter options
-  useEffect(() => {
-    const fetchTenants = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Authorization token is missing.");
-          return;
-        }
+  // // Fetch tenants for filter options
+  // useEffect(() => {
+  //   const fetchTenants = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       if (!token) {
+  //         console.error("Authorization token is missing.");
+  //         return;
+  //       }
 
-        const response = await fetch(
-          "https://careautomate-backend.vercel.app/tenant/all",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
+  //       const response = await fetch(
+  //         "https://careautomate-backend.vercel.app/tenant/all",
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({}),
+  //         }
+  //       );
 
-        const data = await response.json();
+  //       const data = await response.json();
 
-        if (response.status === 200 && data.success) {
-          const tenantData = data.tenants.map((tenant) => ({
-            id: tenant._id,
-            name: tenant.name,
-          }));
-          setAllTenants(tenantData);
-        } else {
-          console.error("Failed to fetch tenants:", data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching tenants:", error);
-      }
-    };
+  //       if (response.status === 200 && data.success) {
+  //         const tenantData = data.tenants.map((tenant) => ({
+  //           id: tenant._id,
+  //           name: tenant.name,
+  //         }));
+  //         setAllTenants(tenantData);
+  //       } else {
+  //         console.error("Failed to fetch tenants:", data.message);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching tenants:", error);
+  //     }
+  //   };
 
-    fetchTenants();
-  }, []);
+  //   fetchTenants();
+  // }, []);
 
-  // Fetch HCMs for filter options
-  useEffect(() => {
-    const fetchHcm = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Authorization token is missing.");
-          return;
-        }
+  // // Fetch HCMs for filter options
+  // useEffect(() => {
+  //   const fetchHcm = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       if (!token) {
+  //         console.error("Authorization token is missing.");
+  //         return;
+  //       }
 
-        const response = await fetch(
-          "https://careautomate-backend.vercel.app/hcm/all",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
+  //       const response = await fetch(
+  //         "https://careautomate-backend.vercel.app/hcm/all",
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({}),
+  //         }
+  //       );
 
-        const data = await response.json();
+  //       const data = await response.json();
 
-        if (response.status === 200 && data.success) {
-          const hcmData = data.hcms.map((hcm) => ({
-            id: hcm._id,
-            name: hcm.name,
-          }));
-          setHcmList(hcmData);
-        } else {
-          console.error("Failed to fetch HCMs:", data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching HCMs:", error);
-      }
-    };
+  //       if (response.status === 200 && data.success) {
+  //         const hcmData = data.hcms.map((hcm) => ({
+  //           id: hcm._id,
+  //           name: hcm.name,
+  //         }));
+  //         setHcmList(hcmData);
+  //       } else {
+  //         console.error("Failed to fetch HCMs:", data.message);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching HCMs:", error);
+  //     }
+  //   };
 
-    fetchHcm();
-  }, []);
+  //   fetchHcm();
+  // }, []);
 
   const handleStatusUpdate = async (index, isApproved) => {
     const visitId = visitData[index]._id;
@@ -264,239 +263,17 @@ const VisitList = () => {
   return (
     <div style={{ margin: "2rem", fontFamily: "Poppins" }}>
       {/* Header Section */}
-      <div className="">
-        <div className="flex items-center justify-between mb-5">
-          <h1 className="text-3xl font-bold mb-0">Visits</h1>
-          <div className="flex items-center justify-center gap-2">
-            <Button
-              style={{
-                marginRight: "10px",
-                borderRadius: "20px",
-                fontFamily: "Poppins",
-                background: "none",
-                color: "#505254",
-                border: "2px solid #6F84F8",
-                padding: "5px 30px",
-                fontSize: "1rem",
-              }}
-              onClick={{}}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#6F84F8";
-                e.currentTarget.style.color = "white";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "white";
-                e.currentTarget.style.color = "#505254";
-              }}
-            >
-              Export{" "}
-            </Button>
-            <Button
-              style={{
-                marginRight: "10px",
-                borderRadius: "20px",
-                fontFamily: "Poppins",
-                background: "none",
-                color: "#505254",
-                border: "2px solid #6F84F8",
-                padding: "5px 30px",
-                fontSize: "1rem",
-                transition: "background-color 0.3s ease, color 0.3s ease",
-              }}
-              onClick={() => setOpenNewVisitPopup(true)}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#6F84F8";
-                e.currentTarget.style.color = "white";
 
-                const icon = e.currentTarget.querySelector("svg");
-                if (icon) icon.style.color = "white";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "white";
-                e.currentTarget.style.color = "#505254";
-
-                const icon = e.currentTarget.querySelector("svg");
-                if (icon) icon.style.color = "#6F84F8";
-              }}
-            >
-              <FaPlus
-                style={{
-                  marginRight: "0.5rem",
-                  color: "#6F84F8",
-                  transition: "color 0.3s ease",
-                }}
-              />
-              New Visit
-            </Button>
-          </div>
-        </div>
-        <div
-          style={{ display: "flex", alignItems: "end", marginBottom: "1rem" }}
-        >
-          {/* Filter Section */}
-
-          {/* Date Filters */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <h2 style={{ color: "#505254", marginBottom: "0.5rem" }}>
-              Start Date
-            </h2>
-            <TextField
-              type="date"
-              value={filters.startDate}
-              onChange={(e) => handleInputChange("startDate", e.target.value)}
-              InputProps={{
-                style: {
-                  fontFamily: "Poppins",
-                  height: "40px",
-                  border: "1px solid #6F84F8",
-                  borderRadius: "30px",
-                  padding: "5px 10px",
-                  fontSize: "15px",
-                  marginRight: "1rem",
-                },
-              }}
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <h2 style={{ color: "#505254", marginBottom: "0.5rem" }}>
-              End Date
-            </h2>
-            <TextField
-              type="date"
-              value={filters.endDate}
-              onChange={(e) => handleInputChange("endDate", e.target.value)}
-              InputProps={{
-                style: {
-                  fontFamily: "Poppins",
-                  height: "40px",
-                  border: "1px solid #6F84F8",
-                  borderRadius: "30px",
-                  padding: "5px 10px",
-                  fontSize: "15px",
-                  marginRight: "1rem",
-                },
-              }}
-            />
-          </div>
-
-          {/* HCM Dropdown */}
-          <Select
-            value={filters.hcmId}
-            onChange={(e) => handleInputChange("hcmId", e.target.value)}
-            displayEmpty
-            sx={{
-              width: "200px",
-              fontFamily: "Poppins",
-              height: "40px",
-              border: "1px solid #6F84F8",
-              borderRadius: "30px",
-              padding: "5px 10px",
-              fontSize: "15px",
-              marginRight: "1rem",
-            }}
-          >
-            <MenuItem value="" sx={{ fontFamily: "Poppins" }}>
-              Select HCM
-            </MenuItem>
-            {hcmList.map((hcm) => (
-              <MenuItem
-                key={hcm.id}
-                value={hcm.id}
-                sx={{ fontFamily: "Poppins" }}
-              >
-                {hcm.name}
-              </MenuItem>
-            ))}
-          </Select>
-
-          {/* Tenant Dropdown */}
-          <Select
-            value={filters.tenantId}
-            onChange={(e) => handleInputChange("tenantId", e.target.value)}
-            displayEmpty
-            sx={{
-              width: "200px",
-              fontFamily: "Poppins",
-              height: "40px",
-              border: "1px solid #6F84F8",
-              borderRadius: "30px",
-              padding: "5px 10px",
-              fontSize: "15px",
-              marginRight: "1rem",
-            }}
-          >
-            <MenuItem value="" sx={{ fontFamily: "Poppins" }}>
-              Select Tenant
-            </MenuItem>
-            {allTenants.map((tenant) => (
-              <MenuItem
-                key={tenant.id}
-                value={tenant.id}
-                sx={{ fontFamily: "Poppins" }}
-              >
-                {tenant.name}
-              </MenuItem>
-            ))}
-          </Select>
-
-          {/* Status Dropdown */}
-          <Select
-            value={filters.status}
-            onChange={(e) => handleInputChange("status", e.target.value)}
-            displayEmpty
-            sx={{
-              width: "200px",
-              fontFamily: "Poppins",
-              height: "40px",
-              border: "1px solid #6F84F8",
-              borderRadius: "30px",
-              padding: "5px 10px",
-              fontSize: "15px",
-              marginRight: "1rem",
-            }}
-          >
-            <MenuItem value="" sx={{ fontFamily: "Poppins" }}>
-              All Statuses
-            </MenuItem>
-            <MenuItem value="pending" sx={{ fontFamily: "Poppins" }}>
-              Pending
-            </MenuItem>
-            <MenuItem value="approved" sx={{ fontFamily: "Poppins" }}>
-              Approved
-            </MenuItem>
-            <MenuItem value="rejected" sx={{ fontFamily: "Poppins" }}>
-              Rejected
-            </MenuItem>
-          </Select>
-
-          {/* Apply Button */}
-          <button
-            className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg
-border-blue-600
-border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
-active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
-            // style={{
-            //   backgroundColor: "#6F84F8",
-            //   fontFamily: "Poppins",
-            //   fontWeight: "bold",
-            // }}
-            onClick={applyFilters}
-          >
-            Apply
-          </button>
-        </div>{" "}
-      </div>
-
+      <VisitHeader
+        isListView={isListView}
+        filters={filters}
+        hcmList={hcmList}
+        allTenants={allTenants}
+        setIsListView={setIsListView}
+        setOpenNewVisitPopup={setOpenNewVisitPopup}
+        handleInputChange={handleInputChange}
+        applyFilters={applyFilters}
+      />
       {/* <-------Visit List--------> */}
 
       {visitData.length === 0 && (
@@ -506,276 +283,18 @@ active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
       )}
 
       {/* Visit List */}
-      <div className="flex flex-col w-full">
-        {visitData.map((visit, index) => (
-          <Box
-            key={index}
-            sx={{
-              marginBottom: "20px",
-              padding: "20px",
-              paddingX: "30px",
-              borderRadius: "1.5rem",
-              backgroundColor: "white",
-              // visit.approved && !visit.rejected
-              //   ? "#AAFFC2"
-              //   : !visit.approved && visit.rejected
-              //     ? "#F57070"
-              //     : "white",
-              border:
-                visit.approved && !visit.rejected
-                  ? "2px solid #6DD98C"
-                  : !visit.approved && visit.rejected
-                    ? "2px solid #F57070"
-                    : "2px solid #6F84F8",
-            }}
-          >
-            {/* Title and Date/Duration Row */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "1rem",
-              }}
-            >
-              <h3 style={{ marginRight: "2rem" }}>
-                {visit?.serviceType ? visit.serviceType : "no service"}
-              </h3>
-              {/* <p
-                style={{
-                  color:
-                    visit.approved && !visit.rejected
-                      ? "#6DD98C"
-                      : !visit.approved && visit.rejected
-                        ? "#F57070"
-                        : "#6F84F8",
-                }}
-              >
-                {visit?.duration
-                  ? (() => {
-                    const [start, end] = visit.duration.split(" - ");
-                    return `${new Date(start.trim()).toLocaleDateString("en-US")} - ${new Date(end.trim()).toLocaleDateString("en-US")}`;
-                  })()
-                  : "No Date"}
-              </p> */}
-              <span style={{ marginLeft: "auto" }}>
-                Signature:{" "}
-                <span
-                  style={{
-                    fontWeight: "bold",
-                    color:
-                      visit.approved && !visit.rejected
-                        ? "#6DD98C"
-                        : !visit.approved && visit.rejected
-                          ? "#F57070"
-                          : "#6F84F8",
-                  }}
-                >
-                  {visit.signature || "N/A"}
-                </span>
-              </span>
-            </div>
-
-            {/* HCM and DOS Row */}
-
-            <div style={{ display: "flex" }}>
-              <div
-                className="flex flex-col gap-3"
-                style={{ marginBottom: "10px" }}
-              >
-                <p>
-                  HCM -
-                  <span
-                    style={{
-                      color:
-                        visit.approved && !visit.rejected
-                          ? "#6DD98C"
-                          : !visit.approved && visit.rejected
-                            ? "#F57070"
-                            : "#6F84F8",
-                      marginLeft: "0.5rem",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {visit.hcm}
-                  </span>
-                </p>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <CiCalendarDate style={{ fontSize: "2rem" }} />
-
-                  <p
-                    style={{
-                      fontSize: "1.1rem",
-                      paddingLeft: "0.5rem",
-                      paddingTop: "0.2rem",
-                      color:
-                        visit.approved && !visit.rejected
-                          ? "#6DD98C"
-                          : !visit.approved && visit.rejected
-                            ? "#F57070"
-                            : "#6F84F8",
-                    }}
-                  >
-                    {visit.dos.split("T")[0]}
-                  </p>
-                </div>
-                <div style={{ display: "flex" }}>
-                  <strong>
-                    <GrLocation
-                      style={{ fontSize: "1.5rem", marginLeft: "0.2rem" }}
-                    />
-                  </strong>{" "}
-                  <div>
-                    <p
-                      style={{
-                        fontSize: "1.1rem",
-                        paddingLeft: "0.7rem",
-                        color:
-                          visit.approved && !visit.rejected
-                            ? "#6DD98C"
-                            : !visit.approved && visit.rejected
-                              ? "#F57070"
-                              : "#6F84F8",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {visit.placeOfService}
-                    </p>
-                    <p
-                      style={{
-                        paddingLeft: "0.7rem",
-                      }}
-                    >
-                      {visit.typeMethod}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Visit Details */}
-              <div style={{ marginLeft: "3rem", width: "55vw" }}>
-                <p>
-                  <p
-                    style={{
-                      color:
-                        visit.approved && !visit.rejected
-                          ? "#6DD98C"
-                          : !visit.approved && visit.rejected
-                            ? "#F57070"
-                            : "#6F84F8",
-                    }}
-                  >
-                    Visit Details:
-                  </p>{" "}
-                  <div
-                    style={{
-                      border:
-                        visit.approved && !visit.rejected
-                          ? "1px solid #6DD98C"
-                          : !visit.approved && visit.rejected
-                            ? "1px solid #F57070"
-                            : "1px solid #6F84F8",
-                      overflow: "hidden",
-                      height: "6em",
-                      lineHeight: "1.5em",
-                      padding: "0.5em",
-                      paddingLeft: "1rem",
-                      borderRadius: "1rem",
-                      color: "#505254",
-                      marginTop: "0.2rem",
-                    }}
-                  >
-                    {visit.details && visit.details.length > 100 ? (
-                      <>
-                        {visit.details.substring(0, 100)}...
-                        <Button
-                          onClick={() => handleDetailsClick(visit.details)}
-                        >
-                          View More
-                        </Button>
-                      </>
-                    ) : (
-                      visit.details || "No details provided."
-                    )}
-                  </div>
-                </p>
-              </div>
-            </div>
-            {/* Signature and Actions */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "end",
-                alignItems: "center",
-              }}
-            >
-              <div className="flex gap-10 mt-5">
-                {!visit.approved && !visit.rejected && (
-                  <div className="flex gap-4">
-                    <button
-                      style={{
-                        backgroundColor: "#F57070",
-                        color: "white",
-                        padding: "10px 30px",
-                        borderRadius: "2rem",
-                        border: "2px solid #F57070",
-                        transition:
-                          "background-color 0.3s ease, color 0.3s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "white";
-                        e.currentTarget.style.color = "#F57070";
-                        e.currentTarget.style.borderColor = "#F57070";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "#F57070";
-                        e.currentTarget.style.color = "white";
-                        e.currentTarget.style.borderColor = "#F57070";
-                      }}
-                      onClick={() => handleStatusUpdate(index, false)}
-                    >
-                      Reject
-                    </button>
-                    <button
-                      style={{
-                        backgroundColor: "#6DD98C",
-                        color: "white",
-                        padding: "10px 30px",
-                        borderRadius: "2rem",
-                        border: "2px solid #6DD98C",
-                        transition:
-                          "background-color 0.3s ease, color 0.3s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "white";
-                        e.currentTarget.style.color = "#6DD98C";
-                        e.currentTarget.style.borderColor = "#6DD98C";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "#6DD98C";
-                        e.currentTarget.style.color = "white";
-                        e.currentTarget.style.borderColor = "#6DD98C";
-                      }}
-                      onClick={() => handleStatusUpdate(index, true)}
-                    >
-                      Approve
-                    </button>
-                  </div>
-                )}
-
-                {/* Edit and Delete Icons */}
-                <div>
-                  <IconButton onClick={() => handleEditClick(index)}>
-                    <EditIcon style={{ color: "#6F84F8" }} />
-                  </IconButton>
-                  <IconButton onClick={() => handleDeleteClick(index)}>
-                    <DeleteIcon style={{ color: "#F57070" }} />
-                  </IconButton>
-                </div>
-              </div>
-            </div>
-          </Box>
-        ))}
-      </div>
+      {!isListView ? (
+        <VisitCalendarView visits={visitData} />
+      ) : (
+        <VisitCard
+          visitData={visitData}
+          handleDeleteClick={handleDeleteClick}
+          handleClosePopup={handleClosePopup}
+          handleDetailsClick={handleDetailsClick}
+          handleEditClick={handleEditClick}
+          handleStatusUpdate={handleStatusUpdate}
+        />
+      )}
 
       {/* Popup for Details */}
       <Dialog open={openPopup} onClose={handleClosePopup}>

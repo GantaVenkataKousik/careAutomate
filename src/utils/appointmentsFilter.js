@@ -1,4 +1,4 @@
-import { formatTime } from "./timeFilter";
+// import { formatTime } from "./timeFilter";
 
 export const appointmentFilter = (appointments) => {
   return appointments.map((appointment) => {
