@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { TextField, Button, MenuItem, Select } from "@mui/material";
 import { FaPlus } from "react-icons/fa";
 import { IoCalendar, IoList } from "react-icons/io5";
-
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 const VisitHeader = ({
   isListView,
   filters,
@@ -14,6 +16,7 @@ const VisitHeader = ({
 }) => {
   const [allTenants, setAllTenants] = useState([]);
   const [hcmList, setHcmList] = useState([]);
+
   useEffect(() => {
     const fetchTenants = async () => {
       try {
@@ -95,31 +98,36 @@ const VisitHeader = ({
   }, []);
 
   return (
-    <div className="">
+    <div className="shadow-sm pb-3">
       <div className="flex items-center justify-between mb-5">
         <h1 className="flex items-center text-3xl font-bold mb-0 gap-2">
           <span>Visits</span>
-          <span style={{
-            height: "2.25rem",
-            width: "2.25rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: "50%",
-            fontWeight: "bold",
-            fontSize: "1.2rem",
-            padding: "0.5rem",
-            backgroundColor: "#6F84F8",
-            color: "white",
-          }}>{visitCount}</span>
+          <span
+            style={{
+              height: "2.25rem",
+              width: "2.25rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "50%",
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+              padding: "0.5rem",
+              backgroundColor: "#6F84F8",
+              color: "white",
+            }}
+          >
+            {visitCount}
+          </span>
         </h1>
         <div className="flex items-center justify-center gap-2">
           <div className="flex bg-gray-200 rounded-2xl p-1  w-fit mr-6">
             {/* Calendar Button */}
             <button
               onClick={() => setIsListView(false)}
-              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${!isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-                }`}
+              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
+                !isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+              }`}
             >
               <IoCalendar className="text-2xl" />
             </button>
@@ -127,8 +135,9 @@ const VisitHeader = ({
             {/* List Button */}
             <button
               onClick={() => setIsListView(true)}
-              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-                }`}
+              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
+                isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+              }`}
             >
               <IoList className="text-2xl" />
             </button>
@@ -209,7 +218,7 @@ const VisitHeader = ({
           <h2 style={{ color: "#505254", marginBottom: "0.5rem" }}>
             Start Date
           </h2>
-          <TextField
+          {/* <TextField
             type="date"
             value={filters.startDate}
             onChange={(e) => handleInputChange("startDate", e.target.value)}
@@ -224,7 +233,31 @@ const VisitHeader = ({
                 marginRight: "1rem",
               },
             }}
-          />
+          /> */}
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              // value={filters.startDate}
+              onChange={(date) => handleInputChange("startDate", date)}
+              sx={{
+                fontFamily: "Poppins",
+                height: "40px",
+                borderRadius: "30px",
+                // padding: "5px 10px",
+                fontSize: "15px",
+                marginRight: "1rem",
+                "& input": {
+                  padding: "5px 10px", // Adjust padding inside input
+                },
+                "& .MuiInputBase-root": {
+                  // Customize input field container
+                  padding: "3px 8px", // Adjust padding inside input
+
+                  borderRadius: "30px",
+                  border: "1px solid #6F84F8",
+                },
+              }}
+            />
+          </LocalizationProvider>
         </div>
         <div
           style={{
@@ -233,22 +266,30 @@ const VisitHeader = ({
           }}
         >
           <h2 style={{ color: "#505254", marginBottom: "0.5rem" }}>End Date</h2>
-          <TextField
-            type="date"
-            value={filters.endDate}
-            onChange={(e) => handleInputChange("endDate", e.target.value)}
-            InputProps={{
-              style: {
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              // value={filters.startDate}
+              onChange={(date) => handleInputChange("endDate", date)}
+              sx={{
                 fontFamily: "Poppins",
                 height: "40px",
-                border: "1px solid #6F84F8",
                 borderRadius: "30px",
-                padding: "5px 10px",
+                // padding: "5px 10px",
                 fontSize: "15px",
                 marginRight: "1rem",
-              },
-            }}
-          />
+                "& input": {
+                  padding: "5px 10px", // Adjust padding inside input
+                },
+                "& .MuiInputBase-root": {
+                  // Customize input field container
+                  padding: "3px 8px", // Adjust padding inside input
+
+                  borderRadius: "30px",
+                  border: "1px solid #6F84F8",
+                },
+              }}
+            />
+          </LocalizationProvider>
         </div>
 
         {/* HCM Dropdown */}
