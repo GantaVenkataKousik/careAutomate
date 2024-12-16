@@ -1,3 +1,20 @@
+export function formatTimeFormate(dateTime, format = "MM-DD-YYYY") {
+  const date = new Date(dateTime);
+
+  const padZero = (num) => String(num).padStart(2, "0");
+
+  const tokens = {
+    YYYY: date.getFullYear(),
+    MM: padZero(date.getMonth() + 1), // Months are zero-based
+    DD: padZero(date.getDate()),
+    HH: padZero(date.getHours()),
+    mm: padZero(date.getMinutes()),
+    ss: padZero(date.getSeconds()),
+  };
+
+  // Replace format tokens with actual values
+  return format.replace(/YYYY|MM|DD|HH|mm|ss/g, (match) => tokens[match]);
+}
 export const today = new Date();
 export const monthNames = [
   "Jan",

@@ -9,6 +9,7 @@ import {
 import VisitModal from "./VisitModal"; // Ensure VisitModal is correctly implemented and imported
 import axios from "axios";
 import VisitCard from "./VisitCard";
+import VisitCard2 from "./VisitCard2";
 import VisitCalendarView from "./VisitCalendarView";
 import VisitHeader from "./VisitHeader";
 
@@ -66,6 +67,7 @@ const VisitList = () => {
           placeOfService: visit.placeOfService,
           approved: visit.approved,
           rejected: visit.rejected,
+          totalMile: visit.totalMiles,
         }));
 
         setVisitData(mappedVisits);
@@ -119,6 +121,7 @@ const VisitList = () => {
           placeOfService: visit.placeOfService,
           approved: visit.approved,
           rejected: visit.rejected,
+          totalMile: visit.totalMiles,
         }));
         setVisitData(mappedVisits); // Update the visit data with filtered results
       } else {
@@ -276,7 +279,6 @@ const VisitList = () => {
         visitCount={visitData.length} // Pass visit count here
       />
       {/* <-------Visit List--------> */}
-
       {visitData.length === 0 && (
         <div className="flex justify-center items-center mt-10">
           <h1 className="text-2xl">No visits found</h1>
@@ -287,7 +289,7 @@ const VisitList = () => {
       {!isListView ? (
         <VisitCalendarView visits={visitData} />
       ) : (
-        <VisitCard
+        <VisitCard2
           visitData={visitData}
           handleDeleteClick={handleDeleteClick}
           handleClosePopup={handleClosePopup}
