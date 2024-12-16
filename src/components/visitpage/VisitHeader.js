@@ -6,11 +6,11 @@ import { IoCalendar, IoList } from "react-icons/io5";
 const VisitHeader = ({
   isListView,
   filters,
-
   setIsListView,
   setOpenNewVisitPopup,
   handleInputChange,
   applyFilters,
+  visitCount,
 }) => {
   const [allTenants, setAllTenants] = useState([]);
   const [hcmList, setHcmList] = useState([]);
@@ -97,15 +97,29 @@ const VisitHeader = ({
   return (
     <div className="">
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-3xl font-bold mb-0">Visits</h1>
+        <h1 className="flex items-center text-3xl font-bold mb-0 gap-2">
+          <span>Visits</span>
+          <span style={{
+            height: "2.25rem",
+            width: "2.25rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: "50%",
+            fontWeight: "bold",
+            fontSize: "1.2rem",
+            padding: "0.5rem",
+            backgroundColor: "#6F84F8",
+            color: "white",
+          }}>{visitCount}</span>
+        </h1>
         <div className="flex items-center justify-center gap-2">
           <div className="flex bg-gray-200 rounded-2xl p-1  w-fit mr-6">
             {/* Calendar Button */}
             <button
               onClick={() => setIsListView(false)}
-              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
-                !isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-              }`}
+              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${!isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                }`}
             >
               <IoCalendar className="text-2xl" />
             </button>
@@ -113,9 +127,8 @@ const VisitHeader = ({
             {/* List Button */}
             <button
               onClick={() => setIsListView(true)}
-              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
-                isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-              }`}
+              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                }`}
             >
               <IoList className="text-2xl" />
             </button>

@@ -273,6 +273,7 @@ const VisitList = () => {
         setOpenNewVisitPopup={setOpenNewVisitPopup}
         handleInputChange={handleInputChange}
         applyFilters={applyFilters}
+        visitCount={visitData.length} // Pass visit count here
       />
       {/* <-------Visit List--------> */}
 
