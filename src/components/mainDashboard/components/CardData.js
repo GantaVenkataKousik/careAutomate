@@ -91,7 +91,7 @@ const CardData = () => {
             />
             <InfoCard
                 count={tenantsRunningOutCount !== null ? tenantsRunningOutCount : '-'}
-                description="Tenants running out of Visits"
+                description="Tenants running out of Units"
             />
         </div>
     );

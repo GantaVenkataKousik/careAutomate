@@ -468,13 +468,13 @@ const VisitList = () => {
             <MenuItem value="" sx={{ fontFamily: "Poppins" }}>
               All Statuses
             </MenuItem>
-            <MenuItem value="Pending" sx={{ fontFamily: "Poppins" }}>
+            <MenuItem value="pending" sx={{ fontFamily: "Poppins" }}>
               Pending
             </MenuItem>
-            <MenuItem value="Approved" sx={{ fontFamily: "Poppins" }}>
+            <MenuItem value="approved" sx={{ fontFamily: "Poppins" }}>
               Approved
             </MenuItem>
-            <MenuItem value="Rejected" sx={{ fontFamily: "Poppins" }}>
+            <MenuItem value="rejected" sx={{ fontFamily: "Poppins" }}>
               Rejected
             </MenuItem>
           </Select>

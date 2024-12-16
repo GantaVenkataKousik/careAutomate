@@ -1,53 +1,91 @@
 import React, { useState } from 'react';
+import * as XLSX from 'xlsx';
 
 export default function Reports() {
   const [activeTab, setActiveTab] = useState('Tenant');
   const [activeSubTab, setActiveSubTab] = useState('Personal Info');
+  const [selectedColumns, setSelectedColumns] = useState({
+    firstName: false,
+    lastName: false,
+    pmi: false,
+    address: false,
+    city: false,
+    state: false,
+    zip: false,
+    designate: false,
+  });
+
+  const dummyData = [
+    { firstName: 'John', lastName: 'Doe', pmi: '12345', address: '123 Main St', city: 'Anytown', state: 'CA', zip: '12345', designate: 'Yes' },
+    { firstName: 'Jane', lastName: 'Smith', pmi: '67890', address: '456 Elm St', city: 'Othertown', state: 'NY', zip: '67890', designate: 'No' },
+    // Add more dummy data as needed
+  ];
+
+  const handleCheckboxChange = (column) => {
+    setSelectedColumns((prev) => ({
+      ...prev,
+      [column]: !prev[column],
+    }));
+  };
 
   const renderTableHeaders = () => {
-    switch (activeSubTab) {
-      case 'Service Plan Info':
-        return (
-          <tr>
-            <th><input type="checkbox" /> First Name</th>
-            <th><input type="checkbox" /> Last Name</th>
-            <th><input type="checkbox" /> PMI</th>
-            <th><input type="checkbox" /> Address</th>
-            <th><input type="checkbox" /> PMI</th>
-            <th><input type="checkbox" /> Service Type</th>
-            <th><input type="checkbox" /> Plan Start Date</th>
-            <th><input type="checkbox" /> Plan End Date</th>
-            <th><input type="checkbox" /> Scheduled Units (Hrs)</th>
-            <th><input type="checkbox" /> Worked Units (Hrs)</th>
-            <th><input type="checkbox" /> Billed Units (Hrs)</th>
-            <th><input type="checkbox" /> Remaining Units (Hrs)</th>
-          </tr>
-        );
-      case 'Compliance':
-        return (
-          <tr>
-            <th><input type="checkbox" /> HCM Name</th>
-            <th><input type="checkbox" /> Designated Tenants</th>
-            <th><input type="checkbox" /> Service Plan Type</th>
-            <th><input type="checkbox" /> Start Date</th>
-            <th><input type="checkbox" /> End Date</th>
-            <th><input type="checkbox" /> Visit Compliance</th>
-          </tr>
-        );
-      default:
-        return (
-          <tr>
-            <th><input type="checkbox" /> First Name</th>
-            <th><input type="checkbox" /> Last Name</th>
-            <th><input type="checkbox" /> PMI</th>
-            <th><input type="checkbox" /> Address</th>
-            <th><input type="checkbox" /> City</th>
-            <th><input type="checkbox" /> State</th>
-            <th><input type="checkbox" /> Zip</th>
-            <th><input type="checkbox" /> Designate</th>
-          </tr>
-        );
-    }
+    return (
+      <tr>
+        <th><input type="checkbox" checked={selectedColumns.firstName} onChange={() => handleCheckboxChange('firstName')} /> First Name</th>
+        <th><input type="checkbox" checked={selectedColumns.lastName} onChange={() => handleCheckboxChange('lastName')} /> Last Name</th>
+        <th><input type="checkbox" checked={selectedColumns.pmi} onChange={() => handleCheckboxChange('pmi')} /> PMI</th>
+        <th><input type="checkbox" checked={selectedColumns.address} onChange={() => handleCheckboxChange('address')} /> Address</th>
+        <th><input type="checkbox" checked={selectedColumns.city} onChange={() => handleCheckboxChange('city')} /> City</th>
+        <th><input type="checkbox" checked={selectedColumns.state} onChange={() => handleCheckboxChange('state')} /> State</th>
+        <th><input type="checkbox" checked={selectedColumns.zip} onChange={() => handleCheckboxChange('zip')} /> Zip</th>
+        <th><input type="checkbox" checked={selectedColumns.designate} onChange={() => handleCheckboxChange('designate')} /> Designate</th>
+      </tr>
+    );
+  };
+
+  const renderTableRows = () => {
+    return dummyData.map((row, index) => (
+      <tr key={index}>
+        <td>{row.firstName}</td>
+        <td>{row.lastName}</td>
+        <td>{row.pmi}</td>
+        <td>{row.address}</td>
+        <td>{row.city}</td>
+        <td>{row.state}</td>
+        <td>{row.zip}</td>
+        <td>{row.designate}</td>
+      </tr>
+    ));
+  };
+
+  const downloadExcel = () => {
+    const columnsToDownload = Object.values(selectedColumns).some((value) => value)
+      ? selectedColumns
+      : {
+        firstName: true,
+        lastName: true,
+        pmi: true,
+        address: true,
+        city: true,
+        state: true,
+        zip: true,
+        designate: true,
+      };
+
+    const filteredData = dummyData.map((row) => {
+      const filteredRow = {};
+      Object.keys(columnsToDownload).forEach((key) => {
+        if (columnsToDownload[key]) {
+          filteredRow[key] = row[key];
+        }
+      });
+      return filteredRow;
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reports');
+    XLSX.writeFile(workbook, 'reports.xlsx');
   };
 
   return (
@@ -85,20 +123,33 @@ export default function Reports() {
           }
 
           .reports-table th {
-          font-weight:500;
-          min-width:10vw;
-          padding:1rem;
+            font-weight: 500;
+            min-width: 10vw;
+            padding: 1rem;
           }
 
           .reports-table th input[type="checkbox"] {
             margin-right: 0.5rem;
           }
+
+          .download{
+            padding: 3rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+            border-radius: 1rem;
+          }
         `}
       </style>
       <h1>Reports</h1>
       <div className="tabs">
-        <button onClick={() => setActiveTab('Tenant')} className={activeTab === 'Tenant' ? 'active' : ''}>Tenant</button>
-        <button onClick={() => setActiveTab('HCM')} className={activeTab === 'HCM' ? 'active' : ''}>HCM</button>
+        <div className="flex justify-between">
+          <div>
+            <button onClick={() => setActiveTab('Tenant')} className={activeTab === 'Tenant' ? 'active' : ''}>Tenant</button>
+            <button onClick={() => setActiveTab('HCM')} className={activeTab === 'HCM' ? 'active' : ''}>HCM</button>
+          </div>
+          <button onClick={downloadExcel} className="download mt-4 p-2 ">Download Excel</button>
+        </div>
       </div>
       <div className="sub-tabs">
         <button onClick={() => setActiveSubTab('Personal Info')} className={activeSubTab === 'Personal Info' ? 'active' : ''}>Personal Info</button>
@@ -111,9 +162,10 @@ export default function Reports() {
           {renderTableHeaders()}
         </thead>
         <tbody>
-          {/* Add your data rows here */}
+          {renderTableRows()}
         </tbody>
       </table>
+
     </div>
   );
 }
