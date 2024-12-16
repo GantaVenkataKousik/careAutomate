@@ -423,7 +423,10 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
                   maxDate={new Date()}
                   dateFormat="MM-dd-yyyy"
                   className="border border-gray-300 rounded-md p-2 w-full"
-                  placeholderText="Select a date(MM-DD-YYYY)"
+                  placeholderText="Select a date (MM-DD-YYYY)"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
                 />
               </div>
 
@@ -552,12 +555,20 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
             <label className="text-sm font-medium flex w-1/3">
               Details of Visit
             </label>
-            <textarea
+            <ReactQuill
               value={detailsOfVisit}
-              onChange={(e) => setDetailsOfVisit(e.target.value)}
+              onChange={setDetailsOfVisit}
               placeholder="Enter details of visit"
-              rows="5"
-              className="border border-gray-300 rounded-md p-2 w-2/3"
+              className="w-2/3"
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic", "underline", "strike"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["link", "image"],
+                  ["clean"],
+                ],
+              }}
             />
           </div >
 
