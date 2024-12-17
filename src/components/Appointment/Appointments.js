@@ -7,7 +7,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import AppointmentCard from "./AppointmentCard";
 import AppointmentCalendarView from "./AppointmentCalendarView";
-import { TextField } from "@mui/material";
 
 const Appointment = () => {
   const [appointments, setAppointments] = useState([]);
@@ -16,12 +15,11 @@ const Appointment = () => {
   const [showDeletePopup1, setShowDeletePopup1] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isListView, setIsListView] = useState(true);
-
-  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [showFilter, setShowFilter] = useState(false);
   const token = localStorage.getItem("token");
   const [hcmList, setHcmList] = useState([]);
   const [allTenants, setAllTenants] = useState([]);
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
   const [filters, setFilters] = useState({
     tenantId: "",
     hcmId: "",
@@ -29,6 +27,7 @@ const Appointment = () => {
     endDate: "",
     status: "",
   });
+
   const fetchAppointments = async () => {
     try {
       const response = await axios.post(
@@ -55,6 +54,8 @@ const Appointment = () => {
           service: apt.serviceType || "Unknown",
           with: apt.tenantDetails?.name || "Unknown",
           status: apt.status.charAt(0).toUpperCase() + apt.status.slice(1),
+          hcmId: apt.hcmId?._id,
+          tenantId: apt.tenantDetails?._id,
         }));
         setAppointments(mappedAppointments); // This will update both list and calendar views
       } else {
@@ -146,41 +147,57 @@ const Appointment = () => {
   const handleInputChange = (name, value) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
+  const handleFilterClear = () => {
+    fetchAppointments();
+    setIsFilterApplied(false);
+    setShowFilter(false);
+  };
+  const applyFilters = () => {
+    const { tenantId, hcmId, startDate, endDate, status } = filters;
 
-  const applyFilters = async () => {
-    console.log("Applying filters with the following criteria:", filters);
-    try {
-      const response = await axios.post(
-        "https://careautomate-backend.vercel.app/appointment/filterAppointments",
-        filters,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      // console.log(response)
-
-      if (response.data.visits) {
-        setAppointments(response.data.visits);
-      } else {
-        setAppointments([]);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error.response || error);
+    // Check if all filters are empty
+    if (Object.values(filters).every((value) => value === "")) {
+      console.log("No filters applied, fetching all appointments.");
+      fetchAppointments();
     }
-  };
 
-  const handleToggle = () => {
-    setIsListView(!isListView);
-  };
+    const filteredAppointments = appointments.filter((appointment) => {
+      // Parse the date string into a Date object (assuming 'date' field is in format 'Thu, Dec 12')
+      const appointmentDate = new Date(appointment.date + " 2024"); // Adding a year to make it valid
 
-  const handleFilterIconClick = (event) => {
-    setFilterAnchorEl(event.currentTarget);
-  };
+      // Convert the filter dates to Date objects, or null if not provided
+      const startDateObj = startDate ? new Date(startDate) : null;
+      const endDateObj = endDate ? new Date(endDate) : null;
 
-  const handleFilterClose = () => {
-    setFilterAnchorEl(null);
+      // Apply each filter condition
+      const matchesTenant = tenantId ? appointment.tenantId === tenantId : true;
+      const matchesHcm = hcmId ? appointment.hcmId === hcmId : true;
+      const matchesStatus = status ? appointment.status === status : true;
+      const matchesStartDate = startDateObj
+        ? appointmentDate >= startDateObj
+        : true;
+      const matchesEndDate = endDateObj ? appointmentDate <= endDateObj : true;
+
+      return (
+        matchesTenant &&
+        matchesHcm &&
+        matchesStatus &&
+        matchesStartDate &&
+        matchesEndDate
+      );
+    });
+
+    setAppointments(filteredAppointments);
+    setIsFilterApplied(true);
+    // Optional: reset filters here if you intend to clear them after applying
+    // setFilters({
+    //   tenantId: "",
+    //   hcmId: "",
+    //   startDate: "",
+    //   endDate: "",
+    //   status: "",
+    // });
+    setShowFilter(false);
   };
 
   const togglePopup1 = (id) => {
@@ -407,6 +424,14 @@ const Appointment = () => {
                     >
                       Apply
                     </button>
+                    {isFilterApplied && (
+                      <button
+                        onClick={handleFilterClear}
+                        className="bg-white text-[#FF6B6B] border-2 border-[#FF6B6B] p-2 rounded-lg w-full font-bold uppercase transition-all duration-300 ease-in-out hover:bg-[#FF6B6B] hover:text-white focus:ring focus:ring-[#6F84F8]"
+                      >
+                        Clear
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

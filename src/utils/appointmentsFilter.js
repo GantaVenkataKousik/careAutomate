@@ -2,7 +2,16 @@
 
 export const appointmentFilter = (appointments) => {
   return appointments.map((appointment) => {
-    const { date, time, service, from, with: personWith, status } = appointment;
+    const {
+      date,
+      time,
+      service,
+      from,
+      with: personWith,
+      status,
+      hcmId,
+      tenantId,
+    } = appointment;
 
     // Helper function to parse date string and merge with time
     const parseDateTime = (dateString, timeString) => {
@@ -28,6 +37,8 @@ export const appointmentFilter = (appointments) => {
         end: endTime, // End time of the appointment
         description: `${from} with ${personWith}`, // Description
         status: status, // Appointment status
+        hcmId: hcmId,
+        tenantId: tenantId,
       };
     }
 
