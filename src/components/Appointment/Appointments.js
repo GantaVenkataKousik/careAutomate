@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import AppointmentModal from "./AppointModal";
 import axios from "axios";
 import { IoFilterOutline, IoCalendar, IoList } from "react-icons/io5";
-
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import AppointmentCard from "./AppointmentCard";
 import AppointmentCalendarView from "./AppointmentCalendarView";
+import { TextField } from "@mui/material";
 
 const Appointment = () => {
   const [appointments, setAppointments] = useState([]);
@@ -307,22 +310,83 @@ const Appointment = () => {
                       ))}
                     </select>
 
-                    <input
-                      type="date"
-                      value={filters.startDate}
-                      onChange={(e) =>
-                        handleInputChange("startDate", e.target.value)
-                      }
-                      className="p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]"
-                    />
-                    <input
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        // value={filters.startDate} // Bind value to filters.startDate
+                        onChange={(date) =>
+                          handleInputChange(
+                            "startDate",
+                            date?.format("YYYY-MM-DD")
+                          )
+                        }
+                        sx={{
+                          fontFamily: "Poppins",
+                          height: "40px",
+                          // borderRadius: "30px",
+                          fontSize: "15px",
+                          marginRight: "1rem",
+                          width: "100%",
+                          "& input": {
+                            padding: "5px 10px", // Match padding inside the input field
+                          },
+                          "& .MuiInputBase-root": {
+                            padding: "3px 8px", // Match padding inside the container
+                            // borderRadius: "30px",
+                            border: "1px solid #6F84F8", // Match the border color
+                          },
+                          "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#6F84F8",
+                          },
+                        }}
+                        InputProps={{
+                          className:
+                            "p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]",
+                        }}
+                      />
+                    </LocalizationProvider>
+
+                    {/* <input
                       type="date"
                       value={filters.endDate}
                       onChange={(e) =>
                         handleInputChange("endDate", e.target.value)
                       }
                       className="p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]"
-                    />
+                    /> */}
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker
+                        // value={filters.startDate} // Bind value to filters.startDate
+                        onChange={(date) =>
+                          handleInputChange(
+                            "endDate",
+                            date?.format("YYYY-MM-DD")
+                          )
+                        }
+                        sx={{
+                          fontFamily: "Poppins",
+                          height: "40px",
+                          // borderRadius: "30px",
+                          fontSize: "15px",
+                          marginRight: "1rem",
+                          width: "100%",
+                          "& input": {
+                            padding: "5px 10px", // Match padding inside the input field
+                          },
+                          "& .MuiInputBase-root": {
+                            padding: "3px 8px", // Match padding inside the container
+                            // borderRadius: "30px",
+                            border: "1px solid #6F84F8", // Match the border color
+                          },
+                          "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#6F84F8",
+                          },
+                        }}
+                        InputProps={{
+                          className:
+                            "p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]",
+                        }}
+                      />
+                    </LocalizationProvider>
 
                     <select
                       value={filters.status}

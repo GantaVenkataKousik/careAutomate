@@ -15,7 +15,6 @@ const AppointmentCard = ({
 }) => {
   const getColor = () => {
     let color = "#6F84F8";
-    console.log(appointment.status);
     if (appointment.status === "Completed") {
       color = "#6DD98C";
     } else if (appointment.status === "Pending") {
@@ -23,7 +22,6 @@ const AppointmentCard = ({
     } else if (appointment.status === "Cancelled") {
       color = "#FF6B6B";
     }
-    console.log(color);
     return color;
   };
   return (
