@@ -13,6 +13,19 @@ const AppointmentCard = ({
   showDeletePopup1,
   setShowDeletePopup1,
 }) => {
+  const getColor = () => {
+    let color = "#6F84F8";
+    console.log(appointment.status);
+    if (appointment.status === "Completed") {
+      color = "#6DD98C";
+    } else if (appointment.status === "Pending") {
+      color = "#6F84F8";
+    } else if (appointment.status === "Cancelled") {
+      color = "#FF6B6B";
+    }
+    console.log(color);
+    return color;
+  };
   return (
     <div
       key={appointment.id}
@@ -26,12 +39,14 @@ const AppointmentCard = ({
               weekday: "short",
             })}
           </div>
-          <div className="text-2xl font-semibold text-[#6F84F8]">
+          <div className="text-2xl font-semibold" style={{ color: getColor() }}>
             {new Date(appointment.date).getDate().toString().padStart(2, "0")}
           </div>
         </div>
         <div>
-          <p className="text-2xl text-[#6F84F8]">|</p>
+          <p className="text-2xl" style={{ color: getColor() }}>
+            |
+          </p>
         </div>
         {/* Time and Location */}
         <div className="w-56">
@@ -39,7 +54,7 @@ const AppointmentCard = ({
           <div className="flex justify-between items-center mt-1">
             {/* Time */}
             <div className="flex items-center space-x-2 text-gray-600">
-              <MdAccessTime className="text-[#6F84F8] w-6 h-6" />
+              <MdAccessTime className="w-6 h-6" style={{ color: getColor() }} />
               <span className="text-gray">
                 {appointment.time.length < 15 ? (
                   appointment.time
@@ -54,7 +69,10 @@ const AppointmentCard = ({
 
             {/* Location */}
             <div className="flex items-center space-x-2 text-gray-600">
-              <MdOutlineLocationOn className="text-[#6F84F8] w-6 h-6" />
+              <MdOutlineLocationOn
+                className="w-6 h-6"
+                style={{ color: getColor() }}
+              />
               <span className="text-gray">{appointment.location}</span>
             </div>
           </div>
@@ -66,7 +84,10 @@ const AppointmentCard = ({
         {/* From Person */}
         <div className="flex items-center space-x-2 text-gray-600 truncate w-[45%]">
           <BsPersonFill className="w-8 h-8" />
-          <span className="text-[#6F84F8] truncate w-full overflow-hidden text-ellipsis">
+          <span
+            className=" truncate w-full overflow-hidden text-ellipsis"
+            style={{ color: getColor() }}
+          >
             {appointment.from}
           </span>
         </div>
@@ -74,7 +95,10 @@ const AppointmentCard = ({
         {/* With Person */}
         <div className="flex items-center space-x-2 text-gray-600 truncate w-[45%]">
           <BsPersonFill className="w-8 h-8" />
-          <span className="text-[#6F84F8] truncate w-full overflow-hidden text-ellipsis">
+          <span
+            className=" truncate w-full overflow-hidden text-ellipsis"
+            style={{ color: getColor() }}
+          >
             {appointment.with}
           </span>
         </div>
