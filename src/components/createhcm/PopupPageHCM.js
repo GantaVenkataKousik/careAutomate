@@ -63,7 +63,7 @@ const PopupPage = () => {
     }
 
     // Log assigned tenants from Redux at Step 2
-    if (currentStep === 1) {
+    if (currentStep === 2) {
       console.log("Assigned Tenants in step2:", assignedTenants);
       const token = localStorage.getItem("token");
       const data = {

@@ -325,7 +325,7 @@ const SubStep1 = () => {
         /> */}
       </Section>
 
-      <Section title="Case Manager Information">
+      {/* <Section title="Case Manager Information">
         <InputField
           label="First Name"
           name="caseManagerFirstName"
@@ -361,12 +361,12 @@ const SubStep1 = () => {
           type="email"
           required
         />
-      </Section>
+      </Section> */}
 
       {/* Other sections as before */}
 
       {/* <Section title="Responsible Party Information"> */}
-      <div className="flex items-center mb-4">
+      {/* <div className="flex items-center mb-4">
         <label className="text-gray-700 mr-2">
           Do you have a responsible party?
         </label>
@@ -438,7 +438,7 @@ const SubStep1 = () => {
             required
           />
         </div>
-      )}
+      )} */}
       {/* </Section> */}
     </div>
   );
