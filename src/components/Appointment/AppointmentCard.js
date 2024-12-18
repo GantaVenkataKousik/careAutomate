@@ -24,10 +24,11 @@ const AppointmentCard = ({
     }
     return color;
   };
+  // console.log(appointment);
   return (
     <div
       key={appointment.id}
-      className="relative flex items-center justify-between bg-white px-5 py-4 mt-4 shadow-lg rounded-3xl max-w-5xl mx-auto "
+      className="relative flex items-center justify-between bg-white px-5 py-5 mt-4 shadow-lg rounded-3xl max-w-5xl mx-auto "
     >
       {/* Date and Time */}
       <div className="flex items-center space-x-4">
@@ -78,27 +79,30 @@ const AppointmentCard = ({
       </div>
 
       {/* Person Information */}
-      <div className="flex justify-between items-center w-[50%] space-x-4">
-        {/* From Person */}
-        <div className="flex items-center space-x-2 text-gray-600 truncate w-[45%]">
-          <BsPersonFill className="w-8 h-8" />
-          <span
-            className=" truncate w-full overflow-hidden text-ellipsis"
-            style={{ color: getColor() }}
-          >
-            {appointment.from}
-          </span>
-        </div>
-        <div className="text-gray-600">with</div>
-        {/* With Person */}
-        <div className="flex items-center space-x-2 text-gray-600 truncate w-[45%]">
-          <BsPersonFill className="w-8 h-8" />
-          <span
-            className=" truncate w-full overflow-hidden text-ellipsis"
-            style={{ color: getColor() }}
-          >
-            {appointment.with}
-          </span>
+      <div className="flex flex-col w-[50%] ">
+        <div className="text- truncate w-full my-3">{appointment.activity}</div>
+        <div className="flex justify-between items-center  w-full ">
+          {/* From Person */}
+          <div className="flex items-center space-x-2 text-gray-600 truncate w-[45%]">
+            <BsPersonFill className="w-8 h-8" />
+            <span
+              className=" truncate w-full overflow-hidden text-ellipsis"
+              style={{ color: getColor() }}
+            >
+              {appointment.from}
+            </span>
+          </div>
+          <div className="text-gray-600">with</div>
+          {/* With Person */}
+          <div className="flex items-center space-x-2 text-gray-600 truncate w-[45%]">
+            <BsPersonFill className="w-8 h-8" />
+            <span
+              className=" truncate w-full overflow-hidden text-ellipsis"
+              style={{ color: getColor() }}
+            >
+              {appointment.with}
+            </span>
+          </div>
         </div>
       </div>
 
