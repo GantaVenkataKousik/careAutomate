@@ -41,6 +41,7 @@ const Appointment = () => {
       );
 
       if (response.data.appointments) {
+        console.log(response.data);
         const mappedAppointments = response.data.appointments.map((apt) => ({
           id: apt._id,
           date: new Date(apt.date).toLocaleDateString("en-US", {
@@ -56,6 +57,7 @@ const Appointment = () => {
           status: apt.status.charAt(0).toUpperCase() + apt.status.slice(1),
           hcmId: apt.hcmId?._id,
           tenantId: apt.tenantDetails?._id,
+          activity: apt.activity || "Activity- N/A",
         }));
         setAppointments(mappedAppointments); // This will update both list and calendar views
       } else {
