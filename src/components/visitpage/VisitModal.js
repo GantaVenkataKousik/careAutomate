@@ -19,7 +19,6 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
   const [hcm, setHcm] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [planOfService, setPlanOfService] = useState("");
-
   const [reasonForRemote, setReasonForRemote] = useState("");
   const [title, setTitle] = useState("");
   const [scheduleCreated, setScheduleCreated] = useState(false);
@@ -42,6 +41,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
   const [selectedTenantId, setSelectedTenantId] = useState(""); // Selected tenant ID
   const [selectedHcmId, setSelectedHcmId] = useState("");
   const [detailsOfVisit, setDetailsOfVisit] = useState("");
+  const [responseOfVisit, setResponseOfVisit] = useState("");
   const tenantName = useSelector((state) => state.hcm.tenantName);
   const tenantId = useSelector((state) => state.hcm.tenantId);
   const user = JSON.parse(localStorage.getItem("user"));
@@ -195,6 +195,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
           : "in-person",
       reasonForRemote: reasonForRemote || null,
       detailsOfVisit: detailsOfVisit || "N/A",
+      responseOfVisit: responseOfVisit || "N/A",
       travel: travel.toLowerCase(),
       totalMiles: travel === "Yes" ? totalMiles : null,
       travelWithTenant: milesWithTenant || null,
@@ -288,6 +289,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
     setStartTime("");
     setActivity("");
     setTitle("");
+    setResponseOfVisit("");
+    setDetailsOfVisit("");
   };
 
   const calculateEndTime = (startTime, duration) => {
@@ -547,7 +550,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
             </div>
           )}
 
-          <div className="flex gap-4 mb-2">
+          <div className="flex gap-4 mb-6">
             <label className="text-sm font-medium flex w-1/3">
               Details of Visit
             </label>
@@ -555,7 +558,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
               value={detailsOfVisit}
               onChange={setDetailsOfVisit}
               placeholder="Enter details of visit"
-              className="w-2/3 mb-5"
+              className="w-2/3 mb-7"
               modules={{
                 toolbar: [
                   [{ header: [1, 2, false] }],
@@ -567,7 +570,26 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
               }}
             />
           </div>
-
+          <div className="flex gap-4 mb-4">
+            <label className="text-sm font-medium flex w-1/3">
+              Response of Visit
+            </label>
+            <ReactQuill
+              value={responseOfVisit}
+              onChange={setResponseOfVisit}
+              placeholder="Enter details of visit"
+              className="w-2/3 mb-7"
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic", "underline", "strike"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["link", "image"],
+                  ["clean"],
+                ],
+              }}
+            />
+          </div>
           <div className="flex gap-4 items-center">
             <label className="text-sm font-medium flex items-center w-1/3">
               Travel
