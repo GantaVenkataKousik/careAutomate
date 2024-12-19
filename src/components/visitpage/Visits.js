@@ -9,9 +9,11 @@ import {
 import VisitModal from "./VisitModal"; // Ensure VisitModal is correctly implemented and imported
 import axios from "axios";
 import VisitCard from "./VisitCard";
-import VisitCard2 from "./VisitCard2";
 import VisitCalendarView from "./VisitCalendarView";
 import VisitHeader from "./VisitHeader";
+import { visitsFilter } from "../../utils/visitsFilter";
+import { useDispatch } from "react-redux";
+import { setSelectedVisit } from "../../redux/visit/visitSlice";
 
 const VisitList = () => {
   const [startDate, setStartDate] = useState("");
@@ -27,6 +29,7 @@ const VisitList = () => {
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [allTenants, setAllTenants] = useState([]);
   const [hcmList, setHcmList] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
   const [filters, setFilters] = useState({
     tenantId: "",
     hcmId: "",
@@ -45,19 +48,18 @@ const VisitList = () => {
       });
       if (response.data.visits) {
         // Sorting the visits by the createdAt date (most recent first)
-        const sortedVisits = response.data.visits.sort((a, b) => {
-          return new Date(b.createdAt) - new Date(a.createdAt);
-        });
-
+        // console.log("raw", response.data.visits);
         // Mapping the sorted visits
-        const mappedVisits = sortedVisits.map((visit) => ({
+        console.log(response.data.visits);
+        const mappedVisits = response.data.visits.map((visit) => ({
           _id: visit._id,
           title: visit.title,
           startDate: visit.dateOfService,
           endDate: visit.dateOfService,
           typeMethod: visit.methodOfVisit,
           hcm: visit.hcmId?.name || "N/A",
-          scheduledDate: visit.scheduledDate,
+          hcmId: visit.hcmId?._id || "N/A",
+          scheduledDate: visit.scheduledDate ?? "",
           dos: visit.dateOfService,
           duration: `${visit.startTime} - ${visit.endTime}`,
           details: visit.detailsOfVisit,
@@ -68,9 +70,19 @@ const VisitList = () => {
           approved: visit.approved,
           rejected: visit.rejected,
           totalMile: visit.totalMiles,
+          createdAt: visit.createdAt,
+          tenantName: visit.tenantId?.name,
+          tenantId: visit.tenantId?._id,
+          travel: visit.travel,
+          travelWithTenant: visit.travelWithTenant,
+          travelWithoutTenant: visit.travelWithoutTenant,
+          response: visit.response ?? "",
         }));
-
-        setVisitData(mappedVisits);
+        const sortedVisits = mappedVisits.sort((a, b) => {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+        setVisitData(sortedVisits);
+        console.log(sortedVisits);
       } else {
         console.error("Failed to fetch visit data");
       }
@@ -122,6 +134,13 @@ const VisitList = () => {
           approved: visit.approved,
           rejected: visit.rejected,
           totalMile: visit.totalMiles,
+          response: visit.response,
+          createdAt: visit.createdAt,
+          tenantName: visit.tenantId?.name,
+          travel: visit.travel,
+          travelWithTenant: visit.travelWithTenant,
+          travelWithoutTenant: visit.travelWithoutTenant,
+          response: visit.response ?? "",
         }));
         setVisitData(mappedVisits); // Update the visit data with filtered results
       } else {
@@ -142,9 +161,24 @@ const VisitList = () => {
     setOpenPopup(false);
   };
 
-  const handleEditClick = (index) => {
+  const dispatch = useDispatch();
+
+  const handleEditClick = (index, id, visit) => {
+    // Directly use the 'visit' passed as a parameter
+    console.log("here", visit);
+
+    // Dispatch the action to update Redux state with the 'visit' parameter
+    dispatch(setSelectedVisit(visit));
+
     setEditVisitIndex(index);
-    setEditVisitData(visitData[index]);
+    if (visit._id === id) {
+      console.log("working");
+    } else {
+      console.log("not");
+    }
+    // Update the visit data and edit modal state
+    setEditVisitData(visit);
+    setIsEdit(true);
     setOpenNewVisitPopup(true);
   };
 
@@ -155,88 +189,6 @@ const VisitList = () => {
   const handleFilterClose = () => {
     setFilterAnchorEl(null);
   };
-
-  // // Fetch tenants for filter options
-  // useEffect(() => {
-  //   const fetchTenants = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       if (!token) {
-  //         console.error("Authorization token is missing.");
-  //         return;
-  //       }
-
-  //       const response = await fetch(
-  //         "https://careautomate-backend.vercel.app/tenant/all",
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({}),
-  //         }
-  //       );
-
-  //       const data = await response.json();
-
-  //       if (response.status === 200 && data.success) {
-  //         const tenantData = data.tenants.map((tenant) => ({
-  //           id: tenant._id,
-  //           name: tenant.name,
-  //         }));
-  //         setAllTenants(tenantData);
-  //       } else {
-  //         console.error("Failed to fetch tenants:", data.message);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching tenants:", error);
-  //     }
-  //   };
-
-  //   fetchTenants();
-  // }, []);
-
-  // // Fetch HCMs for filter options
-  // useEffect(() => {
-  //   const fetchHcm = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       if (!token) {
-  //         console.error("Authorization token is missing.");
-  //         return;
-  //       }
-
-  //       const response = await fetch(
-  //         "https://careautomate-backend.vercel.app/hcm/all",
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({}),
-  //         }
-  //       );
-
-  //       const data = await response.json();
-
-  //       if (response.status === 200 && data.success) {
-  //         const hcmData = data.hcms.map((hcm) => ({
-  //           id: hcm._id,
-  //           name: hcm.name,
-  //         }));
-  //         setHcmList(hcmData);
-  //       } else {
-  //         console.error("Failed to fetch HCMs:", data.message);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching HCMs:", error);
-  //     }
-  //   };
-
-  //   fetchHcm();
-  // }, []);
 
   const handleStatusUpdate = async (index, isApproved) => {
     const visitId = visitData[index]._id;
@@ -289,7 +241,7 @@ const VisitList = () => {
       {!isListView ? (
         <VisitCalendarView visits={visitData} />
       ) : (
-        <VisitCard2
+        <VisitCard
           visitData={visitData}
           handleDeleteClick={handleDeleteClick}
           handleClosePopup={handleClosePopup}
@@ -316,7 +268,8 @@ const VisitList = () => {
       <VisitModal
         isOpen={openNewVisitPopup}
         onClose={() => setOpenNewVisitPopup(false)}
-        onVisitCreated={fetchVisits}
+        onVisitCreated={editVisitData}
+        isEdit={isEdit}
       />
     </div>
   );
