@@ -164,19 +164,7 @@ const VisitList = () => {
   const dispatch = useDispatch();
 
   const handleEditClick = (index, id, visit) => {
-    // Directly use the 'visit' passed as a parameter
-    console.log("here", visit);
-
-    // Dispatch the action to update Redux state with the 'visit' parameter
     dispatch(setSelectedVisit(visit));
-
-    setEditVisitIndex(index);
-    if (visit._id === id) {
-      console.log("working");
-    } else {
-      console.log("not");
-    }
-    // Update the visit data and edit modal state
     setEditVisitData(visit);
     setIsEdit(true);
     setOpenNewVisitPopup(true);
