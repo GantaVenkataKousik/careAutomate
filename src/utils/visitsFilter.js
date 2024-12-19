@@ -25,8 +25,8 @@ export const visitsFilter = (visitsData) => {
 
     if (duration) {
       const [start, end] = duration.split(" - ");
-      startTime = parseDateSafe(`${startDate.split("T")[0]}T${start}:00`);
-      endTime = parseDateSafe(`${startDate.split("T")[0]}T${end}:00`);
+      startTime = parseDateSafe(`${startDate?.split("T")[0]}T${start}:00`);
+      endTime = parseDateSafe(`${startDate?.split("T")[0]}T${end}:00`);
     }
 
     // Handle cases where `dummy` is provided instead of `start` and `end`

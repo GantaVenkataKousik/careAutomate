@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { format } from "date-fns";
 import { GoPerson } from "react-icons/go";
 import { RiServiceLine } from "react-icons/ri";
 import { SlNote } from "react-icons/sl";
@@ -11,124 +10,236 @@ import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
-import { IoMdTime } from "react-icons/io";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { API_ROUTES } from "../../routes";
 
-const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
-  const [hcm, setHcm] = useState("");
-  const [startDate, setStartDate] = useState(null);
-  const [planOfService, setPlanOfService] = useState("");
-
-  const [reasonForRemote, setReasonForRemote] = useState("");
-  const [title, setTitle] = useState("");
+const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
+  console.log(onVisitCreated);
+  const [hcm, setHcm] = useState(isEdit ? onVisitCreated.hcmId : "");
+  const [startDate, setStartDate] = useState(
+    isEdit ? new Date(onVisitCreated.startDate) : null
+  );
+  const [planOfService, setPlanOfService] = useState(
+    isEdit ? onVisitCreated.placeOfService : ""
+  );
+  const [reasonForRemote, setReasonForRemote] = useState(
+    isEdit ? onVisitCreated?.reasonForRemote : ""
+  );
+  const [title, setTitle] = useState(isEdit ? onVisitCreated.title : "");
   const [scheduleCreated, setScheduleCreated] = useState(false);
-  const [activity, setActivity] = useState("");
+  const [activity, setActivity] = useState(isEdit ? onVisitCreated.title : "");
   const [startTime, setStartTime] = useState("");
   const [showCreateScheduleDialog, setShowCreateScheduleDialog] =
     useState(false);
-  const [showCreateAnotherDialog, setShowCreateAnotherDialog] = useState(false);
   const [allTenants, setAllTenants] = useState([]); // Store tenant data
-  const [endTime, setEndTime] = useState("");
-  const [serviceType, setServiceType] = useState("Housing Sustaining"); // Default value for service type
-  const [methodOfContact, setMethodOfContact] = useState("in-person"); // Default value for method of contact
-  const [tenantID, setTenantName] = useState("");
+  const [endTime, setEndTime] = useState(
+    isEdit ? new Date(onVisitCreated.endDate) : ""
+  );
+  const [serviceType, setServiceType] = useState(
+    isEdit ? onVisitCreated.serviceType : "Housing Sustaining"
+  ); // Default value for service type
+  const [methodOfContact, setMethodOfContact] = useState(
+    isEdit ? onVisitCreated.typeMethod : "in-person"
+  ); // Default value for method of contact
 
-  const [travel, setTravel] = useState("No");
-  const [milesWithTenant, setMilesWithTenant] = useState("");
-  const [milesWithoutTenant, setMilesWithoutTenant] = useState("");
-  const [signature, setSignature] = useState("");
+  const [travel, setTravel] = useState(
+    isEdit
+      ? onVisitCreated.travel.toLowerCase() == "yes"
+        ? "Yes"
+        : "NO"
+      : "No"
+  );
+  const [milesWithTenant, setMilesWithTenant] = useState(
+    isEdit ? onVisitCreated.travelWithTenant : ""
+  );
+  const [milesWithoutTenant, setMilesWithoutTenant] = useState(
+    isEdit ? onVisitCreated.travelWithoutTenant : ""
+  );
+  const [signature, setSignature] = useState(
+    isEdit ? onVisitCreated.signature : ""
+  );
   const [hcmList, setHcmList] = useState([]); // List of HCMs
-  const [selectedTenantId, setSelectedTenantId] = useState(""); // Selected tenant ID
-  const [selectedHcmId, setSelectedHcmId] = useState("");
-  const [detailsOfVisit, setDetailsOfVisit] = useState("");
-  const tenantName = useSelector((state) => state.hcm.tenantName);
-  const tenantId = useSelector((state) => state.hcm.tenantId);
+  const [selectedTenantId, setSelectedTenantId] = useState(
+    isEdit ? onVisitCreated.tenantId : ""
+  ); // Selected tenant ID
+  const [detailsOfVisit, setDetailsOfVisit] = useState(
+    isEdit ? onVisitCreated.details : ""
+  );
+  //prettier-ignore
+  const [responseOfVisit, setResponseOfVisit] = useState(
+    isEdit ? onVisitCreated.response: ""
+  );
+
   const user = JSON.parse(localStorage.getItem("user"));
   const userName = user?.name;
 
-  console.log("Hcm Name in step4:", tenantName);
-  console.log("Hcm ID in step4:", tenantId);
-
-  useEffect(() => {
-    const fetchTenants = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Authorization token is missing.");
-          return;
-        }
-
-        const response = await fetch(
-          "https://careautomate-backend.vercel.app/tenant/all",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
-
-        const data = await response.json();
-
-        if (response.status === 200 && data.success) {
-          const tenantData = data.tenants.map((tenant) => ({
-            id: tenant._id,
-            name: tenant.name,
-          }));
-          setAllTenants(tenantData);
-        } else {
-          console.error("Failed to fetch tenants:", data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching tenants:", error);
+  const fetchTenants = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Authorization token is missing.");
+        return;
       }
-    };
 
+      const response = await fetch(
+        "https://careautomate-backend.vercel.app/tenant/all",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.status === 200 && data.success) {
+        const tenantData = data.tenants.map((tenant) => ({
+          id: tenant._id,
+          name: tenant.name,
+        }));
+        setAllTenants(tenantData);
+      } else {
+        console.error("Failed to fetch tenants:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching tenants:", error);
+    }
+  };
+  const fetchHcm = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Authorization token is missing.");
+        return;
+      }
+
+      const response = await fetch(
+        "https://careautomate-backend.vercel.app/hcm/all",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.status === 200 && data.success) {
+        const hcmData = data.hcms.map((hcm) => ({
+          id: hcm._id,
+          name: hcm.name,
+        }));
+        setHcmList(hcmData);
+      } else {
+        console.error("Failed to fetch HCMs:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching HCMs:", error);
+    }
+  };
+  useEffect(() => {
+    if (isOpen && isEdit) {
+      // Reset the state to the visit data when the modal is opened for editing
+      setHcm(onVisitCreated.hcmId);
+      setStartDate(new Date(onVisitCreated.startDate));
+      setPlanOfService(onVisitCreated.placeOfService);
+      setReasonForRemote(onVisitCreated?.reasonForRemote);
+      setTitle(onVisitCreated.title);
+      setEndTime(new Date(onVisitCreated.endDate));
+      setServiceType(onVisitCreated.serviceType || "Housing Sustaining");
+      setMethodOfContact(onVisitCreated.typeMethod || "in-person");
+      setTravel(onVisitCreated.travel.toLowerCase() === "yes" ? "Yes" : "No");
+      setMilesWithTenant(onVisitCreated.travelWithTenant);
+      setMilesWithoutTenant(onVisitCreated.travelWithoutTenant);
+      setSignature(onVisitCreated.signature);
+      setSelectedTenantId(onVisitCreated.tenantId);
+      setDetailsOfVisit(onVisitCreated.details);
+      setResponseOfVisit(onVisitCreated.response);
+    } else {
+      // Reset state when the modal is closed or not in edit mode
+      setHcm("");
+      setStartDate(null);
+      setPlanOfService("");
+      setReasonForRemote("");
+      setTitle("");
+      setEndTime("");
+      setServiceType("Housing Sustaining");
+      setMethodOfContact("in-person");
+      setTravel("No");
+      setMilesWithTenant("");
+      setMilesWithoutTenant("");
+      setSignature("");
+      setSelectedTenantId("");
+      setDetailsOfVisit("");
+      setResponseOfVisit("");
+    }
+  }, [isOpen, isEdit, onVisitCreated]);
+  useEffect(() => {
     fetchTenants();
-  }, []);
-
-  useEffect(() => {
-    const fetchHcm = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Authorization token is missing.");
-          return;
-        }
-
-        const response = await fetch(
-          "https://careautomate-backend.vercel.app/hcm/all",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
-
-        const data = await response.json();
-
-        if (response.status === 200 && data.success) {
-          const hcmData = data.hcms.map((hcm) => ({
-            id: hcm._id,
-            name: hcm.name,
-          }));
-          setHcmList(hcmData);
-        } else {
-          console.error("Failed to fetch HCMs:", data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching HCMs:", error);
-      }
-    };
-
     fetchHcm();
   }, []);
+  const handleEditVisit = async () => {
+    console.log("Editing Visit:");
+
+    let changedFields = {};
+
+    // Compare each field with its initial value and add to `changedFields` if it's different
+    if (hcm !== onVisitCreated.hcm) changedFields.hcm = hcm;
+    if (startDate && startDate !== new Date(onVisitCreated.startDate))
+      changedFields.startDate = startDate;
+    if (planOfService !== onVisitCreated.placeOfService)
+      changedFields.planOfService = planOfService;
+    if (reasonForRemote !== onVisitCreated.reasonForRemote)
+      changedFields.reasonForRemote = reasonForRemote;
+    if (title !== onVisitCreated.title) changedFields.title = title;
+    if (endTime && endTime !== new Date(onVisitCreated.endDate))
+      changedFields.endTime = endTime;
+    if (serviceType !== onVisitCreated.serviceType)
+      changedFields.serviceType = serviceType;
+    if (methodOfContact !== onVisitCreated.typeMethod)
+      changedFields.methodOfContact = methodOfContact;
+    if (milesWithTenant !== onVisitCreated.milesWithTenant)
+      changedFields.milesWithTenant = milesWithTenant;
+    if (signature !== onVisitCreated.signature)
+      changedFields.signature = signature;
+    if (selectedTenantId !== onVisitCreated.tenantName)
+      changedFields.selectedTenantId = selectedTenantId;
+    if (detailsOfVisit !== onVisitCreated.details)
+      changedFields.detailsOfVisit = detailsOfVisit;
+    if (responseOfVisit !== onVisitCreated.response)
+      changedFields.responseOfVisit = responseOfVisit;
+
+    if (Object.keys(changedFields).length > 0) {
+      // Make the API call to update the visit
+      const response = await fetch(
+        `${API_ROUTES.VISITS.BASE}/${onVisitCreated._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(changedFields),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Visit updated successfully!");
+        // Handle success (e.g., show toast or close modal)
+      } else {
+        console.error("Failed to update visit:", await response.json());
+      }
+    } else {
+      console.log("No changes made.");
+    }
+  };
 
   const handleCreateAppointment = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -180,7 +291,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
     const payload = {
       creatorId: creatorId,
       tenantId: selectedTenantId || "Unknown",
-      hcmId: selectedHcmId || "N/A",
+      hcmId: hcm || "N/A",
       serviceType,
       title: activity || "N/A",
       dateOfService: startDate,
@@ -195,7 +306,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
           : "in-person",
       reasonForRemote: reasonForRemote || null,
       detailsOfVisit: detailsOfVisit || "N/A",
-      travel: travel.toLowerCase(),
+      responseOfVisit: responseOfVisit || "N/A",
+      travel: travel,
       totalMiles: travel === "Yes" ? totalMiles : null,
       travelWithTenant: milesWithTenant || null,
       travelWithoutTenant: milesWithoutTenant || null,
@@ -279,7 +391,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
 
   const resetFormState = () => {
     setSelectedTenantId("");
-    setSelectedHcmId("");
+    setHcm("");
     setServiceType("Housing Sustaining");
     setStartDate(null);
     setPlanOfService("");
@@ -288,6 +400,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
     setStartTime("");
     setActivity("");
     setTitle("");
+    setResponseOfVisit("");
+    setDetailsOfVisit("");
   };
 
   const calculateEndTime = (startTime, duration) => {
@@ -309,7 +423,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
         >
           &times;
         </button>
-        <p className=" mb-6">Fill in the details to add a schedule</p>
+        <p className=" mb-6">Fill in the details to add a visit</p>
 
         <div className="space-y-6 max-h-[40rem] overflow-y-auto">
           <div className="flex gap-4">
@@ -345,8 +459,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
               Assigned HCM
             </label>
             <select
-              value={selectedHcmId}
-              onChange={(e) => setSelectedHcmId(e.target.value)}
+              value={hcm}
+              onChange={(e) => setHcm(e.target.value)}
               className="border border-gray-300 rounded-md p-2 w-2/3"
             >
               <option value="" disabled>
@@ -365,20 +479,6 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
               )}
             </select>
           </div>
-
-          {/* <div className="flex gap-4">
-            <label className="text-sm font-medium flex items-center w-1/3">
-              <GoPerson size={24} className="mr-2" />
-              Designated Tenant
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Appointment Title"
-              className="border border-gray-300 rounded-md p-2 w-2/3"
-            />
-          </div> */}
 
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
@@ -402,11 +502,37 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
             </label>
             <input
               type="text"
-              value={activity}
+              value={title}
               onChange={(e) => setActivity(e.target.value)}
               placeholder="Enter Title"
               className="border border-gray-300 rounded-md p-2 w-2/3"
             />
+          </div>
+          <div className="flex gap-4">
+            <label className="text-sm font-medium flex items-center w-1/3">
+              <SlNote size={24} className="mr-2" />
+              Title
+            </label>
+            <select
+              value={title}
+              onChange={(e) => setActivity(e.target.value)} // Use setActivity here to set selected activity
+              className="border border-gray-300 rounded-md p-2 w-2/3"
+            >
+              <option value="" disabled>
+                Select an activity
+              </option>
+              {activities[serviceType]?.length > 0 ? (
+                activities[serviceType].map((service, index) => (
+                  <option key={index} value={service}>
+                    {service} {/* Displaying the activity name */}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  Loading activities...
+                </option>
+              )}
+            </select>
           </div>
 
           <div className="flex gap-4 justify-between">
@@ -547,7 +673,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
             </div>
           )}
 
-          <div className="flex gap-4 mb-2">
+          <div className="flex gap-4 mb-6">
             <label className="text-sm font-medium flex w-1/3">
               Details of Visit
             </label>
@@ -555,7 +681,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
               value={detailsOfVisit}
               onChange={setDetailsOfVisit}
               placeholder="Enter details of visit"
-              className="w-2/3 mb-5"
+              className="w-2/3 mb-7"
               modules={{
                 toolbar: [
                   [{ header: [1, 2, false] }],
@@ -567,7 +693,26 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
               }}
             />
           </div>
-
+          <div className="flex gap-4 mb-4">
+            <label className="text-sm font-medium flex w-1/3">
+              Response of Visit
+            </label>
+            <ReactQuill
+              value={responseOfVisit}
+              onChange={setResponseOfVisit}
+              placeholder="Enter response of visit"
+              className="w-2/3 mb-7"
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic", "underline", "strike"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["link", "image"],
+                  ["clean"],
+                ],
+              }}
+            />
+          </div>
           <div className="flex gap-4 items-center">
             <label className="text-sm font-medium flex items-center w-1/3">
               Travel
@@ -600,7 +745,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
             </div>
           </div>
 
-          {travel === "Yes" && (
+          {travel.toLowerCase() === "yes" && (
             <>
               <div className="flex gap-4">
                 <label className="text-sm font-medium flex items-center w-1/3">
@@ -646,13 +791,13 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated }) => {
 
           <div className="flex gap-4 w-2/3 " style={{ marginLeft: "auto" }}>
             <button
-              onClick={handleCreateAppointment}
+              onClick={isEdit ? handleEditVisit : handleCreateAppointment}
               className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg
               border-blue-600
               border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
               active:border-b-[2px] active:brightness-90 active:translate-y-[2px]  py-3 px-6 w-full mt-6  mb-9 "
             >
-              Create Visit
+              {isEdit ? "Update Visit" : "Create Visit"}
             </button>
             <button
               onClick={onClose || handleCancelAppointment}
