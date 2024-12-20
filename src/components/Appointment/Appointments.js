@@ -57,7 +57,7 @@ const Appointment = () => {
           status: apt.status.charAt(0).toUpperCase() + apt.status.slice(1),
           hcmId: apt.hcmId?._id,
           tenantId: apt.tenantDetails?._id,
-          activity: apt.activity || "Activity- N/A",
+          activity: apt.activity || "N/A",
         }));
         setAppointments(mappedAppointments); // This will update both list and calendar views
       } else {
@@ -309,7 +309,7 @@ const Appointment = () => {
                       onChange={(e) =>
                         handleInputChange("hcmId", e.target.value)
                       }
-                      className="p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]"
+                      className="w-full border border-[#6F84F8] rounded-full px-2.5 py-1.5 font-poppins"
                     >
                       <option value="">Select HCM</option>
                       {hcmList.map((hcm) => (
@@ -324,7 +324,7 @@ const Appointment = () => {
                       onChange={(e) =>
                         handleInputChange("tenantId", e.target.value)
                       }
-                      className="p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]"
+                      className="w-full border border-[#6F84F8] rounded-full px-2.5 py-1.5 font-poppins"
                     >
                       <option value="">Select Tenant</option>
                       {allTenants.map((tenant) => (
@@ -346,16 +346,14 @@ const Appointment = () => {
                         sx={{
                           fontFamily: "Poppins",
                           height: "40px",
-                          // borderRadius: "30px",
                           fontSize: "15px",
-                          marginRight: "1rem",
                           width: "100%",
                           "& input": {
                             padding: "5px 10px", // Match padding inside the input field
                           },
                           "& .MuiInputBase-root": {
                             padding: "3px 8px", // Match padding inside the container
-                            // borderRadius: "30px",
+                            borderRadius: "30px",
                             border: "1px solid #6F84F8", // Match the border color
                           },
                           "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
@@ -369,14 +367,6 @@ const Appointment = () => {
                       />
                     </LocalizationProvider>
 
-                    {/* <input
-                      type="date"
-                      value={filters.endDate}
-                      onChange={(e) =>
-                        handleInputChange("endDate", e.target.value)
-                      }
-                      className="p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]"
-                    /> */}
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DatePicker
                         // value={filters.startDate} // Bind value to filters.startDate
@@ -389,16 +379,15 @@ const Appointment = () => {
                         sx={{
                           fontFamily: "Poppins",
                           height: "40px",
-                          // borderRadius: "30px",
                           fontSize: "15px",
-                          marginRight: "1rem",
+                          // marginRight: "1rem",
                           width: "100%",
                           "& input": {
                             padding: "5px 10px", // Match padding inside the input field
                           },
                           "& .MuiInputBase-root": {
                             padding: "3px 8px", // Match padding inside the container
-                            // borderRadius: "30px",
+                            borderRadius: "30px",
                             border: "1px solid #6F84F8", // Match the border color
                           },
                           "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
@@ -417,7 +406,7 @@ const Appointment = () => {
                       onChange={(e) =>
                         handleInputChange("status", e.target.value)
                       }
-                      className="p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]"
+                      className="w-full border border-[#6F84F8] rounded-full px-2.5 py-1.5 font-poppins focus:border-[#6F84F8]"
                     >
                       <option value="All">All Statuses</option>
                       <option value="Pending">Pending</option>
@@ -427,14 +416,14 @@ const Appointment = () => {
 
                     <button
                       onClick={applyFilters}
-                      className="bg-[#6F84F8] text-white p-2 rounded-lg w-full font-bold uppercase transition-all duration-300 ease-in-out hover:bg-[#5b72d8] focus:ring focus:ring-[#6F84F8]"
+                      className="bg-[#6F84F8] text-white p-2 rounded-full w-full font-bold uppercase transition-all duration-300 ease-in-out hover:bg-[#5b72d8] focus:ring focus:ring-[#6F84F8]"
                     >
                       Apply
                     </button>
                     {isFilterApplied && (
                       <button
                         onClick={handleFilterClear}
-                        className="bg-white text-[#FF6B6B] border-2 border-[#FF6B6B] p-2 rounded-lg w-full font-bold uppercase transition-all duration-300 ease-in-out hover:bg-[#FF6B6B] hover:text-white focus:ring focus:ring-[#6F84F8]"
+                        className="bg-white text-[#FF6B6B] border-2 border-[#FF6B6B] p-2 rounded-full w-full font-bold uppercase transition-all duration-300 ease-in-out hover:bg-[#FF6B6B] hover:text-white focus:ring focus:ring-[#6F84F8]"
                       >
                         Clear
                       </button>

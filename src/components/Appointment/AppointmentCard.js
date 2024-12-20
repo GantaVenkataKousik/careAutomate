@@ -107,7 +107,9 @@ const AppointmentCard = ({
 
       {/* Person Information */}
       <div className="flex flex-col w-[50%] ">
-        <div className="text- truncate w-full my-3">{appointment.activity}</div>
+        <div className="text- truncate w-full my-3">
+          {"Activity- " + appointment.activity}
+        </div>
         <div className="flex justify-between items-center  w-full ">
           {/* From Person */}
           <div className="flex items-center space-x-2 text-gray-600 truncate w-[45%]">
