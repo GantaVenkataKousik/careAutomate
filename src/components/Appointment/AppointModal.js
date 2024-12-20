@@ -9,7 +9,11 @@ import { GrLocation } from "react-icons/gr";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { IoMdTime } from "react-icons/io";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+
 const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
   const [startDate, setStartDate] = useState(null);
   const [planOfService, setPlanOfService] = useState("");
@@ -369,20 +373,41 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
           </div>
 
           <div className="flex gap-4 justify-between">
-            <label className="text-sm font-medium flex items-center mb-1">
+            <label className="text-sm font-medium flex items-center mb-1 w-1/3">
               <BsCalendar2Date size={24} className="mr-2" />
               Date
             </label>
             {/* Date Input */}
-            <div className="flex gap-6">
+            <div className="flex gap-6 w-2/3">
               <div className="flex items-center gap-4">
-                <input
-                  type="date"
-                  value={startDate || ""}
-                  min={format(new Date(), "yyyy-MM-dd")}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="border border-gray-300 rounded-md p-2 w-full"
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    onChange={(date) =>
+                      setStartDate(date?.format("YYYY-MM-DD"))
+                    }
+                    minDate={dayjs()} // Pass a Dayjs object for minDate
+                    sx={{
+                      fontFamily: "Poppins",
+                      height: "40px",
+                      fontSize: "15px",
+                      width: "100%",
+                      "& input": {
+                        padding: "5px 10px", // Match padding inside the input field
+                      },
+                      "& .MuiInputBase-root": {
+                        padding: "3px 8px",
+                        border: "1px solidrgb(176, 173, 173)",
+                      },
+                      "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#6F84F8",
+                      },
+                    }}
+                    InputProps={{
+                      className:
+                        "p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]",
+                    }}
+                  />
+                </LocalizationProvider>
               </div>
 
               {/* Start Time Input */}
@@ -564,7 +589,7 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
         />
       </div> */}
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 w-2/3" style={{ marginLeft: "auto" }}>
             <button
               onClick={handleCreateAppointment}
               className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg

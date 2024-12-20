@@ -41,7 +41,7 @@ const Appointment = () => {
       );
 
       if (response.data.appointments) {
-        console.log(response.data);
+        // console.log(response.data);
         const mappedAppointments = response.data.appointments.map((apt) => ({
           id: apt._id,
           date: new Date(apt.date).toLocaleDateString("en-US", {

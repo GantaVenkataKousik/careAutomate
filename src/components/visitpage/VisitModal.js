@@ -544,7 +544,6 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     // value={filters.startDate} // Bind value to filters.startDate
-                    // placeholderText="(MM-DD-YYYY)"
                     onChange={(date) =>
                       setStartDate(date?.format("YYYY-MM-DD"))
                     }
