@@ -37,7 +37,7 @@ const Tenants = () => {
       }
       try {
         const response = await axios.post(
-          "https://careautomate-backend.vercel.app/fetchAll/fetchAllHCMsTenants",
+          "https://ca-backend-ten.vercel.app/fetchAll/fetchAllHCMsTenants",
           {},
           {
             headers: {

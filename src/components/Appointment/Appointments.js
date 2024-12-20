@@ -221,7 +221,12 @@ const Appointment = () => {
       <div>
         <div className="p-4 shadow-sm ">
           <div className="flex flex-row justify-between items-center">
-            <h1 className="text-2xl font-bold">Appointments</h1>
+            <h1 className="text-2xl font-bold flex gap-2">
+              <span>Appointments</span>
+              <span className="h-9 w-9 flex items-center justify-center rounded-full font-bold text-lg p-2 bg-[#6F84F8] text-white">
+                {appointments.length}
+              </span>
+            </h1>
             <button
               className="px-4 py-2 rounded-full text-white bg-[#6F84F8] mr-4"
               onClick={() => {

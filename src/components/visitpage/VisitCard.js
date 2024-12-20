@@ -15,8 +15,8 @@ const VisitCard = ({
   handleClosePopup,
 }) => {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const handleDeleteClick = async (index) => {
-    console.log(index);
+  const handleDeleteClick = async (index, visit) => {
+    console.log(index, visit);
 
     // Get the token from localStorage
     const token = localStorage.getItem("token");
@@ -69,11 +69,6 @@ const VisitCard = ({
               paddingX: "30px",
               borderRadius: "1.5rem",
               backgroundColor: "white",
-              // visit.approved && !visit.rejected
-              //   ? "#AAFFC2"
-              //   : !visit.approved && visit.rejected
-              //     ? "#F57070"
-              //     : "white",
               border:
                 visit.approved && !visit.rejected
                   ? "2px solid #6DD98C"
@@ -84,18 +79,21 @@ const VisitCard = ({
           >
             {/* Title and Date/Duration Row */}
             <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "1rem",
-              }}
+              // style={{
+              //   display: "flex",
+              //   alignItems: "center",
+              //   marginBottom: "1rem",
+              // }}
+              className="flex items-center mb-1"
             >
               <h3 style={{ marginRight: "2rem" }}>
                 {visit?.serviceType ? visit.serviceType : "no service"} {" - "}
-                {visit?.title ? visit.title : " No Title"}
+                <span className="text truncate">
+                  {visit?.title ? visit.title : " No Title"}
+                </span>
               </h3>
 
-              <div className="flex gap-10 mt-5" style={{ marginLeft: "auto" }}>
+              <div className="flex gap-10 mt-1" style={{ marginLeft: "auto" }}>
                 {!visit.approved && !visit.rejected && (
                   <div className="flex gap-4">
                     <button
@@ -260,7 +258,7 @@ const VisitCard = ({
 
               {/* Visit Details */}
               <div>
-                <div style={{ marginLeft: "3rem", width: "55vw" }}>
+                <div style={{ marginLeft: "2px", width: "55vw" }}>
                   <p>
                     <p
                       style={{
@@ -318,7 +316,7 @@ const VisitCard = ({
                     style={{
                       marginLeft: "auto",
                       //   marginTop: "-20px",
-                      marginBottom: "5px",
+                      marginTop: "20px",
                     }}
                   >
                     Signature:{" "}
@@ -361,7 +359,7 @@ const VisitCard = ({
                     </button>
                     <button
                       className="px-3 py-1 text-sm bg-green-500 text-white rounded-2xl hover:bg-green-600"
-                      onClick={() => handleDeleteClick(visit._id)}
+                      onClick={() => handleDeleteClick(visit._id, visit)}
                     >
                       Confirm
                     </button>
