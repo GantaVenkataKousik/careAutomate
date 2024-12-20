@@ -29,12 +29,14 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
   const [title, setTitle] = useState(isEdit ? onVisitCreated.title : "");
   const [scheduleCreated, setScheduleCreated] = useState(false);
   const [activity, setActivity] = useState(isEdit ? onVisitCreated.title : "");
-  const [startTime, setStartTime] = useState("");
+  const [startTime, setStartTime] = useState(
+    isEdit ? onVisitCreated.startDate.substring(11, 16) : ""
+  );
   const [showCreateScheduleDialog, setShowCreateScheduleDialog] =
     useState(false);
   const [allTenants, setAllTenants] = useState([]); // Store tenant data
   const [endTime, setEndTime] = useState(
-    isEdit ? new Date(onVisitCreated.endDate) : ""
+    isEdit ? onVisitCreated.endDate.substring(11, 16) : ""
   );
   const [serviceType, setServiceType] = useState(
     isEdit ? onVisitCreated.serviceType : "Housing Sustaining"
@@ -198,7 +200,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       changedFields.planOfService = planOfService;
     if (reasonForRemote !== onVisitCreated.reasonForRemote)
       changedFields.reasonForRemote = reasonForRemote;
-    if (title !== onVisitCreated.title) changedFields.title = title;
+    if (activity !== onVisitCreated.title) changedFields.title = activity;
     if (endTime && endTime !== new Date(onVisitCreated.endDate))
       changedFields.endTime = endTime;
     if (serviceType !== onVisitCreated.serviceType)
@@ -215,6 +217,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       changedFields.detailsOfVisit = detailsOfVisit;
     if (responseOfVisit !== onVisitCreated.response)
       changedFields.responseOfVisit = responseOfVisit;
+    console.log(changedFields);
 
     if (Object.keys(changedFields).length > 0) {
       // Make the API call to update the visit
@@ -495,19 +498,6 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
             </select>
           </div>
 
-          <div className="flex gap-4">
-            <label className="text-sm font-medium flex items-center w-1/3">
-              <SlNote size={24} className="mr-2" />
-              Title
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setActivity(e.target.value)}
-              placeholder="Enter Title"
-              className="border border-gray-300 rounded-md p-2 w-2/3"
-            />
-          </div>
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <SlNote size={24} className="mr-2" />

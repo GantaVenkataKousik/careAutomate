@@ -164,7 +164,7 @@ const VisitList = () => {
   const dispatch = useDispatch();
 
   const handleEditClick = (index, id, visit) => {
-    dispatch(setSelectedVisit(visit));
+    // dispatch(setSelectedVisit(visit));
     setEditVisitData(visit);
     setIsEdit(true);
     setOpenNewVisitPopup(true);
@@ -199,9 +199,9 @@ const VisitList = () => {
     // Code for updating status
   };
 
-  const handleDeleteClick = async (index) => {
-    // Code for deleting visits
-  };
+  // const handleDeleteClick = async (index) => {
+  //   // Code for deleting visits
+  // };
 
   return (
     <div style={{ margin: "2rem", fontFamily: "Poppins" }}>
@@ -231,7 +231,7 @@ const VisitList = () => {
       ) : (
         <VisitCard
           visitData={visitData}
-          handleDeleteClick={handleDeleteClick}
+          // handleDeleteClick={handleDeleteClick}
           handleClosePopup={handleClosePopup}
           handleDetailsClick={handleDetailsClick}
           handleEditClick={handleEditClick}
