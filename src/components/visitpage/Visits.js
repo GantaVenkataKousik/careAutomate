@@ -54,19 +54,19 @@ const VisitList = () => {
         const mappedVisits = response.data.visits.map((visit) => ({
           _id: visit._id,
           title: visit.title,
-          startDate: visit.dateOfService,
-          endDate: visit.dateOfService,
+          startDate: visit.dateOfService || visit.date,
+          endDate: visit.dateOfService || visit.date,
           typeMethod: visit.methodOfVisit,
           hcm: visit.hcmId?.name || "N/A",
           hcmId: visit.hcmId?._id || "N/A",
           scheduledDate: visit.scheduledDate ?? "",
-          dos: visit.dateOfService,
+          dos: visit.dateOfService || visit.date,
           duration: `${visit.startTime} - ${visit.endTime}`,
           details: visit.detailsOfVisit,
           signature: visit.signature,
           status: visit.status,
           serviceType: visit.serviceType,
-          placeOfService: visit.placeOfService,
+          placeOfService: visit.placeOfService || visit.place,
           approved: visit.approved,
           rejected: visit.rejected,
           totalMile: visit.totalMiles,
@@ -82,7 +82,7 @@ const VisitList = () => {
           return new Date(b.createdAt) - new Date(a.createdAt);
         });
         setVisitData(sortedVisits);
-        console.log(sortedVisits);
+        // console.log(sortedVisits);
       } else {
         console.error("Failed to fetch visit data");
       }
@@ -119,24 +119,25 @@ const VisitList = () => {
         const mappedVisits = response.data.visits.map((visit) => ({
           _id: visit._id,
           title: visit.title,
-          startDate: visit.dateOfService,
-          endDate: visit.dateOfService,
+          startDate: visit.dateOfService || visit.date,
+          endDate: visit.dateOfService || visit.date,
           typeMethod: visit.methodOfVisit,
           hcm: visit.hcmId?.name || "N/A",
-          scheduledDate: visit.scheduledDate,
-          dos: visit.dateOfService,
+          hcmId: visit.hcmId?._id || "N/A",
+          scheduledDate: visit.scheduledDate ?? "",
+          dos: visit.dateOfService || visit.date,
           duration: `${visit.startTime} - ${visit.endTime}`,
           details: visit.detailsOfVisit,
           signature: visit.signature,
           status: visit.status,
           serviceType: visit.serviceType,
-          placeOfService: visit.placeOfService,
+          placeOfService: visit.placeOfService || visit.place,
           approved: visit.approved,
           rejected: visit.rejected,
           totalMile: visit.totalMiles,
-          response: visit.response,
           createdAt: visit.createdAt,
           tenantName: visit.tenantId?.name,
+          tenantId: visit.tenantId?._id,
           travel: visit.travel,
           travelWithTenant: visit.travelWithTenant,
           travelWithoutTenant: visit.travelWithoutTenant,
