@@ -297,10 +297,10 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       hcmId: hcm || "N/A",
       serviceType,
       title: activity || "N/A",
-      dateOfService: startDate,
+      date: new Date(startDate).toISOString(),
       startTime,
       endTime,
-      placeOfService: planOfService || "N/A",
+      place: planOfService || "N/A",
       methodOfVisit:
         methodOfContact === "indirect"
           ? reasonForRemote === "remote"
@@ -308,19 +308,19 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
             : "in-person"
           : "in-person",
       reasonForRemote: reasonForRemote || null,
-      detailsOfVisit: detailsOfVisit || "N/A",
-      responseOfVisit: responseOfVisit || "N/A",
-      travel: travel,
-      totalMiles: travel === "Yes" ? totalMiles : null,
+      // detailsOfVisit: detailsOfVisit || "N/A",
+      response: responseOfVisit || "N/A",
+      travel: travel.toLowerCase(),
+      totalMiles: travel.toLowerCase() === "yes" ? totalMiles : null,
       travelWithTenant: milesWithTenant || null,
       travelWithoutTenant: milesWithoutTenant || null,
       signature: signature === "done" ? "done" : "not done",
     };
-
+    console.log("payyyui", payload);
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/visit/createVisit",
+        `${API_ROUTES.VISITS.BASE}/createVisit`,
         payload,
         {
           headers: {
@@ -504,7 +504,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
               Title
             </label>
             <select
-              value={title}
+              value={activity}
               onChange={(e) => setActivity(e.target.value)} // Use setActivity here to set selected activity
               className="border border-gray-300 rounded-md p-2 w-2/3"
             >
@@ -535,7 +535,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
               <div className="flex items-center gap-4">
                 <DatePicker
                   selected={startDate}
-                  onChange={(date) => setStartDate(date)}
+                  onChange={(date) => setStartDate(new Date(date))}
                   maxDate={new Date()}
                   dateFormat="MM-dd-yyyy"
                   className="border border-gray-300 rounded-md p-2 w-full"

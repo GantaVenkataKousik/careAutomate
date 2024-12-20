@@ -78,18 +78,13 @@ const VisitCard = ({
             }}
           >
             {/* Title and Date/Duration Row */}
-            <div
-              // style={{
-              //   display: "flex",
-              //   alignItems: "center",
-              //   marginBottom: "1rem",
-              // }}
-              className="flex items-center mb-1"
-            >
+            <div className="flex items-center mb-1">
               <h3 style={{ marginRight: "2rem" }}>
                 {visit?.serviceType ? visit.serviceType : "no service"} {" - "}
                 <span className="text truncate">
-                  {visit?.title ? visit.title : " No Title"}
+                  {visit.title && visit.title.length > 75
+                    ? visit.title.substring(0, 65) + "..."
+                    : visit.title || "No Title"}
                 </span>
               </h3>
 
