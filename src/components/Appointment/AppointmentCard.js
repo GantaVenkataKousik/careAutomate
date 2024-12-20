@@ -4,12 +4,12 @@ import { MdOutlineLocationOn, MdAccessTime } from "react-icons/md";
 import { GoTrash } from "react-icons/go";
 import { BiEditAlt } from "react-icons/bi";
 import { BsPersonFill } from "react-icons/bs";
+import { API_ROUTES } from "../../routes";
 
 const AppointmentCard = ({
   appointment,
   togglePopup1,
   handleDeleteClick1,
-  showPopup1,
   showDeletePopup1,
   setShowDeletePopup1,
 }) => {
@@ -25,6 +25,33 @@ const AppointmentCard = ({
     return color;
   };
   // console.log(appointment);
+  const handleDelete = async (appointment, index) => {
+    try {
+      const response = await fetch(`${API_ROUTES.APPOINTMENTS.BASE}/${index}`, {
+        method: "DELETE", // Correctly placed within the options object
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (response.ok) {
+        console.log("Deleted successfully", index, appointment);
+        // Update your state or perform any action required on successful delete
+      } else {
+        console.error(
+          "Failed to delete:",
+          response.status,
+          response.statusText
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+    } finally {
+      setShowDeletePopup1(false); // Ensure the popup closes regardless of the outcome
+    }
+  };
+
   return (
     <div
       key={appointment.id}
@@ -141,7 +168,7 @@ const AppointmentCard = ({
                 </button>
                 <button
                   className="px-3 py-1 text-sm bg-green-500 text-white rounded-2xl hover:bg-green-600"
-                  onClick={() => setShowDeletePopup1(false)}
+                  onClick={() => handleDelete(appointment, appointment.id)}
                 >
                   Confirm
                 </button>
