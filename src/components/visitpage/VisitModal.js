@@ -7,12 +7,13 @@ import { MdOutlineAccessTime } from "react-icons/md";
 import { GrLocation } from "react-icons/gr";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { API_ROUTES } from "../../routes";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
   console.log(onVisitCreated);
@@ -154,6 +155,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       setPlanOfService(onVisitCreated.placeOfService);
       setReasonForRemote(onVisitCreated?.reasonForRemote);
       setTitle(onVisitCreated.title);
+      setActivity(onVisitCreated.title);
       setEndTime(new Date(onVisitCreated.endDate));
       setServiceType(onVisitCreated.serviceType || "Housing Sustaining");
       setMethodOfContact(onVisitCreated.typeMethod || "in-person");
@@ -171,6 +173,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       setPlanOfService("");
       setReasonForRemote("");
       setTitle("");
+      setActivity("");
+      setStartTime("");
       setEndTime("");
       setServiceType("Housing Sustaining");
       setMethodOfContact("in-person");
@@ -195,12 +199,14 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
     // Compare each field with its initial value and add to `changedFields` if it's different
     if (hcm !== onVisitCreated.hcm) changedFields.hcm = hcm;
     if (startDate && startDate !== new Date(onVisitCreated.startDate))
-      changedFields.startDate = startDate;
+      changedFields.date = startDate;
     if (planOfService !== onVisitCreated.placeOfService)
       changedFields.planOfService = planOfService;
     if (reasonForRemote !== onVisitCreated.reasonForRemote)
       changedFields.reasonForRemote = reasonForRemote;
     if (activity !== onVisitCreated.title) changedFields.title = activity;
+    if (startTime && startTime !== new Date(onVisitCreated.endDate))
+      changedFields.startTime = startTime;
     if (endTime && endTime !== new Date(onVisitCreated.endDate))
       changedFields.endTime = endTime;
     if (serviceType !== onVisitCreated.serviceType)
@@ -216,8 +222,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
     if (detailsOfVisit !== onVisitCreated.details)
       changedFields.detailsOfVisit = detailsOfVisit;
     if (responseOfVisit !== onVisitCreated.response)
-      changedFields.responseOfVisit = responseOfVisit;
-    console.log(changedFields);
+      changedFields.response = responseOfVisit;
+    // console.log(changedFields);
 
     if (Object.keys(changedFields).length > 0) {
       // Make the API call to update the visit
@@ -235,6 +241,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
 
       if (response.ok) {
         console.log("Visit updated successfully!");
+        toast.success("Visit updated successfully!");
         // Handle success (e.g., show toast or close modal)
       } else {
         console.error("Failed to update visit:", await response.json());
@@ -316,7 +323,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       travelWithoutTenant: milesWithoutTenant || null,
       signature: signature === "done" ? "done" : "not done",
     };
-    console.log("payyyui", payload);
+    // console.log("payyyui", payload);
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
@@ -403,6 +410,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
     setStartTime("");
     setActivity("");
     setTitle("");
+    setActivity("");
     setResponseOfVisit("");
     setDetailsOfVisit("");
   };
@@ -533,17 +541,35 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
             {/* Date Input */}
             <div className="flex gap-6 w-2/3">
               <div className="flex items-center gap-4">
-                <DatePicker
-                  selected={startDate}
-                  onChange={(date) => setStartDate(new Date(date))}
-                  maxDate={new Date()}
-                  dateFormat="MM-dd-yyyy"
-                  className="border border-gray-300 rounded-md p-2 w-full"
-                  placeholderText="(MM-DD-YYYY)"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    // value={filters.startDate} // Bind value to filters.startDate
+                    // placeholderText="(MM-DD-YYYY)"
+                    onChange={(date) =>
+                      setStartDate(date?.format("YYYY-MM-DD"))
+                    }
+                    sx={{
+                      fontFamily: "Poppins",
+                      height: "40px",
+                      fontSize: "15px",
+                      width: "100%",
+                      "& input": {
+                        padding: "5px 10px", // Match padding inside the input field
+                      },
+                      "& .MuiInputBase-root": {
+                        padding: "3px 8px",
+                        border: "1px solidrgb(176, 173, 173)",
+                      },
+                      "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#6F84F8",
+                      },
+                    }}
+                    InputProps={{
+                      className:
+                        "p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]",
+                    }}
+                  />
+                </LocalizationProvider>
               </div>
 
               {/* Start Time Input */}
