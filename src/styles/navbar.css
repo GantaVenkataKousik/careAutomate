@@ -1,105 +1,147 @@
 .navbar {
-    background-color: #6F84F8;
-    color: #fff;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+  background-color: #6f84f8;
+  color: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
 }
 
 .navbar-left h2 {
-    margin: 0;
-    font-size: 1.2rem;
-    margin-left: 1rem;
-    font-weight: 500;
-    font-family: 'Poppins';
+  margin: 0;
+  font-size: 1.2rem;
+  margin-left: 1rem;
+  font-weight: 500;
+  font-family: "Poppins";
 }
 
 .navbar-right {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .search-bar-navbar input {
-    width: 270px;
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ddd;
-    border-radius: 35px;
+  width: 270px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 35px;
 }
 
 .notification-icon {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    /* Adjust size as needed */
-    color: white;
-    /* White color for the icon */
-    margin-right: 40px;
-    margin-left: 10px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  /* Adjust size as needed */
+  color: white;
+  /* White color for the icon */
+  margin-right: 40px;
+  margin-left: 10px;
 }
 
 .notification-icon::before {
-    content: "🔔";
-    /* Notification bell icon */
-    font-size: 24px;
-    /* Size of the bell icon */
-    color: white;
+  content: "🔔";
+  /* Notification bell icon */
+  font-size: 24px;
+  /* Size of the bell icon */
+  color: white;
 }
 
 /* Badge styles */
 .notification-icon .notification-badge {
-    position: absolute;
-    top: -5px;
-    /* Position the badge above the icon */
-    right: -5px;
-    /* Position the badge to the right of the icon */
-    width: 20px;
-    /* Size of the badge */
-    height: 20px;
-    /* Size of the badge */
-    border-radius: 50%;
-    /* Make the badge round */
-    background-color: red;
-    /* Red background for the badge */
-    color: white;
-    /* White text color for the badge */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    /* Font size for the number */
+  position: absolute;
+  top: -5px;
+  /* Position the badge above the icon */
+  right: -5px;
+  /* Position the badge to the right of the icon */
+  width: 20px;
+  /* Size of the badge */
+  height: 20px;
+  /* Size of the badge */
+  border-radius: 50%;
+  /* Make the badge round */
+  background-color: red;
+  /* Red background for the badge */
+  color: white;
+  /* White text color for the badge */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  /* Font size for the number */
 }
 
 .notification-icon .notification-badge.hidden {
-    display: none;
-    /* Hide badge if no notifications */
+  display: none;
+  /* Hide badge if no notifications */
 }
 
 .user-profile {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .user-profile img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 30px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 30px;
 }
 
 .username {
-    margin-left: -1rem;
-    font-size: 1.2rem;
-    margin-right: 35px;
-    font-weight: 500;
-    font-family: 'Poppins';
+  margin-left: -1rem;
+  font-size: 1.2rem;
+  margin-right: 35px;
+  font-weight: 500;
+  font-family: "Poppins";
+}
+
+/* Dropdown container */
+.dropdown {
+  position: absolute;
+  top: 60px; /* Adjust to align with the user profile */
+  right: 20px;
+  background-color: #fff;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  z-index: 1000;
+  width: 150px;
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+}
+
+/* Dropdown options */
+.dropdown div {
+  padding: 10px 15px;
+  color: #333;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+/* Last option without border */
+.dropdown div:last-child {
+  border-bottom: none;
+}
+
+/* Hover effect */
+.dropdown div:hover {
+  background-color: #f4f4f4;
+}
+
+/* Navbar positioning fix */
+.navbar-right {
+  position: relative;
 }
