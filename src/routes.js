@@ -1,6 +1,9 @@
 import { BASE_URL, LOCAL_URL } from "./config";
 
 export const API_ROUTES = {
+  AUTH: {
+    BASE: `${BASE_URL}/auth`,
+  },
   HCM: {
     UNITS_STATS: `${BASE_URL}/hcm/hcmUnitsStats/`,
     GET_INFO: `${LOCAL_URL}/hcm/get-hcm-info/`,
