@@ -1,0 +1,40 @@
+.settings-personalDetails {
+  padding: 1rem 2rem;
+  box-sizing: border-box;
+}
+.settings-personalDetails-container {
+  border: 2px solid #ccc;
+  height: 100%;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.settings-personalDetails-imageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+.settings-personDetails-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.settings-personalDetails-centerContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+  margin: 1.5rem 0;
+}
+.settings-personalDetails-infoContainer {
+  margin: 1rem 0;
+}
+.settings-personalDetails-bottomContainer {
+  display: flex;
+  width: 50%;
+  height: 15vh;
+  justify-content: space-between;
+}
