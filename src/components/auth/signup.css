@@ -20,7 +20,7 @@
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  width: 720px;
+  width: 70rem;
   max-width: 100%;
   height: 600px;
   overflow: hidden;
@@ -37,7 +37,7 @@
 
 .signup-image {
   max-width: 100%;
-  height: auto;
+  height: 80vh;
 }
 
 .right-section {
@@ -52,18 +52,32 @@
   margin-bottom: 20px;
   color: #333;
 }
-
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
 .signup-form .form-group {
+  margin-top: 1rem;
   margin-bottom: 13px;
   position: relative;
   /* Relative positioning for absolute children */
 }
 
-.signup-form input,
+/* .signup-form input, */
 .signup-form select {
   width: 100%;
   /* Full width */
-  padding: 12px 50px 12px 10px;
+  padding: 12px 5px 12px 10px;
+  /* Increased right padding for the icon */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+.signup-form input {
+  width: 19rem;
+  /* Full width */
+  padding: 12px 5px 12px 10px;
   /* Increased right padding for the icon */
   border: 1px solid #ccc;
   border-radius: 6px;
