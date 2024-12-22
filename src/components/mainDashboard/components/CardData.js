@@ -29,7 +29,7 @@ const CardData = () => {
                 }
 
                 const result = await response.json();
-                setNewMessagesCount(result.count);
+                setNewMessagesCount(result.response);
             } catch (error) {
                 console.error('Error fetching new messages count:', error);
             }
@@ -48,7 +48,7 @@ const CardData = () => {
                 }
 
                 const result = await response.json();
-                setVisitsWaitingCount(result.count);
+                setVisitsWaitingCount(result.response);
             } catch (error) {
                 console.error('Error fetching visits waiting count:', error);
             }
@@ -67,7 +67,7 @@ const CardData = () => {
                 }
 
                 const result = await response.json();
-                setTenantsRunningOutCount(result.count);
+                setTenantsRunningOutCount(result.response);
             } catch (error) {
                 console.error('Error fetching tenants running out count:', error);
             }
@@ -79,7 +79,7 @@ const CardData = () => {
     }, []);
 
     return (
-        <div className="flex gap-5">
+        <div className="flex gap-6 mb-4">
             <InfoCard
                 count={newMessagesCount !== null ? newMessagesCount : '-'}
                 description="New Messages"
@@ -92,6 +92,10 @@ const CardData = () => {
             <InfoCard
                 count={tenantsRunningOutCount !== null ? tenantsRunningOutCount : '-'}
                 description="Tenants running out of Units"
+            />
+            <InfoCard
+                count={tenantsRunningOutCount !== null ? tenantsRunningOutCount : '-'}
+                description="Bills Pending"
             />
         </div>
     );

@@ -152,23 +152,11 @@ const ServiceSelection = ({ tenantID }) => {
       // Add basic service data
       formData.append("tenantId", tenantID);
       formData.append("serviceType", service.serviceType);
-      formData.append("startDate", service.startDate);
-      formData.append("endDate", service.endDate);
-      formData.append("units", service.units);
-      formData.append("rate", service.billRate);
-      formData.append("status", "active");
-      formData.append("reviewStatus", "approved");
-
-      // Handle file upload
-      if (service.document && service.uploadedFileName) {
-        // Convert base64 to File object
-        const base64Response = await fetch(service.document);
-        const blob = await base64Response.blob();
-        const file = new File([blob], service.uploadedFileName, {
-          type: blob.type || "application/octet-stream",
-        });
-        formData.append("document", file);
-      }
+      formData.append("startDate", new Date(service.startDate).toISOString()); // Format date
+      formData.append("endDate", new Date(service.endDate).toISOString()); // Format date
+      formData.append("unitsRemaining", service.units); // Set unitsRemaining same as totalUnits
+      formData.append("totalUnits", service.units);
+      formData.append("billRate", service.billRate);
 
       const response = await axios.post(
         "https://careautomate-backend.vercel.app/tenant/assign-services-documents",

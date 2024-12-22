@@ -28,6 +28,10 @@ const Tenants = () => {
     }
   };
 
+  const handleIconClick = (path) => {
+    navigate(path);
+  };
+
   useEffect(() => {
     const fetchTenants = async () => {
       const token = localStorage.getItem("token");
@@ -49,7 +53,6 @@ const Tenants = () => {
 
         const tenantsData = response.data?.data?.tenants || [];
         setTenants(tenantsData);
-        console.log(tenantsData);
       } catch (error) {
         console.error(
           "Error fetching tenants:",
@@ -121,15 +124,15 @@ const Tenants = () => {
                   </div>
                 </div>
                 <div style={styles.tenantIconsContainer}>
-                  <CiCalendarDate style={styles.tenantIcon} />
-                  <IoIosMenu style={styles.tenantIcon} />
-                  <TbMessage style={styles.tenantIcon} />
-                  <IoDocumentTextOutline style={styles.tenantIcon} />
+                  <CiCalendarDate style={styles.tenantIcon} onClick={() => handleIconClick('/appointments')} />
+                  <IoIosMenu style={styles.tenantIcon} onClick={() => handleIconClick('/visits')} />
+                  <TbMessage style={styles.tenantIcon} onClick={() => handleIconClick('/communication')} />
+                  <IoDocumentTextOutline style={styles.tenantIcon} onClick={() => handleIconClick('/settings')} />
                 </div>
               </div>
             ))
         ) : (
-          <p style={styles.noDataText}>No data available</p>
+          <p style={styles.noDataText}>Loading...</p>
         )}
       </div>
     </div>

@@ -52,15 +52,13 @@ const TenantAreaChart = () => {
                 const result = await response.json();
 
                 if (result.success) {
-                    const data = result.data["2024"];
+                    const data = result.response["2024"];
                     const allMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
                     const months = Object.keys(data);
-
                     const getRandomValue = () => Math.floor(Math.random() * 9) + 2;
 
                     const movedOutData = allMonths.map(month => data[month]?.movedOut ?? getRandomValue());
                     const receivingServicesData = allMonths.map(month => data[month]?.receivingServices ?? getRandomValue());
-
                     setChartData({
                         series: [
                             {

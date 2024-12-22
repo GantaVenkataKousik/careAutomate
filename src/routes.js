@@ -1,12 +1,8 @@
-import { BASE_URL, LOCAL_URL } from "./config";
+import { BASE_URL } from "./config";
 
 export const API_ROUTES = {
-  AUTH: {
-    BASE: `${BASE_URL}/auth`,
-  },
   HCM: {
-    UNITS_STATS: `${BASE_URL}/hcm/hcmUnitsStats/`,
-    GET_INFO: `${LOCAL_URL}/hcm/get-hcm-info/`,
+    GET_INFO: `${BASE_URL}/hcm/get-hcm-info/`,
     // Add other HCM-related routes here
   },
   COMMUNICATION: {
@@ -19,8 +15,8 @@ export const API_ROUTES = {
   },
   VISITS: {
     BASE: `${BASE_URL}/visit`,
-    WAITING_FOR_APPROVAL: `${LOCAL_URL}/visit/visitsWaitingForApproval/`,
-    COMPLIANCE: `${LOCAL_URL}/visit/visitCompliance/`,
+    WAITING_FOR_APPROVAL: `${BASE_URL}/visit/visitsWaitingForApproval/`,
+    COMPLIANCE: `${BASE_URL}/visit/visitCompliance/`,
     // Add other visit-related routes here
   },
   DOCUMENTS: {
@@ -28,18 +24,18 @@ export const API_ROUTES = {
     // Add other document-related routes here
   },
   MESSAGES: {
-    NEW_COUNT: `${LOCAL_URL}/api/newMessagesCount`,
+    NEW_COUNT: `${BASE_URL}/api/newMessagesCount`,
     // Add other message-related routes here
   },
   BILLING: {
-    TENANTS_RUNNING_BY_UNITS: `${LOCAL_URL}/bill/tenants-running-by-units/`,
+    TENANTS_RUNNING_BY_UNITS: `${BASE_URL}/bill/tenants-running-by-units/`,
+    PLAN_USAGE: `${BASE_URL}/bill/plan-usage/`
     // Add other billing-related routes here
   },
   TENANTS: {
-    GET_INFO: `${LOCAL_URL}/tenant/get-tenant-info/`,
-    REASSESSMENTS: `${LOCAL_URL}/tenant/tenant-reassessments/`,
+    GET_INFO: `${BASE_URL}/tenant/get-tenant-info/`,
+    REASSESSMENTS: `${BASE_URL}/tenant/tenant-reassessments/`,
     // Add other tenant-related routes here
   },
-
   // Add other general routes here
 };

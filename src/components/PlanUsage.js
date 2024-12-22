@@ -29,7 +29,7 @@ export default function PlanUsage() {
             }
 
             try {
-                const response = await axios.post(API_ROUTES.HCM_UNITS_STATS, {
+                const response = await axios.post(API_ROUTES.BILLING.PLAN_USAGE, {
                     tenantId: tenantId,
                 }, {
                     headers: {
@@ -38,30 +38,19 @@ export default function PlanUsage() {
                     }
                 });
 
-                setUnitsData(response.data);
+                const data = response.data.response;
+                setUnitsData(data);
 
-                const transitionYears = Object.keys(response.data['Housing Transition'] || {});
-                const sustainingYears = Object.keys(response.data['Housing Sustaining'] || {});
-                const allYears = Array.from(new Set([...transitionYears, ...sustainingYears])).sort();
+                const transitionPeriod = data['Housing Transition'].period;
+                const sustainingPeriod = data['Housing Sustaining'].period;
 
-                // Generate random periods for each year
-                const formattedPeriods = allYears.map(year => {
-                    const startMonth = Math.floor(Math.random() * 6) + 1; // Start month between 1 and 6
-                    const startDay = Math.floor(Math.random() * 28) + 1;
-                    const endMonth = startMonth + 7; // End month 7 months later
-                    const endDay = Math.floor(Math.random() * 28) + 1;
-                    const startDate = new Date(year, startMonth - 1, startDay);
-                    const endDate = new Date(year, endMonth - 1, endDay);
+                const periodsSet = new Set([transitionPeriod, sustainingPeriod]);
 
-                    return {
-                        period: `${startDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]}`,
-                        year
-                    };
-                });
+                const uniquePeriods = Array.from(periodsSet).map(period => ({ period }));
 
-                setYearOptions(formattedPeriods);
-                if (formattedPeriods.length > 0) {
-                    setSelectedYear(formattedPeriods[0].year);
+                setYearOptions(uniquePeriods);
+                if (uniquePeriods.length > 0) {
+                    setSelectedYear(uniquePeriods[0].period);
                 }
             } catch (error) {
                 console.error('Error fetching units data:', error);
@@ -74,6 +63,8 @@ export default function PlanUsage() {
             fetchUnitsData();
         }
     }, [tenantId]);
+
+    const hasPlanUsage = Object.keys(unitsData).length > 0;
 
     const handleDownloadClick = (planType) => {
         setCurrentPlanType(planType);
@@ -108,32 +99,28 @@ export default function PlanUsage() {
     };
 
     const renderPlanData = (planType) => {
-        const data = unitsData[planType]?.[selectedYear];
-        if (!data || data.message) {
+        const data = unitsData[planType];
+        if (!data) {
             return <p style={styles.noServiceData}>No services have been done for this tenant.</p>;
         }
 
         return (
             <div id={`${planType}Grid`} style={styles.grid}>
                 <div style={styles.card}>
-                    <h3 style={styles.cardTitle}>Allotted</h3>
-                    <p>Units <span style={styles.value}>{data.allottedUnits}</span></p>
-                    <p>Hours <span style={styles.value}>{data.allottedHours}</span></p>
+                    <h3 style={styles.cardTitle}>Total Units</h3>
+                    <p>Units <span style={styles.value}>{data.totalUnits}</span></p>
                 </div>
                 <div style={styles.card}>
                     <h3 style={styles.cardTitle}>Worked</h3>
                     <p>Units <span style={styles.value}>{data.workedUnits}</span></p>
-                    <p>Hours <span style={styles.value}>{data.workedHours}</span></p>
                 </div>
                 <div style={styles.card}>
                     <h3 style={styles.cardTitle}>Remaining</h3>
-                    <p>Units <span style={styles.value}>{data.remainingUnits}</span></p>
-                    <p>Hours <span style={styles.value}>{data.remainingHours}</span></p>
+                    <p>Units <span style={styles.value}>{data.unitsRemaining}</span></p>
                 </div>
                 <div style={styles.card}>
                     <h3 style={styles.cardTitle}>Scheduled</h3>
                     <p>Units <span style={styles.value}>{data.scheduledUnits}</span></p>
-                    <p>Hours <span style={styles.value}>{data.scheduledHours}</span></p>
                 </div>
             </div>
         );
@@ -142,34 +129,31 @@ export default function PlanUsage() {
     return (
         <div style={styles.container}>
             <h2 style={styles.title}>Plan Usage :</h2>
-            <div style={styles.dateRange}>
-                <label htmlFor="yearSelect">Select Year: </label>
-                <select
-                    id="yearSelect"
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                >
-                    {yearOptions.map((option, index) => (
-                        <option key={index} value={option.year}>{option.period}</option>
-                    ))}
-                </select>
-            </div>
+            {hasPlanUsage && (
+                <div style={styles.dateRange}>
+                    <label htmlFor="yearSelect">Select Period: </label>
+                    <select
+                        id="yearSelect"
+                        value={selectedYear}
+                        onChange={(e) => setSelectedYear(e.target.value)}
+                    >
+                        {yearOptions.map((option, index) => (
+                            <option key={index} value={option.period}>{option.period}</option>
+                        ))}
+                    </select>
+                </div>
+            )}
 
             {loading ? (
                 <p style={styles.loadingMessage}>Loading service information...</p>
-            ) : (
+            ) : hasPlanUsage ? (
                 <>
                     <div style={styles.planHeader}>
                         <h3 style={styles.title}>Housing Transition</h3>
                         <div style={styles.actions}>
-                            {selectedYear === new Date().getFullYear().toString() && (
-                                <button style={styles.activePlanButton}>Active</button>
-                            )}
-                            {unitsData['Housing Transition']?.[selectedYear] && !unitsData['Housing Transition']?.[selectedYear].message && (
-                                <button style={styles.downloadButton} onClick={() => handleDownloadClick('Housing Transition')}>
-                                    <FaDownload /> Download
-                                </button>
-                            )}
+                            <button style={styles.downloadButton} onClick={() => handleDownloadClick('Housing Transition')}>
+                                <FaDownload /> Download
+                            </button>
                         </div>
                     </div>
                     {renderPlanData('Housing Transition')}
@@ -177,18 +161,15 @@ export default function PlanUsage() {
                     <div style={styles.planHeader}>
                         <h3 style={styles.title}>Housing Sustaining</h3>
                         <div style={styles.actions}>
-                            {selectedYear === new Date().getFullYear().toString() && (
-                                <button style={styles.activePlanButton}>Active</button>
-                            )}
-                            {unitsData['Housing Sustaining']?.[selectedYear] && !unitsData['Housing Sustaining']?.[selectedYear].message && (
-                                <button style={styles.downloadButton} onClick={() => handleDownloadClick('Housing Sustaining')}>
-                                    <FaDownload /> Download
-                                </button>
-                            )}
+                            <button style={styles.downloadButton} onClick={() => handleDownloadClick('Housing Sustaining')}>
+                                <FaDownload /> Download
+                            </button>
                         </div>
                     </div>
                     {renderPlanData('Housing Sustaining')}
                 </>
+            ) : (
+                <p style={styles.noServiceData}>No plan usage data available for this tenant.</p>
             )}
 
             <Modal
@@ -236,16 +217,6 @@ const styles = {
         fontSize: '1.5em',
         marginRight: '10px',
         cursor: 'pointer',
-    },
-    activePlanButton: {
-        backgroundColor: '#4CAF50',
-        color: '#fff',
-        padding: '8px 15px',
-        borderRadius: '25px',
-        border: 'none',
-        cursor: 'pointer',
-        fontSize: '16px',
-        fontWeight: 'bold',
     },
     grid: {
         display: 'grid',

@@ -8,7 +8,7 @@ const VisitComplianceChart = ({ categories, visitData }) => {
             width: 400,
             stacked: true,
             toolbar: {
-                show: false, // Disable the toolbar
+                show: false,
             },
         },
         plotOptions: {

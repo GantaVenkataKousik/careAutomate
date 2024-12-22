@@ -13,7 +13,7 @@ const PayPeriodChart = () => {
     const chartOptions = {
         chart: {
             type: "donut",
-            width: 380,
+            width: 300,
         },
         labels: ["Medicaid", "UCare", "BCBS", "Medcia", "Health Partners"],
         responsive: [

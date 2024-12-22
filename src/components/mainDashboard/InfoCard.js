@@ -2,7 +2,7 @@ import React from "react";
 
 const InfoCard = ({ count, description, icon }) => {
   return (
-    <div className="flex p-6 items-center border-2 rounded-3xl justify-between shadow-md w-52">
+    <div className="flex p-6 pt-4 pb-4 items-center border-2 rounded-3xl justify-between shadow-md w-52">
       <div className="flex items-center">
         {/* Count */}
         <p className="text-[#6F84F8] text-3xl font-bold mr-4">{count}</p>
