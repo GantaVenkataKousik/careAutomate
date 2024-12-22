@@ -93,8 +93,6 @@ const Signup = () => {
       return; // Stop further execution
     }
 
-    console.log(formData);
-
     try {
       const response = await fetch(`${API_ROUTES.AUTH.BASE}/register/`, {
         method: "POST",
@@ -106,12 +104,14 @@ const Signup = () => {
           password: formData.password,
           name: `${formData.firstName} ${formData.lastName}`,
           phoneNo: formData.mobileNumber,
+          company: formData.companyName,
+          state: formData.state,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log(errorData.message);
+        console.log(errorData);
         toast.error(
           errorData.message || "An error occurred. Please try again."
         );
