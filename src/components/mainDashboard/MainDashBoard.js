@@ -75,14 +75,14 @@ const MainDashboard = () => {
           <div className="flex flex-col flex-2">
             <div className="flex gap-2">
               <button
-                className={`py-1 px-2 rounded-lg ${activeView === "tenant" ? "bg-blue-500 text-white" : "bg-gray-200"
+                className={`py-1 px-2 rounded-lg ${activeView === "tenant" ? "bg-[#6F84F8] text-white shadow-lg" : "bg-gray-200"
                   }`}
                 onClick={() => setActiveView("tenant")}
               >
                 Tenant
               </button>
               <button
-                className={`py-1 px-2 rounded-lg ${activeView === "hcm" ? "bg-blue-500 text-white" : "bg-gray-200"
+                className={`py-1 px-2 rounded-lg ${activeView === "hcm" ? "bg-[#6F84F8] text-white shadow-lg" : "bg-gray-200"
                   }`}
                 onClick={() => setActiveView("hcm")}
               >
