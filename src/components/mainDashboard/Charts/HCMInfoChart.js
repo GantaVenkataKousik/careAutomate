@@ -53,7 +53,7 @@ const HCMInfoChart = () => {
                 const result = await response.json();
 
                 if (result.success) {
-                    const data = result.data["2024"];
+                    const data = result.response["2024"];
                     const allMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
                     const months = Object.keys(data);
 

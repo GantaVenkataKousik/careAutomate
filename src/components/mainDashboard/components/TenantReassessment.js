@@ -29,7 +29,8 @@ const TenantReassessment = () => {
                 }
 
                 const result = await response.json();
-                setDayCounts(result.dayCounts);
+                console.log(result);
+                setDayCounts(result.response);
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching reassessment data:", error);

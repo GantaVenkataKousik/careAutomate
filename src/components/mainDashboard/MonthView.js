@@ -4,12 +4,12 @@ import moment from "moment";
 import axios from "axios";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { appointmentFilter } from "../../utils/appointmentsFilter";
-// Create a localizer for the calendar using moment.js
+
 const localizer = momentLocalizer(moment);
 
 const MonthView = () => {
-  // Example events with title, start and end time, and description
   const [appointments, setAppointments] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const token = localStorage.getItem("token");
 
   const fetchAppointments = async () => {
@@ -39,7 +39,7 @@ const MonthView = () => {
           with: apt.tenantDetails?.name || "Unknown",
           status: apt.status.charAt(0).toUpperCase() + apt.status.slice(1),
         }));
-        setAppointments(mappedAppointments); // This will update both list and calendar views
+        setAppointments(mappedAppointments);
       } else {
         console.error("Failed to fetch appointment data");
       }
@@ -52,38 +52,70 @@ const MonthView = () => {
     fetchAppointments();
   }, []);
 
+  const handleMonthChange = (e) => {
+    const newDate = new Date(selectedDate);
+    newDate.setMonth(e.target.value);
+    setSelectedDate(newDate);
+  };
+
+  const handleYearChange = (e) => {
+    const newDate = new Date(selectedDate);
+    newDate.setFullYear(e.target.value);
+    setSelectedDate(newDate);
+  };
+
   const events = appointmentFilter(appointments);
 
   return (
-    <div>
+    <div style={{ marginTop: '-10px', marginBottom: '10px' }}>
+      <div className="flex justify-end mb-2">
+        <select value={selectedDate.getMonth()} onChange={handleMonthChange}>
+          {moment.months().map((month, index) => (
+            <option key={month} value={index}>
+              {month}
+            </option>
+          ))}
+        </select>
+        <select value={selectedDate.getFullYear()} onChange={handleYearChange}>
+          {[2023, 2024, 2025].map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+      </div>
       <Calendar
         localizer={localizer}
         events={events}
         startAccessor="start"
         endAccessor="end"
         defaultView="month"
-        views={""}
-        style={{ width: "60vh" }}
+        views={["month"]}
+        date={selectedDate}
+        onNavigate={(date) => setSelectedDate(date)}
+        toolbar={false}
+        style={{ width: "70vh", height: "30vh", marginTop: "-2vh" }}
         eventPropGetter={(event) => {
           let color = "";
           switch (event.status) {
             case "Pending":
-              color = "#6F84F8"; // Pending color (blue)
+              color = "#6F84F8";
               break;
             case "Completed":
-              color = "#6DD98C"; // Completed color (green)
+              color = "#6DD98C";
               break;
             case "Cancelled":
-              color = "red"; // Cancelled color (red)
+              color = "red";
               break;
             default:
-              color = "#D5D8DC"; // Default color (gray)
+              color = "#D5D8DC";
           }
           return {
             style: {
               backgroundColor: color,
               borderRadius: "5px",
               padding: "5px",
+              marginTop: "-10px",
             },
           };
         }}

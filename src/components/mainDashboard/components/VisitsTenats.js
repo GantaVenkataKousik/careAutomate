@@ -31,10 +31,11 @@ const VisitsTenats = () => {
                 }
 
                 const result = await response.json();
-                const availableYears = Object.keys(result.visitCounts);
+                console.log('visit compliance : ', result);
+                const availableYears = Object.keys(result.response);
                 setYears(availableYears);
 
-                const data = result.visitCounts[year] || {};
+                const data = result.response[year] || {}; // Corrected access to response
 
                 const direct = [];
                 const indirect = [];
@@ -58,7 +59,7 @@ const VisitsTenats = () => {
         };
 
         fetchVisitData();
-    }, [year]); // Use 'year' as the dependency
+    }, [year]);
 
     return (
         <div>
