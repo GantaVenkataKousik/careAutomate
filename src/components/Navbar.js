@@ -6,11 +6,12 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { FiHelpCircle } from "react-icons/fi";
 import { IoLogOutOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
 const Navbar = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { currentUser, logout } = useAuth();
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
@@ -18,12 +19,25 @@ const Navbar = () => {
 
   const handleOptionClick = (option) => {
     setDropdownVisible(false);
-    if (option === "Settings") {
-      navigate("/settings");
-    } else {
-      console.log(option);
+    switch (option) {
+      case "Settings":
+        navigate("/settings");
+        break;
+      case "Profile":
+        navigate("/profile");
+        break;
+      case "Help":
+        navigate("/help");
+        break;
+      case "Logout":
+        logout();
+        navigate("/login");
+        break;
+      default:
+        console.log(option);
     }
   };
+
   useEffect(() => {
     const handleOutsideClick = (event) => {
       const dropdown = document.querySelector(".dropdown");
@@ -57,7 +71,7 @@ const Navbar = () => {
             alt="User"
             className="w-28 h-24 rounded-full object-cover cursor-pointer"
           />
-          <span className="username cursor-pointer">{user?.name}</span>
+          <span className="username cursor-pointer">{currentUser?.name}</span>
         </div>
         {dropdownVisible && (
           <div className="dropdown">

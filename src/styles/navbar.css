@@ -107,7 +107,8 @@
 /* Dropdown container */
 .dropdown {
   position: absolute;
-  top: 60px; /* Adjust to align with the user profile */
+  top: 60px;
+  /* Adjust to align with the user profile */
   right: 20px;
   background-color: #fff;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);

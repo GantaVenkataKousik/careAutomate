@@ -19,9 +19,8 @@ const CommunicationHeader = ({ activeTab, setActiveTab, unreadCount }) => {
         {["HCM", "Tenant"].map((tab) => (
           <button
             key={tab}
-            className={`border-b-4  hover:border-[#6F84F8] text-[#505254]  px-7 ${
-              activeTab === tab ? "border-[#6F84F8] font-bold" : ""
-            }`}
+            className={`border-b-4  hover:border-[#6F84F8] text-[#505254]  px-7 ${activeTab === tab ? "border-[#6F84F8] font-bold" : ""
+              }`}
             onClick={() => setActiveTab(tab)}
             aria-pressed={activeTab === tab}
           >
