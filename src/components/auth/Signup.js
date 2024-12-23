@@ -1,202 +1,140 @@
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import './signup.css';
-import mobile from '../../images/mobilepic.png';
-import usa from '../../images/usa.png';
-import { toast } from 'react-toastify';
-
+import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import "./signup.css";
+import mobile from "../../images/mobilepic.png";
+import usa from "../../images/usa.png";
+import { toast } from "react-toastify";
+import InputMask from "react-input-mask";
+import { API_ROUTES } from "../../routes";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    companyName: '',
-    state: '',
-    mobileNumber: ''
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    companyName: "",
+    state: "",
+    mobileNumber: "",
   });
-
+  const [otp, setOtp] = useState("");
+  const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
+  const otpRefs = useRef([]);
 
-  const states = [
-    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
-    "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
-    "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
-    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
-    "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
-    "Wisconsin", "Wyoming"];
-
-  // Toggle password visibility
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
-  const handlePaste = (e) => {
-    e.preventDefault();
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      confirmPassword: 'Please type your password instead of pasting.'
-    }));
-  };
-
-  // Validate email format
-  const validateEmail = (email) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
-
-  // Validate company name (no special characters)
-  const validateCompanyName = (companyName) => /^[a-zA-Z0-9&()@#'.,\s]+$/.test(companyName);
-
-  // Validate US mobile number (starting with +1 and then 10 digits)
-  const validateMobileNumber = (mobileNumber) => /^(\([0-9]{3}\) |[0-9]{3}-)[0-9]{3}-[0-9]{4}$/.test(mobileNumber)
-  const validateName = (name) => /^[a-zA-Z\s]+$/.test(name);
-  // Real-time validation function
-  const handleValidation = (name, value) => {
-    switch (name) {
-      case 'firstName':
-        return value ? (validateName(value) ? '' : 'Please enter a correct First Name.') : 'First Name is required.';
-
-      case 'lastName':
-        return value ? (validateName(value) ? '' : 'Please enter a correct Last Name.') : 'Last Name is required.';
-
-      case 'email':
-        return value ? (validateEmail(value) ? '' : 'Please enter a valid email address.') : 'Email is required.';
-
-      case 'companyName':
-        return value ? (validateCompanyName(value) ? '' : 'Please enter a valid Company Name.') : 'Company Name is required.';
-
-      case 'state':
-        return value ? '' : 'State is required.'; // State is simply required, no need for complex validation
-
-      case 'mobileNumber':
-        return value ? (validateMobileNumber(value) ? '' : 'Please enter a valid U.S. mobile number.') : 'Mobile Number is required.';
-
-      case 'password':
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>_\-+=~`/[\]\\';]).{8,}$/;
-        const passwordValid = passwordRegex.test(value);
-        return value ? (passwordValid ? '' : 'Password must be at least 8 characters long and include 1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character.') : 'Password is required.';
-
-      case 'confirmPassword':
-        return value ? (value === formData.password ? '' : 'Passwords do not match.') : 'Please confirm your password.';
-
-      default:
-        return '';
-    }
-  };
-
-  // Handle input changes and validation
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-
-    const error = handleValidation(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
   };
 
-  // Handle blur (when the user leaves the input field)
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-    const error = handleValidation(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
-  };
-
-
-  const handleSubmit = async (e) => {
+  const handleSendOtp = async (e) => {
     e.preventDefault();
+    try {
+      const response = await fetch(
+        "http://localhost:9003/auth/request-verification-code/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: formData.email }),
+        }
+      );
 
-    // Ensure all fields are valid before submitting
-    const allErrors = {};
-    Object.keys(formData).forEach((field) => {
-      allErrors[field] = handleValidation(field, formData[field]);
-    });
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || "Error sending OTP.");
+        return;
+      }
 
-    setErrors(allErrors);
+      toast.success("OTP sent to your email.");
+      setShowOtpPopup(true);
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+      console.error(error);
+    }
+  };
 
-    // Check if there are any errors
-    if (Object.values(allErrors).some((error) => error !== '')) {
-      toast.error('Please fix the errors before submitting.');
-      return; // Prevent submission
+  const handleVerifyOtp = async () => {
+    try {
+      const response = await fetch("http://localhost:9003/auth/verify-email/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: formData.email, code: otp }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error(errorData.message || "Invalid verification code.");
+        return;
+      }
+
+      toast.success("Email verified successfully.");
+      handleSignup();
+    } catch (error) {
+      toast.error("Error verifying email.");
+      console.error(error);
+    }
+  };
+
+  const handleSignup = async (event) => {
+    event.preventDefault(); // Prevent default form submission
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match.");
+      return; // Stop further execution
     }
 
     try {
-      const response = await fetch('https://careautomate-backend.vercel.app/auth/register/', {
-        method: 'POST',
+      const response = await fetch(`${API_ROUTES.AUTH.BASE}/register/`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
           name: `${formData.firstName} ${formData.lastName}`,
           phoneNo: formData.mobileNumber,
+          company: formData.companyName,
+          state: formData.state,
         }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json(); // Parse error response
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          apiError: errorData.message || 'An error occurred. Please try again.', // Display API error
-        }));
-        toast.error(errorData.message || 'An error occurred. Please try again.');
+        const errorData = await response.json();
+        console.log(errorData);
+        toast.error(
+          errorData.message || "An error occurred. Please try again."
+        );
         return;
       }
 
-      const data = await response.json();
-      console.log(data);
-      toast.success('Signup successful! Redirecting to login...');
-      setTimeout(() => navigate('/login'), 2000); // Delay navigation by 2 seconds to show toast
+      toast.success("Signup successful! Redirecting to login...");
+      setTimeout(() => navigate("/login"), 2000); // Redirect after a delay
     } catch (err) {
-      toast.error('An unknown error occurred.');
+      console.error(err); // Log error details for debugging
+      toast.error("An unknown error occurred.");
     }
   };
 
+  const handleOtpChange = (value, index) => {
+    const newOtp = otp.split("");
+    newOtp[index] = value;
+    setOtp(newOtp.join(""));
 
-  const handleMobileNumberChange = (e) => {
-    const input = e.target.value.replace(/\D/g, ''); // Remove all non-numeric characters
-    let formattedNumber = input;
-
-    // Format the number based on the length of the input
-    if (input.length > 6) {
-      formattedNumber = `(${input.slice(0, 3)}) ${input.slice(3, 6)}-${input.slice(6, 10)}`;
-    } else if (input.length > 3) {
-      formattedNumber = `(${input.slice(0, 3)}) ${input.slice(3, 6)}`;
-    } else if (input.length > 0) {
-      formattedNumber = `(${input.slice(0, 3)}`;
+    if (value && index < otpRefs.current.length - 1) {
+      otpRefs.current[index + 1].focus();
     }
-
-    setFormData({ ...formData, mobileNumber: formattedNumber });
-    const error = handleValidation('mobileNumber', formattedNumber);
-    setErrors((prevErrors) => ({ ...prevErrors, mobileNumber: error }));
   };
-
-  const getDynamicPlaceholder = () => {
-    const input = formData.mobileNumber.replace(/\D/g, ''); // Remove all non-numeric characters
-    let placeholder = "(###) ###-####";
-
-    if (input.length === 0) {
-      placeholder = "(###) ###-####"; // Default placeholder
-    } else if (input.length <= 3) {
-      placeholder = `(${input.padEnd(3, "#")}) ###-####`;
-    } else if (input.length <= 6) {
-      placeholder = `(${input.slice(0, 3)}) ${input.slice(3).padEnd(3, "#")}-####`;
-    } else {
-      placeholder = `(${input.slice(0, 3)}) ${input.slice(3, 6)}-${input.slice(6).padEnd(4, "#")}`;
-    }
-
-    return placeholder;
-  };
-
 
   return (
     <div className="signup-container">
@@ -207,170 +145,197 @@ const Signup = () => {
         transition={{ duration: 0.5 }}
       >
         <div className="left-section">
-          <img src={mobile} alt="Signup Illustration" className="signup-image" />
+          <img
+            src={mobile}
+            alt="Signup Illustration"
+            className="signup-image"
+          />
         </div>
         <div className="right-section">
-          <h3 className='text-center'>A Small Step To Begin Automation Of<br />Your Housing Services</h3>
-          <form className="signup-form" onSubmit={handleSubmit}>
-            {errors.apiError && <p className="error-message" style={{
-              color: 'red',
-              fontSize: '18px',
-              fontWeight: 'bold',
-            }}>{errors.apiError}</p>}
+          <h3 className="text-center">
+            A Small Step To Begin Automation Of
+            <br />
+            Your Housing Services
+          </h3>
+          <form className="signup-form" onSubmit={handleSignup}>
+            {/* Form fields */}
 
-            <div className="form-group">
-              <label htmlFor="firstName">First Name *</label>
-              <input
-                type="text"
-                name="firstName"
-                placeholder="First Name *"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                required
-              />
-              {errors.firstName && <p className="error-message">{errors.firstName}</p>}
-            </div>
-            <div className="form-group">
-              <label htmlFor="lastName">Last Name *</label>
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Last Name *"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                required
-              />
-              {errors.lastName && <p className="error-message">{errors.lastName}</p>}
-            </div>
-            <div className="form-group">
-              <label htmlFor="companyName">Company Name *</label>
-              <input
-                type="text"
-                name="companyName"
-                placeholder="Company Name *"
-                value={formData.companyName}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                required
-              />
-              {errors.companyName && <p className="error-message">{errors.companyName}</p>}
-            </div>
-            <div className="form-group mobile-group">
-              <div className="input-with-prefix">
-                <div className="us-prefix">
-                  <img src={usa} alt="US Flag" className="us-icon" />
-                  <span >+1</span>
-                </div>
+            {/**first name and last name */}
+            <div className="flex items-center gap-4">
+              <div className="form-group">
+                <label htmlFor="firstName">First Name *</label>
                 <input
-                  type="tel"
-                  name="mobileNumber"
-                  placeholder={getDynamicPlaceholder()}
-                  value={formData.mobileNumber}
-                  onChange={handleMobileNumberChange}
-                  onBlur={handleBlur}
-                  className="mobile-input"
+                  type="text"
+                  name="firstName"
+                  placeholder="Enter your First Name"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
                   required
                 />
+                {errors.firstName && (
+                  <p className="error-message">{errors.firstName}</p>
+                )}
               </div>
-              {errors.mobileNumber && <p className="error-message">{errors.mobileNumber}</p>}
+              <div className="form-group">
+                <label htmlFor="lastName">Last Name *</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Enter your Last Name"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  required
+                />
+                {errors.lastName && (
+                  <p className="error-message">{errors.lastName}</p>
+                )}
+              </div>
             </div>
-            <div className="form-group">
-              <label htmlFor="email">Email *</label>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email *"
-                value={formData.email}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                required
-              />
-              {errors.email && <p className="error-message">{errors.email}</p>}
+
+            {/**company name and state */}
+            <div className="flex items-center gap-4">
+              <div className="form-group">
+                <label htmlFor="companyName">Company Name *</label>
+                <input
+                  type="text"
+                  name="companyName"
+                  placeholder="Enter your Company Name"
+                  value={formData.companyName}
+                  onChange={handleInputChange}
+                  required
+                />
+                {errors.companyName && (
+                  <p className="error-message">{errors.companyName}</p>
+                )}
+              </div>
+              <div className="form-group">
+                <label htmlFor="state">State *</label>
+                <input
+                  type="text"
+                  name="state"
+                  placeholder="Enter your State"
+                  value={formData.state}
+                  onChange={handleInputChange}
+                  required
+                />
+                {errors.state && (
+                  <p className="error-message">{errors.state}</p>
+                )}
+              </div>
             </div>
-            
-            <div className="form-group">
-              <label htmlFor="state">State *</label>
-              <select
-                name="state"
-                value={formData.state}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                required
-                className="state-dropdown"
-              // style={{ color: formData.state ? 'black' : 'red' }}
-              >
-                <option value="" disabled style={{ color: "red" }}>State *</option>
-                {states.map((state) => (
-                  <option key={state} value={state}>{state}</option>
-                ))}
-              </select>
-              {errors.state && <p className="error-message">{errors.state}</p>}
+
+            {/*Email and Phone numbet  */}
+            <div className="flex items-center gap-4">
+              <div className="form-group">
+                <label htmlFor="email">Email *</label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                />
+                {errors.email && (
+                  <p className="error-message">{errors.email}</p>
+                )}
+              </div>
+              <div className="form-group">
+                <label htmlFor="mobileNumber">Mobile Number *</label>
+                <input
+                  type="mobileNumber"
+                  name="mobileNumber"
+                  placeholder="Enter your Mobile Number"
+                  value={formData.mobileNumber}
+                  onChange={handleInputChange}
+                  required
+                />
+                {errors.mobileNumber && (
+                  <p className="error-message">{errors.mobileNumber}</p>
+                )}
+              </div>
             </div>
-            
-            <div className="form-group password-group">
-              <div style={{ position: 'relative' }}>
+            {/**Password and confirm password */}
+            <div className="flex items-center gap-4">
+              <div className="form-group">
                 <label htmlFor="password">Password *</label>
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type="password"
                   name="password"
-                  className='pwd'
-                  placeholder="Password *"
+                  placeholder="Enter your Password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  onBlur={handleBlur}
                   required
                 />
-                <button type="button" onClick={togglePasswordVisibility} className="toggle-password">
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
+                {errors.password && (
+                  <p className="error-message">{errors.password}</p>
+                )}
               </div>
-              {errors.password && <p className="error-message">{errors.password}</p>}
-            </div>
-            <div className="form-group password-group">
-              <div style={{ position: 'relative' }}>
+              <div className="form-group">
                 <label htmlFor="confirmPassword">Confirm Password *</label>
                 <input
-                  type={showConfirmPassword ? "text" : "password"}
+                  type="password"
                   name="confirmPassword"
-                  placeholder="Confirm Password *"
-                  className='confirm-pwd'
+                  placeholder="Enter your Confirm Password"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  onBlur={handleBlur}
-                  onPaste={handlePaste}
                   required
                 />
-                <button type="button" onClick={toggleConfirmPasswordVisibility} className="toggle-password ">
-                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
+                {errors.confirmPassword && (
+                  <p className="error-message">{errors.confirmPassword}</p>
+                )}
               </div>
-              {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
             </div>
-            <div className=' flex  justify-center '>
-              <motion.button
-                className="signup-btn "
-                initial={{ x: '-100vw' }}
-                animate={{ x: 0 }}
-                transition={{ type: 'tween', duration: 0.8 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                type="submit"
-              >
-                Sign Up
-              </motion.button>
-            </div>
-
+            {/* Other form fields */}
+            <motion.button
+              className="signup-btn"
+              initial={{ x: "-100vw" }}
+              animate={{ x: 0 }}
+              transition={{ type: "tween", duration: 0.8 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              type="submit"
+            >
+              Register
+            </motion.button>
           </form>
           <p className="signin-link">
             Already have an account? <a href="/login">Sign In</a>
           </p>
         </div>
       </motion.div>
+
+      {showOtpPopup && (
+        <div className="otp-popup">
+          <div className="otp-popup-content">
+            <h2>Enter OTP</h2>
+            <div className="otp-inputs">
+              {[...Array(6)].map((_, i) => (
+                <input
+                  key={i}
+                  type="text"
+                  maxLength="1"
+                  className="otp-input"
+                  ref={(el) => (otpRefs.current[i] = el)}
+                  value={otp[i] || ""}
+                  onChange={(e) => handleOtpChange(e.target.value, i)}
+                  required
+                />
+              ))}
+            </div>
+            <motion.button
+              className="signup-btn"
+              onClick={handleVerifyOtp}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Verify OTP
+            </motion.button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default Signup;
-

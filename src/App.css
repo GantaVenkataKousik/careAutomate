@@ -1,9 +1,9 @@
-.careAutomate {
+/* .careAutomate {
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-}
+} */
 
 .navbar {
   position: fixed;
@@ -21,8 +21,8 @@
 }
 
 .main-content {
-  display: flex;
-  height: calc(100vh - 60px);
+  /* display: flex; */
+  height: calc(100vh - 80px);
   margin-top: 60px;
 }
 
@@ -35,7 +35,30 @@
   background-color: #343a40;
   color: white;
   padding: 20px;
-
   overflow-y: auto;
 }
+.content {
+  margin-left: 250px;
+  margin-top: 85px;
+}
+/* Customize scrollbar for the specific component */
+.tenant-visits-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
 
+.tenant-visits-scrollbar::-webkit-scrollbar-track {
+  background: white; /* Color of the track (the background area) */
+}
+
+.tenant-visits-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #6f84f8; /* Color of the thumb (the draggable part) */
+  border-radius: 10px; /* Optional: rounded corners for the thumb */
+}
+
+.tenant-visits-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #4f6dce; /* Color of the thumb on hover */
+}
+
+label span.required {
+  color: red;
+}

@@ -1,79 +1,77 @@
 .sidebar {
-    background-color: #fff;
-    color: #fff;
-    width: 250px;
-    height: 100vh;
-    padding-top: 70px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    overflow-y: auto;
-    margin-top: 30px;
-    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  color: #fff;
+  width: 250px;
+  height: 100vh;
+  padding-top: 70px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  margin-top: 30px;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
+  z-index: 222;
 }
 
 .sidebar-menu {
-    list-style: none;
-    padding: 0;
+  list-style: none;
+  padding: 0;
 }
 
-
 .sidebar-menu li span {
-    font-size: 1.1rem;
-    font-weight: 500;
-    font-family: 'Poppins';
+  font-size: 1.1rem;
+  font-weight: 500;
+  font-family: "Poppins";
 }
 
 .sidebar-menu li {
-    padding: 10px 15px;
-    margin-bottom: 1px;
-    display: flex;
-    align-items: center;
-    border-radius: 10px;
-
+  padding: 10px 15px;
+  margin-bottom: 1px;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
 }
 
 .sidebar-menu .sidebar-icon {
-    margin-right: 0.8rem;
-    font-size: 1.25rem;
+  margin-right: 0.8rem;
+  font-size: 1.25rem;
 }
 
 .sidebar-menu a {
-    color: black;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
+  color: black;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .sidebar-menu li:hover {
-    background-color: #6F84F8;
+  background-color: #6f84f8;
 }
 
 .sidebar-menu li:hover a {
-    color: white;
+  color: white;
 }
 
 .sidebar-menu .active {
-    background-color: #6F84F8;
-    color: white;
+  background-color: #6f84f8;
+  color: white;
 }
 
 .sidebar-menu .active a {
-    color: white;
+  color: white;
 }
 
 .upgrade-text {
-    text-align: center;
-    /* Center align text */
-    color: white;
-    /* Text color */
+  text-align: center;
+  /* Center align text */
+  color: white;
+  /* Text color */
 }
 
 .upgrade-text p {
-    margin: 5px 0;
-    /* Margin around paragraphs */
-    font-size: 15px;
-    /* Font size */
+  margin: 5px 0;
+  /* Margin around paragraphs */
+  font-size: 15px;
+  /* Font size */
 }

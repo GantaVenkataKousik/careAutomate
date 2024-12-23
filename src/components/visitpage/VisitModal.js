@@ -1,120 +1,255 @@
-import React, { useEffect, useState } from 'react';
-import { format } from 'date-fns';
-import { GoPerson } from 'react-icons/go';
-import { RiServiceLine } from 'react-icons/ri';
-import { SlNote } from 'react-icons/sl';
-import { BsCalendar2Date } from 'react-icons/bs';
-import { MdOutlineAccessTime } from 'react-icons/md';
-import { GrLocation } from 'react-icons/gr';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { IoMdTime } from "react-icons/io";
-const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
-  const [hcm, setHcm] = useState('');
-  const [startDate, setStartDate] = useState(null);
-  const [planOfService, setPlanOfService] = useState('');
+import React, { useEffect, useState } from "react";
+import { GoPerson } from "react-icons/go";
+import { RiServiceLine } from "react-icons/ri";
+import { SlNote } from "react-icons/sl";
+import { BsCalendar2Date } from "react-icons/bs";
+import { MdOutlineAccessTime } from "react-icons/md";
+import { GrLocation } from "react-icons/gr";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { toast } from "react-toastify";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { API_ROUTES } from "../../routes";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-  const [reasonForRemote, setReasonForRemote] = useState('');
-  const [title, setTitle] = useState('');
+const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
+  console.log(onVisitCreated);
+  const [hcm, setHcm] = useState(isEdit ? onVisitCreated.hcmId : "");
+  const [startDate, setStartDate] = useState(
+    isEdit ? new Date(onVisitCreated.startDate) : null
+  );
+  const [planOfService, setPlanOfService] = useState(
+    isEdit ? onVisitCreated.placeOfService : ""
+  );
+  const [reasonForRemote, setReasonForRemote] = useState(
+    isEdit ? onVisitCreated?.reasonForRemote : ""
+  );
+  const [title, setTitle] = useState(isEdit ? onVisitCreated.title : "");
   const [scheduleCreated, setScheduleCreated] = useState(false);
-  const [activity, setActivity] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [showCreateScheduleDialog, setShowCreateScheduleDialog] = useState(false);
-  const [showCreateAnotherDialog, setShowCreateAnotherDialog] = useState(false);
+  const [activity, setActivity] = useState(isEdit ? onVisitCreated.title : "");
+  const [startTime, setStartTime] = useState(
+    isEdit ? onVisitCreated.startDate.substring(11, 16) : ""
+  );
+  const [showCreateScheduleDialog, setShowCreateScheduleDialog] =
+    useState(false);
   const [allTenants, setAllTenants] = useState([]); // Store tenant data
-  const [endTime, setEndTime] = useState('');
-  const [serviceType, setServiceType] = useState('Housing Sustaining'); // Default value for service type
-  const [methodOfContact, setMethodOfContact] = useState('in-person'); // Default value for method of contact
-  const [tenantID, setTenantName] = useState("")
+  const [endTime, setEndTime] = useState(
+    isEdit ? onVisitCreated.endDate.substring(11, 16) : ""
+  );
+  const [serviceType, setServiceType] = useState(
+    isEdit ? onVisitCreated.serviceType : "Housing Sustaining"
+  ); // Default value for service type
+  const [methodOfContact, setMethodOfContact] = useState(
+    isEdit ? onVisitCreated.typeMethod : "in-person"
+  ); // Default value for method of contact
 
-  const [travel, setTravel] = useState('No');
-  const [milesWithTenant, setMilesWithTenant] = useState('');
-  const [milesWithoutTenant, setMilesWithoutTenant] = useState('');
-  const [signature, setSignature] = useState('');
+  const [travel, setTravel] = useState(
+    isEdit
+      ? onVisitCreated.travel.toLowerCase() == "yes"
+        ? "Yes"
+        : "NO"
+      : "No"
+  );
+  const [milesWithTenant, setMilesWithTenant] = useState(
+    isEdit ? onVisitCreated.travelWithTenant : ""
+  );
+  const [milesWithoutTenant, setMilesWithoutTenant] = useState(
+    isEdit ? onVisitCreated.travelWithoutTenant : ""
+  );
+  const [signature, setSignature] = useState(
+    isEdit ? onVisitCreated.signature : ""
+  );
   const [hcmList, setHcmList] = useState([]); // List of HCMs
-  const [selectedTenantId, setSelectedTenantId] = useState(""); // Selected tenant ID
-  const [selectedHcmId, setSelectedHcmId] = useState("");
-  const [detailsOfVisit, setDetailsOfVisit] = useState('');
-  const tenantName = useSelector((state) => state.hcm.tenantName);
-  const tenantId = useSelector((state) => state.hcm.tenantId);
+  const [selectedTenantId, setSelectedTenantId] = useState(
+    isEdit ? onVisitCreated.tenantId : ""
+  ); // Selected tenant ID
+  const [detailsOfVisit, setDetailsOfVisit] = useState(
+    isEdit ? onVisitCreated.details : ""
+  );
+  //prettier-ignore
+  const [responseOfVisit, setResponseOfVisit] = useState(
+    isEdit ? onVisitCreated.response: ""
+  );
 
-  console.log('Hcm Name in step4:', tenantName);
-  console.log('Hcm ID in step4:', tenantId);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userName = user?.name;
 
-  useEffect(() => {
-    const fetchTenants = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          console.error('Authorization token is missing.');
-          return;
-        }
+  const fetchTenants = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Authorization token is missing.");
+        return;
+      }
 
-        const response = await fetch('https://careautomate-backend.vercel.app/tenant/all', {
-          method: 'POST',
+      const response = await fetch(
+        "https://careautomate-backend.vercel.app/tenant/all",
+        {
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({}),
-        });
-
-        const data = await response.json();
-
-        if (response.status === 200 && data.success) {
-          const tenantData = data.tenants.map((tenant) => ({
-            id: tenant._id,
-            name: tenant.name,
-          }));
-          setAllTenants(tenantData);
-        } else {
-          console.error('Failed to fetch tenants:', data.message);
         }
-      } catch (error) {
-        console.error('Error fetching tenants:', error);
-      }
-    };
+      );
 
+      const data = await response.json();
+
+      if (response.status === 200 && data.success) {
+        const tenantData = data.tenants.map((tenant) => ({
+          id: tenant._id,
+          name: tenant.name,
+        }));
+        setAllTenants(tenantData);
+      } else {
+        console.error("Failed to fetch tenants:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching tenants:", error);
+    }
+  };
+  const fetchHcm = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Authorization token is missing.");
+        return;
+      }
+
+      const response = await fetch(
+        "https://careautomate-backend.vercel.app/hcm/all",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.status === 200 && data.success) {
+        const hcmData = data.hcms.map((hcm) => ({
+          id: hcm._id,
+          name: hcm.name,
+        }));
+        setHcmList(hcmData);
+      } else {
+        console.error("Failed to fetch HCMs:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching HCMs:", error);
+    }
+  };
+  useEffect(() => {
+    if (isOpen && isEdit) {
+      // Reset the state to the visit data when the modal is opened for editing
+      setHcm(onVisitCreated.hcmId);
+      setStartDate(new Date(onVisitCreated.startDate));
+      setPlanOfService(onVisitCreated.placeOfService);
+      setReasonForRemote(onVisitCreated?.reasonForRemote);
+      setTitle(onVisitCreated.title);
+      setActivity(onVisitCreated.title);
+      setEndTime(new Date(onVisitCreated.endDate));
+      setServiceType(onVisitCreated.serviceType || "Housing Sustaining");
+      setMethodOfContact(onVisitCreated.typeMethod || "in-person");
+      setTravel(onVisitCreated.travel.toLowerCase() === "yes" ? "Yes" : "No");
+      setMilesWithTenant(onVisitCreated.travelWithTenant);
+      setMilesWithoutTenant(onVisitCreated.travelWithoutTenant);
+      setSignature(onVisitCreated.signature);
+      setSelectedTenantId(onVisitCreated.tenantId);
+      setDetailsOfVisit(onVisitCreated.details);
+      setResponseOfVisit(onVisitCreated.response);
+    } else {
+      // Reset state when the modal is closed or not in edit mode
+      setHcm("");
+      setStartDate(null);
+      setPlanOfService("");
+      setReasonForRemote("");
+      setTitle("");
+      setActivity("");
+      setStartTime("");
+      setEndTime("");
+      setServiceType("Housing Sustaining");
+      setMethodOfContact("in-person");
+      setTravel("No");
+      setMilesWithTenant("");
+      setMilesWithoutTenant("");
+      setSignature("");
+      setSelectedTenantId("");
+      setDetailsOfVisit("");
+      setResponseOfVisit("");
+    }
+  }, [isOpen, isEdit, onVisitCreated]);
+  useEffect(() => {
     fetchTenants();
-  }, []);
-
-  useEffect(() => {
-    const fetchHcm = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          console.error('Authorization token is missing.');
-          return;
-        }
-
-        const response = await fetch('https://careautomate-backend.vercel.app/hcm/all', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({}),
-        });
-
-        const data = await response.json();
-
-        if (response.status === 200 && data.success) {
-          const hcmData = data.hcms.map((hcm) => ({
-            id: hcm._id,
-            name: hcm.name,
-          }));
-          setHcmList(hcmData);
-        } else {
-          console.error('Failed to fetch HCMs:', data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching HCMs:', error);
-      }
-    };
-
     fetchHcm();
   }, []);
+  const handleEditVisit = async () => {
+    console.log("Editing Visit:");
+
+    let changedFields = {};
+
+    // Compare each field with its initial value and add to `changedFields` if it's different
+    if (hcm !== onVisitCreated.hcm) changedFields.hcm = hcm;
+    if (startDate && startDate !== new Date(onVisitCreated.startDate))
+      changedFields.date = startDate;
+    if (planOfService !== onVisitCreated.placeOfService)
+      changedFields.planOfService = planOfService;
+    if (reasonForRemote !== onVisitCreated.reasonForRemote)
+      changedFields.reasonForRemote = reasonForRemote;
+    if (activity !== onVisitCreated.title) changedFields.title = activity;
+    if (startTime && startTime !== new Date(onVisitCreated.endDate))
+      changedFields.startTime = startTime;
+    if (endTime && endTime !== new Date(onVisitCreated.endDate))
+      changedFields.endTime = endTime;
+    if (serviceType !== onVisitCreated.serviceType)
+      changedFields.serviceType = serviceType;
+    if (methodOfContact !== onVisitCreated.typeMethod)
+      changedFields.methodOfContact = methodOfContact;
+    if (milesWithTenant !== onVisitCreated.milesWithTenant)
+      changedFields.milesWithTenant = milesWithTenant;
+    if (signature !== onVisitCreated.signature)
+      changedFields.signature = signature;
+    if (selectedTenantId !== onVisitCreated.tenantName)
+      changedFields.selectedTenantId = selectedTenantId;
+    if (detailsOfVisit !== onVisitCreated.details)
+      changedFields.detailsOfVisit = detailsOfVisit;
+    if (responseOfVisit !== onVisitCreated.response)
+      changedFields.response = responseOfVisit;
+    // console.log(changedFields);
+
+    if (Object.keys(changedFields).length > 0) {
+      // Make the API call to update the visit
+      const response = await fetch(
+        `${API_ROUTES.VISITS.BASE}/${onVisitCreated._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(changedFields),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Visit updated successfully!");
+        toast.success("Visit updated successfully!");
+        // Handle success (e.g., show toast or close modal)
+      } else {
+        console.error("Failed to update visit:", await response.json());
+      }
+    } else {
+      console.log("No changes made.");
+    }
+  };
 
   const handleCreateAppointment = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -134,8 +269,14 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
     }
 
     // Validate reasonForRemote if methodOfVisit is "remote"
-    if (methodOfContact === "indirect" && reasonForRemote === "remote" && !reasonForRemote) {
-      console.error("Reason for remote is required for remote method of visit.");
+    if (
+      methodOfContact === "indirect" &&
+      reasonForRemote === "remote" &&
+      !reasonForRemote
+    ) {
+      console.error(
+        "Reason for remote is required for remote method of visit."
+      );
       toast.error("Please provide a reason for remote visit.");
       return;
     }
@@ -160,28 +301,33 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
     const payload = {
       creatorId: creatorId,
       tenantId: selectedTenantId || "Unknown",
-      hcmId: selectedHcmId || "N/A",
+      hcmId: hcm || "N/A",
       serviceType,
       title: activity || "N/A",
-      dateOfService: startDate,
+      date: new Date(startDate).toISOString(),
       startTime,
       endTime,
-      placeOfService: planOfService || "N/A",
+      place: planOfService || "N/A",
       methodOfVisit:
-        methodOfContact === "indirect" ? (reasonForRemote === "remote" ? "remote" : "in-person") : "in-person",
+        methodOfContact === "indirect"
+          ? reasonForRemote === "remote"
+            ? "remote"
+            : "in-person"
+          : "in-person",
       reasonForRemote: reasonForRemote || null,
-      detailsOfVisit: detailsOfVisit || "N/A",
+      // detailsOfVisit: detailsOfVisit || "N/A",
+      response: responseOfVisit || "N/A",
       travel: travel.toLowerCase(),
-      totalMiles: travel === "Yes" ? totalMiles : null,
+      totalMiles: travel.toLowerCase() === "yes" ? totalMiles : null,
       travelWithTenant: milesWithTenant || null,
       travelWithoutTenant: milesWithoutTenant || null,
       signature: signature === "done" ? "done" : "not done",
     };
-
+    // console.log("payyyui", payload);
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/visit/createVisit",
+        `${API_ROUTES.VISITS.BASE}/createVisit`,
         payload,
         {
           headers: {
@@ -253,31 +399,33 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
     resetFormState();
   };
 
-
   const resetFormState = () => {
     setSelectedTenantId("");
-    setSelectedHcmId("");
-    setServiceType('Housing Sustaining');
+    setHcm("");
+    setServiceType("Housing Sustaining");
     setStartDate(null);
-    setPlanOfService('');
-    setMethodOfContact('in-person');
-    setReasonForRemote('');
-    setStartTime('');
-    setActivity('');
-    setTitle('');
+    setPlanOfService("");
+    setMethodOfContact("in-person");
+    setReasonForRemote("");
+    setStartTime("");
+    setActivity("");
+    setTitle("");
+    setActivity("");
+    setResponseOfVisit("");
+    setDetailsOfVisit("");
   };
 
   const calculateEndTime = (startTime, duration) => {
     if (!startTime || !duration) return startTime;
     const time = new Date(startTime);
-    const durationMinutes = parseInt(duration.split(' ')[0], 10) || 0;
+    const durationMinutes = parseInt(duration.split(" ")[0], 10) || 0;
     time.setMinutes(time.getMinutes() + durationMinutes);
     return time;
   };
 
   return isOpen ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className='relative flex flex-col pb-10 max-h-[35rem] p-6 max-w-3xl mx-auto bg-white rounded-lg shadow-lg w-full'>
+      <div className="relative flex flex-col pb-10 max-h-[35rem] p-6 max-w-3xl mx-auto bg-white rounded-lg shadow-lg w-full">
         {/* "X" Close Button */}
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
@@ -286,7 +434,7 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
         >
           &times;
         </button>
-        <p className=" mb-6">Fill in the details to add a schedule</p>
+        <p className=" mb-6">Fill in the details to add a visit</p>
 
         <div className="space-y-6 max-h-[40rem] overflow-y-auto">
           <div className="flex gap-4">
@@ -316,15 +464,14 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
             </select>
           </div>
 
-
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <GoPerson size={24} className="mr-2" />
               Assigned HCM
             </label>
             <select
-              value={selectedHcmId}
-              onChange={(e) => setSelectedHcmId(e.target.value)}
+              value={hcm}
+              onChange={(e) => setHcm(e.target.value)}
               className="border border-gray-300 rounded-md p-2 w-2/3"
             >
               <option value="" disabled>
@@ -344,24 +491,7 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
             </select>
           </div>
 
-
-
-          {/* <div className="flex gap-4">
-            <label className="text-sm font-medium flex items-center w-1/3">
-              <GoPerson size={24} className="mr-2" />
-              Designated Tenant
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Appointment Title"
-              className="border border-gray-300 rounded-md p-2 w-2/3"
-            />
-          </div> */}
-
-
-          <div className="flex gap-4" >
+          <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <RiServiceLine size={24} className="mr-2" />
               Service Type
@@ -376,38 +506,69 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
             </select>
           </div>
 
-
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <SlNote size={24} className="mr-2" />
               Title
             </label>
-            <input
-              type="text"
+            <select
               value={activity}
-              onChange={(e) => setActivity(e.target.value)}
-              placeholder="Enter Title"
+              onChange={(e) => setActivity(e.target.value)} // Use setActivity here to set selected activity
               className="border border-gray-300 rounded-md p-2 w-2/3"
-            />
+            >
+              <option value="" disabled>
+                Select an activity
+              </option>
+              {activities[serviceType]?.length > 0 ? (
+                activities[serviceType].map((service, index) => (
+                  <option key={index} value={service}>
+                    {service} {/* Displaying the activity name */}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  Loading activities...
+                </option>
+              )}
+            </select>
           </div>
 
-
           <div className="flex gap-4 justify-between">
-            <label className="text-sm font-medium flex items-center mb-1">
+            <label className="text-sm font-medium flex items-center mb-1 w-1/3">
               <BsCalendar2Date size={24} className="mr-2" />
               Date
             </label>
             {/* Date Input */}
-            <div className='flex gap-6'>
+            <div className="flex gap-6 w-2/3">
               <div className="flex items-center gap-4">
-
-                <input
-                  type="date"
-                  value={startDate || ''}
-                  max={format(new Date(), 'yyyy-MM-dd')}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="border border-gray-300 rounded-md p-2 w-full"
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    // value={filters.startDate} // Bind value to filters.startDate
+                    onChange={(date) =>
+                      setStartDate(date?.format("YYYY-MM-DD"))
+                    }
+                    sx={{
+                      fontFamily: "Poppins",
+                      height: "40px",
+                      fontSize: "15px",
+                      width: "100%",
+                      "& input": {
+                        padding: "5px 10px", // Match padding inside the input field
+                      },
+                      "& .MuiInputBase-root": {
+                        padding: "3px 8px",
+                        border: "1px solidrgb(176, 173, 173)",
+                      },
+                      "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#6F84F8",
+                      },
+                    }}
+                    InputProps={{
+                      className:
+                        "p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]",
+                    }}
+                  />
+                </LocalizationProvider>
               </div>
 
               {/* Start Time Input */}
@@ -418,7 +579,7 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
                 </label>
                 <input
                   type="time"
-                  value={startTime || ''}
+                  value={startTime || ""}
                   onChange={(e) => setStartTime(e.target.value)}
                   className="border border-gray-300 rounded-md p-2 w-full"
                 />
@@ -432,16 +593,13 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
                 </label>
                 <input
                   type="time"
-                  value={endTime || ''}
+                  value={endTime || ""}
                   onChange={(e) => setEndTime(e.target.value)}
                   className="border border-gray-300 rounded-md p-2 w-full"
                 />
               </div>
             </div>
           </div>
-
-
-
 
           {/* Place of Service */}
           <div className="flex gap-4">
@@ -464,10 +622,6 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
               <option value="Other">Other</option>
             </select>
           </div>
-
-
-
-
           {/* Method of Contact */}
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
@@ -516,7 +670,6 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
               </div>
 
               {/* Conditional rendering for Reason for Remote */}
-
             </div>
           )}
           {reasonForRemote === "remote" && (
@@ -535,20 +688,46 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
             </div>
           )}
 
-          <div className="flex gap-4">
-            <label className="text-sm font-medium flex items-center w-1/3">
-
+          <div className="flex gap-4 mb-6">
+            <label className="text-sm font-medium flex w-1/3">
               Details of Visit
             </label>
-            <input
-              type="text"
+            <ReactQuill
               value={detailsOfVisit}
-              onChange={(e) => setDetailsOfVisit(e.target.value)}
+              onChange={setDetailsOfVisit}
               placeholder="Enter details of visit"
-              className="border border-gray-300 rounded-md p-2 w-2/3"
+              className="w-2/3 mb-7"
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic", "underline", "strike"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["link", "image"],
+                  ["clean"],
+                ],
+              }}
             />
           </div>
-
+          <div className="flex gap-4 mb-4">
+            <label className="text-sm font-medium flex w-1/3">
+              Response of Visit
+            </label>
+            <ReactQuill
+              value={responseOfVisit}
+              onChange={setResponseOfVisit}
+              placeholder="Enter response of visit"
+              className="w-2/3 mb-7"
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic", "underline", "strike"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["link", "image"],
+                  ["clean"],
+                ],
+              }}
+            />
+          </div>
           <div className="flex gap-4 items-center">
             <label className="text-sm font-medium flex items-center w-1/3">
               Travel
@@ -570,7 +749,8 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
                   type="number"
                   value={
                     travel === "Yes"
-                      ? parseFloat(milesWithTenant || 0) + parseFloat(milesWithoutTenant || 0)
+                      ? parseFloat(milesWithTenant || 0) +
+                        parseFloat(milesWithoutTenant || 0)
                       : 0
                   }
                   readOnly
@@ -580,12 +760,10 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
             </div>
           </div>
 
-          {travel === 'Yes' && (
+          {travel.toLowerCase() === "yes" && (
             <>
-
               <div className="flex gap-4">
                 <label className="text-sm font-medium flex items-center w-1/3">
-
                   Travel with Tenant (miles)
                 </label>
                 <input
@@ -599,7 +777,6 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
 
               <div className="flex gap-4">
                 <label className="text-sm font-medium flex items-center w-1/3">
-
                   Travel without Tenant (miles)
                 </label>
                 <input
@@ -607,48 +784,49 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
                   value={milesWithoutTenant}
                   onChange={(e) => setMilesWithoutTenant(e.target.value)}
                   placeholder="Enter miles"
-                  className="border border-gray-300 rounded-md p-2 w-2/3"
+                  className="border border-gray-300 rounded-md p-2 w-2/3 appearance-none"
+                  style={{
+                    appearance: "none",
+                    MozAppearance: "textfield",
+                    WebkitAppearance: "none",
+                  }}
                 />
               </div>
             </>
           )}
 
-
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
-
               Signature
             </label>
-            <input
-              type="text"
-              value={signature}
-              onChange={(e) => setSignature(e.target.value)}
-              placeholder="Enter your signature"
-              className="border border-gray-300 rounded-md p-2 w-2/3"
-            />
+            <div className="border border-gray-300 rounded-md p-2 w-2/3 bg-gray-100 text-gray-700">
+              {user?.name || "No name available"}
+            </div>
           </div>
 
-
-          <div className="flex gap-4">
+          <div className="flex gap-4 w-2/3 " style={{ marginLeft: "auto" }}>
             <button
-              onClick={handleCreateAppointment}
-              className="border py-3 px-6 rounded-md w-full mt-6  transition duration-300"
+              onClick={isEdit ? handleEditVisit : handleCreateAppointment}
+              className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg
+              border-blue-600
+              border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
+              active:border-b-[2px] active:brightness-90 active:translate-y-[2px]  py-3 px-6 w-full mt-6  mb-9 "
             >
-              Create Visit
+              {isEdit ? "Update Visit" : "Create Visit"}
             </button>
             <button
               onClick={onClose || handleCancelAppointment}
-              className=" border py-3 px-6 rounded-md w-full mt-6  transition duration-300"
+              className=" cursor-pointer transition-all bg-[#F57070] text-white 
+              px-6 py-2 rounded-lg 
+              border-red-700 border-b-[4px] 
+              hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] 
+              active:border-b-[2px] active:brightness-90 active:translate-y-[2px] 
+              py-3 px-6 w-full mt-6 mb-9 "
             >
               Cancel
             </button>
           </div>
         </div>
-
-
-
-
-
         {/* <button
           onClick={handleCreateAnother}
           className=" py-2 px-4 rounded-md mt-4  transition duration-300"
@@ -661,4 +839,3 @@ const VisitModal = ({ isOpen, onClose,onVisitCreated }) => {
 };
 
 export default VisitModal;
-

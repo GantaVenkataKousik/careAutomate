@@ -1,60 +1,66 @@
-import React, { useEffect, useState } from 'react';
-import { format } from 'date-fns';
-import { GoPerson } from 'react-icons/go';
-import { RiServiceLine } from 'react-icons/ri';
-import { SlNote } from 'react-icons/sl';
-import { BsCalendar2Date } from 'react-icons/bs';
-import { MdOutlineAccessTime } from 'react-icons/md';
-import { GrLocation } from 'react-icons/gr';
-import { useSelector } from 'react-redux';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { IoMdTime } from "react-icons/io";
-const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
-  const [startDate, setStartDate] = useState(null);
-  const [planOfService, setPlanOfService] = useState('');
+import React, { useEffect, useState } from "react";
+import { format } from "date-fns";
+import { GoPerson } from "react-icons/go";
+import { RiServiceLine } from "react-icons/ri";
+import { SlNote } from "react-icons/sl";
+import { BsCalendar2Date } from "react-icons/bs";
+import { MdOutlineAccessTime } from "react-icons/md";
+import { GrLocation } from "react-icons/gr";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 
-  const [reasonForRemote, setReasonForRemote] = useState('');
-  const [title, setTitle] = useState('');
+const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
+  const [startDate, setStartDate] = useState(null);
+  const [planOfService, setPlanOfService] = useState("");
+
+  const [reasonForRemote, setReasonForRemote] = useState("");
+  const [title, setTitle] = useState("");
   const [scheduleCreated, setScheduleCreated] = useState(false);
-  const [startTime, setStartTime] = useState('');
-  const [showCreateScheduleDialog, setShowCreateScheduleDialog] = useState(false);
+  const [startTime, setStartTime] = useState("");
+  const [showCreateScheduleDialog, setShowCreateScheduleDialog] =
+    useState(false);
   const [showCreateAnotherDialog, setShowCreateAnotherDialog] = useState(false);
-  const [endTime, setEndTime] = useState('');
-  const [serviceType, setServiceType] = useState('Housing Sustaining');
-  const [methodOfContact, setMethodOfContact] = useState('in-person');
-  const [tenantID, setTenantName] = useState("")
+  const [endTime, setEndTime] = useState("");
+  const [serviceType, setServiceType] = useState("Housing Sustaining");
+  const [methodOfContact, setMethodOfContact] = useState("in-person");
+  const [tenantID, setTenantName] = useState("");
 
   const [allTenants, setAllTenants] = useState([]); // List of tenants
   const [hcmList, setHcmList] = useState([]); // List of HCMs
   const [selectedTenantId, setSelectedTenantId] = useState(""); // Selected tenant ID
   const [selectedHcmId, setSelectedHcmId] = useState("");
 
-
-
   const tenantName = useSelector((state) => state.hcm.tenantName);
   const tenantId = useSelector((state) => state.hcm.tenantId);
   const [activity, setActivity] = useState("");
-  console.log('Hcm Name in step4:', tenantName);
-  console.log('Hcm ID in step4:', tenantId);
+  // console.log("Hcm Name in step4:", tenantName);
+  // console.log("Hcm ID in step4:", tenantId);
 
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (!token) {
-          console.error('Authorization token is missing.');
+          console.error("Authorization token is missing.");
           return;
         }
 
-        const response = await fetch('https://careautomate-backend.vercel.app/tenant/all', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({}),
-        });
+        const response = await fetch(
+          "https://careautomate-backend.vercel.app/tenant/all",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({}),
+          }
+        );
 
         const data = await response.json();
 
@@ -65,10 +71,10 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
           }));
           setAllTenants(tenantData);
         } else {
-          console.error('Failed to fetch tenants:', data.message);
+          console.error("Failed to fetch tenants:", data.message);
         }
       } catch (error) {
-        console.error('Error fetching tenants:', error);
+        console.error("Error fetching tenants:", error);
       }
     };
 
@@ -78,20 +84,23 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
   useEffect(() => {
     const fetchHcm = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (!token) {
-          console.error('Authorization token is missing.');
+          console.error("Authorization token is missing.");
           return;
         }
 
-        const response = await fetch('https://careautomate-backend.vercel.app/hcm/all', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({}),
-        });
+        const response = await fetch(
+          "https://careautomate-backend.vercel.app/hcm/all",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({}),
+          }
+        );
 
         const data = await response.json();
 
@@ -102,16 +111,15 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
           }));
           setHcmList(hcmData);
         } else {
-          console.error('Failed to fetch HCMs:', data.message);
+          console.error("Failed to fetch HCMs:", data.message);
         }
       } catch (error) {
-        console.error('Error fetching HCMs:', error);
+        console.error("Error fetching HCMs:", error);
       }
     };
 
     fetchHcm();
   }, []);
-
 
   const handleCreateAppointment = async () => {
     // Validate date, startTime, and endTime
@@ -128,51 +136,58 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
       return;
     }
 
-    
+    // Combine startDate and startTime into a single Date object
+    const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
+    const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
+
+    // Format the times to the desired string format
+    const formattedStartTime = startDateTime.toISOString();
+    const formattedEndTime = endDateTime.toISOString();
+    // console.log("time", new Date(`${startDate}T${startTime}:00`), endTime);
     const payload = {
-      tenantId: selectedTenantId || 'Unknown',
-      hcmId: selectedHcmId || 'N/A',
-      date: startDate, // Send date separately
-      startTime, // Send start time as time only
-      endTime, // Send end time as time only
-      activity: activity || 'N/A',
+      tenantId: selectedTenantId || "Unknown",
+      hcmId: selectedHcmId || "N/A",
+      date: startDate, // Keep the date separately if required
+      startTime: formattedStartTime,
+      endTime: formattedEndTime,
+      activity: activity || "N/A",
       methodOfContact,
       reasonForRemote: reasonForRemote,
-      placeOfService: planOfService || 'N/A',
+      placeOfService: planOfService || "N/A",
       serviceType,
       approved: false,
-      status: 'pending',
+      status: "pending",
     };
 
-
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.post(
-        'https://careautomate-backend.vercel.app/tenant/create-appointment',
+        "https://careautomate-backend.vercel.app/tenant/create-appointment",
         payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
 
       if (response.status >= 200 && response.status < 300) {
-        toast.success('Appointment created successfully.');
+        toast.success("Appointment created successfully.");
         setScheduleCreated(true);
         onAptCreated();
         setShowCreateScheduleDialog(true);
         onClose();
       } else {
-        console.error('Failed to create appointment:', response.statusText);
-        toast.error('Failed to create appointment.');
+        console.error("Failed to create appointment:", response.statusText);
+        toast.error("Failed to create appointment.");
       }
     } catch (error) {
-      console.error('Error during API call:', error);
-      toast.error('Error creating appointment. Please try again.');
+      console.error("Error during API call:", error);
+      toast.error("Error creating appointment. Please try again.");
     }
   };
+
   const handleCancelAppointment = () => {
     resetFormState();
   };
@@ -223,28 +238,27 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
   const resetFormState = () => {
     setSelectedTenantId("");
     setSelectedHcmId("");
-    setServiceType('Housing Sustaining');
+    setServiceType("Housing Sustaining");
     setStartDate(null);
-    setPlanOfService('');
-    setMethodOfContact('in-person');
-    setReasonForRemote('');
-    setStartTime('');
-    setActivity('');
-    setTitle('');
+    setPlanOfService("");
+    setMethodOfContact("in-person");
+    setReasonForRemote("");
+    setStartTime("");
+    setActivity("");
+    setTitle("");
   };
-
 
   const calculateEndTime = (startTime, duration) => {
     if (!startTime || !duration) return startTime;
     const time = new Date(startTime);
-    const durationMinutes = parseInt(duration.split(' ')[0], 10) || 0;
+    const durationMinutes = parseInt(duration.split(" ")[0], 10) || 0;
     time.setMinutes(time.getMinutes() + durationMinutes);
     return time;
   };
 
   return isOpen ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className='relative flex flex-col pb-10 max-h-[35rem] p-6 max-w-3xl mx-auto bg-white rounded-lg shadow-lg w-full'>
+      <div className="relative flex flex-col pb-10 max-h-[35rem] p-6 max-w-3xl mx-auto bg-white rounded-lg shadow-lg w-full">
         {/* "X" Close Button */}
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
@@ -283,7 +297,6 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
             </select>
           </div>
 
-
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <GoPerson size={24} className="mr-2" />
@@ -311,8 +324,6 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
             </select>
           </div>
 
-
-
           {/* <div className="flex gap-4">
           <label className="text-sm font-medium flex items-center w-1/3">
             <GoPerson size={24} className="mr-2" />
@@ -326,7 +337,6 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
             className="border border-gray-300 rounded-md p-2 w-2/3"
           />
         </div> */}
-
 
           <div className="flex gap-4 mb-4">
             <label className="text-sm font-medium flex items-center w-1/3">
@@ -342,7 +352,6 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
               <option value="Housing Transition">Housing Transition</option>
             </select>
           </div>
-
 
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
@@ -363,23 +372,42 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
             </select>
           </div>
 
-
           <div className="flex gap-4 justify-between">
-            <label className="text-sm font-medium flex items-center mb-1">
+            <label className="text-sm font-medium flex items-center mb-1 w-1/3">
               <BsCalendar2Date size={24} className="mr-2" />
               Date
             </label>
             {/* Date Input */}
-            <div className='flex gap-6'>
+            <div className="flex gap-6 w-2/3">
               <div className="flex items-center gap-4">
-
-                <input
-                  type="date"
-                  value={startDate || ''}
-                  min={format(new Date(), 'yyyy-MM-dd')}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="border border-gray-300 rounded-md p-2 w-full"
-                />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    onChange={(date) =>
+                      setStartDate(date?.format("YYYY-MM-DD"))
+                    }
+                    minDate={dayjs()} // Pass a Dayjs object for minDate
+                    sx={{
+                      fontFamily: "Poppins",
+                      height: "40px",
+                      fontSize: "15px",
+                      width: "100%",
+                      "& input": {
+                        padding: "5px 10px", // Match padding inside the input field
+                      },
+                      "& .MuiInputBase-root": {
+                        padding: "3px 8px",
+                        border: "1px solidrgb(176, 173, 173)",
+                      },
+                      "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#6F84F8",
+                      },
+                    }}
+                    InputProps={{
+                      className:
+                        "p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]",
+                    }}
+                  />
+                </LocalizationProvider>
               </div>
 
               {/* Start Time Input */}
@@ -390,7 +418,7 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
                 </label>
                 <input
                   type="time"
-                  value={startTime || ''}
+                  value={startTime || ""}
                   onChange={(e) => setStartTime(e.target.value)}
                   className="border border-gray-300 rounded-md p-2 w-full"
                 />
@@ -404,15 +432,13 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
                 </label>
                 <input
                   type="time"
-                  value={endTime || ''}
+                  value={endTime || ""}
                   onChange={(e) => setEndTime(e.target.value)}
                   className="border border-gray-300 rounded-md p-2 w-full"
                 />
               </div>
             </div>
           </div>
-
-
 
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
@@ -434,7 +460,6 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
               <option value="Other">Other</option>
             </select>
           </div>
-
 
           {/* Method of Contact */}
           <div className="flex gap-4">
@@ -482,7 +507,6 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
               </div>
 
               {/* Conditional rendering for Reason for Remote */}
-
             </div>
           )}
 
@@ -565,26 +589,29 @@ const AppointmentModal = ({ isOpen, onClose,onAptCreated }) => {
         />
       </div> */}
 
-
-          <div className="flex gap-4">
+          <div className="flex gap-4 w-2/3" style={{ marginLeft: "auto" }}>
             <button
               onClick={handleCreateAppointment}
-              className="border py-3 px-6 rounded-md w-full mt-6  transition duration-300"
+              className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg
+              border-blue-600
+              border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
+              active:border-b-[2px] active:brightness-90 active:translate-y-[2px]  py-3 px-6 w-full mt-6"
             >
               Create Appointment
             </button>
             <button
               onClick={onClose || handleCancelAppointment}
-              className=" border py-3 px-6 rounded-md w-full mt-6  transition duration-300"
+              className=" cursor-pointer transition-all bg-[#F57070] text-white 
+              px-6 py-2 rounded-lg 
+              border-red-700 border-b-[4px] 
+              hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] 
+              active:border-b-[2px] active:brightness-90 active:translate-y-[2px] 
+              py-3 px-6 w-full mt-6"
             >
               Cancel
             </button>
           </div>
         </div>
-
-
-
-
 
         {/* <button
         onClick={handleCreateAnother}

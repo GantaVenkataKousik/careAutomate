@@ -1,195 +1,250 @@
-import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
-import axios from 'axios';
-import tenant from '../images/tenant.jpg';
+import React, { useEffect, useState } from "react";
+import CommunicationHeader from "./communication/CommunicationHeader";
+import CommunicationList from "./communication/CommunicationList";
+import CommunicationChat from "./communication/CommunicationChat";
 
-const Communication = ({ userId }) => {
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
-  const socket = io('http://localhost:9003'); // Replace with your server URL
+const Communication = () => {
+  const chats = [
+    {
+      id: 1,
+      avatar: "https://picsum.photos/seed/picsum/200/300",
+      alt: "john_doe_avatar",
+      title: "John Doe",
+      subtitle: "Are we still on for dinner tomorrow night?",
+      date: new Date(),
+      unread: 5,
+      favorite: false,
+      chatMessage: [
+        {
+          position: "left",
+          type: "text",
+          title: "John Doe",
+          text: "Give me a message list example!",
+          date: new Date(),
+          replyButton: true,
+        },
+        {
+          position: "right",
+          type: "text",
+          title: "Surya",
+          text: "That's all.",
+          date: new Date(),
+          replyButton: true,
+        },
+      ],
+    },
+    {
+      id: 2,
+      avatar: "https://picsum.photos/id/16/200/300",
+      alt: "mike_brown_avatar",
+      title: "Mike Brown",
+      subtitle: "Check out this article I found on AI!",
+      date: new Date(),
+      unread: 2,
+      favorite: false,
+      chatMessage: [
+        {
+          position: "left",
+          type: "text",
+          title: "Mike Brown",
+          text: "Check out this article I found on AI!",
+          date: new Date(),
+          replyButton: true,
+        },
+        {
+          position: "right",
+          type: "text",
+          title: "Surya",
+          text: "Interesting! I'll read it later.",
+          date: new Date(),
+          replyButton: true,
+        },
+      ],
+    },
+    {
+      id: 3,
+      avatar: "https://picsum.photos/id/13/200/300",
+      alt: "lucy_williams_avatar",
+      title: "Lucy Williams",
+      subtitle: "The project deadline is tomorrow!",
+      date: new Date(),
+      unread: 1,
+      favorite: false,
+      chatMessage: [
+        {
+          position: "left",
+          type: "text",
+          title: "Lucy Williams",
+          text: "The project deadline is tomorrow!",
+          date: new Date(),
+          replyButton: true,
+        },
+        {
+          position: "right",
+          type: "text",
+          title: "Surya",
+          text: "Got it! I'll submit it tonight.",
+          date: new Date(),
+          replyButton: true,
+        },
+      ],
+    },
+    {
+      id: 4,
+      avatar: "https://picsum.photos/id/11/200/300",
+      alt: "jake_brown_avatar",
+      title: "Jake Brown",
+      subtitle: "How about a quick call in 10 minutes?",
+      date: new Date(),
+      unread: 3,
+      favorite: false,
+      chatMessage: [
+        {
+          position: "left",
+          type: "text",
+          title: "Jake Brown",
+          text: "How about a quick call in 10 minutes?",
+          date: new Date(),
+          replyButton: true,
+        },
+        {
+          position: "right",
+          type: "text",
+          title: "Surya",
+          text: "Sure, let's catch up then.",
+          date: new Date(),
+          replyButton: true,
+        },
+      ],
+    },
+    {
+      id: 5,
+      avatar: "https://picsum.photos/200/300",
+      alt: "olivia_martin_avatar",
+      title: "Olivia Martin",
+      subtitle: "Reminder: The event starts at 8 PM.",
+      date: new Date(),
+      unread: 0,
+      favorite: true,
+      chatMessage: [
+        {
+          position: "left",
+          type: "text",
+          title: "Olivia Martin",
+          text: "Reminder: The event starts at 8 PM.",
+          date: new Date(),
+          replyButton: true,
+        },
+        {
+          position: "right",
+          type: "text",
+          title: "Surya",
+          text: "Thanks for the reminder!",
+          date: new Date(),
+          replyButton: true,
+        },
+      ],
+    },
+    {
+      id: 6,
+      avatar: "https://picsum.photos/id/5/200/300",
+      alt: "nathan_williams_avatar",
+      title: "Nathan Williams",
+      subtitle: "Can you send over the updated proposal?",
+      date: new Date(),
+      unread: 0,
+      favorite: false,
+      chatMessage: [
+        {
+          position: "left",
+          type: "text",
+          title: "Nathan Williams",
+          text: "Can you send over the updated proposal?",
+          date: new Date(),
+          replyButton: true,
+        },
+        {
+          position: "right",
+          type: "text",
+          title: "Surya",
+          text: "I will send it right away.",
+          date: new Date(),
+          replyButton: true,
+        },
+      ],
+    },
+    {
+      id: 7,
+      avatar: "https://picsum.photos/200/300",
+      alt: "noah_davis_avatar",
+      title: "Noah Davis",
+      subtitle: "How was your weekend?",
+      date: new Date(),
+      unread: 0,
+      favorite: false,
+      chatMessage: [
+        {
+          position: "left",
+          type: "text",
+          title: "Noah Davis",
+          text: "How was your weekend?",
+          date: new Date(),
+          replyButton: true,
+        },
+        {
+          position: "right",
+          type: "text",
+          title: "Surya",
+          text: "It was great, thanks! How about you?",
+          date: new Date(),
+          replyButton: true,
+        },
+      ],
+    },
+  ];
 
-  // Fetch users on component mount
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.error('No token found in localStorage');
-        return;
-      }
+  const [activeTab, setActiveTab] = useState("HCM");
+  const [chatClick, setChatClick] = useState(null);
 
-      try {
-        const response = await axios.post('https://careautomate-backend.vercel.app/fetchAll/fetchAllHCMsTenants', {}, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        const { hcm, tenants } = response.data.data;
-        setUsers([...hcm, ...tenants]);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
+  // Filter the chats based on the active tab and the id being odd or even
+  // const filteredChat = chats.filter((chat) => {
+  //   // If "HCM" tab is selected, show even ID chats
+  //   if (activeTab === "HCM") {
+  //     return chat.id % 2 === 0;
+  //   }
+  //   // If "Tenant" tab is selected, show odd ID chats
+  //   if (activeTab === "Tenant") {
+  //     return chat.id % 2 !== 0;
+  //   }
+  //   return false;
+  // });
 
-    fetchUsers();
-  }, []);
-
-  // Fetch messages when a user is selected
-  useEffect(() => {
-    const fetchMessages = async () => {
-      if (!selectedUser) return;
-
-      try {
-        const response = await axios.get('http://localhost:9003/api/messages', {
-          params: { userId, selectedUserId: selectedUser }
-        });
-        setMessages(response.data);
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-      }
-    };
-
-    fetchMessages();
-  }, [selectedUser]);
-
-  // Handle incoming messages via Socket.IO
-  useEffect(() => {
-    socket.on('chat message', (msg) => {
-      if ((msg.sender === userId && msg.receiver === selectedUser) || (msg.sender === selectedUser && msg.receiver === userId)) {
-        setMessages((prevMessages) => [...prevMessages, msg]);
-      }
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [selectedUser, userId]);
-
-  // Send a new message
-  const handleSendMessage = () => {
-    if (message.trim() && selectedUser) {
-      const newMessage = {
-        text: message,
-        sender: userId,
-        receiver: selectedUser,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages([...messages, newMessage]);
-      socket.emit('chat message', newMessage);
-
-      // Save message to backend
-      axios.post('http://localhost:9003/api/messages', newMessage)
-        .catch(error => console.error('Error saving message:', error));
-
-      setMessage('');
-    }
+  const countUnreadMessages = () => {
+    return chats.reduce((total, chat) => {
+      return total + (chat.unread > 0 ? chat.unread : 0);
+    }, 0);
   };
-
-  const toggleFilter = () => {
-    setIsFilterVisible(!isFilterVisible);
-  };
+  // Get the selected chat
+  const selectedChat =
+    chats.find((chat) => chat.title === chatClick?.title) || null;
 
   return (
-    <div className="p-8 w-[1200px] h-full justify-center items-center">
-      <div className="flex gap-4">
-        {/* Chat List Component */}
-        <div className="relative w-full h-full p-4">
-          <h1 className="text-2xl font-bold mb-2">Communications</h1>
-          <div className="flex justify-between items-center mb-4">
-            <div className="relative w-full flex bg-white border rounded-full px-4 py-2">
-              <div className="w-4 h-4">
-                <img src="Vector.png" alt="Search" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search"
-                className="w-full bg-transparent border-none outline-none text-sm text-gray-700 ml-2"
-              />
-            </div>
-            <div
-              className="ml-3 p-2 bg-white border rounded-full cursor-pointer"
-              onClick={toggleFilter}
-            >
-              <div className="w-5 h-5">
-                <img src="Filter.png" alt="Filter" />
-              </div>
-            </div>
-          </div>
+    <div className="h-full w-full font-poppins">
+      <div className="flex flex-col h-full">
+        <CommunicationHeader
+          setActiveTab={setActiveTab}
+          activeTab={activeTab}
+          unreadCount={countUnreadMessages()}
+        />
+        <div className="flex h-full">
+          {/* Pass the filtered chats instead of all chats */}
+          <CommunicationList chats={chats} setChatClick={setChatClick} />
 
-          {isFilterVisible && (
-            <div className="absolute right-0 mt-2 w-48 p-4 bg-white border rounded shadow-md">
-              <div className="text-blue-500 font-bold mb-2">Filter by</div>
-              <div className="flex items-center mb-2">
-                <input type="checkbox" id="date" className="mr-2 rounded-full" />
-                <label htmlFor="date" className="text-gray-700">Date</label>
-              </div>
-              <div className="flex items-center">
-                <input type="checkbox" id="hcm" className="mr-2 rounded-full" />
-                <label htmlFor="hcm" className="text-gray-700">HCM</label>
-              </div>
-            </div>
-          )}
-          <div className="h-[500px] overflow-y-auto pr-3">
-            {users.map(user => (
-              <div
-                key={user._id}
-                className="flex items-center py-3 border-b border-gray-200 bg-[#f9f9ff] hover:bg-gray-100 rounded-lg mb-2"
-                onClick={() => setSelectedUser(user._id)}
-              >
-                <img src={tenant} alt={user.name} className="w-11 h-11 rounded-full mr-3 ml-2" />
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-gray-900">{user.name}</p>
-                  <p className="text-xs text-gray-400">Last message time</p>
-                  <p className="text-sm text-gray-600 truncate">Last message preview...</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Chat Screen Component */}
-        <div className="w-full h-[600px] bg-white rounded-lg shadow-lg flex flex-col mt-8">
-          <div className="flex items-center p-4 border-b h-20">
-            <img src={tenant} alt="profile" className="rounded-full w-10 h-10" />
-            <div className="ml-4 mt-6">
-              <h2 className="text-lg font-semibold">{users.find(user => user._id === selectedUser)?.name}</h2>
-            </div>
-          </div>
-          <div className="flex-1 p-4 space-y-2 overflow-y-auto pb-8 text-sm">
-            {messages.map((msg, index) => (
-              <div key={index} className={msg.sender === userId ? 'flex justify-end' : 'flex'}>
-                <div className={`bg-${msg.sender === userId ? 'blue' : 'gray'}-200 rounded-3xl ${msg.sender === userId ? 'rounded-tr-none' : 'rounded-tl-none'} px-3 py-1 text-sm text-gray-900 max-w-xs`}>
-                  <div>{msg.text}</div>
-                  <div className="text-xs text-gray-500 text-right">{msg.timestamp}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Message Input */}
-          <div className="p-2 flex items-center">
-            <div className="relative w-full">
-              <input
-                type="text"
-                placeholder="Enter your message"
-                className="w-full p-2 pl-4 pr-10 border rounded-3xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-              <button className="absolute right-12 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5">
-                <img src="Attach.png" alt="Attach" />
-              </button>
-              <button
-                onClick={handleSendMessage}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5"
-              >
-                <img src="Send.png" alt="Send" />
-              </button>
-            </div>
-          </div>
+          {/* Show the selected chat */}
+          <CommunicationChat
+            chatMessages={selectedChat?.chatMessage || []}
+            selectedChat={selectedChat}
+          />
         </div>
       </div>
     </div>
