@@ -98,7 +98,7 @@ export default function PlanUsage() {
         });
     };
 
-    const renderPlanData = (planType) => {
+    const renderPlanData = (planType, period) => {
         const data = unitsData[planType];
         if (!data) {
             return <p style={styles.noServiceData}>No services have been done for this tenant.</p>;

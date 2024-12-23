@@ -7,7 +7,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import AppointmentCard from "./AppointmentCard";
 import AppointmentCalendarView from "./AppointmentCalendarView";
-
+import { BASE_URL } from "../../config";
 const Appointment = () => {
   const [appointments, setAppointments] = useState([]);
   const [activeTab, setActiveTab] = useState("Completed");
@@ -31,7 +31,7 @@ const Appointment = () => {
   const fetchAppointments = async () => {
     try {
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/tenant/get-appointments",
+        `${BASE_URL}/tenant/get-appointments`,
         {},
         {
           headers: {
@@ -82,7 +82,7 @@ const Appointment = () => {
         }
 
         const response = await fetch(
-          "https://careautomate-backend.vercel.app/fetchAll/fetchAllHCMsTenants",
+          `${BASE_URL}/fetchAll/fetchAllHCMsTenants`,
           {
             method: "POST",
             headers: {
@@ -116,7 +116,7 @@ const Appointment = () => {
     const fetchHcm = async () => {
       try {
         const response = await fetch(
-          "https://careautomate-backend.vercel.app/hcm/all",
+          `${BASE_URL}/hcm/all`,
           {
             method: "POST",
             headers: {
@@ -243,11 +243,10 @@ const Appointment = () => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-2 rounded-full font-medium ${
-                    activeTab === tab
-                      ? "bg-[#6F84F8] text-white"
-                      : "bg-gray-200 text-gray-600"
-                  }`}
+                  className={`px - 4 py - 2 rounded - full font - medium ${activeTab === tab
+                    ? "bg-[#6F84F8] text-white"
+                    : "bg-gray-200 text-gray-600"
+                    }`}
                 >
                   {tab}
                 </button>
@@ -275,9 +274,8 @@ const Appointment = () => {
                 {/* Calendar Button */}
                 <button
                   onClick={() => setIsListView(false)}
-                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
-                    !isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-                  }`}
+                  className={`flex items - center justify - center w - 12 h - 12 rounded - xl transition - all ${!isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                    } `}
                 >
                   <IoCalendar className="text-2xl" />
                 </button>
@@ -285,9 +283,8 @@ const Appointment = () => {
                 {/* List Button */}
                 <button
                   onClick={() => setIsListView(true)}
-                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
-                    isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-                  }`}
+                  className={`flex items - center justify - center w - 12 h - 12 rounded - xl transition - all ${isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                    } `}
                 >
                   <IoList className="text-2xl" />
                 </button>
