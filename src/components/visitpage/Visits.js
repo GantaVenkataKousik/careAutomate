@@ -14,6 +14,7 @@ import VisitHeader from "./VisitHeader";
 import { visitsFilter } from "../../utils/visitsFilter";
 import { useDispatch } from "react-redux";
 import { setSelectedVisit } from "../../redux/visit/visitSlice";
+import { BASE_URL } from "../../config";
 
 const VisitList = () => {
   const [startDate, setStartDate] = useState("");
@@ -38,7 +39,7 @@ const VisitList = () => {
     status: "",
   });
   const fetchVisits = async () => {
-    let url = "https://careautomate-backend.vercel.app/visit/fetchVisits";
+    let url = `${BASE_URL}/visit/fetchVisits`;
     let token = localStorage.getItem("token");
     try {
       const response = await axios.get(url, {
@@ -106,7 +107,7 @@ const VisitList = () => {
     console.log("Applying filters with the following criteria:", filters);
     try {
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/visit/filterVisits",
+        `${BASE_URL}/visit/filterVisits`,
         filters,
         {
           headers: {
@@ -181,7 +182,7 @@ const VisitList = () => {
 
   const handleStatusUpdate = async (index, isApproved) => {
     const visitId = visitData[index]._id;
-    const url = `https://careautomate-backend.vercel.app/visit/${visitId}`;
+    const url = `${BASE_URL}/visit/${visitId}`;
     const response = await axios.put(
       url,
       { approved: isApproved, rejected: !isApproved },

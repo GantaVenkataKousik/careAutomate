@@ -6,7 +6,7 @@ import { CiCalendarDate } from "react-icons/ci";
 import { IoIosMenu } from "react-icons/io";
 import { TbMessage } from "react-icons/tb";
 import { IoDocumentTextOutline } from "react-icons/io5";
-
+import { BASE_URL } from "../../config";
 import axios from "axios";
 
 const Tenants = () => {
@@ -41,7 +41,7 @@ const Tenants = () => {
       }
       try {
         const response = await axios.post(
-          "https://ca-backend-ten.vercel.app/fetchAll/fetchAllHCMsTenants",
+          `${BASE_URL}/fetchAll/fetchAllHCMsTenants`,
           {},
           {
             headers: {
