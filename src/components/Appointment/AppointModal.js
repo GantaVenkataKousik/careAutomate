@@ -13,7 +13,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-
+import { BASE_URL } from "../../config";
 const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
   const [startDate, setStartDate] = useState(null);
   const [planOfService, setPlanOfService] = useState("");
@@ -51,7 +51,7 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
         }
 
         const response = await fetch(
-          "https://careautomate-backend.vercel.app/tenant/all",
+          `${BASE_URL}/tenant/all`,
           {
             method: "POST",
             headers: {
@@ -91,7 +91,7 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
         }
 
         const response = await fetch(
-          "https://careautomate-backend.vercel.app/hcm/all",
+          `${BASE_URL}/hcm/all`,
           {
             method: "POST",
             headers: {
@@ -162,7 +162,7 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/tenant/create-appointment",
+        `${BASE_URL}/tenant/create-appointment`,
         payload,
         {
           headers: {

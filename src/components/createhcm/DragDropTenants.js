@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateAssignedTenants } from "../../redux/hcm/hcmSlice";
 import { FaArrowRightLong } from "react-icons/fa6";
-
+import { BASE_URL } from "../../config";
 const ChecklistTenants = () => {
   const dispatch = useDispatch();
   const assignedTenantsRedux = useSelector(
@@ -24,7 +24,7 @@ const ChecklistTenants = () => {
         }
 
         const response = await fetch(
-          "https://careautomate-backend.vercel.app/tenant/all",
+          `${BASE_URL}/tenant/all`,
           {
             method: "POST",
             headers: {

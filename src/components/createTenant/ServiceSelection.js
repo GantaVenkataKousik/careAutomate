@@ -6,7 +6,7 @@ import axios from "axios";
 import DatePicker from "react-datepicker"; // Import react-datepicker
 import "react-datepicker/dist/react-datepicker.css"; // Import the styles for react-datepicker
 import { RxCrossCircled } from "react-icons/rx";
-
+import { BASE_URL } from "../../config";
 const serviceOptions = [
   { value: 1, label: "Housing Consultation", billRate: 174.22 },
   { value: 2, label: "Housing Transition", billRate: 17.17 },
@@ -36,7 +36,7 @@ const ServiceSelection = ({ tenantID }) => {
         }
 
         const response = await axios.post(
-          "https://careautomate-backend.vercel.app/tenant/get-services",
+          `${BASE_URL}/tenant/get-services`,
           { tenantId: tenantID },
           {
             headers: {
@@ -159,7 +159,7 @@ const ServiceSelection = ({ tenantID }) => {
       formData.append("billRate", service.billRate);
 
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/tenant/assign-services-documents",
+        `${BASE_URL}/tenant/assign-services-documents`,
         formData,
         {
           headers: {
@@ -173,7 +173,7 @@ const ServiceSelection = ({ tenantID }) => {
         toast.success("Service assigned successfully");
         // Refresh services list
         const fetchResponse = await axios.post(
-          "https://careautomate-backend.vercel.app/tenant/get-services",
+          `${BASE_URL}/tenant/get-services`,
           { tenantId: tenantID },
           {
             headers: {

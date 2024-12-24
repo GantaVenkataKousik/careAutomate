@@ -4,6 +4,7 @@ import moment from "moment";
 import axios from "axios";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { appointmentFilter } from "../../utils/appointmentsFilter";
+import { BASE_URL } from "../../config";
 
 const localizer = momentLocalizer(moment);
 
@@ -15,7 +16,7 @@ const MonthView = () => {
   const fetchAppointments = async () => {
     try {
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/tenant/get-appointments",
+        `${BASE_URL}/tenant/get-appointments`,
         {},
         {
           headers: {
