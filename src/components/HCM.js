@@ -11,7 +11,7 @@ import tenantImage from "../images/tenant.jpg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { he } from "date-fns/locale";
-
+import { BASE_URL } from "../config";
 export default function HCM() {
   const navigate = useNavigate();
   const [tenants, setTenants] = useState([]);
@@ -29,7 +29,7 @@ export default function HCM() {
       }
       try {
         const response = await axios.post(
-          "https://ca-backend-ten.vercel.app/fetchAll/fetchAllHCMsTenants",
+          `${BASE_URL}/fetchAll/fetchAllHCMsTenants`,
           {},
           {
             headers: {

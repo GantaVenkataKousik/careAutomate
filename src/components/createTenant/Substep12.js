@@ -3,7 +3,7 @@ import { FaFolder, FaUpload } from "react-icons/fa";
 import { MdDelete, MdClose } from "react-icons/md";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import { BASE_URL } from "../../config";
 const Substep12 = ({ tenantID }) => {
   const [folders, setFolders] = useState([
     "Intake Documents",
@@ -16,7 +16,6 @@ const Substep12 = ({ tenantID }) => {
   const [selectedYear, setSelectedYear] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState({});
   const [fileToUpload, setFileToUpload] = useState(null);
-
   const [fetchedDocuments, setFetchedDocuments] = useState([]); // State for fetched documents
   // Fetch the documents for the tenant
   useEffect(() => {
@@ -29,7 +28,7 @@ const Substep12 = ({ tenantID }) => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.post(
-          'https://careautomate-backend.vercel.app/tenant/get-documents',
+          `${BASE_URL}/tenant/get-documents`,
           { tenantId: tenantID }, // Make sure the key is 'tenantId' to match backend
           {
             headers: {

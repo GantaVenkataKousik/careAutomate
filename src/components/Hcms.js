@@ -15,7 +15,7 @@ import { CiCalendarDate } from "react-icons/ci";
 import { IoIosMenu } from "react-icons/io";
 import { TbMessage } from "react-icons/tb";
 import { IoDocumentTextOutline } from "react-icons/io5";
-
+import { BASE_URL } from "../config";
 export default function Hcms() {
   const navigate = useNavigate();
   const [Hcms, setHcms] = useState([]);
@@ -48,7 +48,7 @@ export default function Hcms() {
       }
       try {
         const response = await axios.post(
-          "https://careautomate-backend.vercel.app/fetchAll/fetchAllHCMsTenants",
+          `${BASE_URL}/fetchAll/fetchAllHCMsTenants`,
           {},
           {
             headers: {
