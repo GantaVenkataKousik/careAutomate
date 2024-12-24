@@ -161,7 +161,7 @@ const VisitCard = ({
             <div style={{ display: "flex", paddingBottom: "5px" }}>
               <div
                 className="flex flex-col gap-3 w-1/3"
-                //   style={{ marginBottom: "10px" }}
+              //   style={{ marginBottom: "10px" }}
               >
                 <p>
                   HCM -

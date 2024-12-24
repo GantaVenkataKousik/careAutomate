@@ -5,6 +5,7 @@ import { IoCalendar, IoList } from "react-icons/io5";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { BASE_URL } from "../../config";
 const VisitHeader = ({
   isListView,
   filters,
@@ -27,7 +28,7 @@ const VisitHeader = ({
         }
 
         const response = await fetch(
-          "https://careautomate-backend.vercel.app/tenant/all",
+          `${BASE_URL}/tenant/all`,
           {
             method: "POST",
             headers: {
@@ -67,7 +68,7 @@ const VisitHeader = ({
         }
 
         const response = await fetch(
-          "https://careautomate-backend.vercel.app/hcm/all",
+          `${BASE_URL}/hcm/all`,
           {
             method: "POST",
             headers: {
@@ -125,9 +126,8 @@ const VisitHeader = ({
             {/* Calendar Button */}
             <button
               onClick={() => setIsListView(false)}
-              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
-                !isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-              }`}
+              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${!isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                }`}
             >
               <IoCalendar className="text-2xl" />
             </button>
@@ -135,9 +135,8 @@ const VisitHeader = ({
             {/* List Button */}
             <button
               onClick={() => setIsListView(true)}
-              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
-                isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-              }`}
+              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                }`}
             >
               <IoList className="text-2xl" />
             </button>

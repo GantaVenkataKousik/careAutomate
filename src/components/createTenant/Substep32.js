@@ -7,7 +7,7 @@ export default function Substep32({ year }) { // Accepting the selected year as 
             {/* Header with file icon and year aligned to the left border */}
             <div className="flex flex-col items-start mb-4">
                 <div className="flex items-center justify-center w-10 h-10 border-2 border-gray-300 rounded-full mt-1" style={{ marginLeft: '-25px', marginTop: '-28px' }}>
-                <FaFolder className="text-gray-500 text-md" style={{ fill: '', stroke: 'gray' }} />
+                    <FaFolder className="text-gray-500 text-md" style={{ fill: '', stroke: 'gray' }} />
                 </div>
                 <span className="text-lg font-semibold" style={{ marginLeft: '-25px' }}>{year}</span> {/* Display the selected year */}
             </div>

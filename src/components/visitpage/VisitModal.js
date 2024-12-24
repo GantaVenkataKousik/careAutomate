@@ -14,6 +14,7 @@ import { API_ROUTES } from "../../routes";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { BASE_URL } from "../../config";
 
 const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
   console.log(onVisitCreated);
@@ -71,7 +72,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
   );
   //prettier-ignore
   const [responseOfVisit, setResponseOfVisit] = useState(
-    isEdit ? onVisitCreated.response: ""
+    isEdit ? onVisitCreated.response : ""
   );
 
   const user = JSON.parse(localStorage.getItem("user"));
@@ -86,7 +87,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       }
 
       const response = await fetch(
-        "https://careautomate-backend.vercel.app/tenant/all",
+        `${BASE_URL}/tenant/all`,
         {
           method: "POST",
           headers: {
@@ -121,7 +122,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       }
 
       const response = await fetch(
-        "https://careautomate-backend.vercel.app/hcm/all",
+        `${BASE_URL}/hcm/all`,
         {
           method: "POST",
           headers: {
@@ -750,7 +751,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
                   value={
                     travel === "Yes"
                       ? parseFloat(milesWithTenant || 0) +
-                        parseFloat(milesWithoutTenant || 0)
+                      parseFloat(milesWithoutTenant || 0)
                       : 0
                   }
                   readOnly
