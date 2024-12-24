@@ -65,7 +65,7 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
         const data = await response.json();
 
         if (response.status === 200 && data.success) {
-          const tenantData = data.tenants.map((tenant) => ({
+          const tenantData = data.response.map((tenant) => ({
             id: tenant._id,
             name: tenant.name,
           }));
@@ -105,7 +105,7 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
         const data = await response.json();
 
         if (response.status === 200 && data.success) {
-          const hcmData = data.hcms.map((hcm) => ({
+          const hcmData = data.response.map((hcm) => ({
             id: hcm._id,
             name: hcm.name,
           }));
