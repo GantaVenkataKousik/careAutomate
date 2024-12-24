@@ -40,26 +40,31 @@ const Appointment = () => {
         }
       );
 
-      if (response.data.appointments) {
-        // console.log(response.data);
-        const mappedAppointments = response.data.appointments.map((apt) => ({
-          id: apt._id,
-          date: new Date(apt.date).toLocaleDateString("en-US", {
-            weekday: "short",
-            month: "short",
-            day: "numeric",
-          }),
-          time: `${apt.startTime} – ${apt.endTime}`,
-          location: apt.placeOfService || "N/A",
-          from: apt.hcmDetails?.name || "Unknown",
-          service: apt.serviceType || "Unknown",
-          with: apt.tenantDetails?.name || "Unknown",
-          status: apt.status.charAt(0).toUpperCase() + apt.status.slice(1),
-          hcmId: apt.hcmId?._id,
-          tenantId: apt.tenantDetails?._id,
-          activity: apt.activity || "N/A",
-        }));
-        setAppointments(mappedAppointments); // This will update both list and calendar views
+      if (response.data.success) {
+        const mappedAppointments = response.data.response.map((apt) => {
+          const startDateTime = new Date(`${apt.date.split('T')[0]}T${apt.startTime}`);
+          const endDateTime = new Date(`${apt.date.split('T')[0]}T${apt.endTime}`);
+
+          return {
+            id: apt._id,
+            date: new Date(apt.date).toLocaleDateString("en-US", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+            }),
+            startTime: apt.startTime,
+            endTime: apt.endTime,
+            location: apt.placeOfService || "N/A",
+            from: apt.hcmDetails?.name || "N/A",
+            service: apt.serviceType || "N/A",
+            with: apt.tenantDetails?.name || "N/A",
+            status: apt.status.charAt(0).toUpperCase() + apt.status.slice(1),
+            hcmId: apt.hcmId?._id,
+            tenantId: apt.tenantDetails?._id,
+            activity: apt.activity || "N/A",
+          };
+        });
+        setAppointments(mappedAppointments);
       } else {
         console.error("Failed to fetch appointment data");
       }
@@ -96,7 +101,7 @@ const Appointment = () => {
         const data = await response.json();
 
         if (response.status === 200 && data.success) {
-          const tenantsData = data.data.tenants.map((tenant) => ({
+          const tenantsData = data.response.tenants.map((tenant) => ({
             id: tenant._id,
             name: tenant.name,
           }));

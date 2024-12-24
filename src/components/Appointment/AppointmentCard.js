@@ -6,6 +6,13 @@ import { BiEditAlt } from "react-icons/bi";
 import { BsPersonFill } from "react-icons/bs";
 import { API_ROUTES } from "../../routes";
 
+function formatTime(dateTimeString) {
+  const date = new Date(dateTimeString);
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+}
+
 const AppointmentCard = ({
   appointment,
   togglePopup1,
@@ -82,18 +89,15 @@ const AppointmentCard = ({
             <div className="flex items-center space-x-2 text-gray-600">
               <MdAccessTime className="w-6 h-6" style={{ color: getColor() }} />
               <span className="text-gray">
-                {appointment.time.length < 15 ? (
-                  appointment.time
-                ) : (
+                {appointment.startTime && appointment.endTime ? (
                   <>
-                    {formatTime24Hours(appointment.time.split(/\s[-–]\s/)[0])} -{" "}
-                    {formatTime24Hours(appointment.time.split(/\s[-–]\s/)[1])}
+                    {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
                   </>
+                ) : (
+                  "Time not available"
                 )}
               </span>
             </div>
-
-            {/* Location */}
             <div className="flex items-center space-x-2 text-gray-600">
               <MdOutlineLocationOn
                 className="w-6 h-6"
