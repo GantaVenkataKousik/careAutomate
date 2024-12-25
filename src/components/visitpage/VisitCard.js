@@ -7,6 +7,8 @@ import { CiCalendarDate } from "react-icons/ci";
 import { formatTimeFormate } from "../../utils/timeFilter";
 import { GiPathDistance } from "react-icons/gi";
 import { API_ROUTES } from "../../routes";
+import DOMPurify from "dompurify";
+
 const VisitCard = ({
   visitData,
   handleDetailsClick,
@@ -14,6 +16,9 @@ const VisitCard = ({
   handleStatusUpdate,
   handleClosePopup,
 }) => {
+  const sanitizeHTML = (html) => DOMPurify.sanitize(html);
+
+  console.log(visitData);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const handleDeleteClick = async (index, visit) => {
     console.log(index, visit);
@@ -52,7 +57,6 @@ const VisitCard = ({
 
   const twoWeeksAgo = new Date();
   twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-  console.log(visitData);
   return (
     <div className="flex flex-col w-full mt-10">
       {visitData
@@ -161,7 +165,7 @@ const VisitCard = ({
             <div style={{ display: "flex", paddingBottom: "5px" }}>
               <div
                 className="flex flex-col gap-3 w-1/3"
-              //   style={{ marginBottom: "10px" }}
+                //   style={{ marginBottom: "10px" }}
               >
                 <p>
                   HCM -

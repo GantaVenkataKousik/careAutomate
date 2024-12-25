@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "../../AuthContext";
 import "./Login.css";
 import mobile from "../../images/mobilepic.png";
+import { API_ROUTES } from "../../routes";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -12,7 +13,6 @@ const LoginForm = () => {
   // const [otp, setOtp] = useState(''); // Commented out OTP state
   const [loading, setLoading] = useState(false);
   // const [showOtpPopup, setShowOtpPopup] = useState(false); // Commented out OTP popup state
-  const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
   const { login } = useAuth();
   // const otpRefs = useRef([]); // Commented out OTP refs
@@ -20,17 +20,14 @@ const LoginForm = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch(
-        "https://ca-backend-ten.vercel.app/auth/login/",
-        {
-          // Updated URL
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const response = await fetch(`${API_ROUTES.AUTH.BASE}/login/`, {
+        // Updated URL
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
       if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.error || "Invalid credentials");
@@ -38,14 +35,6 @@ const LoginForm = () => {
       }
 
       const data = await response.json();
-      // console.log(data.response.response); // Log the whole response
-      // console.log(data.response.user); // Log the user object
-      // if (data.response.user.accountSetup !== undefined) {
-      //   console.log("Account Setup: ", data.response.user.accountSetup);
-      // } else {
-      //   console.log("No accountSetup field found.");
-      // }
-
       if (data.response.response.token) {
         toast.success("Login successful.");
         login(data.response.response.user, data.response.response.token);

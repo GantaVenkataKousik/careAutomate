@@ -27,22 +27,19 @@ const VisitHeader = ({
           return;
         }
 
-        const response = await fetch(
-          `${BASE_URL}/tenant/all`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
+        const response = await fetch(`${BASE_URL}/tenant/all`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
 
         const data = await response.json();
 
         if (response.status === 200 && data.success) {
-          const tenantData = data.tenants.map((tenant) => ({
+          const tenantData = data.response.map((tenant) => ({
             id: tenant._id,
             name: tenant.name,
           }));
@@ -67,22 +64,19 @@ const VisitHeader = ({
           return;
         }
 
-        const response = await fetch(
-          `${BASE_URL}/hcm/all`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
+        const response = await fetch(`${BASE_URL}/hcm/all`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
 
         const data = await response.json();
 
         if (response.status === 200 && data.success) {
-          const hcmData = data.hcms.map((hcm) => ({
+          const hcmData = data.response.map((hcm) => ({
             id: hcm._id,
             name: hcm.name,
           }));
@@ -126,8 +120,9 @@ const VisitHeader = ({
             {/* Calendar Button */}
             <button
               onClick={() => setIsListView(false)}
-              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${!isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-                }`}
+              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
+                !isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+              }`}
             >
               <IoCalendar className="text-2xl" />
             </button>
@@ -135,8 +130,9 @@ const VisitHeader = ({
             {/* List Button */}
             <button
               onClick={() => setIsListView(true)}
-              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-                }`}
+              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
+                isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+              }`}
             >
               <IoList className="text-2xl" />
             </button>
@@ -384,8 +380,7 @@ const VisitHeader = ({
         {/* Apply Button */}
         <button
           className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg
-border-blue-600
-border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
+border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
 active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
           // style={{
           //   backgroundColor: "#6F84F8",

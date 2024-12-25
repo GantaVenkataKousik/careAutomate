@@ -90,22 +90,19 @@ const Appointment = () => {
           return;
         }
 
-        const response = await fetch(
-          `${BASE_URL}/fetchAll/fetchAllHCMsTenants`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
+        const response = await fetch(`${BASE_URL}/tenant/all`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
 
         const data = await response.json();
 
         if (response.status === 200 && data.success) {
-          const tenantsData = data.response.tenants.map((tenant) => ({
+          const tenantsData = data.response.map((tenant) => ({
             id: tenant._id,
             name: tenant.name,
           }));
@@ -134,13 +131,14 @@ const Appointment = () => {
         });
 
         const data = await response.json();
-
+        console.log(data);
         if (response.status === 200 && data.success) {
-          const hcmData = data.hcms.map((hcm) => ({
+          const hcmData = data.response.map((hcm) => ({
             id: hcm._id,
             name: hcm.name,
           }));
           setHcmList(hcmData);
+          console.log(hcmList);
         } else {
           console.error("Failed to fetch HCMs:", data.message);
         }
