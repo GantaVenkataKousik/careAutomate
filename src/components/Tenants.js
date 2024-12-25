@@ -124,10 +124,22 @@ const Tenants = () => {
                   </div>
                 </div>
                 <div style={styles.tenantIconsContainer}>
-                  <CiCalendarDate style={styles.tenantIcon} onClick={() => handleIconClick('/appointments')} />
-                  <IoIosMenu style={styles.tenantIcon} onClick={() => handleIconClick('/visits')} />
-                  <TbMessage style={styles.tenantIcon} onClick={() => handleIconClick('/communication')} />
-                  <IoDocumentTextOutline style={styles.tenantIcon} onClick={() => handleIconClick('/settings')} />
+                  <CiCalendarDate
+                    style={styles.tenantIcon}
+                    onClick={() => handleIconClick("/appointments")}
+                  />
+                  <IoIosMenu
+                    style={styles.tenantIcon}
+                    onClick={() => handleIconClick("/visits")}
+                  />
+                  <TbMessage
+                    style={styles.tenantIcon}
+                    onClick={() => handleIconClick("/communication")}
+                  />
+                  <IoDocumentTextOutline
+                    style={styles.tenantIcon}
+                    onClick={() => handleIconClick("/settings")}
+                  />
                 </div>
               </div>
             ))
