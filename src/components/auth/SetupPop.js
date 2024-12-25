@@ -1,9 +1,11 @@
 import { Modal } from "@mui/material";
 import React, { useState } from "react";
 import Switch from "@mui/material/Switch";
+import { API_ROUTES } from "../../routes";
 
 const SetupPop = ({ open, onClose, onSubmit }) => {
-  const userId = JSON.parse(localStorage.getItem("user"))._id;
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user._id;
   const [childAccount, setChildAccount] = useState(false);
   const [useSameAddress, setUseSameAddress] = useState(false);
   const [formData, setFormData] = useState({
@@ -153,16 +155,45 @@ const SetupPop = ({ open, onClose, onSubmit }) => {
         },
       },
     };
-    accountData.adminId = userId;
-    return { accountData };
+    return { accountData, adminId: userId };
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const formData = new FormData(e.target);
     const formattedData = formatFormData(formData);
-    console.log(formattedData);
-    // onSubmit(formattedData);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error(token);
+      return; // Stop execution if no token
+    }
+
+    try {
+      const response = await fetch(
+        `${API_ROUTES.AUTH.BASE}/office-admin-account-setup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formattedData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Account setup successful:", responseData);
+      user.accountSetup = true;
+      localStorage.setItem("user", JSON.stringify(user));
+      onClose();
+    } catch (error) {
+      console.error("Error creating account:", error);
+    }
   };
 
   return (
