@@ -13,6 +13,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import { resetTenantInfo } from "../../redux/tenant/tenantSlice";
 import { createdHcm, createdHcmName } from "../../redux/hcm/hcmSlice";
+import { BASE_URL } from "../../config";
 
 const steps = [
   {
@@ -58,7 +59,7 @@ const PopupPage = () => {
 
   const handleNext = async () => {
     // Save data when completing Step 1
-    if (currentStep === 0) {
+    if (currentStep === 1) {
       await handleSave();
     }
 
@@ -72,16 +73,12 @@ const PopupPage = () => {
       };
 
       try {
-        const response = await axios.post(
-          "https://careautomate-backend.vercel.app/hcm/assign-hcm",
-          data,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await axios.post(`${BASE_URL}/hcm/assign-hcm`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
 
         if (response.status >= 200 && response.status < 300) {
           toast.success("Assigned tenants saved successfully");
@@ -113,18 +110,14 @@ const PopupPage = () => {
     for (const [key, value] of Object.entries(tenantData)) {
       formData.append(key, value);
     }
-
+    console.log("form Data", formData);
     try {
-      const response = await axios.post(
-        "https://careautomate-backend.vercel.app/hcm/createhcm",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/hcm/createhcm`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (response) {
         const id = response.data?.hcmID;
