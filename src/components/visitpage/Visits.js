@@ -47,14 +47,15 @@ const VisitList = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (response.data.visits) {
+      console.log(response.data.response);
+      if (response.data.response) {
         // Sorting the visits by the createdAt date (most recent first)
         // console.log("raw", response.data.visits);
         // Mapping the sorted visits
-        console.log(response.data.visits);
-        const mappedVisits = response.data.visits.map((visit) => ({
+        console.log(response);
+        const mappedVisits = response.data.response.map((visit) => ({
           _id: visit._id,
-          title: visit.title,
+          title: visit.activity,
           startDate: visit.dateOfService || visit.date,
           endDate: visit.dateOfService || visit.date,
           typeMethod: visit.methodOfVisit,
@@ -63,7 +64,7 @@ const VisitList = () => {
           scheduledDate: visit.scheduledDate ?? "",
           dos: visit.dateOfService || visit.date,
           duration: `${visit.startTime} - ${visit.endTime}`,
-          details: visit.detailsOfVisit,
+          details: visit.detailsOfVisit || visit.notes,
           signature: visit.signature,
           status: visit.status,
           serviceType: visit.serviceType,
@@ -116,10 +117,10 @@ const VisitList = () => {
         }
       );
 
-      if (response.data.visits) {
-        const mappedVisits = response.data.visits.map((visit) => ({
+      if (response.data.response) {
+        const mappedVisits = response.data.response.map((visit) => ({
           _id: visit._id,
-          title: visit.title,
+          title: visit.activity,
           startDate: visit.dateOfService || visit.date,
           endDate: visit.dateOfService || visit.date,
           typeMethod: visit.methodOfVisit,
@@ -128,7 +129,7 @@ const VisitList = () => {
           scheduledDate: visit.scheduledDate ?? "",
           dos: visit.dateOfService || visit.date,
           duration: `${visit.startTime} - ${visit.endTime}`,
-          details: visit.detailsOfVisit,
+          details: visit.notes,
           signature: visit.signature,
           status: visit.status,
           serviceType: visit.serviceType,
@@ -144,6 +145,7 @@ const VisitList = () => {
           travelWithoutTenant: visit.travelWithoutTenant,
           response: visit.response ?? "",
         }));
+        console.log(mappedVisits);
         setVisitData(mappedVisits); // Update the visit data with filtered results
       } else {
         console.error("Failed to fetch visit data");
