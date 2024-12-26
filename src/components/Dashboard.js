@@ -230,7 +230,7 @@ const ProfilePage = () => {
 
           {/* List of Assigned HCMs */}
           <div className="space-y-3">
-            <AssignedHcms />
+            <AssignedHcms tenantId={tenantId} />
           </div>
         </div>
       </div>
