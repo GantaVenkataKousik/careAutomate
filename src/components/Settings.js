@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import PersonalDetails from "./settings/PersonalDetails";
+import Security from "./settings/Security";
 
 export default function Settings() {
   const [selectedOption, setSelectedOption] = useState("Personal Details");
@@ -66,8 +67,9 @@ export default function Settings() {
           }}
         >
           {selectedOption === "Personal Details" && <PersonalDetails />}
+          {selectedOption === "Security" && <Security />}
           {/* {selectedOption === "Account Details" && <AccountDetails />}
-              {selectedOption === "Security" && <Security />}
+              
               {selectedOption === "Preferences" && <Preferences />} */}
         </div>
       </div>
