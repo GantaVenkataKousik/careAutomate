@@ -20,7 +20,7 @@ const ProfileCard = ({ tenantData, tenantId }) => {
     { name: "Notes", icon: <FaRegStickyNote /> },
     { name: "Eligibility", icon: <FaUserCheck /> },
     {
-      name: "Billing Plan",
+      name: "Plan Usage",
       icon: <FaFileInvoice />,
       onClick: handlePlanUsageClick,
     },

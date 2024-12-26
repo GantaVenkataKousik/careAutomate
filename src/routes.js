@@ -11,6 +11,7 @@ export const API_ROUTES = {
   },
   APPOINTMENTS: {
     BASE: `${BASE_URL}/appointment`,
+    GET_APPOINTMENTS: `${BASE_URL}/appointment/fetchAppointments`,
     // Add other appointment-related routes here
   },
   VISITS: {
