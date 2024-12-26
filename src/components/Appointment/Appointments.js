@@ -73,6 +73,7 @@ const Appointment = () => {
             hcmId: apt.hcmId?._id,
             tenantId: apt.tenantDetails?._id,
             activity: apt.activity || "N/A",
+            methodOfContact: apt.methodOfContact || "in-person",
             // reasonForRemote: apt.reasonForRemote,
           };
         });
