@@ -14,32 +14,65 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { BASE_URL } from "../../config";
-const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
+import { API_ROUTES } from "../../routes";
+const AppointmentModal = ({
+  isOpen,
+  onClose,
+  onAptCreated,
+  isEdit,
+  appointmentData,
+}) => {
+  console.log(
+    appointmentData
+    // dayjs(appointmentData.startDate.split("T")[0]).format("MM-DD-YYYY")
+  );
   const [startDate, setStartDate] = useState(null);
   const [planOfService, setPlanOfService] = useState("");
-
   const [reasonForRemote, setReasonForRemote] = useState("");
-  const [title, setTitle] = useState("");
-  const [scheduleCreated, setScheduleCreated] = useState(false);
   const [startTime, setStartTime] = useState("");
-  const [showCreateScheduleDialog, setShowCreateScheduleDialog] =
-    useState(false);
-  const [showCreateAnotherDialog, setShowCreateAnotherDialog] = useState(false);
   const [endTime, setEndTime] = useState("");
   const [serviceType, setServiceType] = useState("Housing Sustaining");
   const [methodOfContact, setMethodOfContact] = useState("in-person");
-  const [tenantID, setTenantName] = useState("");
-
-  const [allTenants, setAllTenants] = useState([]); // List of tenants
-  const [hcmList, setHcmList] = useState([]); // List of HCMs
-  const [selectedTenantId, setSelectedTenantId] = useState(""); // Selected tenant ID
+  const [selectedTenantId, setSelectedTenantId] = useState("");
   const [selectedHcmId, setSelectedHcmId] = useState("");
-
-  const tenantName = useSelector((state) => state.hcm.tenantName);
-  const tenantId = useSelector((state) => state.hcm.tenantId);
   const [activity, setActivity] = useState("");
-  // console.log("Hcm Name in step4:", tenantName);
-  // console.log("Hcm ID in step4:", tenantId);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (isEdit && appointmentData) {
+        // Populate state with appointmentData for editing
+        setStartDate(
+          new Date(
+            dayjs(appointmentData.startDate.split("T")[0]).format("MM-DD-YYYY")
+          )
+        );
+        setPlanOfService(appointmentData.location || "");
+        setStartTime(dayjs(appointmentData.startTime).format("HH:mm") || "");
+        setEndTime(dayjs(appointmentData.endTime).format("HH:mm") || "");
+        setServiceType(appointmentData.service || "Housing Sustaining");
+        setMethodOfContact(appointmentData.methodOfContact || "in-person");
+        setSelectedTenantId(appointmentData.tenantId || "");
+        setSelectedHcmId(appointmentData.hcmId || "");
+        setActivity(appointmentData.activity || "");
+      } else {
+        // Reset to default values for new entries
+        setStartDate(null);
+        setPlanOfService("");
+        setReasonForRemote("");
+        setStartTime("");
+        setEndTime("");
+        setServiceType("Housing Sustaining");
+        setMethodOfContact("in-person");
+        setSelectedTenantId("");
+        setSelectedHcmId("");
+        setActivity("");
+      }
+    }
+  }, [isOpen, isEdit, appointmentData]);
+
+  const [allTenants, setAllTenants] = useState([]);
+  const [hcmList, setHcmList] = useState([]);
+  const [scheduleCreated, setScheduleCreated] = useState(false);
 
   useEffect(() => {
     const fetchTenants = async () => {
@@ -114,7 +147,96 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
 
     fetchHcm();
   }, []);
+  const handleSubmit = () => {
+    if (isEdit) {
+      handleUpdateAppointment();
+    } else {
+      handleCreateAppointment();
+    }
+  };
 
+  const handleUpdateAppointment = async () => {
+    // First create an object to store only changed fields
+    const changedFields = {};
+
+    // Compare each field with original data and only add if changed
+    if (
+      startDate &&
+      dayjs(appointmentData.startTime).format("YYYY-MM-DD") !== startDate
+    ) {
+      // Format dates for comparison
+      const startDateTime = new Date(`${startDate}T${startTime}:00Z`);
+      changedFields.startTime = startDateTime.toISOString();
+    }
+
+    if (endTime && dayjs(appointmentData.endTime).format("HH:mm") !== endTime) {
+      const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
+      changedFields.endTime = endDateTime.toISOString();
+    }
+
+    if (selectedTenantId !== appointmentData.tenantId) {
+      changedFields.tenantId = selectedTenantId;
+    }
+
+    if (selectedHcmId !== appointmentData.hcmId) {
+      changedFields.hcmId = selectedHcmId;
+    }
+
+    if (activity !== appointmentData.activity) {
+      changedFields.activity = activity;
+    }
+
+    if (methodOfContact !== appointmentData.methodOfContact) {
+      changedFields.methodOfContact = methodOfContact;
+    }
+
+    if (reasonForRemote !== appointmentData.reasonForRemote) {
+      changedFields.reasonForRemote = reasonForRemote;
+    }
+
+    if (planOfService !== appointmentData.location) {
+      changedFields.placeOfService = planOfService;
+    }
+
+    if (serviceType !== appointmentData.service) {
+      changedFields.serviceType = serviceType;
+    }
+
+    // If no fields have changed, show message and return
+    if (Object.keys(changedFields).length === 0) {
+      toast.info("No changes detected");
+      return;
+    }
+
+    // Add the ID to the payload
+    changedFields.id = appointmentData.id;
+    // console.log(changedFields);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.put(
+        `${API_ROUTES.APPOINTMENTS.BASE}/${appointmentData.id}`,
+        changedFields,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status >= 200 && response.status < 300) {
+        console.log("Updated successfully", response);
+        toast.success("Appointment updated successfully.");
+        onAptCreated();
+        onClose();
+      } else {
+        toast.error("Failed to update appointment.");
+      }
+    } catch (error) {
+      console.error("Error updating appointment:", error);
+      toast.error("Error updating appointment. Please try again.");
+    }
+  };
   const handleCreateAppointment = async () => {
     // Validate date, startTime, and endTime
     if (!startDate || !startTime) {
@@ -170,7 +292,7 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
         toast.success("Appointment created successfully.");
         setScheduleCreated(true);
         onAptCreated();
-        setShowCreateScheduleDialog(true);
+        // setShowCreateScheduleDialog(true);
         onClose();
       } else {
         console.error("Failed to create appointment:", response.statusText);
@@ -239,7 +361,7 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
     setReasonForRemote("");
     setStartTime("");
     setActivity("");
-    setTitle("");
+    // setTitle("");
   };
 
   const calculateEndTime = (startTime, duration) => {
@@ -325,9 +447,9 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
           </label>
           <input
             type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Appointment Title"
+            // value={title}
+            // onChange={(e) => setTitle(e.target.value)}
+            // placeholder="Appointment Title"
             className="border border-gray-300 rounded-md p-2 w-2/3"
           />
         </div> */}
@@ -522,7 +644,7 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
 
           <div className="flex gap-4 w-2/3" style={{ marginLeft: "auto" }}>
             <button
-              onClick={handleCreateAppointment}
+              onClick={handleSubmit}
               className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg
               border-blue-600
               border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
