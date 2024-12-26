@@ -50,17 +50,14 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
           return;
         }
 
-        const response = await fetch(
-          `${BASE_URL}/tenant/all`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
+        const response = await fetch(`${BASE_URL}/tenant/all`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
 
         const data = await response.json();
 
@@ -90,17 +87,14 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
           return;
         }
 
-        const response = await fetch(
-          `${BASE_URL}/hcm/all`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
+        const response = await fetch(`${BASE_URL}/hcm/all`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
 
         const data = await response.json();
 
@@ -525,69 +519,6 @@ const AppointmentModal = ({ isOpen, onClose, onAptCreated }) => {
               />
             </div>
           )}
-
-          {/* <div className="flex gap-4">
-        <label className="text-sm font-medium flex items-center w-1/3">
-         
-          Travel
-        </label>
-        <select
-          value={travel}
-          onChange={(e) => setTravel(e.target.value)}
-          className="border border-gray-300 rounded-md p-2 w-2/3"
-        >
-          <option value="No">No</option>
-          <option value="Yes">Yes</option>
-        </select>
-      </div>
-
-      {travel === 'Yes' && (
-        <>
-      
-          <div className="flex gap-4">
-            <label className="text-sm font-medium flex items-center w-1/3">
-             
-              Travel with Tenant (miles)
-            </label>
-            <input
-              type="number"
-              value={milesWithTenant}
-              onChange={(e) => setMilesWithTenant(e.target.value)}
-              placeholder="Enter miles"
-              className="border border-gray-300 rounded-md p-2 w-2/3"
-            />
-          </div>
-
-          <div className="flex gap-4">
-            <label className="text-sm font-medium flex items-center w-1/3">
-            
-              Travel without Tenant (miles)
-            </label>
-            <input
-              type="number"
-              value={milesWithoutTenant}
-              onChange={(e) => setMilesWithoutTenant(e.target.value)}
-              placeholder="Enter miles"
-              className="border border-gray-300 rounded-md p-2 w-2/3"
-            />
-          </div>
-        </>
-      )}
-
-      
-      <div className="flex gap-4">
-        <label className="text-sm font-medium flex items-center w-1/3">
-        
-          Signature
-        </label>
-        <input
-          type="text"
-          value={signature}
-          onChange={(e) => setSignature(e.target.value)}
-          placeholder="Enter your signature"
-          className="border border-gray-300 rounded-md p-2 w-2/3"
-        />
-      </div> */}
 
           <div className="flex gap-4 w-2/3" style={{ marginLeft: "auto" }}>
             <button
