@@ -27,7 +27,13 @@ const Appointment = () => {
     endDate: "",
     status: "",
   });
-
+  const [isEdit, setIsEdit] = useState(false);
+  const [currentAppointment, setCurrentAppointment] = useState(null);
+  const handleEditClick = (appointment) => {
+    setIsEdit(true);
+    setCurrentAppointment(appointment);
+    setShowModal(true);
+  };
   const fetchAppointments = async () => {
     try {
       const response = await axios.post(
@@ -48,7 +54,7 @@ const Appointment = () => {
           const endDateTime = new Date(
             `${apt.date.split("T")[0]}T${apt.endTime}`
           );
-
+          console.log(apt);
           return {
             id: apt._id,
             date: new Date(apt.date).toLocaleDateString("en-US", {
@@ -56,6 +62,7 @@ const Appointment = () => {
               month: "short",
               day: "numeric",
             }),
+            startDate: apt.date,
             startTime: apt.startTime,
             endTime: apt.endTime,
             location: apt.placeOfService || "N/A",
@@ -66,6 +73,7 @@ const Appointment = () => {
             hcmId: apt.hcmId?._id,
             tenantId: apt.tenantDetails?._id,
             activity: apt.activity || "N/A",
+            // reasonForRemote: apt.reasonForRemote,
           };
         });
         setAppointments(mappedAppointments);
@@ -472,7 +480,11 @@ const Appointment = () => {
                   appointment={appointment}
                   togglePopup1={togglePopup1}
                   handleDeleteClick1={handleDeleteClick1}
+                  handleEdit={handleEditClick}
                   showPopup1={showPopup1}
+                  setShowModal={setShowModal}
+                  setIsEdit={setIsEdit}
+                  setCurrentAppointment={setCurrentAppointment}
                   showDeletePopup1={showDeletePopup1}
                   setShowDeletePopup1={setShowDeletePopup1}
                 />
@@ -487,8 +499,14 @@ const Appointment = () => {
 
       <AppointmentModal
         isOpen={showModal}
-        onClose={() => setShowModal(false)} // Close the modal
+        onClose={() => {
+          setShowModal(false);
+          setIsEdit(false);
+          setCurrentAppointment(null);
+        }}
         onAptCreated={fetchAppointments}
+        isEdit={isEdit}
+        appointmentData={currentAppointment}
       />
     </div>
   );

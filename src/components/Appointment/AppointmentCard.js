@@ -10,7 +10,7 @@ function formatTime(dateTimeString) {
   const date = new Date(dateTimeString);
   const hours = date.getHours();
   const minutes = date.getMinutes();
-  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 }
 
 const AppointmentCard = ({
@@ -19,6 +19,9 @@ const AppointmentCard = ({
   handleDeleteClick1,
   showDeletePopup1,
   setShowDeletePopup1,
+  setCurrentAppointment,
+  setIsEdit,
+  setShowModal,
 }) => {
   const getColor = () => {
     let color = "#6F84F8";
@@ -30,6 +33,13 @@ const AppointmentCard = ({
       color = "#FF6B6B";
     }
     return color;
+  };
+  const handleEdit = () => {
+    togglePopup1(appointment.id);
+    // Pass the appointment data to the modal
+    setShowModal(true);
+    setIsEdit(true);
+    setCurrentAppointment(appointment);
   };
   // console.log(appointment);
   const handleDelete = async (appointment, index) => {
@@ -91,7 +101,8 @@ const AppointmentCard = ({
               <span className="text-gray">
                 {appointment.startTime && appointment.endTime ? (
                   <>
-                    {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
+                    {formatTime(appointment.startTime)} -{" "}
+                    {formatTime(appointment.endTime)}
                   </>
                 ) : (
                   "Time not available"
@@ -143,7 +154,7 @@ const AppointmentCard = ({
       <div className="flex items-center space-x-6">
         <button
           className="text-gray-600 hover:text-gray-800"
-          onClick={() => togglePopup1(appointment.id)}
+          onClick={() => handleEdit(appointment)}
           aria-label="Edit Appointment"
         >
           <BiEditAlt className="w-6 h-6" />
