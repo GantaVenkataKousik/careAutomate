@@ -2,26 +2,21 @@ import React, { useState, useEffect } from "react";
 import {
   FaSearch,
   FaPlus,
-  FaCalendarAlt,
-  FaBars,
-  FaEnvelope,
-  FaFileAlt,
 } from "react-icons/fa";
 import tenantImage from "../images/tenant.jpg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { he } from "date-fns/locale";
 import { BASE_URL } from "../config";
 export default function HCM() {
   const navigate = useNavigate();
-  const [tenants, setTenants] = useState([]);
+  const [hcms, setHcms] = useState([]);
 
   const handleAddTenantClick = () => {
     navigate("/hcm/createHcm");
   };
 
   useEffect(() => {
-    const fetchTenants = async () => {
+    const fetchHcms = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
         console.error("No token found in localStorage");
@@ -39,17 +34,17 @@ export default function HCM() {
           }
         );
 
-        const tenantsData = response.data?.data?.hcm || [];
-        setTenants(tenantsData);
+        const hcmsData = response.data?.data?.hcm || [];
+        setHcms(hcmsData);
       } catch (error) {
         console.error(
-          "Error fetching tenants:",
+          "Error fetching hcms:",
           error.response?.data || error.message
         );
       }
     };
 
-    fetchTenants();
+    fetchHcms();
   }, []);
 
   return (
@@ -72,9 +67,9 @@ export default function HCM() {
       </div>
 
       <div style={styles.tenantGrid}>
-        {tenants.length > 0 ? (
-          tenants.map((tenant, index) => (
-            <div key={tenant._id || index} style={styles.tenantBox}>
+        {hcms.length > 0 ? (
+          hcms.map((hcm, index) => (
+            <div key={hcm._id || index} style={styles.tenantBox}>
               <div style={styles.tenantInfo}>
                 <div>
                   <div style={styles.tenantImage}>
@@ -82,9 +77,9 @@ export default function HCM() {
                   </div>
                 </div>
                 <div>
-                  <h3 style={styles.tenantName}>{tenant?.name}</h3>
-                  <p style={styles.tenantDetail}>{tenant?.phoneNo}</p>
-                  <p style={styles.tenantDetail}>{tenant.email}</p>
+                  <h3 style={styles.tenantName}>{hcm?.name}</h3>
+                  <p style={styles.tenantDetail}>{hcm?.phoneNo}</p>
+                  <p style={styles.tenantDetail}>{hcm.email}</p>
                   {/* <div style={styles.tenantIcons}>
                     <FaCalendarAlt style={styles.tenantIcon} />
                     <FaBars style={styles.tenantIcon} />
