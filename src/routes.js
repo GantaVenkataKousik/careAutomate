@@ -1,6 +1,9 @@
 import { BASE_URL } from "./config";
 
 export const API_ROUTES = {
+  AUTH: {
+    BASE: `${BASE_URL}/auth`,
+  },
   HCM: {
     GET_INFO: `${BASE_URL}/hcm/get-hcm-info/`,
     // Add other HCM-related routes here
@@ -30,7 +33,7 @@ export const API_ROUTES = {
   },
   BILLING: {
     TENANTS_RUNNING_BY_UNITS: `${BASE_URL}/bill/tenants-running-by-units/`,
-    PLAN_USAGE: `${BASE_URL}/bill/plan-usage/`
+    PLAN_USAGE: `${BASE_URL}/bill/plan-usage/`,
     // Add other billing-related routes here
   },
   TENANTS: {

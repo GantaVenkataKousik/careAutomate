@@ -39,11 +39,15 @@ const Appointment = () => {
           },
         }
       );
-
+      // console.log(response.data);
       if (response.data.success) {
         const mappedAppointments = response.data.response.map((apt) => {
-          const startDateTime = new Date(`${apt.date.split('T')[0]}T${apt.startTime}`);
-          const endDateTime = new Date(`${apt.date.split('T')[0]}T${apt.endTime}`);
+          const startDateTime = new Date(
+            `${apt.date.split("T")[0]}T${apt.startTime}`
+          );
+          const endDateTime = new Date(
+            `${apt.date.split("T")[0]}T${apt.endTime}`
+          );
 
           return {
             id: apt._id,
@@ -86,22 +90,19 @@ const Appointment = () => {
           return;
         }
 
-        const response = await fetch(
-          `${BASE_URL}/fetchAll/fetchAllHCMsTenants`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
+        const response = await fetch(`${BASE_URL}/tenant/all`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
 
         const data = await response.json();
 
         if (response.status === 200 && data.success) {
-          const tenantsData = data.response.tenants.map((tenant) => ({
+          const tenantsData = data.response.map((tenant) => ({
             id: tenant._id,
             name: tenant.name,
           }));
@@ -120,26 +121,24 @@ const Appointment = () => {
   useEffect(() => {
     const fetchHcm = async () => {
       try {
-        const response = await fetch(
-          `${BASE_URL}/hcm/all`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
+        const response = await fetch(`${BASE_URL}/hcm/all`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
 
         const data = await response.json();
-
+        console.log(data);
         if (response.status === 200 && data.success) {
-          const hcmData = data.hcms.map((hcm) => ({
+          const hcmData = data.response.map((hcm) => ({
             id: hcm._id,
             name: hcm.name,
           }));
           setHcmList(hcmData);
+          console.log(hcmList);
         } else {
           console.error("Failed to fetch HCMs:", data.message);
         }
@@ -248,10 +247,11 @@ const Appointment = () => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px - 4 py - 2 rounded - full font - medium ${activeTab === tab
-                    ? "bg-[#6F84F8] text-white"
-                    : "bg-gray-200 text-gray-600"
-                    }`}
+                  className={`px-4 py-2 rounded-full font-medium ${
+                    activeTab === tab
+                      ? "bg-[#6F84F8] text-white"
+                      : "bg-gray-200 text-gray-600"
+                  }`}
                 >
                   {tab}
                 </button>
@@ -279,8 +279,9 @@ const Appointment = () => {
                 {/* Calendar Button */}
                 <button
                   onClick={() => setIsListView(false)}
-                  className={`flex items - center justify - center w - 12 h - 12 rounded - xl transition - all ${!isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-                    } `}
+                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
+                    !isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                  } `}
                 >
                   <IoCalendar className="text-2xl" />
                 </button>
@@ -288,8 +289,9 @@ const Appointment = () => {
                 {/* List Button */}
                 <button
                   onClick={() => setIsListView(true)}
-                  className={`flex items - center justify - center w - 12 h - 12 rounded - xl transition - all ${isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-                    } `}
+                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
+                    isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                  } `}
                 >
                   <IoList className="text-2xl" />
                 </button>
@@ -441,7 +443,7 @@ const Appointment = () => {
       {/* Dynamic Content */}
       {!isListView ? (
         (() => {
-          const filteredAppointments = appointments.filter(
+          const filteredAppointments = (appointments || []).filter(
             (appointment) =>
               appointment.status === activeTab || activeTab === "All"
           );

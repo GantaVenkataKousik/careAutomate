@@ -23,22 +23,19 @@ const ChecklistTenants = () => {
           return;
         }
 
-        const response = await fetch(
-          `${BASE_URL}/tenant/all`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
+        const response = await fetch(`${BASE_URL}/tenant/all`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
 
         const data = await response.json();
-
+        console.log(data);
         if (response.status === 200 && data.success) {
-          const tenantData = data.tenants.map((tenant) => ({
+          const tenantData = data.response.map((tenant) => ({
             id: tenant._id,
             name: tenant.name,
           }));

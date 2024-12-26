@@ -86,22 +86,19 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
         return;
       }
 
-      const response = await fetch(
-        `${BASE_URL}/tenant/all`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({}),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/tenant/all`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
 
       const data = await response.json();
 
       if (response.status === 200 && data.success) {
-        const tenantData = data.tenants.map((tenant) => ({
+        const tenantData = data.response.map((tenant) => ({
           id: tenant._id,
           name: tenant.name,
         }));
@@ -121,22 +118,19 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
         return;
       }
 
-      const response = await fetch(
-        `${BASE_URL}/hcm/all`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({}),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/hcm/all`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
 
       const data = await response.json();
 
       if (response.status === 200 && data.success) {
-        const hcmData = data.hcms.map((hcm) => ({
+        const hcmData = data.response.map((hcm) => ({
           id: hcm._id,
           name: hcm.name,
         }));
@@ -220,8 +214,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       changedFields.signature = signature;
     if (selectedTenantId !== onVisitCreated.tenantName)
       changedFields.selectedTenantId = selectedTenantId;
-    if (detailsOfVisit !== onVisitCreated.details)
-      changedFields.detailsOfVisit = detailsOfVisit;
+    if (detailsOfVisit !== onVisitCreated.notes)
+      changedFields.notes = detailsOfVisit;
     if (responseOfVisit !== onVisitCreated.response)
       changedFields.response = responseOfVisit;
     // console.log(changedFields);
@@ -304,7 +298,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       tenantId: selectedTenantId || "Unknown",
       hcmId: hcm || "N/A",
       serviceType,
-      title: activity || "N/A",
+      activity: activity || "N/A",
       date: new Date(startDate).toISOString(),
       startTime,
       endTime,
@@ -316,7 +310,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
             : "in-person"
           : "in-person",
       reasonForRemote: reasonForRemote || null,
-      // detailsOfVisit: detailsOfVisit || "N/A",
+      notes: detailsOfVisit || "N/A",
       response: responseOfVisit || "N/A",
       travel: travel.toLowerCase(),
       totalMiles: travel.toLowerCase() === "yes" ? totalMiles : null,
@@ -751,7 +745,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
                   value={
                     travel === "Yes"
                       ? parseFloat(milesWithTenant || 0) +
-                      parseFloat(milesWithoutTenant || 0)
+                        parseFloat(milesWithoutTenant || 0)
                       : 0
                   }
                   readOnly
