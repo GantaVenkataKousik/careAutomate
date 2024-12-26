@@ -5,6 +5,7 @@ import { GoTrash } from "react-icons/go";
 import { BiEditAlt } from "react-icons/bi";
 import { BsPersonFill } from "react-icons/bs";
 import { API_ROUTES } from "../../routes";
+import { MdPersonPinCircle } from "react-icons/md";
 
 function formatTime(dateTimeString) {
   const date = new Date(dateTimeString);
@@ -92,7 +93,7 @@ const AppointmentCard = ({
           </p>
         </div>
         {/* Time and Location */}
-        <div className="w-56">
+        <div className="w-64">
           <div className="text-black-600">{appointment.service}</div>
           <div className="flex justify-between items-center mt-1">
             {/* Time */}
@@ -116,6 +117,13 @@ const AppointmentCard = ({
               />
               <span className="text-gray">{appointment.location}</span>
             </div>
+          </div>
+          <div className="flex items-center space-x-2 mt-1 text-gray-600">
+            <MdPersonPinCircle
+              className="w-6 h-6"
+              style={{ color: getColor() }}
+            />
+            <span className="text-gray">{appointment.methodOfContact}</span>
           </div>
         </div>
       </div>
