@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import CommunicationHeader from "./communication/CommunicationHeader";
 import CommunicationList from "./communication/CommunicationList";
 import CommunicationChat from "./communication/CommunicationChat";

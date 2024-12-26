@@ -11,15 +11,8 @@ import {
   FaTimes,
   FaUser,
   FaUserTie,
-  FaRegFolder,
-  FaRegFilePdf,
-  FaRegFileAlt,
-  FaCheckCircle,
-  FaDollarSign,
-  FaFolderOpen,
 } from "react-icons/fa";
-import { Document, Page } from "react-pdf";
-import samplePDF from "../assets/sample_document.pdf";
+import AssignedHcms from "./tenantProfilePage/AssignedHcms";
 import { pdfjs } from "react-pdf";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API_ROUTES } from "../routes";
@@ -237,18 +230,7 @@ const ProfilePage = () => {
 
           {/* List of Assigned HCMs */}
           <div className="space-y-3">
-            {[...Array(4)].map((_, index) => (
-              <div
-                className="bg-[#e3e7f8] flex items-center justify-between p-3 rounded-lg shadow-sm"
-                key={index}
-              >
-                <FaUserTie className="text-xl text-black" />
-                <p className="text-[#435DED] font-medium text-sm">
-                  Robert Roos
-                </p>
-                <PhoneInTalkIcon className="text-black" />
-              </div>
-            ))}
+            <AssignedHcms />
           </div>
         </div>
       </div>

@@ -240,10 +240,10 @@ const PopupPage = () => {
                       </div>
                       <span
                         className={`${i < currentStep
+                          ? "text-green-500"
+                          : isActive && complete
                             ? "text-green-500"
-                            : isActive && complete
-                              ? "text-green-500"
-                              : "text-black"
+                            : "text-black"
                           } text-sm`}
                       >
                         {step.name}
