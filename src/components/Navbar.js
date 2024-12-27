@@ -77,41 +77,45 @@ const Navbar = () => {
           <div className="dropdown">
             <div onClick={() => handleOptionClick("Profile")}>
               <CgProfile
-                style={{
-                  marginRight: "10px",
-                  color: "#6f84f8",
-                  fontSize: "20px",
-                }}
+                className="profile-icon"
+                // style={{
+                //   marginRight: "10px",
+                //   color: "#6f84f8",
+                //   fontSize: "20px",
+                // }}
               />
               Profile
             </div>
             <div onClick={() => handleOptionClick("Settings")}>
               <IoSettingsOutline
-                style={{
-                  marginRight: "10px",
-                  color: "#6f84f8",
-                  fontSize: "20px",
-                }}
+                className="profile-icon"
+                // style={{
+                //   marginRight: "10px",
+                //   color: "#6f84f8",
+                //   fontSize: "20px",
+                // }}
               />
               Settings
             </div>
             <div onClick={() => handleOptionClick("Help")}>
               <FiHelpCircle
-                style={{
-                  marginRight: "10px",
-                  color: "#6f84f8",
-                  fontSize: "20px",
-                }}
+                className="profile-icon"
+                // style={{
+                //   marginRight: "10px",
+                //   color: "#6f84f8",
+                //   fontSize: "20px",
+                // }}
               />
               Help
             </div>
             <div onClick={() => handleOptionClick("Logout")}>
               <IoLogOutOutline
-                style={{
-                  marginRight: "10px",
-                  color: "#6f84f8",
-                  fontSize: "20px",
-                }}
+                className="profile-icon"
+                // style={{
+                //   marginRight: "10px",
+                //   color: "#6f84f8",
+                //   fontSize: "20px",
+                // }}
               />
               Logout
             </div>
