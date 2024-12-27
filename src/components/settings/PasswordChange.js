@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { API_ROUTES } from "../../routes";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { IoMdCloseCircle } from "react-icons/io";
 
-const PasswordChange = () => {
+const PasswordChange = ({ setChangePassword }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState(user.email);
@@ -80,10 +81,18 @@ const PasswordChange = () => {
   };
   return (
     <div className="m-5 p-5 border-2 border-gray-350 rounded-xl">
-      <div className="flex gap-2 items-center pb-3 mx-10 mt-4">
-        <div className="bg-[#6F84F8] w-2 rounded-[20px] h-8"></div>
-        <h2 className="text-xl ">Change Password</h2>
+      {/**Password change Header div */}
+      <div className="flex justify-between items-center">
+        <div className="flex gap-2 items-center pb-3 mx-10 mt-4">
+          <div className="bg-[#6F84F8] w-2 rounded-[20px] h-8"></div>
+          <h2 className="text-xl ">Change Password</h2>
+        </div>
+        <IoMdCloseCircle
+          onClick={() => setChangePassword(false)}
+          className="w-6 h-6 cursor-pointer hover:text-[#F57070]"
+        />
       </div>
+
       <div>
         {/**form */}
         <form
@@ -160,6 +169,8 @@ const PasswordChange = () => {
               Passwords do not match.
             </p>
           )}
+
+          {/**Buttons div */}
           <div className="flex items-center w-2/3">
             <button
               className=" cursor-pointer transition-all bg-[#F57070] text-white 
