@@ -76,7 +76,7 @@ const Security = () => {
           </div>
         </div>
       ) : (
-        <PasswordChange />
+        <PasswordChange setChangePassword={setChangePassword} />
       )}
     </div>
   );
