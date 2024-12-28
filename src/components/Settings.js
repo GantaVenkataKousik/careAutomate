@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import PersonalDetails from "./settings/PersonalDetails";
 import Security from "./settings/Security";
+import ChildAccountDetails from "./settings/ChildAccountDetails";
+import Preferences from "./settings/Preferences";
 
 export default function Settings() {
   const [selectedOption, setSelectedOption] = useState("Personal Details");
 
   const menuOptions = [
     "Personal Details",
-    "Account Details",
+    "Child Account Details",
     "Security",
     "Preferences",
   ];
@@ -32,8 +34,9 @@ export default function Settings() {
             width: "300px",
             display: "flex",
             flexDirection: "column",
-            height: "100%",
+            // height: "100%",
             paddingRight: "1rem",
+            height: "78vh",
           }}
         >
           {menuOptions.map((option) => (
@@ -67,10 +70,12 @@ export default function Settings() {
           }}
         >
           {selectedOption === "Personal Details" && <PersonalDetails />}
+          {selectedOption === "Child Account Details" && (
+            <ChildAccountDetails />
+          )}
           {selectedOption === "Security" && <Security />}
-          {/* {selectedOption === "Account Details" && <AccountDetails />}
-              
-              {selectedOption === "Preferences" && <Preferences />} */}
+
+          {selectedOption === "Preferences" && <Preferences />}
         </div>
       </div>
     </>
