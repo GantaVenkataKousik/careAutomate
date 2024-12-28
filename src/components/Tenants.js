@@ -208,7 +208,7 @@ const styles = {
   },
   tenantGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 280px))",
     gap: "20px",
     padding: "10px 10px 40px",
   },
