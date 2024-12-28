@@ -56,7 +56,7 @@ const PasswordChange = ({ setChangePassword }) => {
       email: email,
       password: password,
     };
-    console.log("Submitting:", payload);
+    // console.log("Submitting:", payload);
 
     try {
       const response = await fetch(`${API_ROUTES.AUTH.BASE}/change-password`, {
