@@ -32,95 +32,117 @@ const MainDashboard = () => {
           </h3>
         </div>
         <div className="mt-4">
-          <div className="flex gap-4">
+          <div className="gap-4">
             <div>
               <CardData />
-              <WeeklySchedule />
             </div>
-            <div className="flex gap-8 p-2">
-              <div>
-                <div className="flex gap-4">
-                  <button
-                    className={`py-2 px-6 font-semibold transition-colors duration-300 rounded-lg ${activeSection === "visit"
-                      ? "bg-[#6F84F8] text-white shadow-lg" // Updated color
-                      : "bg-gray-200 text-black hover:bg-gray-300"
+            <WeeklySchedule />
+            <div className="flex gap-8 my-5 p-2 w-full mx-auto">
+              <div className="flex shadow-md px-6 pt-6 pb-2 gap-10 justify-evenly border-2 rounded-3xl  w-full ">
+                <div className="p-5">
+                  <div className="flex gap-4">
+                    <button
+                      className={`py-2 px-6 font-semibold transition-colors duration-300 rounded-lg ${
+                        activeSection === "visit"
+                          ? "bg-[#6F84F8] text-white shadow-lg" // Updated color
+                          : "bg-gray-200 text-black hover:bg-gray-300"
                       }`}
-                    onClick={() => setActiveSection("visit")}
-                  >
-                    Visit Compliance
-                  </button>
-                  <button
-                    className={`py-2 px-6 font-semibold transition-colors duration-300 rounded-lg ${activeSection === "reassessment"
-                      ? "bg-[#6F84F8] text-white shadow-lg" // Updated color
-                      : "bg-gray-200 text-black hover:bg-gray-300"
+                      onClick={() => setActiveSection("visit")}
+                    >
+                      Visit Compliance
+                    </button>
+                    <button
+                      className={`py-2 px-6 font-semibold transition-colors duration-300 rounded-lg ${
+                        activeSection === "reassessment"
+                          ? "bg-[#6F84F8] text-white shadow-lg" // Updated color
+                          : "bg-gray-200 text-black hover:bg-gray-300"
                       }`}
-                    onClick={() => setActiveSection("reassessment")}
-                  >
-                    Tenant Reassessment
-                  </button>
+                      onClick={() => setActiveSection("reassessment")}
+                    >
+                      Tenant Reassessment
+                    </button>
+                  </div>
+                  <div className="mt-4">
+                    {activeSection === "visit" && (
+                      <>
+                        <VisitsTenats />
+                      </>
+                    )}
+                    {activeSection === "reassessment" && (
+                      <>
+                        <TenantReassessment />
+                      </>
+                    )}{" "}
+                  </div>
                 </div>
-                <div className="mt-4">
-                  {activeSection === "visit" && (
-                    <>
-                      <VisitsTenats />
-                    </>
-                  )}
-                  {activeSection === "reassessment" && (
-                    <>
-                      <TenantReassessment />
-                    </>
-                  )}{" "}
+
+                <div className="flex flex-col flex-2">
+                  <h3 className="mt-2 mb-2 text-2xl text-[#6f84f8] font-semibold">
+                    Info
+                  </h3>
+                  <div className="flex gap-2">
+                    <button
+                      className={`py-1 px-2 rounded-lg ${
+                        activeView === "tenant"
+                          ? "bg-[#6F84F8] text-white shadow-lg"
+                          : "bg-gray-200"
+                      }`}
+                      onClick={() => setActiveView("tenant")}
+                    >
+                      Tenant
+                    </button>
+                    <button
+                      className={`py-1 px-2 rounded-lg ${
+                        activeView === "hcm"
+                          ? "bg-[#6F84F8] text-white shadow-lg"
+                          : "bg-gray-200"
+                      }`}
+                      onClick={() => setActiveView("hcm")}
+                    >
+                      HCM
+                    </button>
+                  </div>
+                  <div className="mt-2">
+                    {activeView === "tenant" && (
+                      <>
+                        <h3 className="mt-2 ml-2 text-xl text-[#6f84f8] font-bold">
+                          Tenant
+                        </h3>
+                        <TenantInfoChart style={{ height: "150px" }} />{" "}
+                      </>
+                    )}
+                    {activeView === "hcm" && (
+                      <>
+                        <h3 className="mt-2 ml-2 text-xl text-[#6f84f8] font-bold">
+                          HCM
+                        </h3>
+                        <HCMInfoChart style={{ height: "150px" }} />{" "}
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex px-1 py-1 border-2 rounded-3xl shadow-md p-6 mt-4 gap-10 ">
-            <div className="flex flex-col">
-              <h3 className="mt-2 ml-2">Financial Flow</h3>
-              <FinancialFlowLineChart style={{ height: "150px" }} />
-            </div>
-            <div className="pay-period ml-4 ">
-              <h3 className="mt-2 ml-2">Pay Period</h3>
-              <PayPeriodChart style={{ height: "150px" }} />
-            </div>
-            <div className="pay-period ml-4 ">
-              <h3 className="mt-2 ml-2">Pay Period</h3>
-              <PayPeriodPieChart style={{ height: "150px" }} />
-            </div>
-            <div className="flex flex-col flex-2">
-              <h3 className="mt-2 mb-2">Info</h3>
-              <div className="flex gap-2">
-                <button
-                  className={`py-1 px-2 rounded-lg ${activeView === "tenant"
-                    ? "bg-[#6F84F8] text-white shadow-lg"
-                    : "bg-gray-200"
-                    }`}
-                  onClick={() => setActiveView("tenant")}
-                >
-                  Tenant
-                </button>
-                <button
-                  className={`py-1 px-2 rounded-lg ${activeView === "hcm"
-                    ? "bg-[#6F84F8] text-white shadow-lg"
-                    : "bg-gray-200"
-                    }`}
-                  onClick={() => setActiveView("hcm")}
-                >
-                  HCM
-                </button>
+          <div className="flex gap-8 p-2">
+            <div className="flex shadow-md px-10 py-6 gap-10 justify-between border-2 rounded-3xl w-full">
+              <div className="flex flex-col">
+                <h3 className="mt-2 ml-2 text-2xl text-[#6f84f8] font-semibold">
+                  Financial Flow
+                </h3>
+                <FinancialFlowLineChart style={{ height: "150px" }} />
               </div>
-              <div className="mt-2">
-                {activeView === "tenant" && (
-                  <>
-                    <TenantInfoChart style={{ height: "150px" }} />{" "}
-                  </>
-                )}
-                {activeView === "hcm" && (
-                  <>
-                    <h3 className="mt-2 ml-2">HCM</h3>
-                    <HCMInfoChart style={{ height: "150px" }} />{" "}
-                  </>
-                )}
+              <div className="ml-4 ">
+                <h3 className="mt-2 ml-2 text-2xl text-[#6f84f8] font-semibold">
+                  Pay Period
+                </h3>
+                <PayPeriodChart style={{ height: "150px" }} />
+              </div>
+              <div className="ml-4 ">
+                <h3 className="mt-2 ml-2 text-2xl text-[#6f84f8] font-semibold">
+                  Pay Period
+                </h3>
+                <PayPeriodPieChart style={{ height: "150px" }} />
               </div>
             </div>
           </div>

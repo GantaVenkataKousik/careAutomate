@@ -24,9 +24,8 @@ const MonthView = () => {
           },
         }
       );
-
-      if (response.data.appointments) {
-        const mappedAppointments = response.data.appointments.map((apt) => ({
+      if (response.data.response) {
+        const mappedAppointments = response.data.response.map((apt) => ({
           id: apt._id,
           date: new Date(apt.date).toLocaleDateString("en-US", {
             weekday: "short",
@@ -41,6 +40,7 @@ const MonthView = () => {
           status: apt.status.charAt(0).toUpperCase() + apt.status.slice(1),
         }));
         setAppointments(mappedAppointments);
+        console.log("Mapped: ", mappedAppointments);
       } else {
         console.error("Failed to fetch appointment data");
       }
@@ -68,7 +68,7 @@ const MonthView = () => {
   const events = appointmentFilter(appointments);
 
   return (
-    <div style={{ marginTop: '-10px', marginBottom: '10px' }}>
+    <div style={{ marginTop: "-10px", marginBottom: "10px" }}>
       <div className="flex justify-end mb-2">
         <select value={selectedDate.getMonth()} onChange={handleMonthChange}>
           {moment.months().map((month, index) => (
@@ -95,7 +95,7 @@ const MonthView = () => {
         date={selectedDate}
         onNavigate={(date) => setSelectedDate(date)}
         toolbar={false}
-        style={{ width: "70vh", height: "30vh", marginTop: "-2vh" }}
+        style={{ height: "60vh" }}
         eventPropGetter={(event) => {
           let color = "";
           switch (event.status) {
