@@ -30,7 +30,7 @@ const HcmDashboard = () => {
         <HcmProfileCard hcm={selectedHcm} />
 
         {/* Tenants Assigned Component */}
-        <TenantsAssigned />
+        <TenantsAssigned hcmId={hcmId} />
       </div>
       <div className="flex gap-5">
         {/* Appointments and Communications */}
