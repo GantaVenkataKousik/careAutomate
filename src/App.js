@@ -28,6 +28,7 @@ import PlanUsage from "./components/PlanUsage";
 import Onboarding from "./components/Onboarding.js";
 import MainDashboard from "./components/mainDashboard/MainDashBoard.js";
 import HcmDashboard from "./components/hcmsPage/HcmDashboard.js";
+import Profile from "./components/Profile/Profile.js";
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -151,6 +152,14 @@ const App = () => {
               element={
                 <AppLayout>
                   <Settings />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <AppLayout>
+                  <Profile />
                 </AppLayout>
               }
             />
