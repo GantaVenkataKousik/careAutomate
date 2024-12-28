@@ -23,7 +23,7 @@ const AppoinmentVisits = ({ hcmId }) => {
         throw new Error("Authorization token not found");
       }
 
-      const response = await fetch(`${API_ROUTES.VISITS}/filtervisits`, {
+      const response = await fetch(`${API_ROUTES.VISITS.BASE}/filtervisits`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,7 +51,7 @@ const AppoinmentVisits = ({ hcmId }) => {
       }
 
       const response = await fetch(
-        `${API_ROUTES.APPOINTMENTS}/filterAppointments`,
+        `${API_ROUTES.APPOINTMENTS.BASE}/filterAppointments`,
         {
           method: "POST",
           headers: {
@@ -67,6 +67,7 @@ const AppoinmentVisits = ({ hcmId }) => {
       }
 
       const data = await response.json();
+
       setAppointments(data);
       setIsLoading(false);
     } catch (err) {
@@ -91,7 +92,7 @@ const AppoinmentVisits = ({ hcmId }) => {
             </h2>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#6F84F8] mb-4 text-md">Today</span>
+            <span className="text-[#6F84F8] mb-4 text-md">{` `}</span>
             <a
               href="/appointments"
               className="text-[#6F84F8] hover:underline text-md"
@@ -99,62 +100,51 @@ const AppoinmentVisits = ({ hcmId }) => {
               View More
             </a>
           </div>
+          <div className="space-y-2 overflow-y-auto max-h-[calc(5*7rem)] mt-2 tenant-visits-scrollbar">
+            {/* Display upcoming appointments */}
+            {appointments?.appointments?.upcoming &&
+            Object.keys(appointments.appointments.upcoming).length > 0 ? (
+              Object.entries(appointments.appointments.upcoming).map(
+                ([year, months]) =>
+                  Object.entries(months).map(([month, days]) =>
+                    Object.entries(days).map(([day, appointmentsForDay]) => (
+                      <div key={`${year}-${month}-${day}`}>
+                        {/* Display date */}
+                        <div className="bg-gray-100 p-2 rounded-md font-semibold text-gray-800">
+                          {`${day} ${month}, ${year}`}
+                        </div>
+                        {appointmentsForDay.map((appointment) => (
+                          <div key={appointment._id} className="mt-2">
+                            <div className="mb-3 rounded-[20px]">
+                              <div className="flex justify-between items-center mt-3">
+                                <p className="text-[#6F84F8]">
+                                  {appointment.hcmDetails.name}
+                                </p>
+                                <div className="flex space-x-3 text-gray-500"></div>
+                              </div>
 
-          <div className="space-y-2 overflow-y-auto max-h-[calc(5*5rem)] mt-2 tenant-visits-scrollbar">
-            {/* Loop through upcoming appointments */}
-            {appointments?.["appointments"]?.["upcoming"]?.[
-              today.getFullYear()
-            ]?.[monthNames[today.getMonth()]]?.[
-              today.getDate() < 9 ? "0" + today.getDate() : today.getDate
-            ] ? (
-              appointments["appointments"]["upcoming"][today.getFullYear()][
-                monthNames[today.getMonth()]
-              ][
-                today.getDate() < 9 ? "0" + today.getDate() : today.getDate
-              ].map((appointment) => (
-                <div key={appointment._id}>
-                  <div className="flex justify-between items-center">
-                    <p className="font-semibold text-gray-700">
-                      {appointment.startTime.length > 6
-                        ? formatTime(appointment.startTime)
-                        : appointment.startTime}{" "}
-                      -{" "}
-                      {appointment.endTime.length > 6
-                        ? formatTime(appointment.endTime)
-                        : appointment.endTime}
-                    </p>
-                  </div>
-                  <div className="hover:bg-green-100 p-3 rounded-[20px]">
-                    <div className="flex justify-between items-center mt-3">
-                      {/* Display tenant's name */}
-                      <p className="text-[#6F84F8]">
-                        {appointment.hcmDetails.name}
-                      </p>
-                      <div className="flex space-x-3 text-gray-500">
-                        <FaMicrophone />
-                        <FaUser />
-                        <PhoneInTalkIcon />
+                              <div className=" mt-2">
+                                <p className="font-medium text-gray-800 text-md">
+                                  {`${new Date(appointment.startTime).getHours().toString().padStart(2, "0")}:${new Date(appointment.startTime).getMinutes().toString().padStart(2, "0")}`}{" "}
+                                  -{" "}
+                                  {`${new Date(appointment.endTime).getHours().toString().padStart(2, "0")}:${new Date(appointment.endTime).getMinutes().toString().padStart(2, "0")}`}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  {appointment.serviceType}
+                                </p>
+                              </div>
+                            </div>
+                            <hr className="my-2" />
+                          </div>
+                        ))}
                       </div>
-                    </div>
-                    <div className="flex justify-between items-center mt-2">
-                      {/* Display service type */}
-                      <p className="text-sm text-gray-600">
-                        {appointment.serviceType}
-                      </p>
-                      <div className="flex space-x-2">
-                        <div className="w-6 h-6 bg-green-200 flex items-center justify-center rounded-full">
-                          <FaCheck className="text-green-600" />
-                        </div>
-                        <div className="w-6 h-6 bg-red-200 flex items-center justify-center rounded-full">
-                          <FaTimes className="text-red-600" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
+                    ))
+                  )
+              )
             ) : (
-              <p>No upcoming appointments for this day.</p>
+              <p className="text-gray-500 text-center mt-5">
+                No upcoming appointments available.
+              </p>
             )}
           </div>
         </div>
@@ -168,9 +158,9 @@ const AppoinmentVisits = ({ hcmId }) => {
             <h2 className="text-2xl font-semibold text-[#6F84F8]">Visits</h2>
           </div>
           <div className="flex justify-between">
-            <span className="block text-[#6F84F8] text-md">Today</span>
+            <span className="block text-[#6F84F8] text-md">{` `}</span>
             <a
-              href="/calendar"
+              href="/visits"
               className="text-[#6F84F8] hover:underline text-md"
             >
               View More
@@ -178,23 +168,26 @@ const AppoinmentVisits = ({ hcmId }) => {
           </div>
 
           <div
-            className="space-y-2 overflow-y-auto max-h-[calc(5*5rem)] mt-2 tenant-visits-scrollbar" // Adjust height to show 5-6 items
+            className="space-y-2 overflow-y-auto max-h-[calc(5*7rem)] tenant-visits-scrollbar mt-2" // Adjust height to show 5-6 items
           >
-            {visits?.visits?.length > 0 ? (
-              visits.visits.map((visit) => (
-                <div key={visit.id} className="p-2">
+            {visits?.response?.length > 0 ? (
+              visits.response.map((visit) => (
+                <div key={visit.id} className="">
+                  {/* Display the date */}
+                  <div className="bg-gray-100 p-2 rounded-md font-semibold text-gray-800">
+                    {new Date(visit.date).toLocaleDateString("en-US", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </div>
+
                   <div className="flex justify-between items-center mt-3">
                     <p className="font-medium text-[#6F84F8]">
-                      {visit?.hcmId?.name || "Unknown Name"}
+                      {visit?.tenantId?.name || "Unknown Name"}
                     </p>
-
-                    <div className="flex space-x-3 text-gray-500">
-                      <FaMicrophone />
-                      <FaUser />
-                      <FaFileAlt />
-                      <FaBars />
-                    </div>
                   </div>
+
                   <div className="flex justify-between items-center mt-2">
                     <div>
                       <p className="text-gray-800">
@@ -204,23 +197,21 @@ const AppoinmentVisits = ({ hcmId }) => {
                         -{" "}
                         {visit.endTime.length > 6
                           ? formatTime(visit.endTime)
-                          : visit.endTime}
+                          : visit.endTime}{" "}
                       </p>
                       <p className="text-sm text-gray-600">
                         {visit.serviceType || "No Purpose"}
                       </p>
                     </div>
-                    <a
-                      href="/sign-send"
-                      className="text-[#6F84F8] hover:underline text-[15px]"
-                    >
-                      Sign & Send
-                    </a>
                   </div>
+
+                  <hr className="my-2 mt-3" />
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 text-center">No visits available</p>
+              <p className="text-gray-500 text-center mt-5">
+                No visits available
+              </p>
             )}
           </div>
         </div>
