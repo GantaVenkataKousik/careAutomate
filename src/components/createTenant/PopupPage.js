@@ -13,10 +13,15 @@ import Box from "@mui/material/Box";
 import { resetTenantInfo } from "../../redux/tenant/tenantSlice";
 import { createdTenant, createdTenantName } from "../../redux/hcm/hcmSlice";
 import { BASE_URL } from "../../config";
+import ChecklistHCMs from "./AssignHCMs";
 const steps = [
   {
     name: "Personal Info",
     subSteps: [SubStep1],
+  },
+  {
+    name: "Assign HCMs",
+    subSteps: [ChecklistHCMs],
   },
   {
     name: "Assign Services",
@@ -38,9 +43,11 @@ const PopupPage = () => {
   const [complete, setComplete] = useState(false);
   const [tenantID, setTenantID] = useState(null);
   const [tenantName, setTenantName] = useState(null);
+  const assignedTenants = useSelector((state) => state.hcm.assignedTenants);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const tenantData = useSelector((state) => state.tenant);
+  const hcmId = useSelector((state) => state.hcm.hcmId);
 
   const togglePopup = () => {
     navigate("/tenants");
@@ -80,6 +87,42 @@ const PopupPage = () => {
     // Save data when completing Step 1
     if (currentStep === 0) {
       await handleSave();
+    }
+
+    if (currentStep === 1) {
+      console.log("Assigned Tenants in step2:", assignedTenants);
+      const token = localStorage.getItem("token");
+      console.log("Assigned HCMs", assignedTenants);
+      const data = {
+        tenantId: tenantID,
+        hcmIds: assignedTenants,
+      };
+      console.log("data", data);
+      try {
+        const response = await axios.post(
+          `${BASE_URL}/tenant/assign-hcms-to-tenant/`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.status >= 200 && response.status < 300) {
+          toast.success("Assigned tenants saved successfully");
+        } else {
+          console.error(
+            "Failed to save assigned tenants:",
+            response.statusText
+          );
+          toast.error("Failed to save assigned tenants.");
+        }
+      } catch (error) {
+        console.error("Error during API call to save assigned tenants:", error);
+        toast.error("Error saving assigned tenants. Please try again.");
+      }
     }
 
     if (currentStep < steps.length - 1) {

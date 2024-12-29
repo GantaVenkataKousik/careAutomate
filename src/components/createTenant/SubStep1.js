@@ -193,7 +193,7 @@ const SubStep1 = () => {
         <br></br>
         <div>
           <h1 style={{ color: "#000080", fontSize: "1rem", fontWeight: "600" }}>
-            Mailing Address:
+            Mailing Address: <span className="text-red-500">*</span>
           </h1>
           <div style={{ display: "flex" }}>
             <div style={{ marginRight: "1rem" }}>
