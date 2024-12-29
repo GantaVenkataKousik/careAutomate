@@ -15,7 +15,6 @@ const Substep12 = ({ tenantID }) => {
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState({});
-  const [fileToUpload, setFileToUpload] = useState(null);
   const [fetchedDocuments, setFetchedDocuments] = useState([]); // State for fetched documents
   // Fetch the documents for the tenant
   useEffect(() => {
@@ -153,7 +152,7 @@ const Substep12 = ({ tenantID }) => {
       formData.append('document', documentFile);
 
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/tenant/upload-document",
+        `${BASE_URL}/tenant/upload-document`,
         formData,
         {
           headers: {
@@ -182,7 +181,7 @@ const Substep12 = ({ tenantID }) => {
 
         // Refresh the documents list
         const fetchResponse = await axios.post(
-          `https://careautomate-backend.vercel.app/tenant/get-documents`,
+          `${BASE_URL}/tenant/get-documents`,
           {
             tenantId: tenantID
           },

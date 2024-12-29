@@ -182,7 +182,7 @@ const ProfilePage = () => {
         "Review meeting for the last quarter's performance and next steps.",
     },
     {
-      id: 4,
+      id: 14,
       name: "Sarah",
       date: "08-11-2024, 4:00 PM",
       description:
@@ -259,7 +259,7 @@ const ProfilePage = () => {
             <div className="space-y-2 overflow-y-auto max-h-[calc(5*7rem)] mt-2 tenant-visits-scrollbar">
               {/* Display upcoming appointments */}
               {appointments?.appointments?.upcoming &&
-              Object.keys(appointments.appointments.upcoming).length > 0 ? (
+                Object.keys(appointments.appointments.upcoming).length > 0 ? (
                 Object.entries(appointments.appointments.upcoming).map(
                   ([year, months]) =>
                     Object.entries(months).map(([month, days]) =>

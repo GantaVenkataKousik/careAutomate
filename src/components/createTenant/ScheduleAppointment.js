@@ -301,7 +301,7 @@ const ScheduleAppointment = () => {
                   ))
                 ) : (
                   <option value="" disabled>
-                    Loading tenants...
+                    Loading HCMs...
                   </option>
                 )}
               </select>
