@@ -40,10 +40,12 @@ const MnitsLogin = () => {
           <h2 className="text-xl font-semibold text-gray-600">Mnits Login</h2>
         </div>
         <button
-          onClick={() => setEditMode(!editMode)}
-          className="text-blue-500 font-semibold"
+          className={`text-white p-2 px-5 rounded-full ${editMode ? "bg-[#F57070]" : "bg-[#6F84F8]"} `}
+          onClick={() => {
+            setEditMode(!editMode);
+          }}
         >
-          {editMode ? "Save" : "Edit"}
+          {editMode ? "Cancel" : "Edit"}
         </button>
       </div>
       {/* Inner Container */}
