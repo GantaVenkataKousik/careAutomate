@@ -169,13 +169,21 @@ const ScheduleAppointment = () => {
     console.log("Date:", startDate);
     console.log("Start Time:", startTime);
     console.log("End Time:", endTime);
-    const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
-    const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
+    const datePart = startDate.toISOString().split("T")[0];
+    // Combine date with startTime and endTime, then create new Date objects in UTC
+    const startDateTime = new Date(`${datePart}T${startTime}:00Z`);
+    const endDateTime = new Date(`${datePart}T${endTime}:00Z`);
+
+    // Convert to ISO 8601 strings
     const formattedStartTime = startDateTime.toISOString();
     const formattedEndTime = endDateTime.toISOString();
+
+    console.log("Formatted Start Time:", formattedStartTime);
+    console.log("Formatted End Time:", formattedEndTime);
+
     const payload = {
-      tenantId: hcm || "Unknown",
-      hcmId: hcmId || "N/A",
+      tenantId: hcmId || "Unknown",
+      hcmId: hcm || "N/A",
       date: startDate, // Send date separately
       startTime: formattedStartTime,
       endTime: formattedEndTime,
