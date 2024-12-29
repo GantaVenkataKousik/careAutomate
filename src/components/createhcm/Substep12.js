@@ -3,7 +3,7 @@ import { FaFolder, FaUpload } from "react-icons/fa";
 import { MdDelete, MdClose } from "react-icons/md";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import { BASE_URL } from '../../config'
 const Substep12 = ({ tenantID }) => {
   const [folders, setFolders] = useState([
     "Intake Documents",
@@ -158,7 +158,7 @@ const Substep12 = ({ tenantID }) => {
 
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/tenant/upload-document",
+        `${BASE_URL}/tenant/upload-document`,
         data,
         {
           headers: {
