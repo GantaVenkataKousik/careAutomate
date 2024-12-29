@@ -82,7 +82,7 @@ const ScheduleAppointment = () => {
     const fetchHcm = async () => {
       try {
         const response = await fetch(
-          "https://careautomate-backend.vercel.app/hcm/all",
+          `${BASE_URL}/hcm/all`,
           {
             method: "POST",
             headers: {
@@ -149,7 +149,7 @@ const ScheduleAppointment = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/tenant/create-appointment",
+        `${BASE_URL}/tenant/create-appointment`,
         payload,
         {
           headers: {
