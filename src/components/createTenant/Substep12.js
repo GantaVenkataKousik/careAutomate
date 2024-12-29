@@ -15,7 +15,6 @@ const Substep12 = ({ tenantID }) => {
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [selectedYear, setSelectedYear] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState({});
-  const [fileToUpload, setFileToUpload] = useState(null);
   const [fetchedDocuments, setFetchedDocuments] = useState([]); // State for fetched documents
   // Fetch the documents for the tenant
   useEffect(() => {
