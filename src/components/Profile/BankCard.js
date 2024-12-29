@@ -3,16 +3,16 @@ import "./BankCard.css";
 import cardlogo from "../../images/BankCard/cardlogo.png";
 import chip from "../../images/BankCard/chip.png";
 
-const BankCard = ({ editMode }) => {
+const BankCard = ({ editMode, setEditMode }) => {
   const [cardNumber, setCardNumber] = useState("4532123456789012");
-  const [cardName, setCardName] = useState("Surya Abothula");
+  const [nameOnCard, setNameOnCard] = useState("Surya Abothula");
   const [expiryDate, setExpiryDate] = useState("2025-12");
   const [formData, setFormData] = useState({
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    state: "",
-    zipCode: "",
+    addressLine1: "addressLine1",
+    addressLine2: "addressLine2",
+    city: "city",
+    state: "state",
+    zipCode: "533103",
   });
 
   const getCardType = (cardNumber) => {
@@ -42,7 +42,10 @@ const BankCard = ({ editMode }) => {
 
   const getInputProps = () => {
     if (editMode) {
-      return { disabled: false, className: "border rounded-lg bg-[#6F84F8]" };
+      return {
+        disabled: false,
+        className: "rounded-lg border-2 border-gray-400 py-2 px-5",
+      };
     } else {
       return {
         disabled: true,
@@ -54,12 +57,27 @@ const BankCard = ({ editMode }) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const payload = {
+      nameOnCard: nameOnCard,
+      cardNumber: cardNumber,
+      expiryDate: expiryDate,
+      billingAddress: {
+        addressLine1: formData.addressLine1,
+        addressLine2: formData.addressLine2,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zipCode,
+      },
+    };
+    console.log(payload);
+  };
   const { disabled, className } = getInputProps();
 
   return (
     <div className="flex justify-center m-5 p-5 rounded-xl items-center">
-      <form>
+      <form onSubmit={handleSubmit}>
         {/**Card div */}
         <div className="bankcard-container">
           <header className="bankcard-header">
@@ -85,8 +103,8 @@ const BankCard = ({ editMode }) => {
               <h5 className="bankcard-name">
                 <input
                   type="text"
-                  value={cardName}
-                  onChange={(e) => setCardName(e.target.value)}
+                  value={nameOnCard}
+                  onChange={(e) => setNameOnCard(e.target.value)}
                   placeholder="Enter name on card"
                   disabled={disabled}
                   className={className}
@@ -102,7 +120,7 @@ const BankCard = ({ editMode }) => {
                   onChange={(e) => setExpiryDate(e.target.value)}
                   placeholder="MM/YY"
                   disabled={disabled}
-                  className={`${className} w-full`}
+                  className={`${className} ${editMode ? "w-36" : "w-full"}`}
                 />
               </h5>
             </div>
@@ -208,6 +226,23 @@ const BankCard = ({ editMode }) => {
             </div>
           </div>
         </div>
+
+        {editMode && (
+          <div className="flex items-center w-2/3">
+            <button
+              className=" cursor-pointer   text-[#F57070] rounded-lg border-[#F57070] border-2 py-3 px-6 w-full mt-4 mb-9 mr-8 hover:bg-[#F57070] hover:text-white"
+              onClick={() => setEditMode((prev) => !prev)}
+            >
+              Reset Changes
+            </button>
+            <button
+              className=" cursor-pointer   text-[#6F84F8] rounded-lg border-[#6F84F8] border-2 py-3 px-6 w-full mt-4 mb-9 mr-8 hover:bg-[#6F84F8] hover:text-white"
+              type="submit"
+            >
+              Save Changes
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );
