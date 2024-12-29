@@ -153,7 +153,7 @@ const Substep12 = ({ tenantID }) => {
       formData.append('document', documentFile);
 
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/tenant/upload-document",
+        `${BASE_URL}/tenant/upload-document`,
         formData,
         {
           headers: {
@@ -182,7 +182,7 @@ const Substep12 = ({ tenantID }) => {
 
         // Refresh the documents list
         const fetchResponse = await axios.post(
-          `https://careautomate-backend.vercel.app/tenant/get-documents`,
+          `${BASE_URL}/tenant/get-documents`,
           {
             tenantId: tenantID
           },
