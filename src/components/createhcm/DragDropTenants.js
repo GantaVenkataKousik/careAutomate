@@ -8,6 +8,7 @@ const ChecklistTenants = () => {
   const assignedTenantsRedux = useSelector(
     (state) => state.hcm.assignedTenants
   );
+  console.log(assignedTenantsRedux);
   const [allTenants, setAllTenants] = useState([]);
   const [selectedTenants, setSelectedTenants] = useState(
     assignedTenantsRedux || []

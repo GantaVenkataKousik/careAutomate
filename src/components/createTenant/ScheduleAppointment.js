@@ -11,6 +11,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { BASE_URL } from "../../config";
 
 const ScheduleAppointment = () => {
   const [hcm, setHcm] = useState("");
@@ -77,26 +78,64 @@ const ScheduleAppointment = () => {
 
   //   fetchTenants();
   // }, []);
-
+  const activities = {
+    "Housing Transition": [
+      "Developing a housing transition plan",
+      "Supporting the person in applying for benefits to afford their housing",
+      "Assisting the person with the housing search and application process",
+      "Assisting the person with tenant screening and housing assessments",
+      "Providing transportation with the person receiving services present and discussing housing related issues",
+      "Helping the person understand and develop a budget",
+      "Helping the person understand and negotiate a lease",
+      "Helping the person meet and build a relationship with a prospective landlord",
+      "Promoting/supporting cultural practice needs and understandings with prospective landlords, property managers",
+      "Helping the person find funding for deposits",
+      "Helping the person organize their move",
+      "Researching possible housing options for the person",
+      "Contacting possible housing options for the person",
+      "Identifying resources to pay for deposits or home goods",
+      "Identifying resources to cover moving expenses",
+      "Completing housing applications on behalf of the service recipient",
+      "Working to expunge records or access reasonable accommodations",
+      "Identifying services and benefits that will support the person with housing instability",
+      "Ensuring the new living arrangement is safe for the person and ready for move-in",
+      "Arranging for adaptive house related accommodations required by the person",
+      "Arranging for assistive technology required by the person",
+    ],
+    "Housing Sustaining": [
+      "Developing, updating and modifying the housing support and crisis/safety plan on a regular basis",
+      "Preventing and early identification of behaviors that may jeopardize continued housing",
+      "Educating and training on roles, rights, and responsibilities of the tenant and property manager",
+      "Transportation with the person receiving services present and discussing housing related issues",
+      "Promoting/supporting cultural practice needs and understandings with landlords, property managers and neighbors",
+      "Coaching to develop and maintain key relationships with property managers and neighbors",
+      "Advocating with community resources to prevent eviction when housing is at risk and maintain person’s safety",
+      "Assistance with the housing recertification processes",
+      "Continued training on being a good tenant, lease compliance, and household management",
+      "Supporting the person to apply for benefits to retain housing",
+      "Supporting the person to understand and maintain/increase income and benefits to retain housing",
+      "Supporting the building of natural housing supports and resources in the community including building supports and resources related to a person’s culture and identity",
+      "Working with property manager or landlord to promote housing retention",
+      "Arranging for assistive technology",
+      "Arranging for adaptive house related accommodations",
+    ],
+  };
   useEffect(() => {
     const fetchHcm = async () => {
       try {
-        const response = await fetch(
-          "https://careautomate-backend.vercel.app/hcm/all",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({}),
-          }
-        );
+        const response = await fetch(`${BASE_URL}/hcm/all`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
 
         const data = await response.json();
-
+        console.log(data);
         if (response.status === 200 && data.success) {
-          const hcmData = data.hcms.map((hcm) => ({
+          const hcmData = data.response.map((hcm) => ({
             id: hcm._id,
             name: hcm.name,
           }));
@@ -130,13 +169,16 @@ const ScheduleAppointment = () => {
     console.log("Date:", startDate);
     console.log("Start Time:", startTime);
     console.log("End Time:", endTime);
-
+    const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
+    const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
+    const formattedStartTime = startDateTime.toISOString();
+    const formattedEndTime = endDateTime.toISOString();
     const payload = {
       tenantId: hcm || "Unknown",
       hcmId: hcmId || "N/A",
       date: startDate, // Send date separately
-      startTime, // Send start time as time only
-      endTime, // Send end time as time only
+      startTime: formattedStartTime,
+      endTime: formattedEndTime,
       activity: activity || "N/A",
       methodOfContact,
       reasonForRemote: reasonForRemote,
@@ -149,7 +191,7 @@ const ScheduleAppointment = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "https://careautomate-backend.vercel.app/tenant/create-appointment",
+        `${BASE_URL}/tenant/create-appointment`,
         payload,
         {
           headers: {
@@ -299,13 +341,18 @@ const ScheduleAppointment = () => {
                 <SlNote size={24} className="mr-2" />
                 Activity
               </label>
-              <input
-                type="text"
+              <select
                 value={activity}
                 onChange={(e) => setActivity(e.target.value)}
-                placeholder="Enter Activity"
                 className="border border-gray-300 rounded-md p-2 w-2/3"
-              />
+              >
+                <option value="">Select an activity</option>
+                {activities[serviceType].map((activity, index) => (
+                  <option key={index} value={activity}>
+                    {activity}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="flex gap-4">
@@ -355,13 +402,20 @@ const ScheduleAppointment = () => {
                 <GrLocation size={24} className="mr-2" />
                 Place of Service
               </label>
-              <input
-                type="text"
+              <select
                 value={planOfService}
                 onChange={(e) => setPlanOfService(e.target.value)}
-                placeholder="Place of Service"
                 className="border border-gray-300 rounded-md p-2 w-2/3"
-              />
+              >
+                <option value="" disabled>
+                  Select a place of service
+                </option>
+                <option value="Office">Office</option>
+                <option value="Home">Home</option>
+                <option value="Institution">Institution</option>
+                <option value="Community">Community</option>
+                <option value="Other">Other</option>
+              </select>
             </div>
 
             {/* Method of Contact */}
