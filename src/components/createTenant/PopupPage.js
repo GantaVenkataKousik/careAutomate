@@ -148,10 +148,12 @@ const PopupPage = () => {
       });
 
       if (response.status >= 200 && response.status < 300) {
-        const id = response.data?.tenantID;
+        console.log("result", response);
+        const id = response.data?.response.tenantID;
         const first = response.data?.tenantData?.firstName;
         const last = response.data?.tenantData?.lastName;
         const name = `${first + last}`;
+
         dispatch(createdTenantName(name));
         setTenantName(name);
         console.log(`Tenant ID saved: ${id}`);
