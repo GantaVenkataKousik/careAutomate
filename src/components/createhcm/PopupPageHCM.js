@@ -49,8 +49,8 @@ const PopupPage = () => {
   const assignedTenants = useSelector((state) => state.hcm.assignedTenants); // Access Redux state
   const hcmId = useSelector((state) => state.hcm.hcmId);
   const hcmName = useSelector((state) => state.hcm.hcmName);
-  console.log(hcmName);
-  console.log("hcl id", hcmId);
+  // console.log(hcmName);
+  // console.log("hcl id", hcmId);
   const togglePopup = () => {
     navigate("/hcms");
     dispatch(resetTenantInfo());
@@ -66,19 +66,24 @@ const PopupPage = () => {
     // Log assigned tenants from Redux at Step 2
     if (currentStep === 2) {
       console.log("Assigned Tenants in step2:", assignedTenants);
+      console.log("hcmid", hcmId);
       const token = localStorage.getItem("token");
       const data = {
         hcmId: hcmId,
-        tenantIds: assignedTenants,
+        tenantId: assignedTenants,
       };
-
+      console.log("data", data);
       try {
-        const response = await axios.post(`${BASE_URL}/hcm/assign-hcm`, data, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await axios.post(
+          `${BASE_URL}/hcm/assign-tenant-to-hcm`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (response.status >= 200 && response.status < 300) {
           toast.success("Assigned tenants saved successfully");
@@ -145,9 +150,9 @@ const PopupPage = () => {
     const SubStepComponent = steps[currentStep].subSteps[0];
     if (SubStepComponent) {
       console.log(
-        `Rendering step ${currentStep + 1}, passing tenantID: ${tenantID}`
+        `Rendering step ${currentStep + 1}, passing tenantID: ${hcmId}`
       );
-      return <SubStepComponent tenantID={tenantID} />;
+      return <SubStepComponent tenantID={hcmId} />;
     }
     return null;
   };
@@ -239,12 +244,13 @@ const PopupPage = () => {
                         </span>
                       </div>
                       <span
-                        className={`${i < currentStep
-                          ? "text-green-500"
-                          : isActive && complete
+                        className={`${
+                          i < currentStep
                             ? "text-green-500"
-                            : "text-black"
-                          } text-sm`}
+                            : isActive && complete
+                              ? "text-green-500"
+                              : "text-black"
+                        } text-sm`}
                       >
                         {step.name}
                       </span>
@@ -253,8 +259,9 @@ const PopupPage = () => {
                       <div className="flex-1 mx-2 -mt-10">
                         <div className="w-full h-2 bg-gray-300 rounded-full">
                           <div
-                            className={`h-2 rounded-full ${i < currentStep ? "bg-indigo-500" : "bg-gray-300"
-                              }`}
+                            className={`h-2 rounded-full ${
+                              i < currentStep ? "bg-indigo-500" : "bg-gray-300"
+                            }`}
                             style={{
                               width: `${i === currentStep ? 100 : i < currentStep ? 100 : 0}%`,
                             }}
