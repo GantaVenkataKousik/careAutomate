@@ -3,7 +3,7 @@ import { FaFolder, FaUpload } from "react-icons/fa";
 import { MdDelete, MdClose } from "react-icons/md";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { BASE_URL } from '../../config'
+import { BASE_URL } from "../../config";
 const Substep12 = ({ tenantID }) => {
   const [folders, setFolders] = useState([
     "Intake Documents",
@@ -24,17 +24,14 @@ const Substep12 = ({ tenantID }) => {
     const fetchDocuments = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `https://careautomate-backend.vercel.app/tenant/fetch-documents`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            params: {
-              tenantId: tenantID, // Pass tenantID in request
-            },
-          }
-        );
+        const response = await axios.get(`${BASE_URL}/tenant/fetch-documents`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            tenantId: tenantID, // Pass tenantID in request
+          },
+        });
 
         if (response.data.success) {
           setFetchedDocuments(response.data.documents); // Assuming the API response contains 'documents'
