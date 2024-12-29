@@ -70,12 +70,12 @@ const PopupPage = () => {
       const token = localStorage.getItem("token");
       const data = {
         hcmId: hcmId,
-        tenantId: assignedTenants,
+        tenantIds: assignedTenants,
       };
       console.log("data", data);
       try {
         const response = await axios.post(
-          `${BASE_URL}/hcm/assign-tenant-to-hcm`,
+          `${BASE_URL}/hcm/assign-tenants-to-hcm`,
           data,
           {
             headers: {
