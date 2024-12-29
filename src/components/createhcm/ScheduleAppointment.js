@@ -95,16 +95,16 @@ const ScheduleAppointment = () => {
     console.log("Date:", startDate);
     console.log("Start Time:", startTime);
     console.log("End Time:", endTime);
-    const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
-    const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
-    const formattedStartTime = startDateTime.toISOString();
-    const formattedEndTime = endDateTime.toISOString();
+    // const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
+    // const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
+    // const formattedStartTime = startDateTime.toISOString();
+    // const formattedEndTime = endDateTime.toISOString();
     const payload = {
       tenantId: hcm || "Unknown",
       hcmId: hcmId || "N/A",
       date: startDate, // Send date separately
-      startTime: formattedStartTime,
-      endTime: formattedEndTime,
+      startTime,
+      endTime,
       activity: activity || "N/A",
       methodOfContact,
       reasonForRemote: reasonForRemote,

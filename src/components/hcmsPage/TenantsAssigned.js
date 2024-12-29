@@ -54,7 +54,7 @@ const TenantsAssigned = ({ hcmId }) => {
   }, [hcmId]);
 
   return (
-    <div className="bg-white p-5 rounded-[20px] shadow-lg max-w-lg mx-auto">
+    <div className="bg-white p-5 rounded-[20px] shadow-lg max-w-md mx-auto h-[50vh]">
       {/* Assigned HCMs Header */}
       <div className="flex flex-col mb-6">
         <div className="flex items-center gap-3">
@@ -72,10 +72,10 @@ const TenantsAssigned = ({ hcmId }) => {
       </div>
 
       {/* List of Assigned HCMs */}
-      <div className="space-y-3">
+      <div className="space-y-3 h-[70%] overflow-y-auto tenant-visits-scrollbar">
         {tenants.map((tenant) => (
           <div
-            className="bg-[#e3e7f8] flex items-center justify-between p-3 rounded-lg shadow-sm"
+            className="bg-[#e3e7f8] flex items-center justify-between p-3 rounded-lg shadow-sm "
             key={tenant._id}
           >
             <FaUserTie className="text-xl text-black " />

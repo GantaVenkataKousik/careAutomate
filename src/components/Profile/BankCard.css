@@ -1,0 +1,57 @@
+.bankcard-container {
+  position: relative;
+  background: rgba(111, 132, 248, 0.8);
+  box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 35px;
+  border-radius: 30px;
+  max-width: 480px;
+  width: 100%;
+}
+
+.bankcard-header,
+.bankcard-logo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bankcard-logo img {
+  width: 56px;
+  margin-right: 12px;
+}
+
+.bankcard-chip {
+  width: 72px;
+}
+
+.bankcard-header h5 {
+  font-size: 18px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.bankcard-header-tags {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.bankcard-number {
+  margin-top: 8px;
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+
+.bankcard-name {
+  margin-top: 24px;
+}
+
+.bankcard-card-details {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
