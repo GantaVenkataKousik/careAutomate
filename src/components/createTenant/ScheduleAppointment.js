@@ -11,7 +11,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import { BASE_URL } from '../../config'
 const ScheduleAppointment = () => {
   const [hcm, setHcm] = useState("");
   const [startDate, setStartDate] = useState(null);
@@ -259,7 +259,7 @@ const ScheduleAppointment = () => {
                   ))
                 ) : (
                   <option value="" disabled>
-                    Loading tenants...
+                    Loading HCMs...
                   </option>
                 )}
               </select>
