@@ -21,7 +21,7 @@ const BankingInfo = () => {
           {editMode ? "Cancel" : "Edit"}
         </button>
       </div>
-      <BankCard editMode={editMode} />
+      <BankCard editMode={editMode} setEditMode={setEditMode} />
     </div>
   );
 };
