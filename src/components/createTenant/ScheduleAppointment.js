@@ -159,7 +159,6 @@ const ScheduleAppointment = () => {
       return;
     }
 
-    // Validate that start time is before end time if both are provided
     if (endTime && startTime >= endTime) {
       console.error("End time must be after start time.");
       toast.error("End time must be after start time.");
