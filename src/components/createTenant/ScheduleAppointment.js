@@ -13,7 +13,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { BASE_URL } from "../../config";
 
-const ScheduleAppointment = () => {
+const ScheduleAppointment = ({ tenantID }) => {
   const [hcm, setHcm] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -36,9 +36,16 @@ const ScheduleAppointment = () => {
   const [methodOfContact, setMethodOfContact] = useState("in-person"); // Default value for method of contact
   const [hcmList, setHcmList] = useState([]);
   const token = localStorage.getItem("token");
+  const assignedHCMs = useSelector((state) => state.tenant.assignedHCMs);
 
-  const hcmName = useSelector((state) => state.hcm.tenantName);
-  const hcmId = useSelector((state) => state.hcm.tenantId);
+  const hcmName = useSelector((state) => {
+    const firstName = state.tenant.firstName || "";
+    const middleName = state.tenant.middleName || "";
+    const lastName = state.tenant.lastName || "";
+
+    return `${firstName} ${middleName} ${lastName}`.trim();
+  });
+  const hcmId = tenantID;
   // useEffect(() => {
   //   const fetchTenants = async () => {
   //     try {
@@ -121,35 +128,15 @@ const ScheduleAppointment = () => {
     ],
   };
   useEffect(() => {
-    const fetchHcm = async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/hcm/all`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({}),
-        });
-
-        const data = await response.json();
-        console.log(data);
-        if (response.status === 200 && data.success) {
-          const hcmData = data.response.map((hcm) => ({
-            id: hcm._id,
-            name: hcm.name,
-          }));
-          setHcmList(hcmData);
-        } else {
-          console.error("Failed to fetch HCMs:", data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching HCMs:", error);
-      }
-    };
-
-    fetchHcm();
-  }, []);
+    // Update local state with data from Redux
+    if (assignedHCMs.names.length > 0) {
+      const hcmData = assignedHCMs.names.map((name, index) => ({
+        id: assignedHCMs.ids[index],
+        name: name,
+      }));
+      setHcmList(hcmData);
+    }
+  }, [assignedHCMs]);
 
   const handleCreateAppointment = async () => {
     // Validate date, startTime, and endTime

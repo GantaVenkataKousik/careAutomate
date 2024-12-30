@@ -14,6 +14,9 @@ import { resetTenantInfo } from "../../redux/tenant/tenantSlice";
 import { createdTenant, createdTenantName } from "../../redux/hcm/hcmSlice";
 import { BASE_URL } from "../../config";
 import ChecklistHCMs from "./AssignHCMs";
+import { setServices } from "../../redux/tenant/tenantSlice";
+
+import { current } from "@reduxjs/toolkit";
 const steps = [
   {
     name: "Personal Info",
@@ -50,6 +53,7 @@ const PopupPage = () => {
   const tenantData = useSelector((state) => state.tenant);
   const hcmId = useSelector((state) => state.hcm.hcmId);
   const assignedHCMs = useSelector((state) => state.tenant.assignedHCMs);
+  const services = useSelector((state) => state.tenant.services);
 
   const togglePopup = () => {
     navigate("/tenants");
@@ -122,6 +126,68 @@ const PopupPage = () => {
       } catch (error) {
         console.error("Error during API call to save assigned tenants:", error);
         toast.error("Error saving assigned tenants. Please try again.");
+      }
+    }
+
+    if (currentStep === 3) {
+      const token = localStorage.getItem("token"); // Retrieve token from localStorage
+
+      if (!token) {
+        toast.error("Authentication token is missing!");
+        return;
+      }
+
+      try {
+        // Loop through each service
+        console.log(services);
+        for (const service of services) {
+          const formData = new FormData();
+          formData.append("tenantId", tenantID);
+          console.log(service.serviceType);
+          formData.append("serviceType", service.serviceType);
+          formData.append(
+            "startDate",
+            new Date(service.startDate).toISOString()
+          ); // Format date
+          formData.append("endDate", new Date(service.endDate).toISOString()); // Format date
+          formData.append("unitsRemaining", service.units);
+          formData.append("totalUnits", service.units);
+          formData.append("billRate", service.billRate);
+          for (let pair of formData.entries()) {
+            console.log(pair[0] + ": " + pair[1]);
+          }
+          // Make the POST request for each service
+          const response = await axios.post(
+            `${BASE_URL}/tenant/assign-services-documents`,
+            formData,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          if (response.data.success) {
+            toast.success(
+              `Service ${service.serviceType} assigned successfully.`
+            );
+            // Optionally, mark the service as saved
+            const updatedServices = [...services];
+            const index = updatedServices.findIndex(
+              (s) => s.serviceType === service.serviceType
+            );
+            if (index !== -1) {
+              updatedServices[index] = { ...service, isSaved: true };
+            }
+            dispatch(setServices(updatedServices)); // Update Redux state
+          } else {
+            toast.error(`Failed to assign service ${service.serviceType}.`);
+          }
+        }
+      } catch (error) {
+        console.error("Error posting assigned services:", error);
+        toast.error("Error posting assigned services.");
       }
     }
 

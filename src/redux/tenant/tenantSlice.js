@@ -47,6 +47,7 @@ const initialState = {
     ids: [],
     names: [],
   },
+  services: [],
 };
 
 const tenantSlice = createSlice({
@@ -64,10 +65,36 @@ const tenantSlice = createSlice({
         names: action.payload.names || [],
       };
     },
+    setServices: (state, action) => {
+      state.services = action.payload; // Store the services data
+    },
+    addService: (state, action) => {
+      state.services.push(action.payload); // Add new service
+    },
+    updateService: (state, action) => {
+      const { index, service } = action.payload;
+      state.services[index] = service; // Update service at the specific index
+    },
+    removeService: (state, action) => {
+      state.services = state.services.filter(
+        (_, index) => index !== action.payload
+      );
+    },
+    clearServices: (state) => {
+      state.services = []; // Clear all services from Redux store
+    },
   },
 });
 
-export const { updateTenantInfo, resetTenantInfo, updateAssignedHCMs } =
-  tenantSlice.actions;
+export const {
+  updateTenantInfo,
+  resetTenantInfo,
+  updateAssignedHCMs,
+  setServices,
+  addService,
+  updateService,
+  removeService,
+  clearServices,
+} = tenantSlice.actions;
 
 export default tenantSlice.reducer;
