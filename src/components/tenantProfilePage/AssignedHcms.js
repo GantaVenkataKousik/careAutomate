@@ -42,7 +42,7 @@ const AssignedHcms = ({ tenantId }) => {
   }, [tenantId]);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 overflow-y-auto max-h-[calc(5*3rem)] mt-2 tenant-visits-scrollbar">
       {hcms.map((hcm) => (
         <div
           className="bg-[#e3e7f8] flex items-center justify-between p-3 rounded-lg shadow-sm"
