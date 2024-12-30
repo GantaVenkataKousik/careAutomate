@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateTenantInfo } from "../../redux/tenant/tenantSlice";
+import { updateHcmInfo } from "../../redux/hcm/hcmSlice";
 
 const LoginInfo = () => {
   const dispatch = useDispatch();
-  const tenantData = useSelector((state) => state.tenant);
+  const hcmData = useSelector((state) => state.hcm);
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const inputValue = type === "checkbox" ? checked : value;
-    dispatch(updateTenantInfo({ [name]: inputValue }));
+    dispatch(updateHcmInfo({ [name]: inputValue }));
   };
 
   return (
@@ -17,14 +17,22 @@ const LoginInfo = () => {
         <InputField
           label="Username"
           name="userName"
-          value={tenantData.userName}
+          value={hcmData.userName}
           onChange={handleChange}
           required
         />
         <InputField
           label="Password"
           name="password"
-          value={tenantData.password}
+          value={hcmData.password}
+          onChange={handleChange}
+          type="password"
+          required
+        />
+        <InputField
+          label="Confirm Password"
+          name="confirmPassword"
+          value={hcmData.confirmPassword}
           onChange={handleChange}
           type="password"
           required

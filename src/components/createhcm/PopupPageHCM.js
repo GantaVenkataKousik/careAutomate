@@ -11,8 +11,11 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-import { resetTenantInfo } from "../../redux/tenant/tenantSlice";
-import { createdHcm, createdHcmName } from "../../redux/hcm/hcmSlice";
+import {
+  createdHcm,
+  createdHcmName,
+  resetHcmInfo,
+} from "../../redux/hcm/hcmSlice";
 import { BASE_URL } from "../../config";
 
 const steps = [
@@ -45,7 +48,7 @@ const PopupPage = () => {
   const [tenantID, setTenantID] = useState(null); // Store tenant ID here
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const tenantData = useSelector((state) => state.tenant);
+  const hcmData = useSelector((state) => state.hcm);
   const assignedTenants = useSelector((state) => state.hcm.assignedTenants); // Access Redux state
   const hcmId = useSelector((state) => state.hcm.hcmId);
   const hcmName = useSelector((state) => state.hcm.hcmName);
@@ -53,7 +56,7 @@ const PopupPage = () => {
   // console.log("hcl id", hcmId);
   const togglePopup = () => {
     navigate("/hcms");
-    dispatch(resetTenantInfo());
+    dispatch(resetHcmInfo());
     setShowPopup(!showPopup);
   };
 
@@ -70,7 +73,7 @@ const PopupPage = () => {
       const token = localStorage.getItem("token");
       const data = {
         hcmId: hcmId,
-        tenantIds: assignedTenants,
+        tenantIds: assignedTenants.ids,
       };
       console.log("data", data);
       try {
@@ -112,10 +115,24 @@ const PopupPage = () => {
   const handleSave = async () => {
     const token = localStorage.getItem("token");
     const formData = new FormData();
-    for (const [key, value] of Object.entries(tenantData)) {
+    for (const [key, value] of Object.entries(hcmData)) {
+      if (
+        key === "hcmId" ||
+        key === "assignedTenants" ||
+        key === "hcmName" ||
+        key === "tenantName" ||
+        key === "tenantId" ||
+        key === "confirmPassword"
+      ) {
+        continue;
+      }
+
       formData.append(key, value);
     }
-    console.log("form Data", formData);
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
     try {
       const response = await axios.post(`${BASE_URL}/hcm/createhcm`, formData, {
         headers: {
@@ -129,20 +146,20 @@ const PopupPage = () => {
 
         const first = response.data?.hcmData?.firstName;
         const last = response.data?.hcmData?.lastName;
-        const name = `${first + last}`;
+        const name = `${first + " " + last}`;
         dispatch(createdHcmName(name));
         if (id) {
           dispatch(createdHcm(id));
-          toast.success("Tenant data saved successfully");
+          toast.success("HCM data saved successfully");
         } else {
-          console.error("Tenant ID not found in the response");
+          console.error("HCM ID not found in the response");
         }
       } else {
         console.error("Failed to save data:", response.statusText);
       }
     } catch (error) {
       console.error("Error during API call:", error);
-      toast.error("Error saving tenant data. Please try again.");
+      toast.error("Error saving HCM data. Please try again.");
     }
   };
 
@@ -152,7 +169,7 @@ const PopupPage = () => {
       console.log(
         `Rendering step ${currentStep + 1}, passing tenantID: ${hcmId}`
       );
-      return <SubStepComponent tenantID={hcmId} />;
+      return <SubStepComponent hcmID={hcmId} />;
     }
     return null;
   };
