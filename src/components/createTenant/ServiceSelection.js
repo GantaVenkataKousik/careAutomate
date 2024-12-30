@@ -274,7 +274,7 @@ const ServiceSelection = ({ tenantID }) => {
               />
             </div>
 
-            <div className="col-span-1 mt-5 flex justify-center items-center">
+            {/* <div className="col-span-1 mt-5 flex justify-center items-center">
               {!service.isSaved ? (
                 <button
                   onClick={() => handleSubmit(index)}
@@ -288,7 +288,7 @@ const ServiceSelection = ({ tenantID }) => {
                     onClick={() => handleEdit(index)}
                     className="text-yellow-500 hover:scale-110 hover:text-yellow-700 transition-all duration-200"
                   >
-                    <FaEdit /> {/* Replace with the actual Edit icon */}
+                    <FaEdit />
                   </button>
                   <button
                     onClick={() => handleDelete(index)}
@@ -298,7 +298,7 @@ const ServiceSelection = ({ tenantID }) => {
                   </button>
                 </>
               )}
-            </div>
+            </div> */}
           </div>
         ))}
       </div>
