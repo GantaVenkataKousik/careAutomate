@@ -9,7 +9,7 @@ const ChildAccountDetails = () => {
       <div className="flex justify-between items-center">
         <div className="flex gap-2 items-center pb-3">
           <div className="bg-[#6F84F8] w-3 rounded-[20px] h-10"></div>
-          <h2 className="text-xl font-semibold ">Child Account Details</h2>
+          <h2 className="text-xl font-semibold ">Child Accounts</h2>
         </div>
 
         <button

@@ -5,14 +5,9 @@ import ChildAccountDetails from "./settings/ChildAccountDetails";
 import Preferences from "./settings/Preferences";
 
 export default function Settings() {
-  const [selectedOption, setSelectedOption] = useState("Personal Details");
+  const [selectedOption, setSelectedOption] = useState("Child Accounts");
 
-  const menuOptions = [
-    "Personal Details",
-    "Child Account Details",
-    "Security",
-    "Preferences",
-  ];
+  const menuOptions = ["Child Accounts", "Security", "Preferences"];
 
   return (
     <>
@@ -69,10 +64,8 @@ export default function Settings() {
             borderLeft: "2px solid #ccc",
           }}
         >
-          {selectedOption === "Personal Details" && <PersonalDetails />}
-          {selectedOption === "Child Account Details" && (
-            <ChildAccountDetails />
-          )}
+          {/* {selectedOption === "Personal Details" && <PersonalDetails />} */}
+          {selectedOption === "Child Accounts" && <ChildAccountDetails />}
           {selectedOption === "Security" && <Security />}
 
           {selectedOption === "Preferences" && <Preferences />}
