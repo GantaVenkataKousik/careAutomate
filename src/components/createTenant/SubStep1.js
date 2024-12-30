@@ -326,13 +326,12 @@ const SubStep1 = () => {
       <div
         style={{
           display: "flex",
-          justifyContent: "space-evenly",
           marginTop: "20px",
           marginBottom: "1rem",
         }}
       >
         {/* Left side: Races checkboxes */}
-        <div>
+        <div className="mr-10">
           <label style={{ fontWeight: "bold", marginBottom: "10px" }}>
             Race & Ethnicity -
           </label>
@@ -423,7 +422,7 @@ const SubStep1 = () => {
         </div>
 
         {/* Right side: Hispanic radio buttons */}
-        <div>
+        <div className="ml-10">
           <div style={{ marginTop: "20px" }}>
             <label>
               <input
@@ -467,25 +466,25 @@ const SubStep1 = () => {
       ></hr>
       <Section title="Emergency Contact Information">
         <InputField
-          label="Emergency First Name"
+          label="First Name"
           name="emergencyFirstName"
           value={tenantData.emergencyFirstName}
           onChange={handleChange}
         />
         <InputField
-          label="Emergency Middle Name"
+          label="Middle Name"
           name="emergencyMiddleName"
           value={tenantData.emergencyMiddleName}
           onChange={handleChange}
         />
         <InputField
-          label="Emergency Last Name"
+          label="Last Name"
           name="emergencyLastName"
           value={tenantData.emergencyLastName}
           onChange={handleChange}
         />
         <InputField
-          label="Emergency Phone Number"
+          label="Phone Number"
           name="emergencyPhoneNumber"
           value={tenantData.emergencyPhoneNumber}
           onChange={handleChange}
@@ -493,7 +492,7 @@ const SubStep1 = () => {
           mask="(999)-999-9999"
         />
         <InputField
-          label="Emergency Email"
+          label="Email"
           name="emergencyEmail"
           value={tenantData.emergencyEmail}
           onChange={handleChange}
@@ -744,7 +743,7 @@ const SubStep1 = () => {
           <InputField
             label={
               <>
-                Responsible First Name <span className="required">*</span>
+                First Name <span className="required">*</span>
               </>
             }
             name="responsibleFirstName"
@@ -756,7 +755,7 @@ const SubStep1 = () => {
             required
           />
           <InputField
-            label="Responsible Middle Name"
+            label="Middle Name"
             name="responsibleMiddleName"
             value={tenantData.responsibleMiddleName}
             onChange={handleChange}
@@ -767,7 +766,7 @@ const SubStep1 = () => {
           <InputField
             label={
               <>
-                Responsible Last Name <span className="required">*</span>
+                Last Name <span className="required">*</span>
               </>
             }
             name="responsibleLastName"
@@ -781,7 +780,7 @@ const SubStep1 = () => {
           <InputField
             label={
               <>
-                Responsible Phone Number <span className="required">*</span>
+                Phone Number <span className="required">*</span>
               </>
             }
             name="responsiblePhoneNumber"
@@ -797,7 +796,7 @@ const SubStep1 = () => {
           <InputField
             label={
               <>
-                Responsible Email <span className="required">*</span>
+                Email <span className="required">*</span>
               </>
             }
             name="responsibleEmail"

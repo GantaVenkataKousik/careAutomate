@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateAssignedTenants } from "../../redux/hcm/hcmSlice";
+import { updateAssignedHCMs } from "../../redux/tenant/tenantSlice";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { BASE_URL } from "../../config";
+
 const ChecklistHCMs = ({ tenantId }) => {
   const dispatch = useDispatch();
-  const assignedTenantsRedux = useSelector(
-    (state) => state.hcm.assignedTenants
-  );
-  console.log(tenantId);
-  console.log(assignedTenantsRedux);
-  const [allTenants, setAllTenants] = useState([]);
-  const [selectedTenants, setSelectedTenants] = useState(
-    assignedTenantsRedux || []
-  );
+  const assignedHCMs = useSelector((state) => state.tenant.assignedHCMs); // Redux state
+  const [allHCMs, setAllHCMs] = useState([]); // List of all HCMs fetched from API
+  const [selectedHCMs, setSelectedHCMs] = useState([]); // Local state for selected HCMs
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Sync local state with Redux state when component mounts
   useEffect(() => {
-    const fetchTenants = async () => {
+    setSelectedHCMs(
+      assignedHCMs.ids.map((id, index) => ({
+        id,
+        name: assignedHCMs.names[index],
+      }))
+    );
+  }, [assignedHCMs]);
+
+  // Fetch all HCMs from API
+  useEffect(() => {
+    const fetchHCMs = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -38,53 +44,67 @@ const ChecklistHCMs = ({ tenantId }) => {
         );
 
         const data = await response.json();
-        console.log(data);
         if (response.status === 200 && data.success) {
-          const tenantData = data.data.hcm.map((tenant) => ({
-            id: tenant._id,
-            name: tenant.name,
+          const hcmData = data.data.hcm.map((hcm) => ({
+            id: hcm._id,
+            name: hcm.name,
           }));
-          setAllTenants(tenantData);
+          setAllHCMs(hcmData);
         } else {
-          console.error("Failed to fetch tenants:", data.message);
+          console.error("Failed to fetch HCMs:", data.message);
         }
       } catch (error) {
-        console.error("Error fetching tenants:", error);
+        console.error("Error fetching HCMs:", error);
       }
     };
 
-    fetchTenants();
+    fetchHCMs();
   }, []);
 
-  const handleCheckboxChange = (tenant) => {
-    if (selectedTenants.some((t) => t.id === tenant.id)) {
-      const updatedTenants = selectedTenants.filter((t) => t.id !== tenant.id);
-      setSelectedTenants(updatedTenants);
-      dispatch(updateAssignedTenants(updatedTenants.map((t) => t.id)));
+  // Handle individual checkbox toggle
+  const handleCheckboxChange = (hcm) => {
+    let updatedHCMs;
+    if (selectedHCMs.some((selected) => selected.id === hcm.id)) {
+      // Remove HCM if already selected
+      updatedHCMs = selectedHCMs.filter((selected) => selected.id !== hcm.id);
     } else {
-      const updatedTenants = [...selectedTenants, tenant];
-      setSelectedTenants(updatedTenants);
-      dispatch(updateAssignedTenants(updatedTenants.map((t) => t.id)));
+      // Add HCM if not already selected
+      updatedHCMs = [...selectedHCMs, hcm];
     }
+
+    setSelectedHCMs(updatedHCMs);
+
+    // Update Redux state
+    dispatch(
+      updateAssignedHCMs({
+        ids: updatedHCMs.map((hcm) => hcm.id),
+        names: updatedHCMs.map((hcm) => hcm.name),
+      })
+    );
   };
 
+  // Handle Select All / Deselect All
   const handleSelectAllToggle = () => {
-    if (selectedTenants.length === allTenants.length) {
-      // Deselect All
-      setSelectedTenants([]);
-      dispatch(updateAssignedTenants([]));
+    if (selectedHCMs.length === allHCMs.length) {
+      // Deselect all
+      setSelectedHCMs([]);
+      dispatch(updateAssignedHCMs({ ids: [], names: [] }));
     } else {
-      // Select All
-      setSelectedTenants(allTenants);
-      dispatch(updateAssignedTenants(allTenants.map((tenant) => tenant.id)));
+      // Select all
+      setSelectedHCMs(allHCMs);
+      dispatch(
+        updateAssignedHCMs({
+          ids: allHCMs.map((hcm) => hcm.id),
+          names: allHCMs.map((hcm) => hcm.name),
+        })
+      );
     }
   };
 
-  // Filter tenants based on search query
-  const filteredTenants = allTenants.filter((tenant) =>
-    tenant.name.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter HCMs based on search query
+  const filteredHCMs = allHCMs.filter((hcm) =>
+    hcm.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
   return (
     <div style={styles.container}>
       <h2 style={styles.heading}>Step 2: Designate HCMs</h2>
@@ -101,42 +121,48 @@ const ChecklistHCMs = ({ tenantId }) => {
             />
           </div>
           <button
-            style={styles.selectAllButton} // Reusing tenantItem styles
+            style={styles.selectAllButton}
             onClick={handleSelectAllToggle}
           >
-            {selectedTenants.length === allTenants.length
+            {selectedHCMs.length === allHCMs.length
               ? "Deselect All"
               : "Select All"}
           </button>
-          <ul style={styles.tenantList}>
-            {filteredTenants.map((tenant) => (
-              <li
-                key={tenant.id}
-                style={{
-                  ...styles.tenantItem,
-                  backgroundColor: selectedTenants.some(
-                    (t) => t.id === tenant.id
-                  )
-                    ? "#6F84F8"
-                    : "#fff",
-                  color: selectedTenants.some((t) => t.id === tenant.id)
-                    ? "#fff"
-                    : "#000",
-                }}
-                onClick={() => handleCheckboxChange(tenant)} // Handle selection on click
-              >
-                <label style={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={selectedTenants.some((t) => t.id === tenant.id)}
-                    onChange={() => handleCheckboxChange(tenant)}
-                    style={styles.hiddenCheckbox} // Hide the checkbox
-                  />
-                  {tenant.name}
-                </label>
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-y-auto max-h-60">
+            <ul style={styles.tenantList}>
+              {filteredHCMs.map((hcm) => (
+                <li
+                  key={hcm.id}
+                  style={{
+                    ...styles.tenantItem,
+                    backgroundColor: selectedHCMs.some(
+                      (selected) => selected.id === hcm.id
+                    )
+                      ? "#6F84F8"
+                      : "#fff",
+                    color: selectedHCMs.some(
+                      (selected) => selected.id === hcm.id
+                    )
+                      ? "#fff"
+                      : "#000",
+                  }}
+                  onClick={() => handleCheckboxChange(hcm)}
+                >
+                  <label style={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={selectedHCMs.some(
+                        (selected) => selected.id === hcm.id
+                      )}
+                      onChange={() => handleCheckboxChange(hcm)}
+                      style={styles.hiddenCheckbox}
+                    />
+                    {hcm.name}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         <div style={styles.arrows}>
           <FaArrowRightLong />
@@ -144,9 +170,9 @@ const ChecklistHCMs = ({ tenantId }) => {
         <div style={styles.tenantBox}>
           <h3 style={styles.boxHeading}>Selected HCMs</h3>
           <ul style={styles.tenantList}>
-            {selectedTenants.map((tenant) => (
-              <li key={tenant.id} style={styles.tenantItem}>
-                {tenant.name}
+            {selectedHCMs.map((hcm) => (
+              <li key={hcm.id} style={styles.tenantItem}>
+                {hcm.name}
               </li>
             ))}
           </ul>

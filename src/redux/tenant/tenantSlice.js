@@ -43,6 +43,10 @@ const initialState = {
   responsiblePhoneNumber: "",
   responsibleEmail: "",
   responsibleRelationship: "",
+  assignedHCMs: {
+    ids: [],
+    names: [],
+  },
 };
 
 const tenantSlice = createSlice({
@@ -53,9 +57,17 @@ const tenantSlice = createSlice({
       return { ...state, ...action.payload };
     },
     resetTenantInfo: () => initialState,
+    updateAssignedHCMs: (state, action) => {
+      // Update both IDs and names
+      state.assignedHCMs = {
+        ids: action.payload.ids || [],
+        names: action.payload.names || [],
+      };
+    },
   },
 });
 
-export const { updateTenantInfo, resetTenantInfo } = tenantSlice.actions;
+export const { updateTenantInfo, resetTenantInfo, updateAssignedHCMs } =
+  tenantSlice.actions;
 
 export default tenantSlice.reducer;

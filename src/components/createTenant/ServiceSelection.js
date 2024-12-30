@@ -12,15 +12,12 @@ const serviceOptions = [
   { value: 2, label: "Housing Transition", billRate: 17.17 },
   { value: 3, label: "Housing Sustaining", billRate: 17.17 },
   { value: 4, label: "Moving Expenses", billRate: 3000 },
-  { value: 5, label: "RSC- TCM", billRate: 15.53 },
-  { value: 6, label: "Moving Home Minnesota", billRate: 16.63 },
 ];
 
 const ServiceSelection = ({ tenantID }) => {
   const [services, setServices] = useState([]);
   const [allServices, setAllServices] = useState([]);
 
-  // Fetch existing services when component mounts
   useEffect(() => {
     const fetchServices = async () => {
       if (!tenantID) {
@@ -59,7 +56,6 @@ const ServiceSelection = ({ tenantID }) => {
     fetchServices();
   }, [tenantID]);
   const handleServiceSelect = (selectedOptions) => {
-    // Track new services that were selected
     const newServices = selectedOptions
       .filter((option) => {
         return !services.some(
@@ -78,12 +74,10 @@ const ServiceSelection = ({ tenantID }) => {
         reviewStatus: "approved",
       }));
 
-    // Filter out services that have been deselected
     const updatedServices = services.filter((service) =>
       selectedOptions.some((option) => option.label === service.serviceType)
     );
 
-    // Combine both the new and remaining services
     setServices([...updatedServices, ...newServices]);
   };
 
@@ -149,7 +143,6 @@ const ServiceSelection = ({ tenantID }) => {
       const token = localStorage.getItem("token");
       const formData = new FormData();
 
-      // Add basic service data
       formData.append("tenantId", tenantID);
       formData.append("serviceType", service.serviceType);
       formData.append("startDate", new Date(service.startDate).toISOString()); // Format date
@@ -171,7 +164,9 @@ const ServiceSelection = ({ tenantID }) => {
 
       if (response.data.success) {
         toast.success("Service assigned successfully");
-        // Refresh services list
+        const updatedServices = [...services];
+        updatedServices[index] = { ...service, isSaved: true };
+        setServices(updatedServices);
         const fetchResponse = await axios.post(
           `${BASE_URL}/tenant/get-services`,
           { tenantId: tenantID },
@@ -280,12 +275,29 @@ const ServiceSelection = ({ tenantID }) => {
             </div>
 
             <div className="col-span-1 mt-5 flex justify-center items-center">
-              <button
-                onClick={() => handleSubmit(index)}
-                className="bg-blue-500 text-white px-3 py-2  rounded-lg hover:bg-blue-700"
-              >
-                Save
-              </button>
+              {!service.isSaved ? (
+                <button
+                  onClick={() => handleSubmit(index)}
+                  className="bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-700"
+                >
+                  Save
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleEdit(index)}
+                    className="text-yellow-500 hover:scale-110 hover:text-yellow-700 transition-all duration-200"
+                  >
+                    <FaEdit /> {/* Replace with the actual Edit icon */}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(index)}
+                    className="text-red-500 ml-2 hover:scale-110 hover:text-red-700 transition-all duration-200"
+                  >
+                    <RxCrossCircled />
+                  </button>
+                </>
+              )}
             </div>
           </div>
         ))}
