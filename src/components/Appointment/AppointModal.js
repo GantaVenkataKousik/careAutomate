@@ -329,7 +329,7 @@ const AppointmentModal = ({
 
   return isOpen ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative flex flex-col pb-10 max-h-[35rem] p-6 max-w-3xl mx-auto bg-white rounded-lg shadow-lg w-full">
+      <div className="relative flex flex-col pb-10 max-h-[40rem] p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-lg w-full">
         {/* "X" Close Button */}
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
@@ -340,7 +340,7 @@ const AppointmentModal = ({
         </button>
         <p className=" mb-6">Fill in the details to add a schedule</p>
 
-        <div className="space-y-6 max-h-[40rem] overflow-y-auto">
+        <div className="space-y-6 max-h-[40rem] overflow-y-auto tenant-visits-scrollbar">
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <GoPerson size={24} className="mr-2" />
