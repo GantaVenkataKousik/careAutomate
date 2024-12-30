@@ -38,7 +38,7 @@ const ScheduleAppointment = () => {
   const [endTime, setEndTime] = useState("");
   const [serviceType, setServiceType] = useState("Housing Sustaining"); // Default value for service type
   const [methodOfContact, setMethodOfContact] = useState("in-person"); // Default value for method of contact
-
+  const assignedTenants = useSelector((state) => state.hcm.assignedTenants);
   const hcmName = useSelector((state) => state.hcm.hcmName);
   const hcmId = useSelector((state) => state.hcm.hcmId);
 
@@ -46,41 +46,50 @@ const ScheduleAppointment = () => {
   console.log("Hcm ID in step4:", hcmId);
 
   useEffect(() => {
-    const fetchTenants = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Authorization token is missing.");
-          return;
-        }
+    if (assignedTenants.names.length > 0) {
+      const tenantData = assignedTenants.names.map((name, index) => ({
+        id: assignedTenants.ids[index],
+        name: name,
+      }));
+      setAllTenants(tenantData);
+    }
+  }, [assignedTenants]);
+  // useEffect(() => {
+  //   const fetchTenants = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       if (!token) {
+  //         console.error("Authorization token is missing.");
+  //         return;
+  //       }
 
-        const response = await fetch(`${BASE_URL}/tenant/all`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({}),
-        });
+  //       const response = await fetch(`${BASE_URL}/tenant/all`, {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({}),
+  //       });
 
-        const data = await response.json();
+  //       const data = await response.json();
 
-        if (response.status === 200 && data.success) {
-          const tenantData = data.response.map((tenant) => ({
-            id: tenant._id,
-            name: tenant.name,
-          }));
-          setAllTenants(tenantData);
-        } else {
-          console.error("Failed to fetch tenants:", data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching tenants:", error);
-      }
-    };
+  //       if (response.status === 200 && data.success) {
+  //         const tenantData = data.response.map((tenant) => ({
+  //           id: tenant._id,
+  //           name: tenant.name,
+  //         }));
+  //         setAllTenants(tenantData);
+  //       } else {
+  //         console.error("Failed to fetch tenants:", data.message);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching tenants:", error);
+  //     }
+  //   };
 
-    fetchTenants();
-  }, []);
+  //   fetchTenants();
+  // }, []);
 
   const handleCreateAppointment = async () => {
     // Validate date, startTime, and endTime
@@ -100,16 +109,16 @@ const ScheduleAppointment = () => {
     console.log("Date:", startDate);
     console.log("Start Time:", startTime);
     console.log("End Time:", endTime);
-    // const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
-    // const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
-    // const formattedStartTime = startDateTime.toISOString();
-    // const formattedEndTime = endDateTime.toISOString();
+    const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
+    const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
+    const formattedStartTime = startDateTime.toISOString();
+    const formattedEndTime = endDateTime.toISOString();
     const payload = {
       tenantId: hcm || "Unknown",
       hcmId: hcmId || "N/A",
       date: startDate, // Send date separately
-      startTime,
-      endTime,
+      startTime: formattedStartTime,
+      endTime: formattedEndTime,
       activity: activity || "N/A",
       methodOfContact,
       reasonForRemote: reasonForRemote,
@@ -238,20 +247,6 @@ const ScheduleAppointment = () => {
               </select>
             </div>
 
-            {/* <div className="flex gap-4">
-          <label className="text-sm font-medium flex items-center w-1/3">
-            <GoPerson size={24} className="mr-2" />
-            Designated Tenant
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Appointment Title"
-            className="border border-gray-300 rounded-md p-2 w-2/3"
-          />
-        </div> */}
-
             <div className="flex gap-4">
               <label className="text-sm font-medium flex items-center w-1/3">
                 <RiServiceLine size={24} className="mr-2" />
@@ -291,14 +286,7 @@ const ScheduleAppointment = () => {
                 <BsCalendar2Date size={24} className="mr-2" />
                 Date
               </label>
-              {/* <DatePicker
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-                minDate={new Date()}
-                dateFormat="MM-dd-yyyy"
-                className="border border-gray-300 rounded-md p-2 w-full"
-                placeholderText="MM-DD-YYYY"
-              /> */}
+
               <div className="flex gap-6 w-2/3">
                 <div className="flex items-center gap-4">
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -438,13 +426,6 @@ const ScheduleAppointment = () => {
               </button>
             </div>
           </div>
-
-          {/* <button
-        onClick={handleCreateAnother}
-        className=" py-2 px-4 rounded-md mt-4  transition duration-300"
-      >
-        Create Another Schedule
-      </button> */}
         </div>
       )}
     </div>

@@ -52,55 +52,14 @@ const PopupPage = () => {
   const assignedTenants = useSelector((state) => state.hcm.assignedTenants); // Access Redux state
   const hcmId = useSelector((state) => state.hcm.hcmId);
   const hcmName = useSelector((state) => state.hcm.hcmName);
-  // console.log(hcmName);
-  // console.log("hcl id", hcmId);
+
   const togglePopup = () => {
     navigate("/hcms");
     dispatch(resetHcmInfo());
     setShowPopup(!showPopup);
   };
 
-  const handleNext = async () => {
-    if (currentStep === 2) {
-      try {
-        // Save the HCM data and wait for the ID to be available
-        await handleSave();
-
-        // Wait for the hcmId to be updated in Redux
-        await waitForHcmId();
-
-        // Assign tenants to the HCM
-        await assignTenant();
-      } catch (error) {
-        console.error("Error during step 2 processing:", error);
-        toast.error("An error occurred. Please try again.");
-        return;
-      }
-    }
-
-    // Move to the next step
-    if (currentStep < steps.length - 1) {
-      setCurrentStep((prev) => prev + 1);
-    } else {
-      setComplete(true);
-    }
-  };
-
-  const waitForHcmId = async () => {
-    const maxAttempts = 10;
-    let attempts = 0;
-
-    while (!hcmId && attempts < maxAttempts) {
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 500ms
-      attempts++;
-    }
-
-    if (!hcmId) {
-      throw new Error("HCM ID not available after waiting.");
-    }
-  };
-
-  const assignTenant = async () => {
+  const assignTenant = async (hcmId) => {
     console.log("Assigned Tenants in step2:", assignedTenants);
     console.log("hcmid", hcmId);
     const token = localStorage.getItem("token");
@@ -174,6 +133,26 @@ const PopupPage = () => {
     } catch (error) {
       console.error("Error during API call to create HCM:", error);
       toast.error("Error saving HCM data. Please try again.");
+    }
+  };
+  const handleNext = async () => {
+    if (currentStep === 3) {
+      try {
+        const hcmId = await handleSave();
+
+        await assignTenant(hcmId);
+      } catch (error) {
+        console.error("Error during step 2 processing:", error);
+        toast.error("An error occurred. Please try again.");
+        return;
+      }
+    }
+
+    // Move to the next step
+    if (currentStep < steps.length - 1) {
+      setCurrentStep((prev) => prev + 1);
+    } else {
+      setComplete(true);
     }
   };
 

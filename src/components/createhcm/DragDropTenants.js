@@ -42,10 +42,12 @@ const ChecklistTenants = () => {
         const data = await response.json();
         console.log(data);
         if (response.status === 200 && data.success) {
-          const tenantData = data.response.map((tenant) => ({
-            id: tenant._id,
-            name: tenant.name,
-          }));
+          const tenantData = data.response
+            .map((tenant) => ({
+              id: tenant._id,
+              name: tenant.name,
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
           setAllTenants(tenantData);
         } else {
           console.error("Failed to fetch tenants:", data.message);
