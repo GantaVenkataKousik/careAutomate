@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Switch from "@mui/material/Switch";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import InputMask from "react-input-mask";
 import { updateHcmInfo } from "../../redux/hcm/hcmSlice";
 
 const SubStep1 = () => {
   const dispatch = useDispatch();
   const hcmData = useSelector((state) => state.hcm);
-  const [hasResponsibleParty, setHasResponsibleParty] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
-
+  console.log(hcmData);
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const inputValue = type === "checkbox" ? checked : value;
@@ -288,16 +288,42 @@ const InputField = ({
         ))}
       </select>
     ) : type === "date" ? (
-      <DatePicker
-        selected={value}
-        onChange={onChange}
-        dateFormat="MM-dd-yyyy"
-        placeholderText="MM-DD-YYYY"
-        style={{ ...styles.input, ...(focused ? styles.inputFocused : {}) }}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        required={required}
-      />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+          value={dayjs(value)} // Ensure the value is a Dayjs object
+          onChange={(date) => onChange(date?.format("YYYY-MM-DD"))} // Format the selected date as "YYYY-MM-DD"
+          dateFormat="MM-DD-YYYY" // Set the display format for the date
+          placeholder={placeholder || "MM-DD-YYYY"}
+          renderInput={(params) => (
+            <input
+              {...params.inputProps}
+              name={name}
+              style={{
+                ...styles.input,
+                ...(focused ? styles.inputFocused : {}),
+              }}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              required={required}
+            />
+          )}
+          sx={{
+            fontFamily: "Poppins",
+            fontSize: "15px",
+            width: "80%",
+            "& input": {
+              padding: "5px 10px",
+            },
+            "& .MuiInputBase-root": {
+              borderRadius: "20px",
+              border: "1px solid #ddd",
+            },
+            "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#6F84F8",
+            },
+          }}
+        />
+      </LocalizationProvider>
     ) : mask ? (
       <InputMask
         mask={mask}
