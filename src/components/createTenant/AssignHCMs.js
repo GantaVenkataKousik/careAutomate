@@ -45,10 +45,12 @@ const ChecklistHCMs = ({ tenantId }) => {
 
         const data = await response.json();
         if (response.status === 200 && data.success) {
-          const hcmData = data.data.hcm.map((hcm) => ({
-            id: hcm._id,
-            name: hcm.name,
-          }));
+          const hcmData = data.data.hcm
+            .map((hcm) => ({
+              id: hcm._id,
+              name: hcm.name,
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
           setAllHCMs(hcmData);
         } else {
           console.error("Failed to fetch HCMs:", data.message);

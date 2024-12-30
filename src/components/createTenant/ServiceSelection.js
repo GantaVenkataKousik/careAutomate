@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { FaUpload, FaEdit } from "react-icons/fa";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { RxCrossCircled } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -178,10 +180,9 @@ const ServiceSelection = ({ tenantID }) => {
 
             <div className="col-span-2">
               <label>Start Date:</label>
-              <DatePicker
-                selected={service.startDate}
+              <CustomDatePicker
+                value={service.startDate}
                 onChange={(date) => handleDateChange(index, "startDate", date)}
-                dateFormat="MM-dd-yyyy"
                 className="border p-2 rounded w-full"
                 placeholderText="MM-DD-YYYY"
                 disabled={service.isSaved}
@@ -190,10 +191,9 @@ const ServiceSelection = ({ tenantID }) => {
 
             <div className="col-span-2">
               <label>End Date:</label>
-              <DatePicker
-                selected={service.endDate}
+              <CustomDatePicker
+                value={service.endDate}
                 onChange={(date) => handleDateChange(index, "endDate", date)}
-                dateFormat="MM-dd-yyyy"
                 className="border p-2 rounded w-full"
                 placeholderText="MM-DD-YYYY"
                 disabled={service.isSaved}
@@ -256,6 +256,33 @@ const ServiceSelection = ({ tenantID }) => {
         ))}
       </div>
     </div>
+  );
+};
+
+const CustomDatePicker = ({ value, onChange, disabled, placeholder }) => {
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DatePicker
+        value={dayjs(value)} // Ensure the value is a Dayjs object
+        onChange={(date) => onChange(date?.format("YYYY-MM-DD"))} // Format the selected date as "YYYY-MM-DD"
+        dateFormat="MM-DD-YYYY" // Set the display format for the date
+        placeholder={placeholder || "MM-DD-YYYY"}
+        disabled={disabled}
+        sx={{
+          width: "100%",
+          "& input": {
+            fontFamily: "Poppins",
+            fontWeight: 500,
+            height: "32px", // Adjust input height
+            padding: "5px 10px", // Match padding inside the input field
+          },
+          "& .MuiInputBase-root": {
+            height: "100%",
+            // Ensure the input field takes up full height
+          },
+        }}
+      />
+    </LocalizationProvider>
   );
 };
 

@@ -2,8 +2,10 @@ import React, { useState, forwardRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTenantInfo } from "../../redux/tenant/tenantSlice";
 import Switch from "@mui/material/Switch";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import InputMask from "react-input-mask";
 
 const SubStep1 = () => {
@@ -868,16 +870,26 @@ const InputField = ({
         ))}
       </select>
     ) : type === "date" ? (
-      <DatePicker
-        selected={value}
-        onChange={onChange}
-        dateFormat="MM-dd-yyyy"
-        placeholderText="MM-DD-YYYY"
-        style={{ ...styles.input, ...(focused ? styles.inputFocused : {}) }}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        required={required}
-      />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+          value={dayjs(value)} // Ensure the value is in the Dayjs format
+          onChange={(date) => onChange(date?.format("YYYY-MM-DD"))} // Format the selected date as "YYYY-MM-DD"
+          dateFormat="MM-DD-YYYY" // Set the display format for the date
+          placeholder="MM-DD-YYYY"
+          sx={{
+            width: "75%",
+            "& input": {
+              fontFamily: "Poppins",
+              fontWeight: 500,
+              height: "32px", // Adjust input height
+              padding: "5px 10px", // Match padding inside the input field
+            },
+          }}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          required={required}
+        />
+      </LocalizationProvider>
     ) : mask ? (
       <InputMask
         mask={mask}

@@ -54,7 +54,6 @@ const PopupPage = () => {
   const hcmId = useSelector((state) => state.hcm.hcmId);
   const assignedHCMs = useSelector((state) => state.tenant.assignedHCMs);
   const services = useSelector((state) => state.tenant.services);
-
   const togglePopup = () => {
     navigate("/tenants");
     dispatch(resetTenantInfo());
@@ -104,18 +103,32 @@ const PopupPage = () => {
       (service) => service.isSaved !== true
     );
 
-    if (services.length === 0 && currentStep >= 1) {
+    if (services.length === 0 && currentStep === 1) {
       toast.error(`Please select at least one service`);
       return;
     }
 
-    if (areAnyServicesNotSaved) {
+    if (areAnyServicesNotSaved && currentStep === 1) {
       toast.error("Please save all services before proceeding.");
       return;
     }
 
-    if (!areAllServicesValid) {
+    if (!areAllServicesValid && currentStep === 1) {
       toast.error("Please fill in all required fields for each service.");
+      return;
+    }
+
+    if (currentStep === steps.length - 2) {
+      const confirmProceed = window.confirm(
+        "Are you sure you want to proceed to create the tenant?"
+      );
+      if (!confirmProceed) {
+        return; // Stop if user cancels
+      }
+    }
+
+    if (currentStep === steps.length - 3 && assignedHCMs.ids.length === 0) {
+      toast.error("Please select atleast one HCM.");
       return;
     }
 
@@ -441,28 +454,29 @@ const PopupPage = () => {
                   </svg>
                   <span className="ml-1">Back</span>
                 </button>
-
-                <button
-                  className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-                  onClick={handleNext}
-                >
-                  <span className="flex items-center">
-                    <span>
-                      {currentStep === steps.length - 1
-                        ? "Finish"
-                        : "Next Step"}
+                {currentStep != steps.length - 1 && (
+                  <button
+                    className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                    onClick={handleNext}
+                  >
+                    <span className="flex items-center">
+                      <span>
+                        {currentStep == steps.length - 2
+                          ? "Create Tenant"
+                          : "Next"}
+                      </span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        className="ml-2 fill-current"
+                      >
+                        <polygon points="0,0 10,10 0,20" />
+                      </svg>
                     </span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      className="ml-2 fill-current"
-                    >
-                      <polygon points="0,0 10,10 0,20" />
-                    </svg>
-                  </span>
-                </button>
+                  </button>
+                )}
               </div>
             </div>
           </Box>
