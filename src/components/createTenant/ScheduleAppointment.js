@@ -9,10 +9,12 @@ import { GrLocation } from "react-icons/gr";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { BASE_URL } from "../../config";
-
+import activities from "../../utils/activities";
 const ScheduleAppointment = ({ tenantID }) => {
   const [hcm, setHcm] = useState("");
   const [startDate, setStartDate] = useState(null);
@@ -37,6 +39,10 @@ const ScheduleAppointment = ({ tenantID }) => {
   const [hcmList, setHcmList] = useState([]);
   const token = localStorage.getItem("token");
   const assignedHCMs = useSelector((state) => state.tenant.assignedHCMs);
+  const services = useSelector((state) => state.tenant.services);
+  const uniqueServiceTypes = Array.from(
+    new Set(services.map((service) => service.serviceType))
+  );
 
   const hcmName = useSelector((state) => {
     const firstName = state.tenant.firstName || "";
@@ -46,6 +52,7 @@ const ScheduleAppointment = ({ tenantID }) => {
     return `${firstName} ${middleName} ${lastName}`.trim();
   });
   const hcmId = tenantID;
+
   // useEffect(() => {
   //   const fetchTenants = async () => {
   //     try {
@@ -85,48 +92,7 @@ const ScheduleAppointment = ({ tenantID }) => {
 
   //   fetchTenants();
   // }, []);
-  const activities = {
-    "Housing Transition": [
-      "Developing a housing transition plan",
-      "Supporting the person in applying for benefits to afford their housing",
-      "Assisting the person with the housing search and application process",
-      "Assisting the person with tenant screening and housing assessments",
-      "Providing transportation with the person receiving services present and discussing housing related issues",
-      "Helping the person understand and develop a budget",
-      "Helping the person understand and negotiate a lease",
-      "Helping the person meet and build a relationship with a prospective landlord",
-      "Promoting/supporting cultural practice needs and understandings with prospective landlords, property managers",
-      "Helping the person find funding for deposits",
-      "Helping the person organize their move",
-      "Researching possible housing options for the person",
-      "Contacting possible housing options for the person",
-      "Identifying resources to pay for deposits or home goods",
-      "Identifying resources to cover moving expenses",
-      "Completing housing applications on behalf of the service recipient",
-      "Working to expunge records or access reasonable accommodations",
-      "Identifying services and benefits that will support the person with housing instability",
-      "Ensuring the new living arrangement is safe for the person and ready for move-in",
-      "Arranging for adaptive house related accommodations required by the person",
-      "Arranging for assistive technology required by the person",
-    ],
-    "Housing Sustaining": [
-      "Developing, updating and modifying the housing support and crisis/safety plan on a regular basis",
-      "Preventing and early identification of behaviors that may jeopardize continued housing",
-      "Educating and training on roles, rights, and responsibilities of the tenant and property manager",
-      "Transportation with the person receiving services present and discussing housing related issues",
-      "Promoting/supporting cultural practice needs and understandings with landlords, property managers and neighbors",
-      "Coaching to develop and maintain key relationships with property managers and neighbors",
-      "Advocating with community resources to prevent eviction when housing is at risk and maintain person’s safety",
-      "Assistance with the housing recertification processes",
-      "Continued training on being a good tenant, lease compliance, and household management",
-      "Supporting the person to apply for benefits to retain housing",
-      "Supporting the person to understand and maintain/increase income and benefits to retain housing",
-      "Supporting the building of natural housing supports and resources in the community including building supports and resources related to a person’s culture and identity",
-      "Working with property manager or landlord to promote housing retention",
-      "Arranging for assistive technology",
-      "Arranging for adaptive house related accommodations",
-    ],
-  };
+
   useEffect(() => {
     // Update local state with data from Redux
     if (assignedHCMs.names.length > 0) {
@@ -155,7 +121,7 @@ const ScheduleAppointment = ({ tenantID }) => {
     console.log("Date:", startDate);
     console.log("Start Time:", startTime);
     console.log("End Time:", endTime);
-    const datePart = startDate.toISOString().split("T")[0];
+    const datePart = startDate;
     // Combine date with startTime and endTime, then create new Date objects in UTC
     const startDateTime = new Date(`${datePart}T${startTime}:00Z`);
     const endDateTime = new Date(`${datePart}T${endTime}:00Z`);
@@ -325,8 +291,11 @@ const ScheduleAppointment = ({ tenantID }) => {
                 onChange={(e) => setServiceType(e.target.value)}
                 className="border border-gray-300 rounded-md p-2 w-2/3"
               >
-                <option value="Housing Sustaining">Housing Sustaining</option>
-                <option value="Housing Transition">Housing Transition</option>
+                {uniqueServiceTypes.map((type, index) => (
+                  <option key={index} value={type}>
+                    {type}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -354,40 +323,65 @@ const ScheduleAppointment = ({ tenantID }) => {
                 <BsCalendar2Date size={24} className="mr-2" />
                 Date
               </label>
-              <DatePicker
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-                minDate={new Date()}
-                dateFormat="MM-dd-yyyy"
-                className="border border-gray-300 rounded-md p-2 w-full"
-                placeholderText="MM-DD-YYYY"
-              />
-            </div>
+              <div className="flex gap-6 w-2/3">
+                <div className="flex items-center gap-4">
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      onChange={(date) =>
+                        setStartDate(date?.format("YYYY-MM-DD"))
+                      }
+                      minDate={dayjs()} // Pass a Dayjs object for minDate
+                      sx={{
+                        fontFamily: "Poppins",
+                        height: "40px",
+                        fontSize: "15px",
+                        width: "100%",
+                        "& input": {
+                          padding: "5px 10px", // Match padding inside the input field
+                        },
+                        "& .MuiInputBase-root": {
+                          padding: "3px 8px",
+                          border: "1px solidrgb(176, 173, 173)",
+                        },
+                        "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#6F84F8",
+                        },
+                      }}
+                      InputProps={{
+                        className:
+                          "p-2 rounded border border-[#6F84F8] w-full focus:border-[#6F84F8]",
+                      }}
+                    />
+                  </LocalizationProvider>
+                </div>
 
-            <div className="flex gap-4">
-              <label className="text-sm font-medium flex items-center w-1/3">
-                <MdOutlineAccessTime size={24} className="mr-2" />
-                Start Time
-              </label>
-              <input
-                type="time"
-                value={startTime || ""}
-                onChange={(e) => setStartTime(e.target.value)} // Updates the startTime state
-                className="border border-gray-300 rounded-md pointer p-2 w-2/3"
-              />
-            </div>
+                {/**start time */}
+                <div className="flex gap-2">
+                  <label className="text-sm font-medium flex items-center w-1/3">
+                    {/* <MdOutlineAccessTime size={24} className="mr-2" /> */}
+                    Start
+                  </label>
+                  <input
+                    type="time"
+                    value={startTime || ""}
+                    onChange={(e) => setStartTime(e.target.value)} // Updates the startTime state
+                    className="border border-gray-300 rounded-md pointer p-2 w-2/3"
+                  />
+                </div>
 
-            <div className="flex gap-4">
-              <label className="text-sm font-medium flex items-center w-1/3">
-                <MdOutlineAccessTime size={24} className="mr-2" />
-                End Time
-              </label>
-              <input
-                type="time"
-                value={endTime || ""}
-                onChange={(e) => setEndTime(e.target.value)} // Updates the endTime state
-                className="border border-gray-300 rounded-md pointer p-2 w-2/3"
-              />
+                <div className="flex gap-2">
+                  <label className="text-sm font-medium flex items-center w-1/3">
+                    {/* <MdOutlineAccessTime size={24} className="mr-2" /> */}
+                    End
+                  </label>
+                  <input
+                    type="time"
+                    value={endTime || ""}
+                    onChange={(e) => setEndTime(e.target.value)} // Updates the endTime state
+                    className="border border-gray-300 rounded-md pointer p-2 w-2/3"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Place of Service */}
@@ -428,21 +422,23 @@ const ScheduleAppointment = ({ tenantID }) => {
               </select>
             </div>
 
-            <div className="flex gap-4">
-              <label className="text-sm font-medium flex items-center w-1/3">
-                <RiServiceLine size={24} className="mr-2" />
-                Reason for Remote
-              </label>
-              <input
-                type="text"
-                value={reasonForRemote}
-                onChange={(e) => setReasonForRemote(e.target.value)}
-                placeholder="Reason for Remote"
-                className="border border-gray-300 rounded-md p-2 w-2/3"
-              />
-            </div>
+            {methodOfContact === "remote" && (
+              <div className="flex gap-4">
+                <label className="text-sm font-medium flex items-center w-1/3">
+                  <RiServiceLine size={24} className="mr-2" />
+                  Reason for Remote
+                </label>
+                <input
+                  type="text"
+                  value={reasonForRemote}
+                  onChange={(e) => setReasonForRemote(e.target.value)}
+                  placeholder="Reason for Remote"
+                  className="border border-gray-300 rounded-md p-2 w-2/3"
+                />
+              </div>
+            )}
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 w-2/3" style={{ marginLeft: "auto" }}>
               <button
                 onClick={handleCreateAppointment}
                 className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg

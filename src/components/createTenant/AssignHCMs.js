@@ -169,13 +169,15 @@ const ChecklistHCMs = ({ tenantId }) => {
         </div>
         <div style={styles.tenantBox}>
           <h3 style={styles.boxHeading}>Selected HCMs</h3>
-          <ul style={styles.tenantList}>
-            {selectedHCMs.map((hcm) => (
-              <li key={hcm.id} style={styles.tenantItem}>
-                {hcm.name}
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-y-auto max-h-60">
+            <ul style={styles.tenantList}>
+              {selectedHCMs.map((hcm) => (
+                <li key={hcm.id} style={styles.tenantItem}>
+                  {hcm.name}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>

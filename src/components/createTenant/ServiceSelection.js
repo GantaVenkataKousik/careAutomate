@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { FaUpload, FaEdit } from "react-icons/fa"; // Add FaEdit import
+import { FaUpload, FaEdit } from "react-icons/fa";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import DatePicker from "react-datepicker"; // Import react-datepicker
-import "react-datepicker/dist/react-datepicker.css"; // Import the styles for react-datepicker
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { RxCrossCircled } from "react-icons/rx";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -22,9 +22,8 @@ const serviceOptions = [
 
 const ServiceSelection = ({ tenantID }) => {
   const dispatch = useDispatch();
-  const services = useSelector((state) => state.tenant.services); // Get services from Redux store
+  const services = useSelector((state) => state.tenant.services);
 
-  // Handles selecting services from the dropdown
   const handleServiceSelect = (selectedOptions) => {
     const newServices = selectedOptions
       .filter((option) => {
@@ -42,17 +41,16 @@ const ServiceSelection = ({ tenantID }) => {
         uploadedFileName: "",
         status: "active",
         reviewStatus: "approved",
-        isSaved: false, // Newly added service is not saved yet
+        isSaved: false,
       }));
 
     const updatedServices = services.filter((service) =>
       selectedOptions.some((option) => option.label === service.serviceType)
     );
 
-    dispatch(setServices([...updatedServices, ...newServices])); // Update the services in Redux store
+    dispatch(setServices([...updatedServices, ...newServices]));
   };
 
-  // Handles file upload and updates the service data in Redux
   const handleFileUpload = (index) => {
     const input = document.createElement("input");
     input.type = "file";
@@ -60,7 +58,7 @@ const ServiceSelection = ({ tenantID }) => {
       const file = e.target.files[0];
       if (!file) return;
 
-      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+      const MAX_FILE_SIZE = 5 * 1024 * 1024;
       if (file.size > MAX_FILE_SIZE) {
         toast.error("File is too large. Maximum size is 5MB");
         return;
@@ -71,74 +69,66 @@ const ServiceSelection = ({ tenantID }) => {
         const updatedServices = [...services];
         updatedServices[index] = {
           ...updatedServices[index],
-          document: reader.result, // Store as data URL
+          document: reader.result,
           uploadedFileName: file.name,
         };
-        dispatch(setServices(updatedServices)); // Update the services in Redux
+        dispatch(setServices(updatedServices));
       };
       reader.readAsDataURL(file);
     };
     input.click();
   };
 
-  // Handles removing the file data from the service
   const clearFile = (index) => {
     const updatedServices = [...services];
     updatedServices[index] = {
       ...updatedServices[index],
-      document: "", // Reset the document (file data)
-      uploadedFileName: "", // Reset the uploaded file name
+      document: "",
+      uploadedFileName: "",
     };
-    dispatch(setServices(updatedServices)); // Update the services in Redux
+    dispatch(setServices(updatedServices));
   };
 
-  // Handles changes to the service data (e.g., dates or units)
   const handleServiceChange = (index, e) => {
     const { name, value } = e.target;
     const updatedServices = [...services];
     updatedServices[index][name] = value;
-    dispatch(setServices(updatedServices)); // Update the services in Redux
-  };
-
-  // Handles date changes for service start/end dates
-  const handleDateChange = (index, name, date) => {
-    const updatedServices = [...services]; // Create a copy of the services array
-    updatedServices[index] = {
-      ...updatedServices[index], // Spread the existing service object
-      [name]: date, // Update the specific property (startDate or endDate)
-    };
-
-    dispatch(setServices(updatedServices)); // Update the services in Redux
-  };
-
-  // Handle service removal from Redux store
-  const handleDelete = (index) => {
-    dispatch(removeService(index)); // Remove service from Redux store
-  };
-
-  // Handle service editing by marking it as unsaved
-  const handleEdit = (index) => {
-    // Create a shallow copy of the services array
-    const updatedServices = [...services];
-
-    // Update the specific service object at the given index
-    updatedServices[index] = {
-      ...updatedServices[index], // Spread the existing service object
-      isSaved: false, // Mark the service as not saved (so it can be edited)
-    };
-
-    // Dispatch the updated services array to Redux
     dispatch(setServices(updatedServices));
   };
-  // Handle saving the service (Placeholder for actual save functionality)
-  const handleSubmit = (index) => {
-    const updatedServices = [...services]; // Create a copy of the services array
+
+  const handleDateChange = (index, name, date) => {
+    const updatedServices = [...services];
     updatedServices[index] = {
-      ...updatedServices[index], // Spread the existing service object
-      isSaved: true, // Set isSaved to true
+      ...updatedServices[index],
+      [name]: date,
     };
 
-    dispatch(setServices(updatedServices)); // Dispatch the updated services array to Redux
+    dispatch(setServices(updatedServices));
+  };
+
+  const handleDelete = (index) => {
+    dispatch(removeService(index));
+  };
+
+  const handleEdit = (index) => {
+    const updatedServices = [...services];
+
+    updatedServices[index] = {
+      ...updatedServices[index],
+      isSaved: false,
+    };
+
+    dispatch(setServices(updatedServices));
+  };
+
+  const handleSubmit = (index) => {
+    const updatedServices = [...services];
+    updatedServices[index] = {
+      ...updatedServices[index],
+      isSaved: true,
+    };
+
+    dispatch(setServices(updatedServices));
   };
 
   return (
@@ -152,6 +142,10 @@ const ServiceSelection = ({ tenantID }) => {
           className="basic-multi-select"
           classNamePrefix="select"
           onChange={handleServiceSelect}
+          value={services.map((service) => ({
+            label: service.serviceType,
+            value: service.serviceType,
+          }))}
         />
       </div>
 
@@ -187,9 +181,10 @@ const ServiceSelection = ({ tenantID }) => {
               <DatePicker
                 selected={service.startDate}
                 onChange={(date) => handleDateChange(index, "startDate", date)}
-                dateFormat="MM-dd-yyyy" // Format the date
+                dateFormat="MM-dd-yyyy"
                 className="border p-2 rounded w-full"
                 placeholderText="MM-DD-YYYY"
+                disabled={service.isSaved}
               />
             </div>
 
@@ -198,9 +193,10 @@ const ServiceSelection = ({ tenantID }) => {
               <DatePicker
                 selected={service.endDate}
                 onChange={(date) => handleDateChange(index, "endDate", date)}
-                dateFormat="MM-dd-yyyy" // Format the date
+                dateFormat="MM-dd-yyyy"
                 className="border p-2 rounded w-full"
                 placeholderText="MM-DD-YYYY"
+                disabled={service.isSaved}
               />
             </div>
 
@@ -213,6 +209,7 @@ const ServiceSelection = ({ tenantID }) => {
                 value={service.units}
                 onChange={(e) => handleServiceChange(index, e)}
                 className="border p-2 rounded w-full"
+                disabled={service.isSaved}
               />
             </div>
 
@@ -225,6 +222,7 @@ const ServiceSelection = ({ tenantID }) => {
                 value={service.billRate}
                 readOnly
                 className="border p-2 rounded w-full"
+                disabled={service.isSaved}
               />
             </div>
 
@@ -232,7 +230,8 @@ const ServiceSelection = ({ tenantID }) => {
               {!service.isSaved ? (
                 <button
                   onClick={() => handleSubmit(index)}
-                  className="bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-700"
+                  className="bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+                  disabled={!service.startDate || !service.endDate}
                 >
                   Save
                 </button>
