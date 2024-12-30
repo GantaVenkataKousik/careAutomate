@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateHcmInfo } from "../../redux/hcm/hcmSlice";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 const LoginInfo = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const dispatch = useDispatch();
   const hcmData = useSelector((state) => state.hcm);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const inputValue = type === "checkbox" ? checked : value;
@@ -26,21 +30,26 @@ const LoginInfo = () => {
           name="password"
           value={hcmData.password}
           onChange={handleChange}
-          type="password"
+          type={showPassword ? "text" : "password"}
           required
+          showPassword={showPassword}
+          setShowPassword={setShowPassword}
         />
         <InputField
           label="Confirm Password"
           name="confirmPassword"
           value={hcmData.confirmPassword}
           onChange={handleChange}
-          type="password"
+          type={showConfirmPassword ? "text" : "password"}
           required
+          showPassword={showConfirmPassword}
+          setShowPassword={setShowConfirmPassword}
         />
       </Section>
     </div>
   );
 };
+
 const InputField = ({
   label,
   name,
@@ -52,8 +61,10 @@ const InputField = ({
   focused,
   onFocus,
   onBlur,
+  showPassword,
+  setShowPassword,
 }) => (
-  <div style={{ marginBottom: "2px" }}>
+  <div style={{ marginBottom: "2px", position: "relative" }}>
     <label style={styles.label} htmlFor={name}>
       {label}
     </label>
@@ -75,16 +86,34 @@ const InputField = ({
         ))}
       </select>
     ) : (
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        style={{ ...styles.input, ...(focused ? styles.inputFocused : {}) }}
-        required={required}
-      />
+      <div className="flex items-center relative">
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          style={{
+            ...styles.input,
+            paddingRight: "2.5rem", // Adds space for the icon inside the input
+            ...(focused ? styles.inputFocused : {}),
+          }}
+          required={required}
+        />
+        {name === "password" || name === "confirmPassword" ? (
+          <span
+            className="absolute left-[70%] top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-black"
+            onClick={() => setShowPassword((prev) => !prev)}
+          >
+            {showPassword ? (
+              <FaRegEye className="w-5 h-5" />
+            ) : (
+              <FaRegEyeSlash className="w-5 h-5" />
+            )}
+          </span>
+        ) : null}
+      </div>
     )}
   </div>
 );
@@ -112,7 +141,6 @@ const styles = {
     marginBottom: "8px",
     textDecoration: "underline",
   },
-
   label: {
     display: "block",
     fontSize: "1rem",
