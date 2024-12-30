@@ -3,15 +3,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateAssignedTenants } from "../../redux/hcm/hcmSlice";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { BASE_URL } from "../../config";
+
 const ChecklistTenants = () => {
   const dispatch = useDispatch();
   const assignedTenantsRedux = useSelector(
     (state) => state.hcm.assignedTenants
   );
-  console.log(assignedTenantsRedux);
+  // console.log(assignedTenantsRedux);
+
+  // Ensure selectedTenants is an array of objects with id and name
   const [allTenants, setAllTenants] = useState([]);
   const [selectedTenants, setSelectedTenants] = useState(
-    assignedTenantsRedux || []
+    (assignedTenantsRedux.ids || []).map((id, index) => ({
+      id: id,
+      name: assignedTenantsRedux.names[index],
+    })) // Create an array of objects with id and name
   );
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
 
@@ -53,26 +59,35 @@ const ChecklistTenants = () => {
   }, []);
 
   const handleCheckboxChange = (tenant) => {
-    if (selectedTenants.some((t) => t.id === tenant.id)) {
-      const updatedTenants = selectedTenants.filter((t) => t.id !== tenant.id);
-      setSelectedTenants(updatedTenants);
-      dispatch(updateAssignedTenants(updatedTenants.map((t) => t.id)));
-    } else {
-      const updatedTenants = [...selectedTenants, tenant];
-      setSelectedTenants(updatedTenants);
-      dispatch(updateAssignedTenants(updatedTenants.map((t) => t.id)));
-    }
+    const updatedTenants = selectedTenants.some((t) => t.id === tenant.id)
+      ? selectedTenants.filter((t) => t.id !== tenant.id) // Remove tenant if already selected
+      : [...selectedTenants, tenant]; // Add tenant if not selected
+
+    setSelectedTenants(updatedTenants);
+
+    // Update the assigned tenants (both ids and names)
+    dispatch(
+      updateAssignedTenants({
+        ids: updatedTenants.map((t) => t.id),
+        names: updatedTenants.map((t) => t.name),
+      })
+    );
   };
 
   const handleSelectAllToggle = () => {
     if (selectedTenants.length === allTenants.length) {
       // Deselect All
       setSelectedTenants([]);
-      dispatch(updateAssignedTenants([]));
+      dispatch(updateAssignedTenants({ ids: [], names: [] }));
     } else {
       // Select All
       setSelectedTenants(allTenants);
-      dispatch(updateAssignedTenants(allTenants.map((tenant) => tenant.id)));
+      dispatch(
+        updateAssignedTenants({
+          ids: allTenants.map((tenant) => tenant.id),
+          names: allTenants.map((tenant) => tenant.name),
+        })
+      );
     }
   };
 
@@ -83,7 +98,7 @@ const ChecklistTenants = () => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>Step 2: Designate Tenants</h2>
+      {/* <h2 style={styles.heading}>Step 2: Designate Tenants</h2> */}
 
       <div style={styles.checklistSection}>
         <div style={styles.tenantBox}>
@@ -104,48 +119,52 @@ const ChecklistTenants = () => {
               ? "Deselect All"
               : "Select All"}
           </button>
-          <ul style={styles.tenantList}>
-            {filteredTenants.map((tenant) => (
-              <li
-                key={tenant.id}
-                style={{
-                  ...styles.tenantItem,
-                  backgroundColor: selectedTenants.some(
-                    (t) => t.id === tenant.id
-                  )
-                    ? "#6F84F8"
-                    : "#fff",
-                  color: selectedTenants.some((t) => t.id === tenant.id)
-                    ? "#fff"
-                    : "#000",
-                }}
-                onClick={() => handleCheckboxChange(tenant)} // Handle selection on click
-              >
-                <label style={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={selectedTenants.some((t) => t.id === tenant.id)}
-                    onChange={() => handleCheckboxChange(tenant)}
-                    style={styles.hiddenCheckbox} // Hide the checkbox
-                  />
-                  {tenant.name}
-                </label>
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-y-auto max-h-[calc(5*3rem)] tenant-visits-scrollbar">
+            <ul style={styles.tenantList}>
+              {filteredTenants.map((tenant) => (
+                <li
+                  key={tenant.id}
+                  style={{
+                    ...styles.tenantItem,
+                    backgroundColor: selectedTenants.some(
+                      (t) => t.id === tenant.id
+                    )
+                      ? "#6F84F8"
+                      : "#fff",
+                    color: selectedTenants.some((t) => t.id === tenant.id)
+                      ? "#fff"
+                      : "#000",
+                  }}
+                  onClick={() => handleCheckboxChange(tenant)} // Handle selection on click
+                >
+                  <label style={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={selectedTenants.some((t) => t.id === tenant.id)}
+                      onChange={() => handleCheckboxChange(tenant)}
+                      style={styles.hiddenCheckbox} // Hide the checkbox
+                    />
+                    {tenant.name}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         <div style={styles.arrows}>
           <FaArrowRightLong />
         </div>
         <div style={styles.tenantBox}>
           <h3 style={styles.boxHeading}>Selected Tenants</h3>
-          <ul style={styles.tenantList}>
-            {selectedTenants.map((tenant) => (
-              <li key={tenant.id} style={styles.tenantItem}>
-                {tenant.name}
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-y-auto max-h-[calc(5*4rem)] tenant-visits-scrollbar">
+            <ul style={styles.tenantList}>
+              {selectedTenants.map((tenant) => (
+                <li key={tenant.id} style={styles.tenantItem}>
+                  {tenant.name}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -188,7 +207,7 @@ const styles = {
     borderRadius: "8px",
     padding: "16px",
     backgroundColor: "#f9f9f9",
-    minHeight: "200px",
+    minHeight: "400px",
   },
   boxHeader: {
     display: "flex",

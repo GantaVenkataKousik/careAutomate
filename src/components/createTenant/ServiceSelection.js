@@ -242,7 +242,7 @@ const ServiceSelection = ({ tenantID }) => {
                     onClick={() => handleEdit(index)}
                     className="text-yellow-500 hover:scale-110 hover:text-yellow-700 transition-all duration-200"
                   >
-                    <FaEdit /> {/* Edit icon */}
+                    <FaEdit />
                   </button>
                   <button
                     onClick={() => handleDelete(index)}

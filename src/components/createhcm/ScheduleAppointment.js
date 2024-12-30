@@ -11,6 +11,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import { BASE_URL } from "../../config";
+import activities from "../../utils/activities";
 
 const ScheduleAppointment = () => {
   const [hcm, setHcm] = useState("");
@@ -175,48 +176,6 @@ const ScheduleAppointment = () => {
     return time;
   };
 
-  const activities = {
-    "Housing Transition": [
-      "Developing a housing transition plan",
-      "Supporting the person in applying for benefits to afford their housing",
-      "Assisting the person with the housing search and application process",
-      "Assisting the person with tenant screening and housing assessments",
-      "Providing transportation with the person receiving services present and discussing housing related issues",
-      "Helping the person understand and develop a budget",
-      "Helping the person understand and negotiate a lease",
-      "Helping the person meet and build a relationship with a prospective landlord",
-      "Promoting/supporting cultural practice needs and understandings with prospective landlords, property managers",
-      "Helping the person find funding for deposits",
-      "Helping the person organize their move",
-      "Researching possible housing options for the person",
-      "Contacting possible housing options for the person",
-      "Identifying resources to pay for deposits or home goods",
-      "Identifying resources to cover moving expenses",
-      "Completing housing applications on behalf of the service recipient",
-      "Working to expunge records or access reasonable accommodations",
-      "Identifying services and benefits that will support the person with housing instability",
-      "Ensuring the new living arrangement is safe for the person and ready for move-in",
-      "Arranging for adaptive house related accommodations required by the person",
-      "Arranging for assistive technology required by the person",
-    ],
-    "Housing Sustaining": [
-      "Developing, updating and modifying the housing support and crisis/safety plan on a regular basis",
-      "Preventing and early identification of behaviors that may jeopardize continued housing",
-      "Educating and training on roles, rights, and responsibilities of the tenant and property manager",
-      "Transportation with the person receiving services present and discussing housing related issues",
-      "Promoting/supporting cultural practice needs and understandings with landlords, property managers and neighbors",
-      "Coaching to develop and maintain key relationships with property managers and neighbors",
-      "Advocating with community resources to prevent eviction when housing is at risk and maintain person’s safety",
-      "Assistance with the housing recertification processes",
-      "Continued training on being a good tenant, lease compliance, and household management",
-      "Supporting the person to apply for benefits to retain housing",
-      "Supporting the person to understand and maintain/increase income and benefits to retain housing",
-      "Supporting the building of natural housing supports and resources in the community including building supports and resources related to a person’s culture and identity",
-      "Working with property manager or landlord to promote housing retention",
-      "Arranging for assistive technology",
-      "Arranging for adaptive house related accommodations",
-    ],
-  };
   return (
     <div className="p-[20px]  mx-auto bg-white rounded-lg ">
       {scheduleCreated ? (
@@ -402,19 +361,22 @@ const ScheduleAppointment = () => {
               </select>
             </div>
 
-            <div className="flex gap-4">
-              <label className="text-sm font-medium flex items-center w-1/3">
-                <RiServiceLine size={24} className="mr-2" />
-                Reason for Remote
-              </label>
-              <input
-                type="text"
-                value={reasonForRemote}
-                onChange={(e) => setReasonForRemote(e.target.value)}
-                placeholder="Reason for Remote"
-                className="border border-gray-300 rounded-md p-2 w-2/3"
-              />
-            </div>
+            {/* Display input field for Reason for Remote if selected */}
+            {methodOfContact === "remote" && (
+              <div className="flex gap-4">
+                <label className="text-sm font-medium flex items-center w-1/3">
+                  <RiServiceLine size={24} className="mr-2" />
+                  Reason for Remote
+                </label>
+                <input
+                  type="text"
+                  value={reasonForRemote}
+                  onChange={(e) => setReasonForRemote(e.target.value)}
+                  placeholder="Reason for Remote"
+                  className="border border-gray-300 rounded-md p-2 w-2/3"
+                />
+              </div>
+            )}
 
             <div className="flex gap-4">
               <button
