@@ -220,55 +220,12 @@ const SubStep1 = () => {
         </div>
       </Section>
 
-      {/* <Section title="Emergency Contact Information">
-        <InputField
-          label="Emergency First Name"
-          name="emergencyFirstName"
-          value={tenantData.emergencyFirstName}
-          onChange={handleChange}
-          required
-        />
-        <InputField
-          label="Emergency Middle Name"
-          name="emergencyMiddleName"
-          value={tenantData.emergencyMiddleName}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Emergency Last Name"
-          name="emergencyLastName"
-          value={tenantData.emergencyLastName}
-          onChange={handleChange}
-          required
-        />
-        <InputField
-          label="Emergency Phone Number"
-          name="emergencyPhoneNumber"
-          value={tenantData.emergencyPhoneNumber}
-          onChange={handleChange}
-          required
-        />
-        <InputField
-          label="Emergency Email"
-          name="emergencyEmail"
-          value={tenantData.emergencyEmail}
-          onChange={handleChange}
-          type="email"
-          required
-        />
-        <InputField
-          label="Relationship"
-          name="emergencyRelationship"
-          value={tenantData.emergencyRelationship}
-          onChange={handleChange}
-          required
-        />
-      </Section> */}
-
       <Section title="Employment Information">
         <InputField
           label="Employment Title"
           name="employmentTitle"
+          type="select"
+          options={["Permanent", "Contractor"]}
           value={tenantData.employmentTitle}
           onChange={handleChange}
           required
