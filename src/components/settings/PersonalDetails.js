@@ -6,7 +6,7 @@ export default function PersonalDetails() {
   const user = JSON.parse(localStorage.getItem("user"));
 
   return (
-    <div className="settings-personalDetails">
+    <div className="settings-personalDetails w-full">
       <div className="settings-personalDetails-container">
         <div className="settings-personalDetails-imageContainer">
           <img
