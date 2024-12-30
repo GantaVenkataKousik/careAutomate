@@ -90,12 +90,36 @@ const PopupPage = () => {
       }
     }
 
-    // Save data when completing Step 1
-    if (currentStep === 0) {
-      await handleSave();
+    const areAllServicesValid = services.every(
+      (service) =>
+        service.serviceType !== "" &&
+        service.startDate !== "" &&
+        service.endDate !== "" &&
+        service.units !== "" &&
+        service.billRate !== "" &&
+        service.isSaved === true
+    );
+
+    const areAnyServicesNotSaved = services.some(
+      (service) => service.isSaved !== true
+    );
+
+    if (services.length === 0 && currentStep >= 1) {
+      toast.error(`Please select at least one service`);
+      return;
     }
 
-    if (currentStep === 2) {
+    if (areAnyServicesNotSaved) {
+      toast.error("Please save all services before proceeding.");
+      return;
+    }
+
+    if (!areAllServicesValid) {
+      toast.error("Please fill in all required fields for each service.");
+      return;
+    }
+
+    const assignHCMToTenant = async (tenantID) => {
       const token = localStorage.getItem("token");
       console.log("Assigned HCMs", assignedTenants);
       const data = {
@@ -127,10 +151,10 @@ const PopupPage = () => {
         console.error("Error during API call to save assigned tenants:", error);
         toast.error("Error saving assigned tenants. Please try again.");
       }
-    }
+    };
 
-    if (currentStep === 3) {
-      const token = localStorage.getItem("token"); // Retrieve token from localStorage
+    const handleAssignService = async (tenantID) => {
+      const token = localStorage.getItem("token");
 
       if (!token) {
         toast.error("Authentication token is missing!");
@@ -138,7 +162,6 @@ const PopupPage = () => {
       }
 
       try {
-        // Loop through each service
         console.log(services);
         for (const service of services) {
           const formData = new FormData();
@@ -172,7 +195,7 @@ const PopupPage = () => {
             toast.success(
               `Service ${service.serviceType} assigned successfully.`
             );
-            // Optionally, mark the service as saved
+
             const updatedServices = [...services];
             const index = updatedServices.findIndex(
               (s) => s.serviceType === service.serviceType
@@ -188,6 +211,18 @@ const PopupPage = () => {
       } catch (error) {
         console.error("Error posting assigned services:", error);
         toast.error("Error posting assigned services.");
+      }
+    };
+
+    // Save data when completing Step 1
+    if (currentStep === 3) {
+      try {
+        const tenantID = await handleSave(); // Wait for handleSave to complete and return tenantID
+        await handleAssignService(tenantID); // Pass tenantID if needed here
+        await assignHCMToTenant(tenantID); // Pass tenantID explicitly
+      } catch (error) {
+        console.error("Error in step 3 operations:", error);
+        toast.error("Please try again!");
       }
     }
 
@@ -227,15 +262,19 @@ const PopupPage = () => {
           setTenantID(id); // Store tenant ID in state
           dispatch(createdTenant(id));
           toast.success("Tenant data saved successfully");
+          return id;
         } else {
           console.error("Tenant ID not found in the response");
+          return null;
         }
       } else {
         console.error("Failed to save data:", response.statusText);
+        return null;
       }
     } catch (error) {
       console.error("Error during API call:", error);
       toast.error("Error saving tenant data. Please try again.");
+      return null;
     }
   };
 
@@ -375,41 +414,56 @@ const PopupPage = () => {
             </div>
 
             <div className="flex justify-between mt-6">
-              <button
-                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-                onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  className="fill-current"
+              <div className="flex w-full justify-between">
+                <button
+                  className={`flex items-center px-4 py-2 rounded ${
+                    currentStep === 0 || currentStep === steps.length - 1
+                      ? "bg-white text-white "
+                      : "bg-blue-500 text-white hover:bg-blue-700"
+                  }`}
+                  onClick={() =>
+                    currentStep !== 0 && currentStep !== steps.length - 1
+                      ? setCurrentStep((prev) => Math.max(prev - 1, 0))
+                      : null
+                  }
+                  disabled={
+                    currentStep === 0 || currentStep === steps.length - 1
+                  }
                 >
-                  <polygon points="10,0 0,10 10,20" />
-                </svg>
-                <span className="ml-1">Back</span>
-              </button>
-
-              <button
-                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-                onClick={handleNext}
-              >
-                <span className="flex items-center">
-                  <span>
-                    {currentStep === steps.length - 1 ? "Finish" : "Next Step"}
-                  </span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
                     height="20"
                     viewBox="0 0 20 20"
-                    className="ml-2 fill-current"
+                    className="fill-current"
                   >
-                    <polygon points="0,0 10,10 0,20" />
+                    <polygon points="10,0 0,10 10,20" />
                   </svg>
-                </span>
-              </button>
+                  <span className="ml-1">Back</span>
+                </button>
+
+                <button
+                  className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                  onClick={handleNext}
+                >
+                  <span className="flex items-center">
+                    <span>
+                      {currentStep === steps.length - 1
+                        ? "Finish"
+                        : "Next Step"}
+                    </span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      className="ml-2 fill-current"
+                    >
+                      <polygon points="0,0 10,10 0,20" />
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </Box>
         </Modal>
