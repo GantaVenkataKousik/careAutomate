@@ -61,45 +61,20 @@ const PopupPage = () => {
   };
 
   const handleNext = async () => {
-    // Save data when completing Step 1
-    if (currentStep === 1) {
-      await handleSave();
-    }
-
-    // Log assigned tenants from Redux at Step 2
     if (currentStep === 2) {
-      console.log("Assigned Tenants in step2:", assignedTenants);
-      console.log("hcmid", hcmId);
-      const token = localStorage.getItem("token");
-      const data = {
-        hcmId: hcmId,
-        tenantIds: assignedTenants.ids,
-      };
-      console.log("data", data);
       try {
-        const response = await axios.post(
-          `${BASE_URL}/hcm/assign-tenants-to-hcm`,
-          data,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        // Save the HCM data and wait for the ID to be available
+        await handleSave();
 
-        if (response.status >= 200 && response.status < 300) {
-          toast.success("Assigned tenants saved successfully");
-        } else {
-          console.error(
-            "Failed to save assigned tenants:",
-            response.statusText
-          );
-          toast.error("Failed to save assigned tenants.");
-        }
+        // Wait for the hcmId to be updated in Redux
+        await waitForHcmId();
+
+        // Assign tenants to the HCM
+        await assignTenant();
       } catch (error) {
-        console.error("Error during API call to save assigned tenants:", error);
-        toast.error("Error saving assigned tenants. Please try again.");
+        console.error("Error during step 2 processing:", error);
+        toast.error("An error occurred. Please try again.");
+        return;
       }
     }
 
@@ -107,8 +82,54 @@ const PopupPage = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      // navigate('/HCM');
       setComplete(true);
+    }
+  };
+
+  const waitForHcmId = async () => {
+    const maxAttempts = 10;
+    let attempts = 0;
+
+    while (!hcmId && attempts < maxAttempts) {
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Wait 500ms
+      attempts++;
+    }
+
+    if (!hcmId) {
+      throw new Error("HCM ID not available after waiting.");
+    }
+  };
+
+  const assignTenant = async () => {
+    console.log("Assigned Tenants in step2:", assignedTenants);
+    console.log("hcmid", hcmId);
+    const token = localStorage.getItem("token");
+    const data = {
+      hcmId: hcmId,
+      tenantIds: assignedTenants.ids,
+    };
+    console.log("data", data);
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/hcm/assign-tenants-to-hcm`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status >= 200 && response.status < 300) {
+        toast.success("Assigned tenants saved successfully");
+      } else {
+        console.error("Failed to save assigned tenants:", response.statusText);
+        toast.error("Failed to save assigned tenants.");
+      }
+    } catch (error) {
+      console.error("Error during API call to save assigned tenants:", error);
+      toast.error("Error saving assigned tenants. Please try again.");
     }
   };
 
@@ -126,11 +147,7 @@ const PopupPage = () => {
       ) {
         continue;
       }
-
       formData.append(key, value);
-    }
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
     }
 
     try {
@@ -141,24 +158,21 @@ const PopupPage = () => {
         },
       });
 
-      if (response) {
-        const id = response.data?.hcmID;
-
-        const first = response.data?.hcmData?.firstName;
-        const last = response.data?.hcmData?.lastName;
-        const name = `${first + " " + last}`;
-        dispatch(createdHcmName(name));
-        if (id) {
-          dispatch(createdHcm(id));
-          toast.success("HCM data saved successfully");
-        } else {
-          console.error("HCM ID not found in the response");
-        }
+      if (response?.data?.hcmID) {
+        const id = response.data.hcmID;
+        dispatch(createdHcm(id));
+        dispatch(
+          createdHcmName(
+            `${response.data.hcmData.firstName} ${response.data.hcmData.lastName}`
+          )
+        );
+        toast.success("HCM is successfully created");
+        return id; // Return the hcmId for use in the next step
       } else {
-        console.error("Failed to save data:", response.statusText);
+        console.error("HCM ID not found in the response");
       }
     } catch (error) {
-      console.error("Error during API call:", error);
+      console.error("Error during API call to create HCM:", error);
       toast.error("Error saving HCM data. Please try again.");
     }
   };
