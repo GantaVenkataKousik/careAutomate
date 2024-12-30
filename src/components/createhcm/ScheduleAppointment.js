@@ -361,19 +361,22 @@ const ScheduleAppointment = () => {
               </select>
             </div>
 
-            <div className="flex gap-4">
-              <label className="text-sm font-medium flex items-center w-1/3">
-                <RiServiceLine size={24} className="mr-2" />
-                Reason for Remote
-              </label>
-              <input
-                type="text"
-                value={reasonForRemote}
-                onChange={(e) => setReasonForRemote(e.target.value)}
-                placeholder="Reason for Remote"
-                className="border border-gray-300 rounded-md p-2 w-2/3"
-              />
-            </div>
+            {/* Display input field for Reason for Remote if selected */}
+            {methodOfContact === "remote" && (
+              <div className="flex gap-4">
+                <label className="text-sm font-medium flex items-center w-1/3">
+                  <RiServiceLine size={24} className="mr-2" />
+                  Reason for Remote
+                </label>
+                <input
+                  type="text"
+                  value={reasonForRemote}
+                  onChange={(e) => setReasonForRemote(e.target.value)}
+                  placeholder="Reason for Remote"
+                  className="border border-gray-300 rounded-md p-2 w-2/3"
+                />
+              </div>
+            )}
 
             <div className="flex gap-4">
               <button
