@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { FaUpload } from "react-icons/fa";
+import { FaUpload, FaEdit } from "react-icons/fa"; // Add FaEdit import
 import Select from "react-select";
 import { toast } from "react-toastify";
-import axios from "axios";
 import DatePicker from "react-datepicker"; // Import react-datepicker
 import "react-datepicker/dist/react-datepicker.css"; // Import the styles for react-datepicker
 import { RxCrossCircled } from "react-icons/rx";
-import { BASE_URL } from "../../config";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setServices,
+  addService,
+  updateService,
+  removeService,
+} from "../../redux/tenant/tenantSlice";
+
 const serviceOptions = [
   { value: 1, label: "Housing Consultation", billRate: 174.22 },
   { value: 2, label: "Housing Transition", billRate: 17.17 },
@@ -15,46 +21,10 @@ const serviceOptions = [
 ];
 
 const ServiceSelection = ({ tenantID }) => {
-  const [services, setServices] = useState([]);
-  const [allServices, setAllServices] = useState([]);
+  const dispatch = useDispatch();
+  const services = useSelector((state) => state.tenant.services); // Get services from Redux store
 
-  useEffect(() => {
-    const fetchServices = async () => {
-      if (!tenantID) {
-        console.error("Tenant ID is missing!");
-        return;
-      }
-
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Token is missing!");
-          return;
-        }
-
-        const response = await axios.post(
-          `${BASE_URL}/tenant/get-services`,
-          { tenantId: tenantID },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.data.success) {
-          setAllServices(response.data.services);
-        } else {
-          console.log(response.data.message || "Failed to fetch services");
-        }
-      } catch (error) {
-        console.error("Error fetching services:", error);
-      }
-    };
-
-    fetchServices();
-  }, [tenantID]);
+  // Handles selecting services from the dropdown
   const handleServiceSelect = (selectedOptions) => {
     const newServices = selectedOptions
       .filter((option) => {
@@ -72,19 +42,21 @@ const ServiceSelection = ({ tenantID }) => {
         uploadedFileName: "",
         status: "active",
         reviewStatus: "approved",
+        isSaved: false, // Newly added service is not saved yet
       }));
 
     const updatedServices = services.filter((service) =>
       selectedOptions.some((option) => option.label === service.serviceType)
     );
 
-    setServices([...updatedServices, ...newServices]);
+    dispatch(setServices([...updatedServices, ...newServices])); // Update the services in Redux store
   };
 
+  // Handles file upload and updates the service data in Redux
   const handleFileUpload = (index) => {
     const input = document.createElement("input");
     input.type = "file";
-    input.onchange = async (e) => {
+    input.onchange = (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
@@ -94,26 +66,22 @@ const ServiceSelection = ({ tenantID }) => {
         return;
       }
 
-      try {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const updatedServices = [...services];
-          updatedServices[index] = {
-            ...updatedServices[index],
-            document: reader.result, // Store as data URL
-            uploadedFileName: file.name,
-          };
-          setServices(updatedServices);
+      const reader = new FileReader();
+      reader.onload = () => {
+        const updatedServices = [...services];
+        updatedServices[index] = {
+          ...updatedServices[index],
+          document: reader.result, // Store as data URL
+          uploadedFileName: file.name,
         };
-        reader.readAsDataURL(file);
-      } catch (error) {
-        console.error("Error reading file:", error);
-        toast.error("Error processing file");
-      }
+        dispatch(setServices(updatedServices)); // Update the services in Redux
+      };
+      reader.readAsDataURL(file);
     };
     input.click();
   };
 
+  // Handles removing the file data from the service
   const clearFile = (index) => {
     const updatedServices = [...services];
     updatedServices[index] = {
@@ -121,70 +89,56 @@ const ServiceSelection = ({ tenantID }) => {
       document: "", // Reset the document (file data)
       uploadedFileName: "", // Reset the uploaded file name
     };
-    setServices(updatedServices);
+    dispatch(setServices(updatedServices)); // Update the services in Redux
   };
 
+  // Handles changes to the service data (e.g., dates or units)
   const handleServiceChange = (index, e) => {
     const { name, value } = e.target;
     const updatedServices = [...services];
     updatedServices[index][name] = value;
-    setServices(updatedServices);
+    dispatch(setServices(updatedServices)); // Update the services in Redux
   };
 
+  // Handles date changes for service start/end dates
   const handleDateChange = (index, name, date) => {
-    const updatedServices = [...services];
-    updatedServices[index][name] = date;
-    setServices(updatedServices);
+    const updatedServices = [...services]; // Create a copy of the services array
+    updatedServices[index] = {
+      ...updatedServices[index], // Spread the existing service object
+      [name]: date, // Update the specific property (startDate or endDate)
+    };
+
+    dispatch(setServices(updatedServices)); // Update the services in Redux
   };
 
-  const handleSubmit = async (index) => {
-    try {
-      const service = services[index];
-      const token = localStorage.getItem("token");
-      const formData = new FormData();
+  // Handle service removal from Redux store
+  const handleDelete = (index) => {
+    dispatch(removeService(index)); // Remove service from Redux store
+  };
 
-      formData.append("tenantId", tenantID);
-      formData.append("serviceType", service.serviceType);
-      formData.append("startDate", new Date(service.startDate).toISOString()); // Format date
-      formData.append("endDate", new Date(service.endDate).toISOString()); // Format date
-      formData.append("unitsRemaining", service.units); // Set unitsRemaining same as totalUnits
-      formData.append("totalUnits", service.units);
-      formData.append("billRate", service.billRate);
+  // Handle service editing by marking it as unsaved
+  const handleEdit = (index) => {
+    // Create a shallow copy of the services array
+    const updatedServices = [...services];
 
-      const response = await axios.post(
-        `${BASE_URL}/tenant/assign-services-documents`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+    // Update the specific service object at the given index
+    updatedServices[index] = {
+      ...updatedServices[index], // Spread the existing service object
+      isSaved: false, // Mark the service as not saved (so it can be edited)
+    };
 
-      if (response.data.success) {
-        toast.success("Service assigned successfully");
-        const updatedServices = [...services];
-        updatedServices[index] = { ...service, isSaved: true };
-        setServices(updatedServices);
-        const fetchResponse = await axios.post(
-          `${BASE_URL}/tenant/get-services`,
-          { tenantId: tenantID },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (fetchResponse.data.success) {
-          setAllServices(fetchResponse.data.services);
-        }
-      }
-    } catch (error) {
-      console.error("Error submitting service:", error);
-      toast.error(error.response?.data?.message || "Failed to assign service");
-    }
+    // Dispatch the updated services array to Redux
+    dispatch(setServices(updatedServices));
+  };
+  // Handle saving the service (Placeholder for actual save functionality)
+  const handleSubmit = (index) => {
+    const updatedServices = [...services]; // Create a copy of the services array
+    updatedServices[index] = {
+      ...updatedServices[index], // Spread the existing service object
+      isSaved: true, // Set isSaved to true
+    };
+
+    dispatch(setServices(updatedServices)); // Dispatch the updated services array to Redux
   };
 
   return (
@@ -288,7 +242,7 @@ const ServiceSelection = ({ tenantID }) => {
                     onClick={() => handleEdit(index)}
                     className="text-yellow-500 hover:scale-110 hover:text-yellow-700 transition-all duration-200"
                   >
-                    <FaEdit /> {/* Replace with the actual Edit icon */}
+                    <FaEdit /> {/* Edit icon */}
                   </button>
                   <button
                     onClick={() => handleDelete(index)}
