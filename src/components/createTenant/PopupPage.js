@@ -19,13 +19,14 @@ const steps = [
     name: "Personal Info",
     subSteps: [SubStep1],
   },
-  {
-    name: "Assign HCMs",
-    subSteps: [ChecklistHCMs],
-  },
+
   {
     name: "Assign Services",
     subSteps: [ServiceSelection],
+  },
+  {
+    name: "Assign HCMs",
+    subSteps: [ChecklistHCMs],
   },
   {
     name: "Documentation",
@@ -48,6 +49,7 @@ const PopupPage = () => {
   const navigate = useNavigate();
   const tenantData = useSelector((state) => state.tenant);
   const hcmId = useSelector((state) => state.hcm.hcmId);
+  const assignedHCMs = useSelector((state) => state.tenant.assignedHCMs);
 
   const togglePopup = () => {
     navigate("/tenants");
@@ -59,22 +61,22 @@ const PopupPage = () => {
     const requiredFields = [
       { key: "firstName", label: "First Name" },
       { key: "lastName", label: "Last Name" },
-      { key: "dob", label: "Date of Birth" },
-      { key: "gender", label: "Gender" },
-      { key: "mapmi", label: "Mapmi" },
-      { key: "addressLine1", label: "Address Line 1" },
-      { key: "city", label: "City" },
-      { key: "state", label: "State" },
-      { key: "zipCode", label: "Zipcode" },
+      // { key: "dob", label: "Date of Birth" },
+      // { key: "gender", label: "Gender" },
+      // { key: "mapmi", label: "Mapmi" },
+      // { key: "addressLine1", label: "Address Line 1" },
+      // { key: "city", label: "City" },
+      // { key: "state", label: "State" },
+      // { key: "zipCode", label: "Zipcode" },
       { key: "phoneNumber", label: "Phone Number" },
       { key: "email", label: "Email" },
-      { key: "insuranceType", label: "Insurance Type" },
-      { key: "insuranceNumber", label: "Insurance Number" },
-      { key: "diagnosisCode", label: "Diagnosis Code" },
-      { key: "caseManagerFirstName", label: "Case Manager First Name" },
-      { key: "caseManagerLastName", label: "Case Manager Last Name" },
-      { key: "caseManagerPhoneNumber", label: "Case Manager Phone Number" },
-      { key: "caseManagerEmail", label: "Case Manager Email" },
+      // { key: "insuranceType", label: "Insurance Type" },
+      // { key: "insuranceNumber", label: "Insurance Number" },
+      // { key: "diagnosisCode", label: "Diagnosis Code" },
+      // { key: "caseManagerFirstName", label: "Case Manager First Name" },
+      // { key: "caseManagerLastName", label: "Case Manager Last Name" },
+      // { key: "caseManagerPhoneNumber", label: "Case Manager Phone Number" },
+      // { key: "caseManagerEmail", label: "Case Manager Email" },
     ];
 
     for (let field of requiredFields) {
@@ -89,15 +91,13 @@ const PopupPage = () => {
       await handleSave();
     }
 
-    if (currentStep === 1) {
-      console.log("Assigned Tenants in step2:", assignedTenants);
+    if (currentStep === 2) {
       const token = localStorage.getItem("token");
       console.log("Assigned HCMs", assignedTenants);
       const data = {
         tenantId: tenantID,
-        hcmIds: assignedTenants,
+        hcmIds: assignedHCMs.ids,
       };
-      console.log("data", data);
       try {
         const response = await axios.post(
           `${BASE_URL}/tenant/assign-hcms-to-tenant/`,
