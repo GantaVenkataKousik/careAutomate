@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import PersonalDetails from "../settings/PersonalDetails";
+// import PersonalDetails from "./PersonalDetails";
 import MnitsLogin from "./MnitsLogin";
 import WaystarLogin from "./WaystarLogin";
 import BankingInfo from "./BankingInfo";
+import PersonalDetails from "./PersonalDetails";
 
 const Profile = () => {
   const [selectedOption, setSelectedOption] = useState("Personal Details");

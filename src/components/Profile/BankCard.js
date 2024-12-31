@@ -228,7 +228,7 @@ const BankCard = ({ editMode, setEditMode }) => {
         </div>
 
         {editMode && (
-          <div className="flex items-center w-2/3">
+          <div className="flex items-center w-2/3 mt-8 ml-auto">
             <button
               className=" cursor-pointer   text-[#F57070] rounded-lg border-[#F57070] border-2 py-3 px-6 w-full mt-4 mb-9 mr-8 hover:bg-[#F57070] hover:text-white"
               onClick={() => setEditMode((prev) => !prev)}
@@ -236,7 +236,7 @@ const BankCard = ({ editMode, setEditMode }) => {
               Reset Changes
             </button>
             <button
-              className=" cursor-pointer   text-[#6F84F8] rounded-lg border-[#6F84F8] border-2 py-3 px-6 w-full mt-4 mb-9 mr-8 hover:bg-[#6F84F8] hover:text-white"
+              className=" cursor-pointer   text-[#6F84F8] rounded-lg border-[#6F84F8] border-2 py-3 px-6 w-full mt-4 mb-9 hover:bg-[#6F84F8] hover:text-white"
               type="submit"
             >
               Save Changes
