@@ -8,7 +8,8 @@ import PayPeriodChart from "./Charts/PayPeriodChart";
 import TenantInfoChart from "./Charts/TenantInfoChart";
 import HCMInfoChart from "./Charts/HCMInfoChart";
 import PayPeriodPieChart from "./Charts/PayPeriodPieChart";
-import SetupPop from "../auth/SetupPop";
+import AccountSetupPopup from "../auth/AcoountSetup/AccountSetupPopup";
+
 const MainDashboard = () => {
   const [activeView, setActiveView] = useState("tenant");
   const [activeSection, setActiveSection] = useState("visit");
@@ -150,7 +151,7 @@ const MainDashboard = () => {
       </div>
 
       {showPopup && (
-        <SetupPop
+        <AccountSetupPopup
           open={showPopup}
           onClose={() => setShowPopup(false)}
           onSubmit={handleSave}

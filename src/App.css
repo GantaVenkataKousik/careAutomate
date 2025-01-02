@@ -48,6 +48,7 @@
 
 .tenant-visits-scrollbar::-webkit-scrollbar-track {
   background: white; /* Color of the track (the background area) */
+  border-radius: 10px;
 }
 
 .tenant-visits-scrollbar::-webkit-scrollbar-thumb {
