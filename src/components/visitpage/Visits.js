@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
 import VisitModal from "./VisitModal"; // Ensure VisitModal is correctly implemented and imported
 import axios from "axios";
-import VisitCard from "./VisitCard";
+// import VisitCard from "./VisitCard";
 import VisitCalendarView from "./VisitCalendarView";
 import VisitHeader from "./VisitHeader";
 import { visitsFilter } from "../../utils/visitsFilter";
 import { useDispatch } from "react-redux";
 import { setSelectedVisit } from "../../redux/visit/visitSlice";
 import { BASE_URL } from "../../config";
+import VisitCard2 from "./VisitCard2";
+import VisitDetailsPopup from "./VisitDetailsPopup";
 
 const VisitList = () => {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const [filterOption, setFilterOption] = useState("All");
   const [detailsPopup, setDetailsPopup] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
@@ -187,7 +180,7 @@ const VisitList = () => {
     const url = `${BASE_URL}/visit/${visitId}`;
     const response = await axios.put(
       url,
-      { approved: isApproved, rejected: !isApproved },
+      { status: isApproved ? "approved" : "rejected" },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -233,7 +226,7 @@ const VisitList = () => {
       {!isListView ? (
         <VisitCalendarView visits={visitData} />
       ) : (
-        <VisitCard
+        <VisitCard2
           visitData={visitData}
           // handleDeleteClick={handleDeleteClick}
           handleClosePopup={handleClosePopup}
@@ -243,18 +236,11 @@ const VisitList = () => {
         />
       )}
 
-      {/* Popup for Details */}
-      <Dialog open={openPopup} onClose={handleClosePopup}>
-        <DialogTitle>Visit Details</DialogTitle>
-        <DialogContent>
-          <p>{detailsPopup}</p>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClosePopup} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <VisitDetailsPopup
+        openPopup={openPopup}
+        handleClosePopup={handleClosePopup}
+        detailsPopup={detailsPopup}
+      />
 
       {/* Visit Modal */}
       <VisitModal

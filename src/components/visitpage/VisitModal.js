@@ -335,7 +335,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
 
       if (response.status >= 200 && response.status < 300) {
         toast.success("Visit created successfully.");
-        onVisitCreated();
+        // onVisitCreated();
         setScheduleCreated(true);
         setShowCreateScheduleDialog(true);
       } else {
