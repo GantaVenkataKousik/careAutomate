@@ -18,7 +18,7 @@ import { BASE_URL } from "../../config";
 import activities from "../../utils/activities";
 
 const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
-  console.log(onVisitCreated);
+  // console.log(onVisitCreated);
   const [hcm, setHcm] = useState(isEdit ? onVisitCreated.hcmId : "");
   const [startDate, setStartDate] = useState(
     isEdit ? new Date(onVisitCreated.startDate) : null
