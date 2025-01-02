@@ -18,9 +18,6 @@ const MainDashboard = () => {
   // console.log("boolena", accountSetup);
   const [showPopup, setShowPopup] = useState(!accountSetup);
 
-  const handleSave = () => {
-    console.log("save");
-  };
   return (
     <>
       <div className="p-8 pt-0">
@@ -154,7 +151,6 @@ const MainDashboard = () => {
         <AccountSetupPopup
           open={showPopup}
           onClose={() => setShowPopup(false)}
-          onSubmit={handleSave}
         />
       )}
     </>
