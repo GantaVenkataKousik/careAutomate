@@ -83,7 +83,7 @@ const VisitCard = ({
           >
             {/* Title and Date/Duration Row */}
             <div className="flex items-center mb-1">
-              <h3 style={{ marginRight: "2rem" }}>
+              <h3 className="mr-[2rem] flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
                 {visit?.serviceType ? visit.serviceType : "no service"} {" - "}
                 <span className="text truncate">
                   {visit.title && visit.title.length > 75
@@ -92,53 +92,17 @@ const VisitCard = ({
                 </span>
               </h3>
 
-              <div className="flex gap-10 mt-1" style={{ marginLeft: "auto" }}>
-                {!visit.approved && !visit.rejected && (
+              <div className="flex gap-10 items-center mt-1 ml-auto">
+                {visit.status === "approved" && (
                   <div className="flex gap-4">
                     <button
-                      style={{
-                        backgroundColor: "#F57070",
-                        color: "white",
-                        padding: "10px 30px",
-                        borderRadius: "2rem",
-                        border: "2px solid #F57070",
-                        transition:
-                          "background-color 0.3s ease, color 0.3s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "white";
-                        e.currentTarget.style.color = "#F57070";
-                        e.currentTarget.style.borderColor = "#F57070";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "#F57070";
-                        e.currentTarget.style.color = "white";
-                        e.currentTarget.style.borderColor = "#F57070";
-                      }}
+                      className="bg-[#F57070] text-white px-6 py-2.5 rounded-full border-2 border-[#F57070] transition-all duration-300 hover:bg-white hover:text-[#F57070] hover:border-[#F57070]"
                       onClick={() => handleStatusUpdate(index, false)}
                     >
                       Reject
                     </button>
                     <button
-                      style={{
-                        backgroundColor: "#6DD98C",
-                        color: "white",
-                        padding: "10px 30px",
-                        borderRadius: "2rem",
-                        border: "2px solid #6DD98C",
-                        transition:
-                          "background-color 0.3s ease, color 0.3s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "white";
-                        e.currentTarget.style.color = "#6DD98C";
-                        e.currentTarget.style.borderColor = "#6DD98C";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "#6DD98C";
-                        e.currentTarget.style.color = "white";
-                        e.currentTarget.style.borderColor = "#6DD98C";
-                      }}
+                      className="bg-[#6DD98C] text-white px-6 py-2.5 rounded-full border-2 border-[#6DD98C] transition-all duration-300 hover:bg-white hover:text-[#6DD98C] hover:border-[#6DD98C]"
                       onClick={() => handleStatusUpdate(index, true)}
                     >
                       Approve
