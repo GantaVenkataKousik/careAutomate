@@ -16,13 +16,13 @@ const HcmProfileCard = ({ hcm }) => {
     : "N/A";
 
   const listItems = [
-    { name: "Notes", icon: <FaRegStickyNote /> },
-    { name: "Eligibility", icon: <FaUserCheck /> },
-    {
-      name: "Billing Plan",
-      icon: <FaFileInvoice />,
-      //   onClick: handlePlanUsageClick,
-    },
+    // { name: "Notes", icon: <FaRegStickyNote /> },
+    // { name: "Eligibility", icon: <FaUserCheck /> },
+    // {
+    //   name: "Billing Plan",
+    //   icon: <FaFileInvoice />,
+    //   //   onClick: handlePlanUsageClick,
+    // },
     { name: "Documents", icon: <FaFileAlt /> },
   ];
 

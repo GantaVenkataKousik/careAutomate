@@ -54,7 +54,7 @@ const Appointment = () => {
           const endDateTime = new Date(
             `${apt.date.split("T")[0]}T${apt.endTime}`
           );
-          console.log(apt);
+          // console.log(apt);
           return {
             id: apt._id,
             date: new Date(apt.date).toLocaleDateString("en-US", {

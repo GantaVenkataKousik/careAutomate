@@ -138,7 +138,7 @@ const VisitList = () => {
           travelWithoutTenant: visit.travelWithoutTenant,
           response: visit.response ?? "",
         }));
-        console.log(mappedVisits);
+        // console.log(mappedVisits);
         setVisitData(mappedVisits); // Update the visit data with filtered results
       } else {
         console.error("Failed to fetch visit data");
