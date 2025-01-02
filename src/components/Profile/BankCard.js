@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./BankCard.css";
 import cardlogo from "../../images/BankCard/cardlogo.png";
 import chip from "../../images/BankCard/chip.png";
+import Cleave from "cleave.js/react";
 
 const BankCard = ({ editMode, setEditMode }) => {
   const [cardNumber, setCardNumber] = useState("4532123456789012");
+  const [cardType, setCardType] = useState("Unknown Card Type");
   const [nameOnCard, setNameOnCard] = useState("Surya Abothula");
   const [expiryDate, setExpiryDate] = useState("2025-12");
   const [formData, setFormData] = useState({
@@ -14,31 +16,6 @@ const BankCard = ({ editMode, setEditMode }) => {
     state: "state",
     zipCode: "533103",
   });
-
-  const getCardType = (cardNumber) => {
-    const cardPatterns = [
-      { type: "Visa", pattern: /^4\d{12}(\d{3})?(\d{3})?$/ },
-      { type: "Mastercard", pattern: /^5[1-5]\d{14}$|^2[2-7]\d{14}$/ },
-      { type: "American Express", pattern: /^3[47]\d{13}$/ },
-      {
-        type: "Discover",
-        pattern:
-          /^6(?:011|5\d{2}|4[4-9])\d{12}$|^622(?:12[6-9]|1[3-9]\d|2[0-5]\d|2[6-9]|9[0-2]|92[0-5])\d{10}$/,
-      },
-      { type: "Diners Club", pattern: /^3(?:6|8|0[0-5])\d{11}$/ },
-      { type: "UnionPay", pattern: /^62\d{14,17}$/ },
-      { type: "Interac Debit", pattern: /^6\d{15}$/ },
-    ];
-
-    const sanitizedNumber = cardNumber.replace(/[\s-]/g, "");
-    for (let card of cardPatterns) {
-      if (card.pattern.test(sanitizedNumber)) {
-        return card.type;
-      }
-    }
-
-    return "Unknown Card Type";
-  };
 
   const getInputProps = () => {
     if (editMode) {
@@ -52,6 +29,22 @@ const BankCard = ({ editMode, setEditMode }) => {
         className: "border-none rounded-lg bg-transparent",
       };
     }
+  };
+  const handleCardNumberChange = (e) => {
+    setCardNumber(e.target.value);
+  };
+  const handleCardTypeChange = (type) => {
+    console.log(type);
+    const cardTypes = {
+      visa: "Visa",
+      mastercard: "Mastercard",
+      amex: "American Express",
+      discover: "Discover",
+      jcb: "JCB",
+      dinersclub: "Diners Club",
+      unknown: "Unknown Card Type",
+    };
+    setCardType(type.toUpperCase() || "Unknown Card Type");
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -83,7 +76,7 @@ const BankCard = ({ editMode, setEditMode }) => {
           <header className="bankcard-header">
             <span className="bankcard-logo">
               <img src={cardlogo} alt="Card Logo" />
-              <h5>{getCardType(cardNumber)}</h5>
+              <h5>{cardType}</h5>{" "}
             </span>
             <img src={chip} alt="Chip" className="bankcard-chip" />
           </header>
@@ -91,13 +84,24 @@ const BankCard = ({ editMode, setEditMode }) => {
             <div>
               <h6 className="bankcard-header-tags">Card Number</h6>
               <h5 className="bankcard-number">
-                <input
+                {/* <input
                   type="text"
                   value={cardNumber}
                   onChange={(e) => setCardNumber(e.target.value)}
                   placeholder="Enter card number"
                   disabled={disabled}
                   className={className}
+                /> */}
+                <Cleave
+                  placeholder="Enter your credit card number"
+                  options={{
+                    creditCard: true,
+                    onCreditCardTypeChanged: handleCardTypeChange,
+                  }}
+                  onChange={handleCardNumberChange}
+                  value={cardNumber}
+                  {...getInputProps()}
+                  className={`w-full text-xl font-mono ${className}`}
                 />
               </h5>
               <h5 className="bankcard-name">
