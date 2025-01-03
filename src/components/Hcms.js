@@ -19,6 +19,7 @@ import { BASE_URL } from "../config";
 export default function Hcms() {
   const navigate = useNavigate();
   const [Hcms, setHcms] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleAddHcmClick = () => {
     navigate("/hcms/createHcm");
@@ -70,7 +71,12 @@ export default function Hcms() {
 
     fetchHcms();
   }, []);
-
+  const filteredHcms = Hcms.filter(
+    (hcm) =>
+      hcm.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      hcm.phoneNo?.includes(searchQuery) ||
+      hcm.email?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   return (
     <div style={styles.container}>
       <h1 style={styles.header}>HCM</h1>
@@ -82,7 +88,10 @@ export default function Hcms() {
             type="text"
             placeholder="Search..."
             style={styles.searchInput}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
+
           <button style={styles.searchButton}>Search</button>
         </div>
 
@@ -92,8 +101,8 @@ export default function Hcms() {
       </div>
 
       <div style={styles.HcmGrid}>
-        {Hcms.length > 0 ? (
-          Hcms.map((Hcm, index) => (
+        {filteredHcms.length > 0 ? (
+          filteredHcms.map((Hcm, index) => (
             <div key={Hcm._id || index} style={styles.HcmCard}>
               <div style={styles.HcmCardUpperContainer}>
                 <div style={styles.HcmDetails}>
