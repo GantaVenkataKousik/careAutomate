@@ -12,6 +12,7 @@ import axios from "axios";
 const Tenants = () => {
   const navigate = useNavigate();
   const [tenants, setTenants] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleAddTenantClick = () => {
     navigate("/tenants/createTenant");
@@ -64,6 +65,28 @@ const Tenants = () => {
     fetchTenants();
   }, []);
 
+  // Combine both filters
+  const filteredTenants = tenants
+    .filter(
+      (tenant) =>
+        tenant.tenantData?.firstName &&
+        tenant.tenantData?.lastName &&
+        (tenant.tenantData?.phoneNumber || tenant.phoneNo) &&
+        (tenant.tenantData?.email || tenant.email)
+    ) // Old filter for valid tenants
+    .filter((tenant) => {
+      const fullName = `${tenant.tenantData?.firstName || ""} ${
+        tenant.tenantData?.lastName || ""
+      }`;
+      const phone = tenant.tenantData?.phoneNumber || tenant.phoneNo || "";
+      const email = tenant.tenantData?.email || tenant.email || "";
+
+      return (
+        fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        email.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }); // New search filter
   return (
     <div style={styles.container}>
       <h1 style={styles.header}>Tenants</h1>
@@ -75,6 +98,8 @@ const Tenants = () => {
             type="text"
             placeholder="Search..."
             style={styles.searchInput}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
           <button style={styles.searchButton}>Search</button>
         </div>
@@ -86,63 +111,54 @@ const Tenants = () => {
       </div>
 
       <div style={styles.tenantGrid}>
-        {tenants.length > 0 ? (
-          tenants
-            .filter(
-              (tenant) =>
-                tenant.tenantData?.firstName &&
-                tenant.tenantData?.lastName &&
-                (tenant.tenantData?.phoneNumber || tenant.phoneNo) &&
-                (tenant.tenantData?.email || tenant.email)
-            )
-            .map((tenant, index) => (
-              <div style={styles.tenantCard} key={tenant._id || index}>
-                <div style={styles.tenantCardUpperContainer}>
-                  <div style={styles.tenantDetails}>
-                    <p
-                      style={styles.tenantNameUI}
-                      onClick={() => handleTenantClick(tenant._id)}
-                    >
-                      {tenant.tenantData?.firstName}{" "}
-                      {tenant.tenantData?.lastName}
-                    </p>
-                    <p style={styles.tenantSubNameUI}>
-                      {" "}
-                      {tenant.tenantData?.phoneNumber || tenant.phoneNo}
-                    </p>
-                    <p style={styles.tenantSubNameUI}>
-                      {" "}
-                      {tenant.tenantData?.email || tenant.email}
-                    </p>
-                  </div>
-                  <div>
-                    <img
-                      style={styles.tenantImg}
-                      onClick={() => handleTenantClick(tenant._id)}
-                      src={tenantImage}
-                    ></img>
-                  </div>
+        {filteredTenants.length > 0 ? (
+          filteredTenants.map((tenant, index) => (
+            <div style={styles.tenantCard} key={tenant._id || index}>
+              <div style={styles.tenantCardUpperContainer}>
+                <div style={styles.tenantDetails}>
+                  <p
+                    style={styles.tenantNameUI}
+                    onClick={() => handleTenantClick(tenant._id)}
+                  >
+                    {tenant.tenantData?.firstName} {tenant.tenantData?.lastName}
+                  </p>
+                  <p style={styles.tenantSubNameUI}>
+                    {" "}
+                    {tenant.tenantData?.phoneNumber || tenant.phoneNo}
+                  </p>
+                  <p style={styles.tenantSubNameUI}>
+                    {" "}
+                    {tenant.tenantData?.email || tenant.email}
+                  </p>
                 </div>
-                <div style={styles.tenantIconsContainer}>
-                  <CiCalendarDate
-                    style={styles.tenantIcon}
-                    onClick={() => handleIconClick("/appointments")}
-                  />
-                  <IoIosMenu
-                    style={styles.tenantIcon}
-                    onClick={() => handleIconClick("/visits")}
-                  />
-                  <TbMessage
-                    style={styles.tenantIcon}
-                    onClick={() => handleIconClick("/communication")}
-                  />
-                  <IoDocumentTextOutline
-                    style={styles.tenantIcon}
-                    onClick={() => handleIconClick("/settings")}
-                  />
+                <div>
+                  <img
+                    style={styles.tenantImg}
+                    onClick={() => handleTenantClick(tenant._id)}
+                    src={tenantImage}
+                  ></img>
                 </div>
               </div>
-            ))
+              <div style={styles.tenantIconsContainer}>
+                <CiCalendarDate
+                  style={styles.tenantIcon}
+                  onClick={() => handleIconClick("/appointments")}
+                />
+                <IoIosMenu
+                  style={styles.tenantIcon}
+                  onClick={() => handleIconClick("/visits")}
+                />
+                <TbMessage
+                  style={styles.tenantIcon}
+                  onClick={() => handleIconClick("/communication")}
+                />
+                <IoDocumentTextOutline
+                  style={styles.tenantIcon}
+                  onClick={() => handleIconClick("/settings")}
+                />
+              </div>
+            </div>
+          ))
         ) : (
           <p style={styles.noDataText}>Loading...</p>
         )}
