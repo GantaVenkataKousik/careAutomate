@@ -34,6 +34,28 @@ const MainDashboard = () => {
             <div>
               <CardData />
             </div>
+            <div className="flex gap-8 p-2">
+              <div className="flex shadow-md px-10 py-6 gap-10 justify-between border-2 rounded-3xl w-full">
+                <div className="flex flex-col">
+                  <h3 className="mt-2 ml-2 text-2xl text-[#6f84f8] font-semibold">
+                    Financial Flow
+                  </h3>
+                  <FinancialFlowLineChart style={{ height: "150px" }} />
+                </div>
+                <div className="ml-4 ">
+                  <h3 className="mt-2 ml-2 text-2xl text-[#6f84f8] font-semibold">
+                    Pay Period
+                  </h3>
+                  <PayPeriodChart style={{ height: "150px" }} />
+                </div>
+                <div className="ml-4 ">
+                  <h3 className="mt-2 ml-2 text-2xl text-[#6f84f8] font-semibold">
+                    Pay Period
+                  </h3>
+                  <PayPeriodPieChart style={{ height: "150px" }} />
+                </div>
+              </div>
+            </div>
             <WeeklySchedule />
             <div className="flex gap-8 my-5 p-2 w-full mx-auto">
               <div className="flex shadow-md px-6 pt-6 pb-2 gap-10 justify-evenly border-2 rounded-3xl  w-full ">
@@ -119,28 +141,6 @@ const MainDashboard = () => {
                     )}
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex gap-8 p-2">
-            <div className="flex shadow-md px-10 py-6 gap-10 justify-between border-2 rounded-3xl w-full">
-              <div className="flex flex-col">
-                <h3 className="mt-2 ml-2 text-2xl text-[#6f84f8] font-semibold">
-                  Financial Flow
-                </h3>
-                <FinancialFlowLineChart style={{ height: "150px" }} />
-              </div>
-              <div className="ml-4 ">
-                <h3 className="mt-2 ml-2 text-2xl text-[#6f84f8] font-semibold">
-                  Pay Period
-                </h3>
-                <PayPeriodChart style={{ height: "150px" }} />
-              </div>
-              <div className="ml-4 ">
-                <h3 className="mt-2 ml-2 text-2xl text-[#6f84f8] font-semibold">
-                  Pay Period
-                </h3>
-                <PayPeriodPieChart style={{ height: "150px" }} />
               </div>
             </div>
           </div>
