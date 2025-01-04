@@ -16,8 +16,12 @@ const ProfileCard = ({ tenantData, tenantId }) => {
   const handlePlanUsageClick = () => {
     navigate("/tenants/planUsage", { state: { tenantId } });
   };
+
+  const handleNotesClick = () => {
+    navigate("/tenants/notes", { state: { tenantData } });
+  };
   const listItems = [
-    { name: "Notes", icon: <FaRegStickyNote /> },
+    { name: "Notes", icon: <FaRegStickyNote />, onClick: handleNotesClick },
     { name: "Eligibility", icon: <FaUserCheck /> },
     {
       name: "Plan Usage",

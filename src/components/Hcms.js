@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  FaSearch,
-  FaPlus,
-  FaCalendarAlt,
-  FaBars,
-  FaEnvelope,
-  FaFileAlt,
-} from "react-icons/fa";
+import { FaSearch, FaPlus } from "react-icons/fa";
 import HcmImage from "../images/tenant.jpg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { he } from "date-fns/locale";
 import { CiCalendarDate } from "react-icons/ci";
 import { IoIosMenu } from "react-icons/io";
 import { TbMessage } from "react-icons/tb";
