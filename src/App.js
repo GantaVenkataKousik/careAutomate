@@ -29,6 +29,7 @@ import Onboarding from "./components/Onboarding.js";
 import MainDashboard from "./components/mainDashboard/MainDashBoard.js";
 import HcmDashboard from "./components/hcmsPage/HcmDashboard.js";
 import Profile from "./components/Profile/Profile.js";
+import Notes from "./components/tenantsPage/notes/Notes.js";
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -169,6 +170,14 @@ const App = () => {
               element={
                 <AppLayout>
                   <PlanUsage />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/tenants/notes"
+              element={
+                <AppLayout>
+                  <Notes />
                 </AppLayout>
               }
             />
