@@ -53,6 +53,7 @@ const Tenants = () => {
         );
 
         const tenantsData = response.data?.data?.tenants || [];
+        console.log(tenantsData);
         setTenants(tenantsData);
       } catch (error) {
         console.error(
@@ -69,17 +70,19 @@ const Tenants = () => {
   const filteredTenants = tenants
     .filter(
       (tenant) =>
-        tenant.tenantData?.firstName &&
-        tenant.tenantData?.lastName &&
-        (tenant.tenantData?.phoneNumber || tenant.phoneNo) &&
-        (tenant.tenantData?.email || tenant.email)
+        tenant.tenantData?.personalInfo?.firstName &&
+        tenant.tenantData?.personalInfo?.lastName &&
+        (tenant.tenantData?.personalInfo?.phoneNumber || tenant.phoneNo) &&
+        (tenant.tenantData?.personalInfo?.email || tenant.email)
     ) // Old filter for valid tenants
     .filter((tenant) => {
-      const fullName = `${tenant.tenantData?.firstName || ""} ${
-        tenant.tenantData?.lastName || ""
+      const fullName = `${tenant.tenantData?.personalInfo?.firstName || ""} ${
+        tenant.tenantData?.personalInfo?.lastName || ""
       }`;
-      const phone = tenant.tenantData?.phoneNumber || tenant.phoneNo || "";
-      const email = tenant.tenantData?.email || tenant.email || "";
+      const phone =
+        tenant.tenantData?.personalInfo?.phoneNumber || tenant.phoneNo || "";
+      const email =
+        tenant.tenantData?.personalInfo?.email || tenant.email || "";
 
       return (
         fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -120,15 +123,17 @@ const Tenants = () => {
                     style={styles.tenantNameUI}
                     onClick={() => handleTenantClick(tenant._id)}
                   >
-                    {tenant.tenantData?.firstName} {tenant.tenantData?.lastName}
+                    {tenant.tenantData?.personalInfo?.firstName}{" "}
+                    {tenant.tenantData?.personalInfo?.lastName}
                   </p>
                   <p style={styles.tenantSubNameUI}>
                     {" "}
-                    {tenant.tenantData?.phoneNumber || tenant.phoneNo}
+                    {tenant.tenantData?.personalInfo?.phoneNumber ||
+                      tenant.phoneNo}
                   </p>
                   <p style={styles.tenantSubNameUI}>
                     {" "}
-                    {tenant.tenantData?.email || tenant.email}
+                    {tenant.tenantData?.personalInfo?.email || tenant.email}
                   </p>
                 </div>
                 <div>
