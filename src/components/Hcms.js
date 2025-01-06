@@ -3,11 +3,16 @@ import { FaSearch, FaPlus } from "react-icons/fa";
 import HcmImage from "../images/tenant.jpg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { CiCalendarDate } from "react-icons/ci";
-import { IoIosMenu } from "react-icons/io";
+import {
+  LiaFileInvoiceDollarSolid,
+  LiaUserEditSolid,
+  LiaTrashSolid,
+} from "react-icons/lia";
+import { MdOutlineEventAvailable } from "react-icons/md";
+import { BiUserCheck } from "react-icons/bi";
 import { TbMessage } from "react-icons/tb";
-import { IoDocumentTextOutline } from "react-icons/io5";
 import { BASE_URL } from "../config";
+
 export default function Hcms() {
   const navigate = useNavigate();
   const [Hcms, setHcms] = useState([]);
@@ -17,8 +22,8 @@ export default function Hcms() {
     navigate("/hcms/createHcm");
   };
 
-  const handleHcmNameClick = () => {
-    navigate("/hcms/planUsage");
+  const handleIconClick = (path) => {
+    navigate(path);
   };
   const handleHcmClick = (hcmId) => {
     const selectedHcm = Hcms.find((hcm) => hcm._id === hcmId);
@@ -69,6 +74,7 @@ export default function Hcms() {
       hcm.phoneNo?.includes(searchQuery) ||
       hcm.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  console.log(filteredHcms);
   return (
     <div style={styles.container}>
       <h1 style={styles.header}>HCM</h1>
@@ -116,11 +122,33 @@ export default function Hcms() {
                   />
                 </div>
               </div>
-              <div style={styles.HcmIconsContainer}>
-                <CiCalendarDate style={styles.HcmIcon} />
-                <IoIosMenu style={styles.HcmIcon} />
-                <TbMessage style={styles.HcmIcon} />
-                <IoDocumentTextOutline style={styles.HcmIcon} />
+
+              {/**Bottom Icons div */}
+              <div className="flex justify-between">
+                <div style={styles.HcmIconsContainer}>
+                  <MdOutlineEventAvailable
+                    style={styles.HcmIcon}
+                    onClick={() => handleIconClick("/appointments")}
+                  />
+                  <BiUserCheck
+                    style={styles.HcmIcon}
+                    onClick={() => handleIconClick("/visits")}
+                  />
+                  <TbMessage
+                    style={styles.HcmIcon}
+                    onClick={() => handleIconClick("/communication")}
+                  />
+                  <LiaFileInvoiceDollarSolid
+                    style={styles.HcmIcon}
+                    onClick={() => handleIconClick("planUsage")}
+                  />
+                </div>
+
+                {/**Right side icons */}
+                <div style={styles.HcmIconsContainer}>
+                  <LiaUserEditSolid style={styles.HcmIcon} />
+                  <LiaTrashSolid style={styles.HcmIcon} />
+                </div>
               </div>
             </div>
           ))
@@ -135,7 +163,6 @@ export default function Hcms() {
 const styles = {
   container: {
     padding: "10px",
-    fontFamily: "Arial, sans-serif",
     margin: "1rem",
     fontFamily: "Poppins",
   },

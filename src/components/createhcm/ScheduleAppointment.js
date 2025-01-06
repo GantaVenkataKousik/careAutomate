@@ -42,8 +42,8 @@ const ScheduleAppointment = () => {
   const hcmName = useSelector((state) => state.hcm.hcmName);
   const hcmId = useSelector((state) => state.hcm.hcmId);
 
-  console.log("Hcm Name in step4:", hcmName);
-  console.log("Hcm ID in step4:", hcmId);
+  // console.log("Hcm Name in step4:", hcmName);
+  // console.log("Hcm ID in step4:", hcmId);
 
   useEffect(() => {
     if (assignedTenants.names.length > 0) {
@@ -106,9 +106,9 @@ const ScheduleAppointment = () => {
       return;
     }
 
-    console.log("Date:", startDate);
-    console.log("Start Time:", startTime);
-    console.log("End Time:", endTime);
+    // console.log("Date:", startDate);
+    // console.log("Start Time:", startTime);
+    // console.log("End Time:", endTime);
     const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
     const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
     const formattedStartTime = startDateTime.toISOString();

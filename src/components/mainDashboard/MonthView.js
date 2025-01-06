@@ -106,7 +106,7 @@ const MonthView = () => {
         startAccessor="start"
         endAccessor="end"
         defaultView="month"
-        views={["month", "day"]}
+        views={["month", "week", "day"]}
         date={selectedDate}
         onNavigate={(date) => setSelectedDate(date)}
         // toolbar={false}
