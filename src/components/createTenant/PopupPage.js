@@ -138,7 +138,7 @@ const PopupPage = () => {
 
     const assignHCMToTenant = async (tenantID) => {
       const token = localStorage.getItem("token");
-      console.log("Assigned HCMs", assignedTenants);
+      // console.log("Assigned HCMs", assignedTenants);
       const data = {
         tenantId: tenantID,
         hcmIds: assignedHCMs.ids,
@@ -179,11 +179,11 @@ const PopupPage = () => {
       }
 
       try {
-        console.log(services);
+        // console.log(services);
         for (const service of services) {
           const formData = new FormData();
           formData.append("tenantId", tenantID);
-          console.log(service.serviceType);
+          // console.log(service.serviceType);
           formData.append("serviceType", service.serviceType);
           formData.append(
             "startDate",
@@ -193,9 +193,9 @@ const PopupPage = () => {
           formData.append("unitsRemaining", service.units);
           formData.append("totalUnits", service.units);
           formData.append("billRate", service.billRate);
-          for (let pair of formData.entries()) {
-            console.log(pair[0] + ": " + pair[1]);
-          }
+          // for (let pair of formData.entries()) {
+          //   console.log(pair[0] + ": " + pair[1]);
+          // }
           // Make the POST request for each service
           const response = await axios.post(
             `${BASE_URL}/tenant/assign-services-documents`,
@@ -326,12 +326,12 @@ const PopupPage = () => {
       },
       notes: tenantData.notes || [], // Assuming tenantData.notes is an array of note objects
     };
-    console.log(transformedData);
+    // console.log(transformedData);
     for (const [key, value] of Object.entries(transformedData)) {
       formData.append(key, value);
     }
 
-    console.log(formData);
+    // console.log(formData);
 
     try {
       const response = await axios.post(
@@ -346,7 +346,7 @@ const PopupPage = () => {
       );
 
       if (response.status >= 200 && response.status < 300) {
-        console.log("result", response);
+        // console.log("result", response);
         const id = response.data?.response.tenantID;
         const first = response.data?.tenantData?.firstName;
         const last = response.data?.tenantData?.lastName;
@@ -354,7 +354,7 @@ const PopupPage = () => {
 
         dispatch(createdTenantName(name));
         setTenantName(name);
-        console.log(`Tenant ID saved: ${id}`);
+        // console.log(`Tenant ID saved: ${id}`);
         if (id) {
           setTenantID(id); // Store tenant ID in state
           dispatch(createdTenant(id));
@@ -378,9 +378,9 @@ const PopupPage = () => {
   const renderSubStep = () => {
     const SubStepComponent = steps[currentStep].subSteps[0];
     if (SubStepComponent) {
-      console.log(
-        `Rendering step ${currentStep + 1}, passing tenantID: ${tenantID}`
-      );
+      // console.log(
+      //   `Rendering step ${currentStep + 1}, passing tenantID: ${tenantID}`
+      // );
       return <SubStepComponent tenantID={tenantID} tenantName={tenantName} />;
     }
     return null;
