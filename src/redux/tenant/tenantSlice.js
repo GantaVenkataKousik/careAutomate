@@ -48,7 +48,6 @@ const initialState = {
   employmentTitle: "",
   hireDate: "",
   terminationDate: "",
-  ssn: "",
   rateOfPay: "",
   userName: "",
   password: "",
