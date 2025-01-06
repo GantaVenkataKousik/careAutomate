@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../styles/ProfilePage.css";
-import tenant from "../images/tenant.jpg";
-import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
-import {
-  FaBars,
-  FaCheck,
-  FaDownload,
-  FaFileAlt,
-  FaMicrophone,
-  FaTimes,
-  FaUser,
-  FaUserTie,
-} from "react-icons/fa";
-import AssignedHcms from "./tenantProfilePage/AssignedHcms";
+import AssignedHcms from "./tenantsPage/AssignedHcms";
 import { pdfjs } from "react-pdf";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API_ROUTES } from "../routes";
@@ -259,7 +247,7 @@ const ProfilePage = () => {
             <div className="space-y-2 overflow-y-auto max-h-[calc(5*7rem)] mt-2 tenant-visits-scrollbar">
               {/* Display upcoming appointments */}
               {appointments?.appointments?.upcoming &&
-                Object.keys(appointments.appointments.upcoming).length > 0 ? (
+              Object.keys(appointments.appointments.upcoming).length > 0 ? (
                 Object.entries(appointments.appointments.upcoming).map(
                   ([year, months]) =>
                     Object.entries(months).map(([month, days]) =>

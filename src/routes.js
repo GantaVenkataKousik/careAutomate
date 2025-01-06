@@ -37,6 +37,8 @@ export const API_ROUTES = {
     // Add other billing-related routes here
   },
   TENANTS: {
+    BASE: `${BASE_URL}/tenant`,
+    UPDATE_TENANT: `${BASE_URL}/tenant/update-tenant/`,
     GET_INFO: `${BASE_URL}/tenant/get-tenant-info/`,
     REASSESSMENTS: `${BASE_URL}/tenant/tenant-reassessments/`,
     // Add other tenant-related routes here

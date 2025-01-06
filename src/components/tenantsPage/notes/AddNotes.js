@@ -15,7 +15,7 @@ const AddNotes = ({ setEditMode, addNote }) => {
       notedBy: "Surya Abothula",
       createdAt: new Date().toISOString(),
     };
-    console.log(newNote);
+    // console.log(newNote);
     addNote(newNote);
   };
 

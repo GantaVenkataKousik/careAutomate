@@ -12,14 +12,22 @@ import { BiUserCheck } from "react-icons/bi";
 import { TbMessage } from "react-icons/tb";
 import { BASE_URL } from "../config";
 import axios from "axios";
+import EditTenant from "./tenantsPage/EditTenant";
 
 const Tenants = () => {
   const navigate = useNavigate();
   const [tenants, setTenants] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [openModal, setOpenModal] = useState(false); // State for modal visibility
+  const [selectedTenant, setSelectedTenant] = useState(null); // Track selected tenant
 
   const handleAddTenantClick = () => {
     navigate("/tenants/createTenant");
+  };
+
+  const handleEditClick = (tenant) => {
+    setSelectedTenant(tenant); // Set selected tenant
+    setOpenModal(true); // Open the modal
   };
 
   const handleTenantClick = (tenantId) => {
@@ -186,7 +194,7 @@ const Tenants = () => {
                 <div style={styles.tenantIconsContainer}>
                   <LiaUserEditSolid
                     style={styles.tenantIcon}
-                    onClick={() => handleIconClick("/communication")}
+                    onClick={() => handleEditClick(tenant)}
                   />
                   <LiaTrashSolid
                     style={styles.tenantIcon}
@@ -202,6 +210,12 @@ const Tenants = () => {
           <p style={styles.noDataText}>Loading...</p>
         )}
       </div>
+      {/* EditTenant Modal */}
+      <EditTenant
+        open={openModal} // Pass open state to EditTenant
+        setOpen={setOpenModal} // Pass setOpen to control modal visibility
+        tenant={selectedTenant} // Pass the selected tenant to EditTenant
+      />
     </div>
   );
 };
