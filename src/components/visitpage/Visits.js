@@ -40,12 +40,11 @@ const VisitList = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data.response);
       if (response.data.response) {
         // Sorting the visits by the createdAt date (most recent first)
         // console.log("raw", response.data.visits);
         // Mapping the sorted visits
-        console.log(response);
+        // console.log(response);
         const mappedVisits = response.data.response.map((visit) => ({
           _id: visit._id,
           title: visit.activity,
