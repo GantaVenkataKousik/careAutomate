@@ -71,7 +71,7 @@ const Tenants = () => {
         );
 
         const tenantsData = response.data?.data?.tenants || [];
-        console.log(tenantsData);
+        // console.log(tenantsData);
         setTenants(tenantsData);
       } catch (error) {
         console.error(
@@ -107,7 +107,7 @@ const Tenants = () => {
         email.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }); // New search filter
-  console.log(filteredTenants);
+  // console.log(filteredTenants);
 
   return (
     <div style={styles.container}>

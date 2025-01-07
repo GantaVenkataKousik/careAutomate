@@ -12,12 +12,19 @@ import { MdOutlineEventAvailable } from "react-icons/md";
 import { BiUserCheck } from "react-icons/bi";
 import { TbMessage } from "react-icons/tb";
 import { BASE_URL } from "../config";
+import EditHcmPopup from "./hcmsPage/EditHcmPopup";
 
 export default function Hcms() {
   const navigate = useNavigate();
   const [Hcms, setHcms] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [openModal, setOpenModal] = useState(false); // State for modal visibility
+  const [selectedHCM, setSelectedHCM] = useState(null); // Track selected tenant
 
+  const handleEditClick = (hcm) => {
+    setSelectedHCM(hcm); // Set selected hcm
+    setOpenModal(true); // Open the modal
+  };
   const handleAddHcmClick = () => {
     navigate("/hcms/createHcm");
   };
@@ -74,7 +81,7 @@ export default function Hcms() {
       hcm.phoneNo?.includes(searchQuery) ||
       hcm.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  console.log(filteredHcms);
+  // console.log(filteredHcms);
   return (
     <div style={styles.container}>
       <h1 style={styles.header}>HCM</h1>
@@ -146,7 +153,10 @@ export default function Hcms() {
 
                 {/**Right side icons */}
                 <div style={styles.HcmIconsContainer}>
-                  <LiaUserEditSolid style={styles.HcmIcon} />
+                  <LiaUserEditSolid
+                    style={styles.HcmIcon}
+                    onClick={() => handleEditClick(Hcm)}
+                  />
                   <LiaTrashSolid style={styles.HcmIcon} />
                 </div>
               </div>
@@ -156,6 +166,13 @@ export default function Hcms() {
           <p style={styles.noDataText}>No data available</p>
         )}
       </div>
+
+      {/**Edit HCM Modal */}
+      <EditHcmPopup
+        open={openModal} // Pass open state to EditTenant
+        setOpen={setOpenModal} // Pass setOpen to control modal visibility
+        hcm={selectedHCM} // Pass the selected tenant to EditTenant
+      />
     </div>
   );
 }
