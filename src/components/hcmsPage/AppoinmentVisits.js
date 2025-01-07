@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { API_ROUTES } from "../../routes";
-import { formatTime, monthNames, today } from "../../utils/timeFilter";
 import {
-  FaBars,
-  FaCheck,
-  FaFileAlt,
-  FaMicrophone,
-  FaTimes,
-  FaUser,
-} from "react-icons/fa";
-import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
+  formatTime,
+  monthNames,
+  today,
+} from "../../utils/commonUtils/timeFilter";
 
 const AppoinmentVisits = ({ hcmId }) => {
   const [appointments, setAppointments] = useState([]);

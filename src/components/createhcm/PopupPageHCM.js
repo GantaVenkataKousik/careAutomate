@@ -17,7 +17,7 @@ import {
   resetHcmInfo,
 } from "../../redux/hcm/hcmSlice";
 import { BASE_URL } from "../../config";
-import { mapHcmDataToSchema } from "../../utils/hcmCreateFormat";
+import { mapHcmDataToSchema } from "../../utils/hcm/createHcmUtils/hcmCreateFormat";
 
 const steps = [
   {

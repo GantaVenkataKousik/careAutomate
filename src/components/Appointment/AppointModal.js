@@ -15,7 +15,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { BASE_URL } from "../../config";
 import { API_ROUTES } from "../../routes";
-import activities from "../../utils/activities";
+import activities from "../../utils/commonUtils/activities";
 
 const AppointmentModal = ({
   isOpen,

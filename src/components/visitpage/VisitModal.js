@@ -15,7 +15,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { BASE_URL } from "../../config";
-import activities from "../../utils/activities";
+import activities from "../../utils/commonUtils/activities";
 
 const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
   // console.log(onVisitCreated);

@@ -1,5 +1,5 @@
 import React from "react";
-import { formatTime24Hours } from "../../utils/timeFilter";
+import { formatTime24Hours } from "../../utils/commonUtils/timeFilter";
 import { MdOutlineLocationOn, MdAccessTime } from "react-icons/md";
 import { GoTrash } from "react-icons/go";
 import { BiEditAlt } from "react-icons/bi";
