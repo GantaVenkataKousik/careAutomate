@@ -3,7 +3,7 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 // import "../../styles/customCalendarStyles.scss"; // Import your custom SASS file
-import { visitsFilter } from "../../utils/visitsFilter";
+import { visitsFilter } from "../../utils/visitsUtils/visitsFilter";
 
 // Initialize localizer for moment.js
 const localizer = momentLocalizer(moment);

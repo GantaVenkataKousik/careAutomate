@@ -4,7 +4,7 @@ import AssignedHcms from "./tenantsPage/AssignedHcms";
 import { pdfjs } from "react-pdf";
 import { useLocation, useNavigate } from "react-router-dom";
 import { API_ROUTES } from "../routes";
-import { formatTime, monthNames, today } from "../utils/timeFilter";
+import { formatTime, monthNames, today } from "../utils/commonUtils/timeFilter";
 import ProfileCard from "./tenantsPage/ProfileCard";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;

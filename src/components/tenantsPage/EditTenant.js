@@ -4,8 +4,8 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { mapTenantToFormData } from "../../utils/tenants/editFormFormat";
-import { getChangedFields } from "../../utils/tenants/editFormFormatForAPI";
+import { mapTenantToFormData } from "../../utils/tenants/editFormUtils/editFormFormat";
+import { getChangedFields } from "../../utils/tenants/editFormUtils/editFormFormatForAPI";
 import { API_ROUTES } from "../../routes";
 import { toast } from "react-toastify";
 

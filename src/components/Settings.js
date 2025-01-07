@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PersonalDetails from "./settings/PersonalDetails";
 import Security from "./settings/Security";
 import ChildAccountDetails from "./settings/ChildAccountDetails";
 import Preferences from "./settings/Preferences";

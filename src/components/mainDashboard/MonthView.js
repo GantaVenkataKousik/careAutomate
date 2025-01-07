@@ -3,7 +3,7 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import axios from "axios";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { appointmentFilter } from "../../utils/appointmentsFilter";
+import { appointmentFilter } from "../../utils/appointmentsUtils/appointmentsFilter";
 import { BASE_URL } from "../../config";
 
 const localizer = momentLocalizer(moment);

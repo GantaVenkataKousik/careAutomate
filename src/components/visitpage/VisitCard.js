@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { Button, Box, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { GrLocation } from "react-icons/gr";
 import { CiCalendarDate } from "react-icons/ci";
-import { formatTimeFormate } from "../../utils/timeFilter";
+import { formatTimeFormate } from "../../utils/commonUtils/timeFilter";
+import { GrLocation } from "react-icons/gr";
 import { GiPathDistance } from "react-icons/gi";
 import { API_ROUTES } from "../../routes";
-import DOMPurify from "dompurify";
 
 const VisitCard = ({
   visitData,
@@ -16,13 +14,45 @@ const VisitCard = ({
   handleStatusUpdate,
   handleClosePopup,
 }) => {
-  const sanitizeHTML = (html) => DOMPurify.sanitize(html);
+  const getColorClass = (status, type) => {
+    const colorMapping = {
+      approved: "#6DD98C", // Blue
+      rejected: "#F57070", // Red
+      pending: "#6F84F8", // Blue
+    };
 
-  console.log(visitData);
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const handleDeleteClick = async (index, visit) => {
-    console.log(index, visit);
+    const color = colorMapping[status] || "#6F84F8"; // Default to blue if status is unknown
 
+    if (type === "border") {
+      return `border-[${color}]`; // Return border class
+    } else if (type === "text") {
+      return `text-[${color}]`; // Return text color class
+    }
+
+    return ""; // Default: Return empty if type is not provided correctly
+  };
+
+  // Local state for tracking which visit's delete popup is open
+  const [deletePopups, setDeletePopups] = useState({});
+
+  // Open the delete popup for the specific visit ID
+  const handleDeleteClick = (visitId) => {
+    setDeletePopups((prevState) => ({
+      ...prevState,
+      [visitId]: true,
+    }));
+  };
+
+  // Close the delete popup for the specific visit ID
+  const handleCloseDeletePopup = (visitId) => {
+    setDeletePopups((prevState) => ({
+      ...prevState,
+      [visitId]: false,
+    }));
+  };
+
+  // Confirm delete action
+  const confirmDelete = async (visitId) => {
     // Get the token from localStorage
     const token = localStorage.getItem("token");
     if (!token) {
@@ -31,307 +61,189 @@ const VisitCard = ({
     }
 
     try {
-      // Make the DELETE request
-      const response = await fetch(`${API_ROUTES.VISITS.BASE}/${index}`, {
+      const response = await fetch(`${API_ROUTES.VISITS.BASE}/${visitId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Include the Bearer token
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      // Handle the response
       if (response.ok) {
         console.log("Delete successful!");
-        // Optionally refresh the data or notify the user
+        // Optionally refresh or update state to remove the visit from the list
       } else {
         const errorData = await response.json();
         console.error("Error deleting:", errorData.message || "Unknown error");
       }
     } catch (error) {
       console.error("Network error:", error);
+    } finally {
+      handleCloseDeletePopup(visitId);
     }
-
-    setShowDeletePopup(false);
   };
 
-  const twoWeeksAgo = new Date();
-  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
   return (
     <div className="flex flex-col w-full mt-10">
-      {visitData
-        // .filter((visit) => {
-        //   const visitDate = new Date(visit.dos?.split("T")[0]); // Parse the visit date
-        //   return visitDate >= twoWeeksAgo; // Keep only visits from the last two weeks
-        // })
-        .map((visit, index) => (
-          <Box
-            key={index}
-            sx={{
-              marginBottom: "20px",
-              padding: "5px",
-              paddingX: "30px",
-              borderRadius: "1.5rem",
-              backgroundColor: "white",
-              border:
-                visit.approved && !visit.rejected
-                  ? "2px solid #6DD98C"
-                  : !visit.approved && visit.rejected
-                    ? "2px solid #F57070"
-                    : "2px solid #6F84F8",
-            }}
-          >
-            {/* Title and Date/Duration Row */}
-            <div className="flex items-center mb-1">
-              <h3 className="mr-[2rem] flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-                {visit?.serviceType ? visit.serviceType : "no service"} {" - "}
-                <span className="text truncate">
-                  {visit.title && visit.title.length > 75
-                    ? visit.title.substring(0, 65) + "..."
-                    : visit.title || "No Title"}
-                </span>
-              </h3>
+      {visitData.map((visit, index) => (
+        <div
+          key={visit._id}
+          className={`mb-[20px] p-[5px] px-[30px] rounded-2xl bg-white border-2 ${getColorClass(
+            visit.status,
+            "border"
+          )} overflow-hidden`}
+        >
+          <div className="flex items-center mb-2">
+            <h3 className="mr-[2rem] flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+              Service Type -{" "}
+              <span className="text">
+                {visit.title && visit.title.length > 40
+                  ? visit.title.substring(0, 45) + "..."
+                  : visit.title || "No Title"}
+              </span>
+            </h3>
 
-              <div className="flex gap-10 items-center mt-1 ml-auto">
-                {visit.status === "approved" && (
-                  <div className="flex gap-4">
-                    <button
-                      className="bg-[#F57070] text-white px-6 py-2.5 rounded-full border-2 border-[#F57070] transition-all duration-300 hover:bg-white hover:text-[#F57070] hover:border-[#F57070]"
-                      onClick={() => handleStatusUpdate(index, false)}
-                    >
-                      Reject
-                    </button>
-                    <button
-                      className="bg-[#6DD98C] text-white px-6 py-2.5 rounded-full border-2 border-[#6DD98C] transition-all duration-300 hover:bg-white hover:text-[#6DD98C] hover:border-[#6DD98C]"
-                      onClick={() => handleStatusUpdate(index, true)}
-                    >
-                      Approve
-                    </button>
-                  </div>
-                )}
-
-                {/* Edit and Delete Icons */}
-                <div>
-                  <IconButton
-                    onClick={() => handleEditClick(index, visit._id, visit)}
+            <div className="flex gap-10 items-center mt-1 ml-auto">
+              {visit.status === "pending" && (
+                <div className="flex gap-4">
+                  <button
+                    className="bg-[#F57070] text-white px-6 py-2.5 rounded-full border-2 border-[#F57070] transition-all duration-300 hover:bg-white hover:text-[#F57070] hover:border-[#F57070]"
+                    onClick={() => handleStatusUpdate(index, false)}
                   >
-                    <EditIcon style={{ color: "#6F84F8" }} />
-                  </IconButton>
-                  <IconButton onClick={() => setShowDeletePopup(true)}>
-                    <DeleteIcon style={{ color: "#F57070" }} />
-                  </IconButton>
+                    Reject
+                  </button>
+                  <button
+                    className="bg-[#6DD98C] text-white px-6 py-2.5 rounded-full border-2 border-[#6DD98C] transition-all duration-300 hover:bg-white hover:text-[#6DD98C] hover:border-[#6DD98C]"
+                    onClick={() => handleStatusUpdate(index, true)}
+                  >
+                    Approve
+                  </button>
                 </div>
+              )}
+              <div className="flex gap-4">
+                <EditIcon
+                  className="text-[#6F84F8] cursor-pointer"
+                  onClick={() => handleEditClick(index, visit._id, visit)}
+                />
+                <DeleteIcon
+                  className="text-[#F57070] cursor-pointer"
+                  onClick={() => handleDeleteClick(visit._id)} // Pass visit ID for delete
+                />
               </div>
             </div>
+          </div>
 
-            {/* HCM and DOS Row */}
-
-            <div style={{ display: "flex", paddingBottom: "5px" }}>
-              <div
-                className="flex flex-col gap-3 w-1/3"
-                //   style={{ marginBottom: "10px" }}
-              >
-                <p>
-                  HCM -
-                  <span
-                    style={{
-                      color:
-                        visit.approved && !visit.rejected
-                          ? "#6DD98C"
-                          : !visit.approved && visit.rejected
-                            ? "#F57070"
-                            : "#6F84F8",
-                      marginLeft: "0.5rem",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {visit.hcm}
-                  </span>
-                </p>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <CiCalendarDate style={{ fontSize: "2rem" }} />
-
-                  <p
-                    style={{
-                      fontSize: "1.1rem",
-                      paddingLeft: "0.5rem",
-                      paddingTop: "0.2rem",
-                      color:
-                        visit.approved && !visit.rejected
-                          ? "#6DD98C"
-                          : !visit.approved && visit.rejected
-                            ? "#F57070"
-                            : "#6F84F8",
-                    }}
-                  >
-                    {formatTimeFormate(visit.dos?.split("T")[0])}
-                  </p>
-                </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <strong>
-                    <GrLocation
-                      style={{ fontSize: "1.5rem", marginLeft: "0.2rem" }}
-                    />
-                  </strong>{" "}
-                  <div>
-                    <p
-                      style={{
-                        fontSize: "1.1rem",
-                        paddingLeft: "0.7rem",
-                        color:
-                          visit.approved && !visit.rejected
-                            ? "#6DD98C"
-                            : !visit.approved && visit.rejected
-                              ? "#F57070"
-                              : "#6F84F8",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {visit.placeOfService}
-                    </p>
-                    <p
-                      style={{
-                        paddingLeft: "0.7rem",
-                      }}
-                    >
-                      {visit.typeMethod}
-                    </p>
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <GiPathDistance style={{ fontSize: "2rem" }} />
-
-                  <p
-                    style={{
-                      fontSize: "1.1rem",
-                      paddingLeft: "0.5rem",
-                      paddingTop: "0.2rem",
-                      color:
-                        visit.approved && !visit.rejected
-                          ? "#6DD98C"
-                          : !visit.approved && visit.rejected
-                            ? "#F57070"
-                            : "#6F84F8",
-                    }}
-                  >
-                    {(visit.totalMile || "0") + " Miles"}
-                  </p>
-                </div>
-              </div>
-
-              {/* Visit Details */}
-              <div>
-                <div style={{ marginLeft: "2px", width: "55vw" }}>
-                  <p>
-                    <p
-                      style={{
-                        color:
-                          visit.approved && !visit.rejected
-                            ? "#6DD98C"
-                            : !visit.approved && visit.rejected
-                              ? "#F57070"
-                              : "#6F84F8",
-                      }}
-                    >
-                      Visit Details:
-                    </p>{" "}
-                    <div
-                      style={{
-                        border:
-                          visit.approved && !visit.rejected
-                            ? "1px solid #6DD98C"
-                            : !visit.approved && visit.rejected
-                              ? "1px solid #F57070"
-                              : "1px solid #6F84F8",
-                        overflow: "hidden",
-                        height: "6em",
-                        lineHeight: "1.5em",
-                        padding: "0.5em",
-                        paddingLeft: "1rem",
-                        borderRadius: "1rem",
-                        color: "#505254",
-                        marginTop: "0.2rem",
-                      }}
-                    >
-                      {visit.details && visit.details.length > 100 ? (
-                        <>
-                          {visit.details.substring(0, 100)}...
-                          <Button
-                            onClick={() => handleDetailsClick(visit.details)}
-                          >
-                            View More
-                          </Button>
-                        </>
-                      ) : (
-                        visit.details || "No details provided."
-                      )}
-                    </div>
-                  </p>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "end",
-                    alignItems: "center",
-                  }}
+          <div className="flex pb-2 gap-10 w-full">
+            <div className="flex flex-col gap-3 max-w-[400px]">
+              <p>
+                HCM -
+                <span
+                  className={`${getColorClass(visit.status, "text")} ml-2 font-bold`}
                 >
-                  <span
-                    style={{
-                      marginLeft: "auto",
-                      //   marginTop: "-20px",
-                      marginTop: "20px",
-                    }}
+                  {visit.hcm}
+                </span>
+              </p>
+              <div className="flex items-center">
+                <CiCalendarDate style={{ fontSize: "2rem" }} />
+                <p
+                  className={`${getColorClass(visit.status, "text")} text-lg pl-2 pt-1`}
+                >
+                  {formatTimeFormate(visit.dos?.split("T")[0])}
+                </p>
+              </div>
+              <div className="flex items-center">
+                <strong>
+                  <GrLocation className="text-2xl ml-1" />
+                </strong>
+                <div>
+                  <p
+                    className={`${getColorClass(visit.status, "text")} text-lg pl-3 pt-1 font-bold`}
                   >
-                    Signature:{" "}
-                    <span
-                      style={{
-                        fontWeight: "bold",
-                        color:
-                          visit.approved && !visit.rejected
-                            ? "#6DD98C"
-                            : !visit.approved && visit.rejected
-                              ? "#F57070"
-                              : "#6F84F8",
-                      }}
-                    >
-                      {visit.signature || "N/A"}
-                    </span>
+                    {visit.placeOfService}
+                  </p>
+                  <p className="pl-3"> {visit.typeMethod}</p>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <strong>
+                  <GiPathDistance style={{ fontSize: "2rem" }} />
+                </strong>
+                <p
+                  className={`${getColorClass(visit.status, "text")} text-lg pl-3 pt-1`}
+                >
+                  {(visit.totalMile || "0") + " Miles"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex-1 ml-[2px]">
+              <div>
+                <p className={`${getColorClass(visit.status, "text")}`}>
+                  Visit Details
+                </p>
+                <div
+                  className={`${getColorClass(visit.status, "border")} border-2 overflow-hidden h-24 leading-6 p-2 pl-4 rounded-xl text-[#505254] mt-1`}
+                >
+                  {visit.details && visit.details.length > 20 ? (
+                    <>
+                      {visit.details.substring(0, 20)}...
+                      <button
+                        className={`${getColorClass("visit.status", "text")} ml-2 rounded-full px-2`}
+                        onClick={() => {
+                          handleDetailsClick(visit.details);
+                        }}
+                      >
+                        View More
+                      </button>
+                    </>
+                  ) : (
+                    visit.details || "No details provided."
+                  )}
+                </div>
+              </div>
+              <div className="flex justify-end items-center">
+                <span className="ml-auto mt-6">
+                  Signature:{" "}
+                  <span
+                    className={`${getColorClass(visit.status, "text")} font-bold`}
+                  >
+                    {visit.signature || "N/A"}
                   </span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Delete Popup */}
+          {deletePopups[visit._id] && (
+            <div className="fixed inset-0 flex items-center justify-center z-10 bg-black bg-opacity-10">
+              <div className="bg-white p-6 w-fit rounded-xl shadow-lg">
+                <p className="text-black font-semibold">
+                  Are you sure you want to delete this visit?
+                </p>
+                <div className="mt-4 text-gray-500 text-sm">
+                  <span className="text-black">Note:</span> The respective HCM
+                  will be notified about this.
+                </div>
+                <div className="mt-5 flex justify-end space-x-4">
+                  <button
+                    className="px-3 py-1 text-sm border-2 border-red-300 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white"
+                    onClick={() => handleCloseDeletePopup(visit._id)} // Close the delete popup
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="px-3 py-1 text-sm bg-green-500 text-white rounded-2xl hover:bg-green-600"
+                    onClick={() => confirmDelete(visit._id)} // Confirm delete for the specific visit
+                  >
+                    Confirm
+                  </button>
                 </div>
               </div>
             </div>
-            {/* Signature and Actions */}
-
-            {/* Delete Popup */}
-            {showDeletePopup && (
-              <div className="fixed inset-0 flex items-center justify-center z-10 bg-black bg-opacity-10">
-                <div className="bg-white p-6 w-fit rounded-xl shadow-lg">
-                  <p className="text-black font-semibold">
-                    Are you sure you want to delete this visit?
-                  </p>
-                  <div className="mt-4 text-gray-500 text-sm">
-                    <span className="text-black">Note:</span> The respective HCM
-                    will be notified about this.
-                  </div>
-                  <div className="mt-5 flex justify-end space-x-4">
-                    <button
-                      className="px-3 py-1 text-sm border-2 border-red-300 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white"
-                      onClick={() => setShowDeletePopup(false)}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      className="px-3 py-1 text-sm bg-green-500 text-white rounded-2xl hover:bg-green-600"
-                      onClick={() => handleDeleteClick(visit._id, visit)}
-                    >
-                      Confirm
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </Box>
-        ))}
+          )}
+        </div>
+      ))}
     </div>
   );
 };

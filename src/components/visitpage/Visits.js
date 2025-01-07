@@ -4,11 +4,11 @@ import axios from "axios";
 // import VisitCard from "./VisitCard";
 import VisitCalendarView from "./VisitCalendarView";
 import VisitHeader from "./VisitHeader";
-import { visitsFilter } from "../../utils/visitsFilter";
+import { visitsFilter } from "../../utils/visitsUtils/visitsFilter";
 import { useDispatch } from "react-redux";
 import { setSelectedVisit } from "../../redux/visit/visitSlice";
 import { BASE_URL } from "../../config";
-import VisitCard2 from "./VisitCard2";
+import VisitCard from "./VisitCard";
 import VisitDetailsPopup from "./VisitDetailsPopup";
 
 const VisitList = () => {
@@ -225,7 +225,7 @@ const VisitList = () => {
       {!isListView ? (
         <VisitCalendarView visits={visitData} />
       ) : (
-        <VisitCard2
+        <VisitCard
           visitData={visitData}
           // handleDeleteClick={handleDeleteClick}
           handleClosePopup={handleClosePopup}
