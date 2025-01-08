@@ -93,8 +93,15 @@ const ServiceSelection = ({ tenantID }) => {
 
   const handleServiceChange = (index, e) => {
     const { name, value } = e.target;
-    const updatedServices = [...services];
-    updatedServices[index][name] = value;
+    const updatedServices = services.map(
+      (service, i) =>
+        i === index
+          ? {
+              ...service, // Copy existing service properties
+              [name]: value, // Update only the targeted property
+            }
+          : service // Leave other services unchanged
+    );
     dispatch(setServices(updatedServices));
   };
 
@@ -215,15 +222,18 @@ const ServiceSelection = ({ tenantID }) => {
 
             <div className="col-span-2">
               <label>Bill Rate:</label>
-              <input
-                type="number"
-                name="billRate"
-                placeholder="Bill Rate"
-                value={service.billRate}
-                readOnly
-                className="border p-2 rounded w-full"
-                disabled={service.isSaved}
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-2">$</span>
+                <input
+                  type="number"
+                  name="billRate"
+                  placeholder="Bill Rate"
+                  value={service.billRate}
+                  readOnly
+                  className="border p-2 pl-6 rounded w-full"
+                  disabled={service.isSaved}
+                />
+              </div>
             </div>
 
             <div className="col-span-1 mt-5 flex justify-center items-center">

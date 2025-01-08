@@ -15,8 +15,15 @@ import { createdTenant, createdTenantName } from "../../redux/hcm/hcmSlice";
 import { BASE_URL } from "../../config";
 import ChecklistHCMs from "./AssignHCMs";
 import { setServices } from "../../redux/tenant/tenantSlice";
-
 import { current } from "@reduxjs/toolkit";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+} from "@mui/material";
+
 const steps = [
   {
     name: "Personal Info",
@@ -59,29 +66,47 @@ const PopupPage = () => {
     dispatch(resetTenantInfo());
     setShowPopup(!showPopup);
   };
+  const [open, setOpen] = useState(false);
+
+  const handleClose = () => {
+    setOpen(true);
+  };
+
+  // Function to confirm and close the modal
+  const handleConfirmClose = () => {
+    setOpen(false);
+    togglePopup(); // Proceed with closing
+  };
+
+  // Function to cancel the dialog
+  const handleCancelClose = () => {
+    setOpen(false); // Just close the modal without doing anything
+  };
 
   const handleNext = async () => {
     const requiredFields = [
-      // { key: "firstName", label: "First Name" },
-      // { key: "lastName", label: "Last Name" },
-      // { key: "dob", label: "Date of Birth" },
-      // { key: "gender", label: "Gender" },
-      // { key: "maPMINumber", label: "Mapmi" },
-      // { key: "addressLine1", label: "Address Line 1" },
-      // { key: "city", label: "City" },
-      // { key: "state", label: "State" },
-      // { key: "zipCode", label: "Zipcode" },
-      // { key: "phoneNumber", label: "Phone Number" },
-      // { key: "email", label: "Email" },
-      // { key: "insurance", label: "Insurance Type" },
-      // { key: "insuranceNumber", label: "Insurance Number" },
-      // { key: "diagnosisCode", label: "Diagnosis Code" },
-      // { key: "caseManagerFirstName", label: "Case Manager First Name" },
-      // { key: "caseManagerLastName", label: "Case Manager Last Name" },
-      // { key: "caseManagerPhoneNumber", label: "Case Manager Phone Number" },
-      // { key: "caseManagerEmail", label: "Case Manager Email" },
+      { key: "firstName", label: "First Name" },
+      { key: "lastName", label: "Last Name" },
+      { key: "dob", label: "Date of Birth" },
+      { key: "gender", label: "Gender" },
+      { key: "maPMINumber", label: "Mapmi" },
+      { key: "addressLine1", label: "Address Line 1" },
+      { key: "city", label: "City" },
+      { key: "state", label: "State" },
+      { key: "zipCode", label: "Zipcode" },
+      { key: "phoneNumber", label: "Phone Number" },
+      { key: "email", label: "Email" },
+      { key: "insurance", label: "Insurance Type" },
+      { key: "insuranceNumber", label: "Insurance Number" },
+      { key: "diagnosisCode", label: "Diagnosis Code" },
+      { key: "caseManagerFirstName", label: "Case Manager First Name" },
+      { key: "caseManagerLastName", label: "Case Manager Last Name" },
+      { key: "caseManagerPhoneNumber", label: "Case Manager Phone Number" },
+      { key: "caseManagerEmail", label: "Case Manager Email" },
+      { key: "race", label: "Race" },
+      { key: "ethnicity", label: "Ethnicity" },
     ];
-
+    console.log(tenantData);
     for (let field of requiredFields) {
       if (!tenantData[field.key]) {
         toast.error(`Please fill in the ${field.label}`);
@@ -402,7 +427,7 @@ const PopupPage = () => {
           </button>
         </div>
       ) : (
-        <Modal open={showPopup} onClose={togglePopup}>
+        <Modal open={showPopup} onClose={() => {}}>
           <Box
             sx={{
               position: "absolute",
@@ -419,9 +444,36 @@ const PopupPage = () => {
             }}
           >
             <div className="mb-6">
-              <label className="block text-gray-700 mb-2 mx-4 -mt-2">
-                New Tenant
-              </label>
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg text-gray-700">New Tenant</h2>
+                {/* "X" Close Button */}
+                <button
+                  className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                  onClick={handleClose}
+                  aria-label="Close"
+                >
+                  &times;
+                </button>
+              </div>
+
+              <Dialog open={open} onClose={handleCancelClose}>
+                <DialogTitle>Confirm Close</DialogTitle>
+                <DialogContent>
+                  <p>
+                    All the existing form data will be lost. Are you sure you
+                    want to close?
+                  </p>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCancelClose} color="primary">
+                    No
+                  </Button>
+                  <Button onClick={handleConfirmClose} color="secondary">
+                    Yes
+                  </Button>
+                </DialogActions>
+              </Dialog>
+
               <div className="w-full bg-gray-200 h-2 rounded-full">
                 <div
                   className="h-2 bg-indigo-500 rounded-full"
@@ -504,9 +556,26 @@ const PopupPage = () => {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-center mb-6">
-                {steps[currentStep].name}
-              </h2>
+              <div className="relative mb-6">
+                {/* Container with relative positioning */}
+
+                {/* Centered Text */}
+                <h2 className="text-xl font-semibold text-center w-full">
+                  {steps[currentStep].name}
+                </h2>
+
+                {/* Absolutely positioned button */}
+                {steps[currentStep].name === "Assign HCMs" && (
+                  <button
+                    onClick={() => setCurrentStep((prev) => prev + 1)}
+                    className={`absolute right-0 top-1/2 -translate-y-1/2 px-3 py-2 rounded-lg 
+          bg-[#6F84F8] text-white border-[#6F84F8] hover:bg-[#4B63D6]
+      }`}
+                  >
+                    Assign Later
+                  </button>
+                )}
+              </div>
               {renderSubStep()}
             </div>
 
@@ -549,6 +618,25 @@ const PopupPage = () => {
                           ? "Create Tenant"
                           : "Next"}
                       </span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        className="ml-2 fill-current"
+                      >
+                        <polygon points="0,0 10,10 0,20" />
+                      </svg>
+                    </span>
+                  </button>
+                )}
+                {currentStep === steps.length - 1 && (
+                  <button
+                    className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                    onClick={handleNext}
+                  >
+                    <span className="flex items-center">
+                      <span>Finish</span>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="20"
