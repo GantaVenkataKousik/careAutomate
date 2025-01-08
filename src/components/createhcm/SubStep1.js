@@ -34,7 +34,11 @@ const SubStep1 = () => {
     <div style={styles.container}>
       <Section title="Basic Information">
         <InputField
-          label="First Name *"
+          label={
+            <>
+              First Name <span className="required">*</span>
+            </>
+          }
           name="firstName"
           value={hcmData.firstName}
           onChange={handleChange}
@@ -53,7 +57,11 @@ const SubStep1 = () => {
           focused={focusedField === "middleName"}
         />
         <InputField
-          label="Last Name *"
+          label={
+            <>
+              Last Name <span className="required">*</span>
+            </>
+          }
           name="lastName"
           value={hcmData.lastName}
           onChange={handleChange}
@@ -63,7 +71,11 @@ const SubStep1 = () => {
           required
         />
         <InputField
-          label="Date of Birth"
+          label={
+            <>
+              Date of Birth <span className="required">*</span>
+            </>
+          }
           name="dob"
           value={hcmData.dob ? formatDateToMMDDYYYY(hcmData.dob) : ""}
           onChange={(date) =>
@@ -76,7 +88,11 @@ const SubStep1 = () => {
           required
         />
         <InputField
-          label="Gender"
+          label={
+            <>
+              Gender <span className="required">*</span>
+            </>
+          }
           name="gender"
           value={hcmData.gender}
           onChange={handleChange}
@@ -90,14 +106,22 @@ const SubStep1 = () => {
       </Section>
       <Section title="Contact Information">
         <InputField
-          label="Phone Number *"
+          label={
+            <>
+              Phone Number <span className="required">*</span>
+            </>
+          }
           name="phoneNumber"
           value={hcmData.phoneNumber}
           onChange={handleChange}
           required
         />
         <InputField
-          label="Email *"
+          label={
+            <>
+              Email <span className="required">*</span>
+            </>
+          }
           name="email"
           value={hcmData.email}
           onChange={handleChange}
@@ -120,7 +144,11 @@ const SubStep1 = () => {
 
       <Section title="Address Information">
         <InputField
-          label="Address Line 1"
+          label={
+            <>
+              Address Line 1 <span className="required">*</span>
+            </>
+          }
           name="addressLine1"
           value={hcmData.addressLine1}
           onChange={handleChange}
@@ -133,21 +161,33 @@ const SubStep1 = () => {
           onChange={handleChange}
         />
         <InputField
-          label="City"
+          label={
+            <>
+              City <span className="required">*</span>
+            </>
+          }
           name="city"
           value={hcmData.city}
           onChange={handleChange}
           required
         />
         <InputField
-          label="State"
+          label={
+            <>
+              State <span className="required">*</span>
+            </>
+          }
           name="state"
           value={hcmData.state}
           onChange={handleChange}
           required
         />
         <InputField
-          label="Zip Code"
+          label={
+            <>
+              Zip Code <span className="required">*</span>
+            </>
+          }
           name="zipCode"
           value={hcmData.zipCode}
           onChange={handleChange}
@@ -195,7 +235,11 @@ const SubStep1 = () => {
 
       <Section title="Employment Information">
         <InputField
-          label="Employment Title"
+          label={
+            <>
+              Emergency Title <span className="required">*</span>
+            </>
+          }
           name="employmentTitle"
           type="select"
           options={["Permanent", "Contractor"]}
@@ -231,14 +275,22 @@ const SubStep1 = () => {
           required
         />
         <InputField
-          label="SSN"
+          label={
+            <>
+              SSN <span className="required">*</span>
+            </>
+          }
           name="ssn"
           value={hcmData.ssn}
           onChange={handleChange}
           required
         />
         <InputField
-          label="Rate of Pay"
+          label={
+            <>
+              Rate of Pay <span className="required">*</span>
+            </>
+          }
           name="rateOfPay"
           value={hcmData.rateOfPay}
           onChange={handleChange}

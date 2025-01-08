@@ -80,7 +80,7 @@ const Substep12 = ({ hcmId, uploadDocumentLater }) => {
     setNewFolderName("");
   };
 
-  const handleFileUpload = async (e) => {
+  const handleFileUpload2 = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const file1 = convertToBase64(file);
@@ -109,12 +109,30 @@ const Substep12 = ({ hcmId, uploadDocumentLater }) => {
         // Optionally, fetch documents again to update the UI with the newly uploaded file
         // fetchDocuments(); // Call the fetchDocuments function to re-fetch the documents after uploading
       } else {
-        toast.error("Failed to upload the file");
+        // toast.error("Failed to upload the file");
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      toast.error("Error uploading file. Please try again.");
+      // toast.error("Error uploading file. Please try again.");
     }
+  };
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const base64 = await convertToBase64(file);
+
+    // Store just the file metadata and the File object in Redux
+    dispatch(
+      addFileToFolder({
+        folderName: selectedFolder,
+        file: {
+          name: file.name,
+          date: new Date().toLocaleDateString(),
+          file: base64, // Store the actual File object
+        },
+      })
+    );
+    toast.success("File Uploaded successfully");
   };
 
   const deleteFile = (fileName) => {

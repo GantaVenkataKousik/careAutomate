@@ -325,7 +325,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       travelWithoutTenant: milesWithoutTenant || null,
       signature: signature === "done" ? "done" : "not done",
     };
-    // console.log("payyyui", payload);
+    console.log("payyyui", payload);
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
