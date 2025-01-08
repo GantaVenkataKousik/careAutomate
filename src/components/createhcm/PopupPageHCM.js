@@ -47,6 +47,7 @@ const PopupPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [complete, setComplete] = useState(false);
   const [tenantID, setTenantID] = useState(null); // Store tenant ID here
+  const [assignTenantLater, setAssignTenantLater] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const hcmData = useSelector((state) => state.hcm);
@@ -134,7 +135,10 @@ const PopupPage = () => {
       try {
         const hcmId = await handleSave();
 
-        await assignTenant(hcmId);
+        // Only call assignTenant if assignTenantLater is false
+        if (!assignTenantLater) {
+          await assignTenant(hcmId);
+        }
       } catch (error) {
         console.error("Error during step 2 processing:", error);
         toast.error("An error occurred. Please try again.");
@@ -153,10 +157,16 @@ const PopupPage = () => {
   const renderSubStep = () => {
     const SubStepComponent = steps[currentStep].subSteps[0];
     if (SubStepComponent) {
-      console.log(
-        `Rendering step ${currentStep + 1}, passing tenantID: ${hcmId}`
+      // console.log(
+      //   `Rendering step ${currentStep + 1}, passing tenantID: ${hcmId}`
+      // );
+      return (
+        <SubStepComponent
+          hcmID={hcmId}
+          assignTenantLater={assignTenantLater} // Pass assignTenantLater as a prop
+          setAssignTenantLater={setAssignTenantLater} // Allow ChecklistTenants to update this state if needed
+        />
       );
-      return <SubStepComponent hcmID={hcmId} />;
     }
     return null;
   };
@@ -279,9 +289,26 @@ const PopupPage = () => {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-center mb-6">
-                {steps[currentStep].name}
-              </h2>
+              <div className="flex items-center justify-between mb-6">
+                {/* Step Name in the Center */}
+                <h2 className="text-xl font-semibold text-center flex-grow">
+                  {steps[currentStep].name}
+                </h2>
+
+                {/* Conditional Button in the Right Corner */}
+                {steps[currentStep].name === "Assign Tenants" && (
+                  <button
+                    onClick={() => setAssignTenantLater(!assignTenantLater)}
+                    className={`px-3 py-2 rounded-lg ${
+                      assignTenantLater
+                        ? "bg-[#F57070] text-white border-[#F57070] hover:bg-[#F57070]"
+                        : "bg-[#6F84F8] text-white border-[#6F84F8] hover:bg-[#4B63D6]"
+                    }`}
+                  >
+                    {assignTenantLater ? "Assign Now" : "Assign Later"}
+                  </button>
+                )}
+              </div>
               {renderSubStep()}
             </div>
 
