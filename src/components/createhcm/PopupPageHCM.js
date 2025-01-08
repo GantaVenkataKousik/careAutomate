@@ -12,6 +12,13 @@ import { toast } from "react-toastify";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+} from "@mui/material";
+import {
   createdHcm,
   createdHcmName,
   resetHcmInfo,
@@ -54,13 +61,34 @@ const PopupPage = () => {
   const assignedTenants = useSelector((state) => state.hcm.assignedTenants); // Access Redux state
   const hcmId = useSelector((state) => state.hcm.hcmId);
   const hcmName = useSelector((state) => state.hcm.hcmName);
+  const [open, setOpen] = useState(false);
 
+  const handleClose = () => {
+    setOpen(true);
+  };
+
+  // Function to confirm and close the modal
+  const handleConfirmClose = () => {
+    setOpen(false);
+    togglePopup(); // Proceed with closing
+  };
+
+  // Function to cancel the dialog
+  const handleCancelClose = () => {
+    setOpen(false); // Just close the modal without doing anything
+  };
   const togglePopup = () => {
     navigate("/hcms");
     dispatch(resetHcmInfo());
     setShowPopup(!showPopup);
   };
 
+  const handleAssignLater = () => {
+    setAssignTenantLater(!assignTenantLater);
+    if (!assignTenantLater) {
+      setCurrentStep((prev) => prev + 1);
+    }
+  };
   const assignTenant = async (hcmId) => {
     console.log("Assigned Tenants in step2:", assignedTenants);
     console.log("hcmid", hcmId);
@@ -187,7 +215,7 @@ const PopupPage = () => {
           </button>
         </div>
       ) : (
-        <Modal open={showPopup} onClose={togglePopup}>
+        <Modal open={showPopup} onClose={() => {}}>
           <Box
             sx={{
               position: "absolute",
@@ -204,9 +232,35 @@ const PopupPage = () => {
             }}
           >
             <div className="mb-6">
-              <label className="block text-gray-700 mb-2 mx-4 -mt-2">
-                New HCM
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-lg text-gray-700">New HCM</h2>
+                {/* "X" Close Button */}
+                <button
+                  className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                  onClick={handleClose}
+                  aria-label="Close"
+                >
+                  &times;
+                </button>
+              </div>
+              {/* Material UI Dialog Confirmation */}
+              <Dialog open={open} onClose={handleCancelClose}>
+                <DialogTitle>Confirm Close</DialogTitle>
+                <DialogContent>
+                  <p>
+                    All existing HCM data will be lost. Are you sure you want to
+                    close?
+                  </p>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCancelClose} color="primary">
+                    No
+                  </Button>
+                  <Button onClick={handleConfirmClose} color="secondary">
+                    Yes
+                  </Button>
+                </DialogActions>
+              </Dialog>
               <div className="w-full bg-gray-200 h-2 rounded-full">
                 <div
                   className="h-2 bg-indigo-500 rounded-full"
@@ -298,7 +352,9 @@ const PopupPage = () => {
                 {/* Conditional Button in the Right Corner */}
                 {steps[currentStep].name === "Assign Tenants" && (
                   <button
-                    onClick={() => setAssignTenantLater(!assignTenantLater)}
+                    onClick={() => {
+                      handleAssignLater();
+                    }}
                     className={`px-3 py-2 rounded-lg ${
                       assignTenantLater
                         ? "bg-[#F57070] text-white border-[#F57070] hover:bg-[#F57070]"
