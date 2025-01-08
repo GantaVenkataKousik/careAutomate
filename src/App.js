@@ -16,8 +16,6 @@ import Communication from "./components/Communication";
 import Reports from "./components/Reports";
 import Settings from "./components/Settings";
 import PopupPage from "./components/createTenant/PopupPage.js";
-import LoginForm from "./components/auth/LoginForm.js";
-import Signup from "./components/auth/Signup.js";
 import "./App.css";
 import PrivateRoute from "./PrivateRoute";
 import { AuthProvider } from "./AuthContext";
@@ -29,7 +27,10 @@ import Onboarding from "./components/Onboarding.js";
 import MainDashboard from "./components/mainDashboard/MainDashBoard.js";
 import HcmDashboard from "./components/hcmsPage/HcmDashboard.js";
 import Profile from "./components/Profile/Profile.js";
+import Login from "./components/auth/Login.jsx";
+import Register from "./components/auth/Register.jsx";
 
+import BillingPayments from "./components/BillingPayments";
 const AppLayout = ({ children }) => {
   const location = useLocation();
   const noNavSidebarRoutes = ["/login", "/signup"];
@@ -55,8 +56,8 @@ const App = () => {
         <Routes>
           {/* Redirect to login if not authenticated */}
           <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           {/* Protected Routes */}
           <Route element={<PrivateRoute />}>
             <Route
@@ -169,6 +170,14 @@ const App = () => {
               element={
                 <AppLayout>
                   <PlanUsage />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/tenants/billsAndPayments"
+              element={
+                <AppLayout>
+                  <BillingPayments />
                 </AppLayout>
               }
             />

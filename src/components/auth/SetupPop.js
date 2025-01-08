@@ -108,32 +108,32 @@ const SetupPop = ({ open, onClose, onSubmit }) => {
       },
       childAdminAccounts: childAccount
         ? [
-            {
-              firstName: formData.get("childFirstName") || "",
-              lastName: formData.get("childLastName") || "",
-              address: {
-                addressLine1: formData.get("childAddressLine1") || "",
-                addressLine2: formData.get("childAddressLine2") || "",
-                city: formData.get("childCity") || "",
-                state: formData.get("childState") || "",
-                zipCode: formData.get("childZipCode") || "",
-              },
-              contact: {
-                officePhoneNumber: formData.get("childOfficePhoneNumber") || "",
-                cellPhoneNumber: formData.get("childCellPhoneNumber") || "",
-              },
-              username: formData.get("childUsername") || "",
-              password: formData.get("childPassword") || "",
-              permissions: {
-                billing: formData.get("billing") === "on",
-                tenant: formData.get("tenant") === "on",
-                hcm: formData.get("hcm") === "on",
-                appointments: formData.get("appointments") === "on",
-                visit: formData.get("visit") === "on",
-                communication: formData.get("communication") === "on",
-              },
+          {
+            firstName: formData.get("childFirstName") || "",
+            lastName: formData.get("childLastName") || "",
+            address: {
+              addressLine1: formData.get("childAddressLine1") || "",
+              addressLine2: formData.get("childAddressLine2") || "",
+              city: formData.get("childCity") || "",
+              state: formData.get("childState") || "",
+              zipCode: formData.get("childZipCode") || "",
             },
-          ]
+            contact: {
+              officePhoneNumber: formData.get("childOfficePhoneNumber") || "",
+              cellPhoneNumber: formData.get("childCellPhoneNumber") || "",
+            },
+            username: formData.get("childUsername") || "",
+            password: formData.get("childPassword") || "",
+            permissions: {
+              billing: formData.get("billing") === "on",
+              tenant: formData.get("tenant") === "on",
+              hcm: formData.get("hcm") === "on",
+              appointments: formData.get("appointments") === "on",
+              visit: formData.get("visit") === "on",
+              communication: formData.get("communication") === "on",
+            },
+          },
+        ]
         : [],
       bankingInfo: {
         nameOnCard: formData.get("nameOnCard") || "",

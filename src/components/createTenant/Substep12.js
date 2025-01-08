@@ -23,7 +23,6 @@ const Substep12 = ({ tenantID }) => {
         console.log('Tenant ID is missing!');
         return;
       }
-
       try {
         const token = localStorage.getItem("token");
         const response = await axios.post(
@@ -220,15 +219,6 @@ const Substep12 = ({ tenantID }) => {
 
   const getFilesForSelectedFolderAndYear = () =>
     uploadedFiles[selectedFolder]?.[selectedYear] || [];
-
-  const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
 
   const handleSaveAndClose = () => {
     // Save any necessary data here
