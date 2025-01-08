@@ -248,6 +248,12 @@ const PopupPage = () => {
   const handleNext = async () => {
     if (currentStep === 2) {
       try {
+        const confirmProceed = window.confirm(
+          "Are you sure you want to proceed to create the HCM?"
+        );
+        if (!confirmProceed) {
+          return; // Stop if user cancels
+        }
         const hcmId = await handleSave();
 
         // Only call assignTenant if assignTenantLater is false
@@ -479,7 +485,11 @@ const PopupPage = () => {
 
             <div className="flex justify-between mt-6">
               <button
-                className="flex items-center px-4 py-2 bg-[#6F84F8] text-white rounded hover:bg-[#6F84F8]"
+                className={`flex items-center px-4 py-2 rounded ${
+                  currentStep === 3
+                    ? "bg-white text-white "
+                    : "bg-[#6F84F8] text-white hover:bg-[#6F84F8]"
+                }`}
                 onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
               >
                 <svg
@@ -500,7 +510,11 @@ const PopupPage = () => {
               >
                 <span className="flex items-center">
                   <span>
-                    {currentStep === steps.length - 1 ? "Finish" : "Next Step"}
+                    {currentStep === steps.length - 1
+                      ? "Finish"
+                      : currentStep === 2
+                        ? "Create HCM"
+                        : "Next"}
                   </span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
