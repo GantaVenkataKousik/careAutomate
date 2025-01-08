@@ -34,7 +34,7 @@ const Step4 = () => {
   };
 
   return (
-    <div className="mb-7">
+    <div className="mb-7 h-[410px] overflow-y-auto tenant-visits-scrollbar">
       <h1 className="underline">Banking Information</h1>
       <div className="mb-6">
         <label

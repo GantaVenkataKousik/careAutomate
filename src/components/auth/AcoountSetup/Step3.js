@@ -20,7 +20,7 @@ const Step3 = () => {
     }
   };
   return (
-    <>
+    <div className=" h-[390px] overflow-y-auto tenant-visits-scrollbar">
       {/**Child Account */}
       <div className="mb-7">
         <div className="flex items-center w-full">
@@ -310,7 +310,7 @@ const Step3 = () => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
