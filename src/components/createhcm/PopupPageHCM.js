@@ -55,6 +55,7 @@ const PopupPage = () => {
   const [complete, setComplete] = useState(false);
   const [tenantID, setTenantID] = useState(null); // Store tenant ID here
   const [assignTenantLater, setAssignTenantLater] = useState(false);
+  const [uploadDocumentLater, setUploadDocumentLater] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const hcmData = useSelector((state) => state.hcm);
@@ -62,6 +63,7 @@ const PopupPage = () => {
   const hcmId = useSelector((state) => state.hcm.hcmId);
   const hcmName = useSelector((state) => state.hcm.hcmName);
   const [open, setOpen] = useState(false);
+  const files = useSelector((state) => state.hcm.files);
 
   const handleClose = () => {
     setOpen(true);
@@ -158,8 +160,93 @@ const PopupPage = () => {
       toast.error("Error saving HCM data. Please try again.");
     }
   };
+  function base64ToFile(base64String, fileName, fileType) {
+    const byteCharacters = atob(base64String); // Decode the base64 string to bytes
+    const byteArrays = [];
+
+    // Convert bytes into a format that can be used to create a File object
+    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+      const slice = byteCharacters.slice(offset, offset + 512);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      byteArrays.push(new Uint8Array(byteNumbers));
+    }
+
+    // Create a Blob from the byte arrays
+    const fileBlob = new Blob(byteArrays, { type: fileType });
+
+    // Create a File object from the Blob
+    return new File([fileBlob], fileName, { type: fileType });
+  }
+
+  const handleFileUploads = async (hcmId, files) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      // Iterate through each folder and its files in Redux
+      for (const [folderName, folderFiles] of Object.entries(files)) {
+        // Only proceed if the folder contains files
+        if (folderFiles.length === 0) {
+          continue; // Skip to the next folder if no files exist in this folder
+        }
+
+        // Loop through the files in the folder and send them
+        for (const fileInfo of folderFiles) {
+          const fileType = fileInfo.file.split(";")[0].split(":")[1];
+          const file = base64ToFile(
+            fileInfo.file.split(",")[1],
+            fileInfo.name,
+            fileType
+          );
+
+          // Convert base64 to file
+
+          console.log(file); // This will log the File object
+          const formData = new FormData();
+          formData.append("userId", hcmId);
+          formData.append("file", file);
+          formData.append("folderName", folderName);
+          formData.append("year", new Date().getFullYear().toString()); // Get current year dynamically
+          console.log(formData);
+
+          try {
+            const response = await axios.post(
+              `${BASE_URL}/document/upload-document`,
+              formData,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+
+            if (!response.data.success) {
+              toast.error(`Failed to upload ${fileInfo.name}`);
+              console.log(response);
+            }
+          } catch (error) {
+            console.log(error);
+
+            toast.error(
+              `Error uploading file ${fileInfo.name}: ${error.message}`
+            );
+          }
+        }
+      }
+
+      toast.success("Documents uploaded successfully");
+    } catch (error) {
+      console.error("Error uploading documents:", error);
+      toast.error("Error uploading documents. Please try again.");
+      throw error;
+    }
+  };
+
   const handleNext = async () => {
-    if (currentStep === 3) {
+    if (currentStep === 2) {
       try {
         const hcmId = await handleSave();
 
@@ -167,8 +254,13 @@ const PopupPage = () => {
         if (!assignTenantLater) {
           await assignTenant(hcmId);
         }
+
+        // // Handle file uploads if uploadDocumentLater is false
+        // if (!uploadDocumentLater) {
+        //   await handleFileUploads(hcmId, files);
+        // }
       } catch (error) {
-        console.error("Error during step 2 processing:", error);
+        console.error("Error during step 3 processing:", error);
         toast.error("An error occurred. Please try again.");
         return;
       }
@@ -193,6 +285,8 @@ const PopupPage = () => {
           hcmID={hcmId}
           assignTenantLater={assignTenantLater} // Pass assignTenantLater as a prop
           setAssignTenantLater={setAssignTenantLater} // Allow ChecklistTenants to update this state if needed
+          uploadDocumentLater={uploadDocumentLater}
+          setUploadDocumentLater={setUploadDocumentLater}
         />
       );
     }
@@ -362,6 +456,21 @@ const PopupPage = () => {
                     }`}
                   >
                     {assignTenantLater ? "Assign Now" : "Assign Later"}
+                  </button>
+                )}
+                {/* Conditional Button in the Right Corner */}
+                {steps[currentStep].name === "Documentation" && (
+                  <button
+                    onClick={() => {
+                      setUploadDocumentLater(!uploadDocumentLater);
+                    }}
+                    className={`px-3 py-2 rounded-lg ${
+                      uploadDocumentLater
+                        ? "bg-[#F57070] text-white border-[#F57070] hover:bg-[#F57070]"
+                        : "bg-[#6F84F8] text-white border-[#6F84F8] hover:bg-[#4B63D6]"
+                    }`}
+                  >
+                    {uploadDocumentLater ? "Upload Now" : "Upload Later"}
                   </button>
                 )}
               </div>

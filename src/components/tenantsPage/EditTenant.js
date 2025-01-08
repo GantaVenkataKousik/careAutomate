@@ -96,7 +96,7 @@ const EditTenant = ({ open, setOpen, tenant }) => {
       }
 
       const response = await fetch(`${API_ROUTES.TENANTS.UPDATE_TENANT}`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
