@@ -97,7 +97,9 @@ const ChecklistTenants = ({ assignTenantLater, setAssignTenantLater }) => {
   const filteredTenants = allTenants.filter((tenant) =>
     tenant.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
+  if (assignTenantLater) {
+    return null; // Return nothing if assigning tenants is skipped
+  }
   return (
     <div style={styles.container}>
       {/* <h2 style={styles.heading}>Step 2: Designate Tenants</h2> */}

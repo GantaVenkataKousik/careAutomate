@@ -155,7 +155,7 @@ const Substep12 = ({ tenantID }) => {
 
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `${BASE_URL}/tenant/upload-document`,
+        `${BASE_URL}/document/upload-document`,
         data,
         {
           headers: {
