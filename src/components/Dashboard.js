@@ -18,17 +18,15 @@ const ProfilePage = () => {
   const [documents, setDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   // const [error, setError] = useState(null);
-
+  console.log(tenantId);
   const fetchDocuments = async (tenantData) => {
     try {
       const token = localStorage.getItem("token");
       const id = tenantData._id;
-
       console.log("user", id);
       if (!token) {
         throw new Error("Authorization token not found");
       }
-
       const response = await fetch(`${API_ROUTES.DOCUMENTS.GET}`, {
         method: "POST",
         headers: {
@@ -190,6 +188,14 @@ const ProfilePage = () => {
     setIsPopupOpen(!isPopupOpen);
   };
 
+  const handleBillingPaymentsClick = (tenantId) => {
+    if (tenantId) {
+      navigate('/tenants/billsAndPayments', { state: { tenantId } });
+    } else {
+      console.error('Tenant ID is missing');
+    }
+  };
+
   return (
     <div
       className=" flex flex-col  m-2 overflow-y-auto gap-10"
@@ -247,7 +253,7 @@ const ProfilePage = () => {
             <div className="space-y-2 overflow-y-auto max-h-[calc(5*7rem)] mt-2 tenant-visits-scrollbar">
               {/* Display upcoming appointments */}
               {appointments?.appointments?.upcoming &&
-              Object.keys(appointments.appointments.upcoming).length > 0 ? (
+                Object.keys(appointments.appointments.upcoming).length > 0 ? (
                 Object.entries(appointments.appointments.upcoming).map(
                   ([year, months]) =>
                     Object.entries(months).map(([month, days]) =>
@@ -439,12 +445,12 @@ const ProfilePage = () => {
             </div>
           </div>
           <div className="flex justify-end">
-            <a
-              href="/tenants/billsAndPayments"
+            <button
+              onClick={() => handleBillingPaymentsClick(tenantId)}
               className="text-[#6F84F8] hover:underline"
             >
               View More
-            </a>
+            </button>
           </div>
           <p className="text-[#6F84F8] mb-4 text-xl font-bold">This Month</p>
           <div className="space-y-4 overflow-y-auto max-h-[calc(5*7rem)] mt-2 tenant-visits-scrollbar">

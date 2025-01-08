@@ -25,16 +25,17 @@ export const API_ROUTES = {
   },
   DOCUMENTS: {
     GET: `${BASE_URL}/tenant/get-documents/`,
-    // Add other document-related routes here
   },
   MESSAGES: {
     NEW_COUNT: `${BASE_URL}/api/newMessagesCount`,
-    // Add other message-related routes here
   },
   BILLING: {
     TENANTS_RUNNING_BY_UNITS: `${BASE_URL}/bill/tenants-running-by-units/`,
     PLAN_USAGE: `${BASE_URL}/bill/plan-usage/`,
-    // Add other billing-related routes here
+    BILLS_PENDING_BY_TENANT: `${BASE_URL}/bill/get-bills-pending-by-tenant/`,
+    BILLS_PAID_BY_TENANT: `${BASE_URL}/bill/get-bills-completed-by-tenant/`,
+    GET_BILLS_PENDING: `${BASE_URL}/bill/get-bills-pending/`,
+    GET_BILLS_RECEIVED: `${BASE_URL}/bill/get-bills-received/`,
   },
   TENANTS: {
     BASE: `${BASE_URL}/tenant`,

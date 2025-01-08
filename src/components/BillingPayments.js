@@ -1,12 +1,170 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { API_ROUTES } from '../routes';
+import { useLocation } from "react-router-dom";
 
 const BillingPayments = () => {
+  const location = useLocation();
+  const { tenantId } = location.state || {};
+  const [pendingBills, setPendingBills] = useState([]);
+  const [completedBills, setCompletedBills] = useState([]);
+  const [totalBilled, setTotalBilled] = useState(0);
+  const [totalUnbilled, setTotalUnbilled] = useState(0);
+  const [totalReceived, setTotalReceived] = useState(0);
+  const [totalWaiting, setTotalWaiting] = useState(0);
+  const [totalCompleted, setTotalCompleted] = useState(0);
+  const [billedCount, setBilledCount] = useState(0);
+  const [unbilledCount, setUnbilledCount] = useState(0);
+  const [waitingCount, setWaitingCount] = useState(0);
+  const [workedHours, setWorkedHours] = useState(0);
+  const [billedHours, setBilledHours] = useState(0);
+  const [unbilledHours, setUnbilledHours] = useState(0);
+  const [planUsage, setPlanUsage] = useState({});
+  const [selectedTransitionPeriod, setSelectedTransitionPeriod] = useState('');
+  const [selectedSustainingPeriod, setSelectedSustainingPeriod] = useState('');
+
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchPlanUsage = async () => {
+      try {
+        const response = await fetch(API_ROUTES.BILLING.PLAN_USAGE, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            tenantId,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch plan usage');
+        }
+
+        const data = await response.json();
+        console.log(data);
+        setPlanUsage(data.response);
+        setSelectedTransitionPeriod(data.response["Housing Transition"].period);
+        setSelectedSustainingPeriod(data.response["Housing Sustaining"].period);
+      } catch (error) {
+        console.error('Error fetching plan usage:', error);
+      }
+    };
+
+    fetchPlanUsage();
+  }, [token]);
+
+  const handleTransitionPeriodChange = (event) => {
+    setSelectedTransitionPeriod(event.target.value);
+  };
+
+  const handleSustainingPeriodChange = (event) => {
+    setSelectedSustainingPeriod(event.target.value);
+  };
+
+  useEffect(() => {
+    const fetchBills = async () => {
+      try {
+        const response = await fetch(API_ROUTES.BILLING.BILLS_PENDING_BY_TENANT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            tenantId,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch bills');
+        }
+
+        const data = await response.json();
+        console.log(data);
+        setPendingBills(data.response.Bills || []);
+
+        // Calculate totals for pending bills
+        let unbilledAmount = 0;
+        let waitingAmount = 0;
+        let unbilledCount = 0;
+        let waitingCount = 0;
+        let unbilledHours = 0;
+
+        data.response.Bills.forEach(bill => {
+          unbilledCount += 1;
+          waitingCount += 1;
+          bill.serviceLine.forEach(line => {
+            unbilledAmount += line.lineItemChargeAmount;
+            waitingAmount += line.lineItemChargeAmount;
+            unbilledHours += line.serviceUnitCount;
+          });
+        });
+
+        setUnbilledCount(unbilledCount);
+        setWaitingCount(waitingCount);
+        setTotalUnbilled(unbilledAmount);
+        setTotalWaiting(waitingAmount);
+        setUnbilledHours(unbilledHours);
+
+      } catch (error) {
+        console.error('Error fetching bills:', error);
+      }
+    };
+
+    const fetchCompletedBills = async () => {
+      try {
+        const response = await fetch(API_ROUTES.BILLING.BILLS_COMPLETED_BY_TENANT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            tenantId,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch completed bills');
+        }
+
+        const data = await response.json();
+        console.log(data);
+        setCompletedBills(data.response.Bills || []);
+
+        // Calculate totals for completed bills
+        let completedAmount = 0;
+        let billedAmount = 0;
+        let completedCount = 0;
+        let billedHours = 0;
+
+        data.response.Bills.forEach(bill => {
+          completedCount += 1;
+          billedAmount += bill.serviceLine.reduce((sum, line) => sum + line.lineItemChargeAmount, 0);
+          billedHours += bill.serviceLine.reduce((sum, line) => sum + line.serviceUnitCount, 0);
+        });
+
+        setTotalCompleted(completedCount);
+        setTotalBilled(billedAmount);
+        setBilledCount(completedCount);
+        setBilledHours(billedHours);
+
+      } catch (error) {
+        console.error('Error fetching completed bills:', error);
+      }
+    };
+
+    fetchBills();
+    fetchCompletedBills();
+  }, [tenantId, token]);
 
   const [checkedItems, setCheckedItems] = useState({
     selectAll: false,
     item1: false,
     item2: false,
-    item3: false, // Add as many checkboxes as needed
+    item3: false,
     item4: false,
     item5: false,
     item6: false,
@@ -39,7 +197,6 @@ const BillingPayments = () => {
     });
   };
 
-
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
     setCheckedItems(prevState => ({
@@ -48,6 +205,26 @@ const BillingPayments = () => {
     }));
   };
 
+  const calculateDuration = (startTime, endTime) => {
+    if (!startTime || !endTime) {
+      return 'N/A'; // Return 'N/A' or any default value if startTime or endTime is undefined
+    }
+
+    const [startHours, startMinutes] = startTime.split(':').map(Number);
+    const [endHours, endMinutes] = endTime.split(':').map(Number);
+
+    const start = new Date();
+    start.setHours(startHours, startMinutes);
+
+    const end = new Date();
+    end.setHours(endHours, endMinutes);
+
+    const diff = (end - start) / (1000 * 60); // difference in minutes
+    const hours = Math.floor(diff / 60);
+    const minutes = diff % 60;
+
+    return `${hours}h ${minutes}m`;
+  };
 
   return (
     <div className="p-8 bg-gray-50">
@@ -57,7 +234,7 @@ const BillingPayments = () => {
           Tom Hank's Billing and Payments :
         </h1>
         <div className="text-2xl font-bold md-6 cursor-pointer">
-          <i class="fa-solid fa-download"></i></div>
+          <i className="fa-solid fa-download"></i></div>
         {/* Date Filters and Buttons */}
       </div>
 
@@ -98,16 +275,18 @@ const BillingPayments = () => {
 
       {/* Info Cards */}
       <div className="flex flex-col md:flex-row items-center mb-8 gap-10">
-        {/* Amount Card */}
-        <div className="p-6 bg-white rounded-lg shadow-md shadow-indigo-400 border">
-          <h3 className="font-semibold text-indigo-400 mb-2">Amount</h3>
-          <div className="ml-3">
-            <table className="table-auto w-full">
-              <tr><td><p className="text-green-500">Billed</p></td> <td><p className="text-green-500">$150</p></td></tr>
-              <tr><td><p className="text-red-500">UnBilled</p></td> <td><p className="text-red-500">$89</p></td></tr>
-              <tr><td><p className="text-orange-500">Received</p></td> <td><p className="text-orange-500">$89</p></td></tr>
-              <tr><td><p className="text-yellow-500">Waiting for Payments</p></td> <td><p className="text-yellow-500">$89</p></td></tr>
-            </table>
+        <div className="flex flex-col md:flex-row items-center mb-8 gap-10">
+          {/* Amount Card */}
+          <div className="p-6 bg-white rounded-lg shadow-md shadow-indigo-400 border">
+            <h3 className="font-semibold text-indigo-400 mb-2">Amount</h3>
+            <div className="ml-3">
+              <table className="table-auto w-full">
+                <tr><td><p className="text-green-500">Billed</p></td> <td><p className="text-green-500">${totalBilled.toFixed(2)}</p></td></tr>
+                <tr><td><p className="text-red-500">UnBilled</p></td> <td><p className="text-red-500">${totalUnbilled.toFixed(2)}</p></td></tr>
+                <tr><td><p className="text-orange-500">Received</p></td> <td><p className="text-orange-500">${totalReceived.toFixed(2)}</p></td></tr>
+                <tr><td><p className="text-yellow-500">Waiting for Payments</p></td> <td><p className="text-yellow-500">${totalWaiting.toFixed(2)}</p></td></tr>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -116,9 +295,10 @@ const BillingPayments = () => {
           <h3 className="font-semibold text-indigo-400 mb-2">Visits</h3>
           <div className="ml-3">
             <table className="table-auto w-full">
-              <tr><td><p className="text-green-500">Completed</p></td> <td><p className="text-green-500">150</p></td></tr>
-              <tr><td><p className="text-red-500">Billed</p></td> <td><p className="text-red-500">89</p></td></tr>
-              <tr><td><p className="text-yellow-500">Waiting for Decision</p></td> <td><p className="text-yellow-500">89</p></td></tr>
+              <tr><td><p className="text-green-500">Completed</p></td> <td><p className="text-green-500">{totalCompleted} </p></td></tr>
+              <tr><td><p className="text-red-500">UnBilled</p></td> <td><p className="text-red-500">{unbilledCount} </p></td></tr>
+              <tr><td><p className="text-red-500">Billed</p></td> <td><p className="text-red-500">{billedCount} </p></td></tr>
+              <tr><td><p className="text-yellow-500">Waiting for Decision</p></td> <td><p className="text-yellow-500">{waitingCount} </p></td></tr>
             </table>
           </div>
         </div>
@@ -128,25 +308,57 @@ const BillingPayments = () => {
           <h3 className="font-semibold text-indigo-400 mb-2">Worked Hours</h3>
           <div className="ml-3">
             <table className="table-auto w-full">
-              <tr><td><p className="text-green-500">Worked Hours</p></td> <td><p className="text-green-500">20 (80 Units)</p></td></tr>
-              <tr><td><p className="text-red-500">Billed Hours</p></td> <td><p className="text-red-500">10 (40 Units)</p></td></tr>
-              <tr><td><p className="text-yellow-500">UnBilled Hours</p></td> <td><p className="text-yellow-500">10 (40 Units)</p></td></tr>
+              <tr><td><p className="text-green-500">Worked Hours</p></td> <td><p className="text-green-500">{workedHours} (Units)</p></td></tr>
+              <tr><td><p className="text-red-500">Billed Hours</p></td> <td><p className="text-red-500">{billedHours} (Units)</p></td></tr>
+              <tr><td><p className="text-yellow-500">UnBilled Hours</p></td> <td><p className="text-yellow-500">{unbilledHours} (Units)</p></td></tr>
             </table>
           </div>
         </div>
       </div>
 
-      {/* SA-Housing Transition Section */}
+      {/* Plan Usage Section */}
       <div className="flex flex-col md:flex-row items-center mb-8 gap-10">
         <div className="p-6 bg-white rounded-lg shadow-md shadow-indigo-400 border">
-          <h3 className="font-semibold text-indigo-400 mb-2">
-            SA- Housing Transition (05/01/2024 - 10/31/2024)
-          </h3>
+          <h3 className="font-semibold text-indigo-400 mb-2">Housing Transition</h3>
+          <select value={selectedTransitionPeriod} onChange={handleTransitionPeriodChange} className="mb-4">
+            <option value={planUsage["Housing Transition"]?.period}>{planUsage["Housing Transition"]?.period}</option>
+          </select>
           <div className="ml-3">
             <table className="table-auto w-full">
-              <tr><td><p className="text-green-500">Allotted Hours</p></td> <td><p className="text-green-500">150(600 Units)</p></td></tr>
-              <tr><td><p className="text-red-500">Worked Hours</p></td> <td><p className="text-red-500">150(600 Units)</p></td></tr>
-              <tr><td><p className="text-yellow-500">Remaining Hours</p></td> <td><p className="text-yellow-500">150(600 Units)</p></td></tr>
+              <tr>
+                <td><p className="text-green-500">Allotted Hours</p></td>
+                <td><p className="text-green-500">{planUsage["Housing Transition"]?.totalUnits?.toFixed(2) || '0.00'} Units</p></td>
+              </tr>
+              <tr>
+                <td><p className="text-red-500">Worked Hours</p></td>
+                <td><p className="text-red-500">{planUsage["Housing Transition"]?.workedUnits?.toFixed(2) || '0.00'} Units</p></td>
+              </tr>
+              <tr>
+                <td><p className="text-yellow-500">Remaining Hours</p></td>
+                <td><p className="text-yellow-500">{planUsage["Housing Transition"]?.unitsRemaining?.toFixed(2) || '0.00'} Units</p></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div className="p-6 bg-white rounded-lg shadow-md shadow-indigo-400 border">
+          <h3 className="font-semibold text-indigo-400 mb-2">Housing Sustaining</h3>
+          <select value={selectedSustainingPeriod} onChange={handleSustainingPeriodChange} className="mb-4">
+            <option value={planUsage["Housing Sustaining"]?.period}>{planUsage["Housing Sustaining"]?.period}</option>
+          </select>
+          <div className="ml-3">
+            <table className="table-auto w-full">
+              <tr>
+                <td><p className="text-green-500">Allotted Hours</p></td>
+                <td><p className="text-green-500">{planUsage["Housing Sustaining"]?.totalUnits?.toFixed(2) || '0.00'} Units</p></td>
+              </tr>
+              <tr>
+                <td><p className="text-red-500">Worked Hours</p></td>
+                <td><p className="text-red-500">{planUsage["Housing Sustaining"]?.workedUnits?.toFixed(2) || '0.00'} Units</p></td>
+              </tr>
+              <tr>
+                <td><p className="text-yellow-500">Remaining Hours</p></td>
+                <td><p className="text-yellow-500">{planUsage["Housing Sustaining"]?.unitsRemaining?.toFixed(2) || '0.00'} Units</p></td>
+              </tr>
             </table>
           </div>
         </div>
@@ -154,6 +366,7 @@ const BillingPayments = () => {
 
       {/* Billing Table */}
       <div className="mt-10">
+        <h2 className="text-xl font-bold text-indigo-400 mb-4">Pending Bills</h2>
         <table className="table-auto w-full">
           <thead>
             <tr className="text-left text-indigo-400">
@@ -171,218 +384,59 @@ const BillingPayments = () => {
             </tr>
           </thead>
           <tbody>
-            {/* Sample Row */}
+            {pendingBills.map((bill, index) => (
+              <tr key={bill._id}>
+                <td className="p-2">{new Date(bill.visit.date).toLocaleDateString()}</td>
+                <td className="p-2">{calculateDuration(bill.visit.startTime, bill.visit.endTime)}</td>
+                <td className="p-2">{bill.renderingProvider.name}</td>
+                <td className="p-2">{bill.serviceType}</td>
+                <td className="p-2">{bill.visit.methodOfVisit}</td>
+                <td className="p-2">{bill.status}</td>
+                <td className="p-2">${bill.serviceLine.reduce((sum, line) => sum + line.lineItemChargeAmount, 0).toFixed(2)}</td>
+                <td className="p-2">$0.00</td> {/* Assuming no received amount is provided */}
+                <td className="p-2">{new Date(bill.hierarchicalTransaction.creationDate).toLocaleDateString()}</td>
+                <td className="p-2">{bill.payerName.name}</td>
+                <td className="p-2 text-center">
+                  <input type="checkbox" name={`item${index + 1}`} onChange={handleCheckboxChange} checked={checkedItems[`item${index + 1}`]} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-            {/* Add more rows as needed */}
-
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item1" onChange={handleCheckboxChange} checked={checkedItems.item1} />
-              </td>
+      <div className="mt-10">
+        <h2 className="text-xl font-bold text-indigo-400 mb-4">Completed Bills</h2>
+        <table className="table-auto w-full">
+          <thead>
+            <tr className="text-left text-indigo-400">
+              <th className="p-2">Schedule</th>
+              <th className="p-2">Duration</th>
+              <th className="p-2">HCM</th>
+              <th className="p-2">Service Type</th>
+              <th className="p-2">Visit Type</th>
+              <th className="p-2">Bill Status</th>
+              <th className="p-2">Bill Amount</th>
+              <th className="p-2">Received Amount</th>
+              <th className="p-2">Date of Bill</th>
+              <th className="p-2">Payor</th>
             </tr>
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item2" onChange={handleCheckboxChange} checked={checkedItems.item2} />
-              </td>
-            </tr>
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item3" onChange={handleCheckboxChange} checked={checkedItems.item3} />
-              </td>
-            </tr>
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item4" onChange={handleCheckboxChange} checked={checkedItems.item4} />
-              </td>
-            </tr>
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item5" onChange={handleCheckboxChange} checked={checkedItems.item5} />
-              </td>
-            </tr>
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item6" onChange={handleCheckboxChange} checked={checkedItems.item6} />
-              </td>
-            </tr>
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item7" onChange={handleCheckboxChange} checked={checkedItems.item7} />
-              </td>
-            </tr>
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item8" onChange={handleCheckboxChange} checked={checkedItems.item8} />
-              </td>
-            </tr>
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item9" onChange={handleCheckboxChange} checked={checkedItems.item9} />
-              </td>
-            </tr>
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item10" onChange={handleCheckboxChange} checked={checkedItems.item10} />
-              </td>
-            </tr>
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item11" onChange={handleCheckboxChange} checked={checkedItems.item11} />
-              </td>
-            </tr>
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item12" onChange={handleCheckboxChange} checked={checkedItems.item12} />
-              </td>
-            </tr>
-
-            <tr>
-              <td className="p-2">09/01/24</td>
-              <td className="p-2">01:00 Hrs</td>
-              <td className="p-2">Rick John</td>
-              <td className="p-2">H2015 U8</td>
-              <td className="p-2">Indirect</td>
-              <td className="p-2">Not Billed</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">$70.00</td>
-              <td className="p-2">09/15/24</td>
-              <td className="p-2">Health Partners</td>
-              <td className="p-2 text-center">
-                <input type="checkbox" name="item13" onChange={handleCheckboxChange} checked={checkedItems.item13} />
-              </td>
-            </tr>
+          </thead>
+          <tbody>
+            {completedBills.map((bill, index) => (
+              <tr key={bill._id}>
+                <td className="p-2">{new Date(bill.visit.date).toLocaleDateString()}</td>
+                <td className="p-2">{calculateDuration(bill.visit.startTime, bill.visit.endTime)}</td>
+                <td className="p-2">{bill.renderingProvider.name}</td>
+                <td className="p-2">{bill.serviceType}</td>
+                <td className="p-2">{bill.visit.methodOfVisit}</td>
+                <td className="p-2">{bill.status}</td>
+                <td className="p-2">${bill.serviceLine.reduce((sum, line) => sum + line.lineItemChargeAmount, 0).toFixed(2)}</td>
+                <td className="p-2">$0.00</td> {/* Assuming no received amount is provided */}
+                <td className="p-2">{new Date(bill.hierarchicalTransaction.creationDate).toLocaleDateString()}</td>
+                <td className="p-2">{bill.payerName.name}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
