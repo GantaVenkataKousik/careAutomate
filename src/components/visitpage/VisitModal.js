@@ -88,12 +88,11 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       }
 
       const response = await fetch(`${BASE_URL}/tenant/all`, {
-        method: "POST",
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({}),
       });
 
       const data = await response.json();
@@ -292,6 +291,13 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
     console.log("Date:", startDate);
     console.log("Start Time:", startTime);
     console.log("End Time:", endTime);
+    // Combine startDate and startTime into a single Date object
+    const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
+    const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
+
+    // Format the times to the desired string format
+    const formattedStartTime = startDateTime.toISOString();
+    const formattedEndTime = endDateTime.toISOString();
 
     // Prepare payload
     const payload = {
@@ -301,8 +307,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       serviceType,
       activity: activity || "N/A",
       date: new Date(startDate).toISOString(),
-      startTime,
-      endTime,
+      startTime: formattedStartTime,
+      endTime: formattedEndTime,
       place: planOfService || "N/A",
       methodOfVisit:
         methodOfContact === "indirect"
@@ -597,7 +603,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
           {/* Conditional rendering for radio buttons */}
           {methodOfContact === "indirect" && (
             <div className="flex flex-col gap-2 items-center">
-              <div className="flex items-center gap-4">
+              {/* <div className="flex items-center gap-4">
                 <label className="flex items-center">
                   <input
                     type="radio"
@@ -620,12 +626,12 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
                   />
                   In-Person
                 </label>
-              </div>
+              </div> */}
 
               {/* Conditional rendering for Reason for Remote */}
             </div>
           )}
-          {reasonForRemote === "remote" && (
+          {methodOfContact === "indirect" && (
             <div className="flex gap-4">
               <label className="text-sm font-medium flex items-center w-1/3">
                 <RiServiceLine size={24} className="mr-2" />
