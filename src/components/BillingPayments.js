@@ -210,20 +210,23 @@ const BillingPayments = () => {
       return 'N/A'; // Return 'N/A' or any default value if startTime or endTime is undefined
     }
 
-    const [startHours, startMinutes] = startTime.split(':').map(Number);
-    const [endHours, endMinutes] = endTime.split(':').map(Number);
+    try {
+      const start = new Date(startTime);
+      const end = new Date(endTime);
 
-    const start = new Date();
-    start.setHours(startHours, startMinutes);
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return 'N/A'; // Skip if the date is invalid
+      }
 
-    const end = new Date();
-    end.setHours(endHours, endMinutes);
+      const diff = (end - start) / (1000 * 60); // difference in minutes
+      const hours = Math.floor(diff / 60);
+      const minutes = diff % 60;
 
-    const diff = (end - start) / (1000 * 60); // difference in minutes
-    const hours = Math.floor(diff / 60);
-    const minutes = diff % 60;
-
-    return `${hours}h ${minutes}m`;
+      return `${hours}h ${minutes}m`;
+    } catch (error) {
+      console.error('Error parsing date:', error);
+      return 'N/A'; // Return 'N/A' if there's an error parsing the date
+    }
   };
 
   return (
@@ -239,7 +242,7 @@ const BillingPayments = () => {
       </div>
 
       <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
-        {/* Date Pickers */}
+        {/* Date Pickers
         <div className="flex items-center gap-2 mt-8">
           <input className="border rounded-full px-6 py-2 text-black border-blue-500" type="text" placeholder="Search Dates" />
         </div>
@@ -252,7 +255,8 @@ const BillingPayments = () => {
           <input type="date" className="border rounded-full px-6 py-2 text-black border-blue-500" />
         </div>
         {/* Dropdown */}
-        <div className="flex items-center gap-2 mt-8">
+
+        {/* <div className="flex items-center gap-2 mt-8">
           <select className="border rounded-full px-6 py-2 text-black border-blue-500">
             <option>All</option>
             <option>Bill</option>
@@ -270,7 +274,7 @@ const BillingPayments = () => {
         </button>
         <button className="border rounded-full px-6 py-2 text-black border-blue-500 mt-8">
           Void
-        </button>
+        </button> */}
       </div>
 
       {/* Info Cards */}
@@ -384,23 +388,28 @@ const BillingPayments = () => {
             </tr>
           </thead>
           <tbody>
-            {pendingBills.map((bill, index) => (
-              <tr key={bill._id}>
-                <td className="p-2">{new Date(bill.visit.date).toLocaleDateString()}</td>
-                <td className="p-2">{calculateDuration(bill.visit.startTime, bill.visit.endTime)}</td>
-                <td className="p-2">{bill.renderingProvider.name}</td>
-                <td className="p-2">{bill.serviceType}</td>
-                <td className="p-2">{bill.visit.methodOfVisit}</td>
-                <td className="p-2">{bill.status}</td>
-                <td className="p-2">${bill.serviceLine.reduce((sum, line) => sum + line.lineItemChargeAmount, 0).toFixed(2)}</td>
-                <td className="p-2">$0.00</td> {/* Assuming no received amount is provided */}
-                <td className="p-2">{new Date(bill.hierarchicalTransaction.creationDate).toLocaleDateString()}</td>
-                <td className="p-2">{bill.payerName.name}</td>
-                <td className="p-2 text-center">
-                  <input type="checkbox" name={`item${index + 1}`} onChange={handleCheckboxChange} checked={checkedItems[`item${index + 1}`]} />
-                </td>
-              </tr>
-            ))}
+            {pendingBills.map((bill, index) => {
+              const duration = calculateDuration(bill.visit.startTime, bill.visit.endTime);
+              if (duration === 'N/A') return null; // Skip the record if duration is 'N/A'
+
+              return (
+                <tr key={bill._id}>
+                  <td className="p-2">{new Date(bill.visit.date).toLocaleDateString()}</td>
+                  <td className="p-2">{duration}</td>
+                  <td className="p-2">{bill.renderingProvider.name}</td>
+                  <td className="p-2">{bill.serviceType}</td>
+                  <td className="p-2">{bill.visit.methodOfVisit}</td>
+                  <td className="p-2">{bill.status}</td>
+                  <td className="p-2">${bill.serviceLine.reduce((sum, line) => sum + line.lineItemChargeAmount, 0).toFixed(2)}</td>
+                  <td className="p-2">$0.00</td> {/* Assuming no received amount is provided */}
+                  <td className="p-2">{new Date(bill.hierarchicalTransaction.creationDate).toLocaleDateString()}</td>
+                  <td className="p-2">{bill.payerName.name}</td>
+                  <td className="p-2 text-center">
+                    <input type="checkbox" name={`item${index + 1}`} onChange={handleCheckboxChange} checked={checkedItems[`item${index + 1}`]} />
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
