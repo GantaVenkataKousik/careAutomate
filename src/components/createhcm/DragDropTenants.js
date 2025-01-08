@@ -4,7 +4,7 @@ import { updateAssignedTenants } from "../../redux/hcm/hcmSlice";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { BASE_URL } from "../../config";
 
-const ChecklistTenants = () => {
+const ChecklistTenants = ({ assignTenantLater, setAssignTenantLater }) => {
   const dispatch = useDispatch();
   const assignedTenantsRedux = useSelector(
     (state) => state.hcm.assignedTenants
@@ -101,6 +101,12 @@ const ChecklistTenants = () => {
   return (
     <div style={styles.container}>
       {/* <h2 style={styles.heading}>Step 2: Designate Tenants</h2> */}
+      {/* <button
+        onclick={() => setAssignTenantLater(!assignTenantLater)}
+        className="px-3 py-2 border-2 border-[#6F84F8] text-[#6F84F8] rounded-lg m"
+      >
+        Assign Later
+      </button> */}
 
       <div style={styles.checklistSection}>
         <div style={styles.tenantBox}>
