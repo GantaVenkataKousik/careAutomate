@@ -88,7 +88,8 @@ const PopupPage = () => {
   const handleAssignLater = () => {
     setAssignTenantLater(!assignTenantLater);
     if (!assignTenantLater) {
-      setCurrentStep((prev) => prev + 1);
+      handleNext();
+      // setCurrentStep((prev) => prev + 1);
     }
   };
   const assignTenant = async (hcmId) => {
@@ -246,6 +247,27 @@ const PopupPage = () => {
   };
 
   const handleNext = async () => {
+    const requiredFields = [
+      { key: "firstName", label: "First Name" },
+      { key: "lastName", label: "Last Name" },
+      { key: "dob", label: "Date of Birth" },
+      { key: "gender", label: "Gender" },
+      { key: "addressLine1", label: "Address Line 1" },
+      { key: "city", label: "City" },
+      { key: "state", label: "State" },
+      { key: "zipCode", label: "Zipcode" },
+      { key: "phoneNumber", label: "Phone Number" },
+      { key: "email", label: "Email" },
+      { key: "employmentTitle", label: "Emergency Title" },
+      { key: "ssn", label: "SSN" },
+      { key: "rateOfPay", label: "Rate of Pay" },
+    ];
+    for (let field of requiredFields) {
+      if (!hcmData[field.key]) {
+        toast.error(`Please fill in the ${field.label}`);
+        return;
+      }
+    }
     if (currentStep === 2) {
       try {
         const confirmProceed = window.confirm(

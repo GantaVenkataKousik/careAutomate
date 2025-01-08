@@ -19,14 +19,22 @@ const LoginInfo = () => {
     <div style={styles.container}>
       <Section title="Login Information">
         <InputField
-          label="Username"
+          label={
+            <>
+              Username <span className="required">*</span>
+            </>
+          }
           name="userName"
           value={hcmData.userName}
           onChange={handleChange}
           required
         />
         <InputField
-          label="Password"
+          label={
+            <>
+              Password <span className="required">*</span>
+            </>
+          }
           name="password"
           value={hcmData.password}
           onChange={handleChange}
@@ -36,7 +44,11 @@ const LoginInfo = () => {
           setShowPassword={setShowPassword}
         />
         <InputField
-          label="Confirm Password"
+          label={
+            <>
+              Confirm Password <span className="required">*</span>
+            </>
+          }
           name="confirmPassword"
           value={hcmData.confirmPassword}
           onChange={handleChange}

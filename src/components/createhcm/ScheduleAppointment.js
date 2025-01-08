@@ -16,7 +16,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-const ScheduleAppointment = () => {
+const ScheduleAppointment = ({ assignTenantLater }) => {
   const [hcm, setHcm] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -45,47 +45,49 @@ const ScheduleAppointment = () => {
   // console.log("Hcm ID in step4:", hcmId);
 
   useEffect(() => {
-    if (assignedTenants.names.length > 0) {
+    console.log(assignTenantLater);
+    if (assignedTenants.names.length > 0 && !assignTenantLater) {
       const tenantData = assignedTenants.names.map((name, index) => ({
         id: assignedTenants.ids[index],
         name: name,
       }));
       setAllTenants(tenantData);
+    } else {
+      fetchTenants();
     }
   }, [assignedTenants]);
   // useEffect(() => {
-  //   const fetchTenants = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       if (!token) {
-  //         console.error("Authorization token is missing.");
-  //         return;
-  //       }
+  const fetchTenants = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Authorization token is missing.");
+        return;
+      }
 
-  //       const response = await fetch(`${BASE_URL}/tenant/all`, {
-  //         method: "POST",
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({}),
-  //       });
+      const response = await fetch(`${BASE_URL}/tenant/all`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-  //       const data = await response.json();
+      const data = await response.json();
 
-  //       if (response.status === 200 && data.success) {
-  //         const tenantData = data.response.map((tenant) => ({
-  //           id: tenant._id,
-  //           name: tenant.name,
-  //         }));
-  //         setAllTenants(tenantData);
-  //       } else {
-  //         console.error("Failed to fetch tenants:", data.message);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching tenants:", error);
-  //     }
-  //   };
+      if (response.status === 200 && data.success) {
+        const tenantData = data.response.map((tenant) => ({
+          id: tenant._id,
+          name: tenant.name,
+        }));
+        setAllTenants(tenantData);
+      } else {
+        console.error("Failed to fetch tenants:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching tenants:", error);
+    }
+  };
 
   //   fetchTenants();
   // }, []);
@@ -214,7 +216,8 @@ const ScheduleAppointment = () => {
                 type="text"
                 value={hcmName}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Hcm"
+                placeholder="HCM"
+                disabled={true}
                 className="border border-gray-300 rounded-md p-2 w-2/3"
               />
             </div>
