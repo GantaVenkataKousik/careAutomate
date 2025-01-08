@@ -350,7 +350,7 @@ const SubStep1 = () => {
         {/* Left side: Races checkboxes */}
         <div className="mr-10">
           <label style={{ fontWeight: "bold", marginBottom: "10px" }}>
-            Race & Ethnicity -
+            Race & Ethnicity - <span className="text-red-500">*</span>
           </label>
           <div>
             <label>
