@@ -62,18 +62,18 @@ const PopupPage = () => {
 
   const handleNext = async () => {
     const requiredFields = [
-      { key: "firstName", label: "First Name" },
-      { key: "lastName", label: "Last Name" },
+      // { key: "firstName", label: "First Name" },
+      // { key: "lastName", label: "Last Name" },
       // { key: "dob", label: "Date of Birth" },
       // { key: "gender", label: "Gender" },
-      // { key: "mapmi", label: "Mapmi" },
+      // { key: "maPMINumber", label: "Mapmi" },
       // { key: "addressLine1", label: "Address Line 1" },
       // { key: "city", label: "City" },
       // { key: "state", label: "State" },
       // { key: "zipCode", label: "Zipcode" },
-      { key: "phoneNumber", label: "Phone Number" },
-      { key: "email", label: "Email" },
-      // { key: "insuranceType", label: "Insurance Type" },
+      // { key: "phoneNumber", label: "Phone Number" },
+      // { key: "email", label: "Email" },
+      // { key: "insurance", label: "Insurance Type" },
       // { key: "insuranceNumber", label: "Insurance Number" },
       // { key: "diagnosisCode", label: "Diagnosis Code" },
       // { key: "caseManagerFirstName", label: "Case Manager First Name" },
@@ -88,6 +88,10 @@ const PopupPage = () => {
         return;
       }
     }
+
+    // if (currentStep === 0) {
+    //   await handleSave();
+    // }
 
     const areAllServicesValid = services.every(
       (service) =>
@@ -134,7 +138,7 @@ const PopupPage = () => {
 
     const assignHCMToTenant = async (tenantID) => {
       const token = localStorage.getItem("token");
-      console.log("Assigned HCMs", assignedTenants);
+      // console.log("Assigned HCMs", assignedTenants);
       const data = {
         tenantId: tenantID,
         hcmIds: assignedHCMs.ids,
@@ -175,11 +179,11 @@ const PopupPage = () => {
       }
 
       try {
-        console.log(services);
+        // console.log(services);
         for (const service of services) {
           const formData = new FormData();
           formData.append("tenantId", tenantID);
-          console.log(service.serviceType);
+          // console.log(service.serviceType);
           formData.append("serviceType", service.serviceType);
           formData.append(
             "startDate",
@@ -189,9 +193,9 @@ const PopupPage = () => {
           formData.append("unitsRemaining", service.units);
           formData.append("totalUnits", service.units);
           formData.append("billRate", service.billRate);
-          for (let pair of formData.entries()) {
-            console.log(pair[0] + ": " + pair[1]);
-          }
+          // for (let pair of formData.entries()) {
+          //   console.log(pair[0] + ": " + pair[1]);
+          // }
           // Make the POST request for each service
           const response = await axios.post(
             `${BASE_URL}/tenant/assign-services-documents`,
@@ -249,20 +253,100 @@ const PopupPage = () => {
   const handleSave = async () => {
     const token = localStorage.getItem("token");
     const formData = new FormData();
-    for (const [key, value] of Object.entries(tenantData)) {
+
+    const transformedData = {
+      personalInfo: {
+        firstName: tenantData.firstName || "",
+        middleName: tenantData.middleName || "",
+        lastName: tenantData.lastName || "",
+        dob: tenantData.dob || "",
+        gender: tenantData.gender || "",
+        maPMINumber: tenantData.maPMINumber || "",
+        email: tenantData.email || "",
+      },
+      address: {
+        addressLine1: tenantData.addressLine1 || "",
+        addressLine2: tenantData.addressLine2 || "",
+        city: tenantData.city || "",
+        state: tenantData.state || "",
+        zipCode: tenantData.zipCode || "",
+        mailingSameAsAbove: tenantData.mailingSameAsAbove || false,
+        mailingDifferent: !tenantData.mailingSameAsAbove || false,
+      },
+      contactInfo: {
+        phoneNumber: tenantData.phoneNumber || "",
+        email: tenantData.email || "",
+        homePhone: tenantData.homePhone || "",
+        cellPhone: tenantData.cellPhone || "",
+        race: tenantData.race || "",
+        ethnicity: tenantData.ethnicity || "",
+      },
+      emergencyContact: {
+        firstName: tenantData.emergencyFirstName || "",
+        middleName: tenantData.emergencyMiddleName || "",
+        lastName: tenantData.emergencyLastName || "",
+        phoneNumber: tenantData.emergencyPhoneNumber || "",
+        email: tenantData.emergencyEmail || "",
+        relationship: tenantData.emergencyRelationship || "",
+      },
+      admissionInfo: {
+        insurance: tenantData.insurance || "",
+        insuranceNumber: tenantData.insuranceNumber || "",
+        ssn: tenantData.ssn || "",
+        intakeDate: tenantData.intakeDate || "",
+        letGoDate: tenantData.letGoDate || null,
+        letGoReason: tenantData.letGoReason || "",
+        diagnosisCode: tenantData.diagnosisCode || "",
+      },
+      caseManager: {
+        firstName: tenantData.caseManagerFirstName || "",
+        middleInitial: tenantData.caseManagerMiddleInitial || "",
+        lastName: tenantData.caseManagerLastName || "",
+        phoneNumber: tenantData.caseManagerPhoneNumber || "",
+        email: tenantData.caseManagerEmail || "",
+      },
+      loginInfo: {
+        userName: tenantData.userName || "",
+        password: tenantData.password || "",
+      },
+      responsibleParty: {
+        firstName: tenantData.responsibleFirstName || "",
+        middleName: tenantData.responsibleMiddleName || "",
+        lastName: tenantData.responsibleLastName || "",
+        phoneNumber: tenantData.responsiblePhoneNumber || "",
+        email: tenantData.responsibleEmail || "",
+        relationship: tenantData.responsibleRelationship || "",
+      },
+      mailingAddress: {
+        line1: tenantData.mailingAddressLine1 || "",
+        line2: tenantData.mailingAddressLine2 || "",
+        city: tenantData.mailingCity || "",
+        state: tenantData.mailingState || "",
+        zipcode: tenantData.mailingZipCode || "",
+      },
+      notes: tenantData.notes || [], // Assuming tenantData.notes is an array of note objects
+    };
+    // console.log(transformedData);
+    for (const [key, value] of Object.entries(transformedData)) {
       formData.append(key, value);
     }
 
+    // console.log(formData);
+
     try {
-      const response = await axios.post(`${BASE_URL}/tenant/create`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        `${BASE_URL}/tenant/create`,
+        transformedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.status >= 200 && response.status < 300) {
-        console.log("result", response);
+        // console.log("result", response);
         const id = response.data?.response.tenantID;
         const first = response.data?.tenantData?.firstName;
         const last = response.data?.tenantData?.lastName;
@@ -270,7 +354,7 @@ const PopupPage = () => {
 
         dispatch(createdTenantName(name));
         setTenantName(name);
-        console.log(`Tenant ID saved: ${id}`);
+        // console.log(`Tenant ID saved: ${id}`);
         if (id) {
           setTenantID(id); // Store tenant ID in state
           dispatch(createdTenant(id));
@@ -294,9 +378,9 @@ const PopupPage = () => {
   const renderSubStep = () => {
     const SubStepComponent = steps[currentStep].subSteps[0];
     if (SubStepComponent) {
-      console.log(
-        `Rendering step ${currentStep + 1}, passing tenantID: ${tenantID}`
-      );
+      // console.log(
+      //   `Rendering step ${currentStep + 1}, passing tenantID: ${tenantID}`
+      // );
       return <SubStepComponent tenantID={tenantID} tenantName={tenantName} />;
     }
     return null;

@@ -8,10 +8,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import InputMask from "react-input-mask";
 
+const updateResponsibleParty = (hasResponsibleParty) => ({
+  type: "UPDATE_RESPONSIBLE_PARTY",
+  payload: hasResponsibleParty,
+});
+
 const SubStep1 = () => {
   const dispatch = useDispatch();
   const tenantData = useSelector((state) => state.tenant);
-  const [hasResponsibleParty, setHasResponsibleParty] = useState(false);
   const [needsMobileAccess, setNeedsMobileAccess] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
   const [password, setPassword] = useState("");
@@ -21,7 +25,15 @@ const SubStep1 = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const inputValue = type === "checkbox" ? checked : value;
+    let inputValue;
+
+    if (type === "checkbox") {
+      inputValue = checked; // Handle checkboxes
+    } else if (type === "radio" && name === "mailingSameAsAbove") {
+      inputValue = value === "true"; // Convert "true" or "false" string to boolean
+    } else {
+      inputValue = value; // Handle other inputs
+    }
     dispatch(updateTenantInfo({ [name]: inputValue }));
   };
 
@@ -35,6 +47,13 @@ const SubStep1 = () => {
     const { value } = e.target;
     setConfirmPassword(value);
     setPasswordMatch(password === value);
+  };
+  const hasResponsibleParty = useSelector(
+    (state) => state.tenant.hasResponsibleParty
+  );
+  const handleSwitchChange = () => {
+    const newValue = !hasResponsibleParty;
+    dispatch(updateTenantInfo({ hasResponsibleParty: newValue })); // Dispatch action to Redux
   };
 
   const formatDateToMMDDYYYY = (date) => {
@@ -128,8 +147,8 @@ const SubStep1 = () => {
               MA PMI # <span className="required">*</span>
             </>
           }
-          name="mapmi"
-          value={tenantData.mapmi}
+          name="maPMINumber"
+          value={tenantData.maPMINumber}
           onChange={handleChange}
           maxLength={8}
           onFocus={() => setFocusedField("mapmi")}
@@ -202,12 +221,10 @@ const SubStep1 = () => {
               <label>
                 <input
                   type="radio"
-                  name="mailingAddressOption"
-                  value="same"
-                  checked={tenantData.mailingAddress === "same"}
-                  onChange={() =>
-                    dispatch(updateTenantInfo({ mailingAddress: "same" }))
-                  }
+                  name="mailingSameAsAbove"
+                  value="true"
+                  onChange={handleChange}
+                  checked={tenantData.mailingSameAsAbove === true}
                   style={{ marginRight: "1rem" }}
                 />
                 Same as above
@@ -217,12 +234,10 @@ const SubStep1 = () => {
               <label>
                 <input
                   type="radio"
-                  name="mailingAddressOption"
-                  value="different"
-                  checked={tenantData.mailingAddress === "different"}
-                  onChange={() =>
-                    dispatch(updateTenantInfo({ mailingAddress: "different" }))
-                  }
+                  name="mailingSameAsAbove"
+                  value="false"
+                  onChange={handleChange}
+                  checked={tenantData.mailingSameAsAbove === false}
                   style={{ marginRight: "1rem" }}
                 />
                 Different
@@ -232,7 +247,7 @@ const SubStep1 = () => {
         </div>
       </Section>
 
-      {tenantData.mailingAddress === "different" && (
+      {tenantData.mailingSameAsAbove === false && (
         <>
           <hr
             style={{
@@ -343,6 +358,7 @@ const SubStep1 = () => {
                 type="radio"
                 name="race"
                 value="White"
+                checked={tenantData.race === "White"}
                 onChange={handleChange}
                 style={{ marginRight: "1rem" }}
               />
@@ -355,6 +371,7 @@ const SubStep1 = () => {
                 type="radio"
                 name="race"
                 value="Black or African American"
+                checked={tenantData.race === "Black or African American"}
                 onChange={handleChange}
                 style={{ marginRight: "1rem" }}
               />
@@ -367,6 +384,7 @@ const SubStep1 = () => {
                 type="radio"
                 name="race"
                 value="American Indian or Alaska Native"
+                checked={tenantData.race === "American Indian or Alaska Native"}
                 onChange={handleChange}
                 style={{ marginRight: "1rem" }}
               />
@@ -380,6 +398,7 @@ const SubStep1 = () => {
                 name="race"
                 value="Asian"
                 onChange={handleChange}
+                checked={tenantData.race === "Asian"}
                 style={{ marginRight: "1rem" }}
               />
               Asian
@@ -391,6 +410,9 @@ const SubStep1 = () => {
                 type="radio"
                 name="race"
                 value="Native Hawaiian or Pacific Islander"
+                checked={
+                  tenantData.race === "Native Hawaiian or Pacific Islander"
+                }
                 onChange={handleChange}
                 style={{ marginRight: "1rem" }}
               />
@@ -403,6 +425,7 @@ const SubStep1 = () => {
                 type="radio"
                 name="race"
                 value="Some Other Race"
+                checked={tenantData.race === "Some Other Race"}
                 onChange={handleChange}
                 style={{ marginRight: "1rem" }}
               />
@@ -415,6 +438,7 @@ const SubStep1 = () => {
                 type="radio"
                 name="race"
                 value="Two or more Races"
+                checked={tenantData.race === "Two or more Races"}
                 onChange={handleChange}
                 style={{ marginRight: "1rem" }}
               />
@@ -429,8 +453,9 @@ const SubStep1 = () => {
             <label>
               <input
                 type="radio"
-                name="hispanicStatus"
+                name="ethnicity"
                 value="Hispanic"
+                checked={tenantData.ethnicity === "Hispanic"}
                 onChange={handleChange}
                 style={{ marginRight: "1rem" }}
               />
@@ -441,8 +466,9 @@ const SubStep1 = () => {
             <label>
               <input
                 type="radio"
-                name="hispanicStatus"
+                name="ethnicity"
                 value="Not Hispanic"
+                checked={tenantData.ethnicity === "Not Hispanic"}
                 onChange={handleChange}
                 style={{ marginRight: "1rem" }}
               />
@@ -453,8 +479,9 @@ const SubStep1 = () => {
             <label>
               <input
                 type="radio"
-                name="hispanicStatus"
+                name="ethnicity"
                 value="Not Applicable"
+                checked={tenantData.ethnicity === "Not Applicable"}
                 onChange={handleChange}
                 style={{ marginRight: "1rem" }}
               />
@@ -517,8 +544,8 @@ const SubStep1 = () => {
               Insurance <span className="required">*</span>
             </>
           }
-          name="insuranceType"
-          value={tenantData.insuranceType}
+          name="insurance"
+          value={tenantData.insurance}
           onChange={handleChange}
           type="select"
           options={[
@@ -531,7 +558,7 @@ const SubStep1 = () => {
           ]}
           onFocus={() => setFocusedField("insuranceType")}
           onBlur={() => setFocusedField(null)}
-          focused={focusedField === "insuranceType"}
+          focused={focusedField === "insurance"}
           required
         />
         <InputField
@@ -546,53 +573,53 @@ const SubStep1 = () => {
           required
         />
         <InputField
-          label="SSN"
-          name="insuranceSSN"
+          label="ssn"
+          name="ssn"
           value={tenantData.insuranceSSN}
           onChange={handleChange}
         />
         <InputField
           label="Intake Date"
-          name="insuranceIntakeDate"
+          name="intakeDate"
           value={
-            tenantData.insuranceIntakeDate
-              ? formatDateToMMDDYYYY(tenantData.insuranceIntakeDate)
+            tenantData.intakeDate
+              ? formatDateToMMDDYYYY(tenantData.intakeDate)
               : ""
           }
           onChange={(date) =>
             handleDateChange(
-              "insuranceIntakeDate",
+              "intakeDate",
               date ? formatDateToMMDDYYYY(date) : ""
             )
           }
           type="date"
-          onFocus={() => setFocusedField("insuranceIntakeDate")}
+          onFocus={() => setFocusedField("intakeDate")}
           onBlur={() => setFocusedField(null)}
-          focused={focusedField === "insuranceIntakeDate"}
+          focused={focusedField === "intakeDate"}
         />
         <InputField
           label="Let go Date"
-          name="insuranceLetGoDate"
+          name="letGoDate"
           value={
-            tenantData.insuranceLetGoDate
-              ? formatDateToMMDDYYYY(tenantData.insuranceLetGoDate)
+            tenantData.letGoDate
+              ? formatDateToMMDDYYYY(tenantData.letGoDate)
               : ""
           }
           onChange={(date) =>
             handleDateChange(
-              "insuranceLetGoDate",
+              "letGoDate",
               date ? formatDateToMMDDYYYY(date) : ""
             )
           }
           type="date"
-          onFocus={() => setFocusedField("insuranceLetGoDate")}
+          onFocus={() => setFocusedField("letGoDate")}
           onBlur={() => setFocusedField(null)}
-          focused={focusedField === "insuranceLetGoDate"}
+          focused={focusedField === "letGoDate"}
         />
         <InputField
           label="Let go Reason"
-          name="insuranceLetGoReason"
-          value={tenantData.insuranceLetGoReason}
+          name="LetGoReason"
+          value={tenantData.LetGoReason}
           onChange={handleChange}
         />
         <InputField
@@ -708,12 +735,12 @@ const SubStep1 = () => {
               </>
             }
             name="password"
-            value={password}
-            onChange={handlePasswordChange}
+            value={tenantData.password}
+            onChange={handleChange}
             type="password"
             required
           />
-          <InputField
+          {/* <InputField
             label={
               <>
                 Confirm Password <span className="required">*</span>
@@ -727,7 +754,7 @@ const SubStep1 = () => {
           />
           <p style={{ color: passwordMatch ? "green" : "red" }}>
             {passwordMatch ? "Passwords match" : "Passwords do not match"}
-          </p>
+          </p> */}
         </Section>
       )}
 
@@ -735,10 +762,7 @@ const SubStep1 = () => {
         <label className="text-gray-700 mr-2">
           Does the tenant have a responsible party?
         </label>
-        <Switch
-          checked={hasResponsibleParty}
-          onChange={() => setHasResponsibleParty(!hasResponsibleParty)}
-        />
+        <Switch checked={hasResponsibleParty} onChange={handleSwitchChange} />
       </div>
       {hasResponsibleParty && (
         <Section title="Responsible Party Information">

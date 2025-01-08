@@ -17,6 +17,7 @@ import {
   resetHcmInfo,
 } from "../../redux/hcm/hcmSlice";
 import { BASE_URL } from "../../config";
+import { mapHcmDataToSchema } from "../../utils/hcm/createHcmUtils/hcmCreateFormat";
 
 const steps = [
   {
@@ -94,35 +95,28 @@ const PopupPage = () => {
 
   const handleSave = async () => {
     const token = localStorage.getItem("token");
-    const formData = new FormData();
-    for (const [key, value] of Object.entries(hcmData)) {
-      if (
-        key === "hcmId" ||
-        key === "assignedTenants" ||
-        key === "hcmName" ||
-        key === "tenantName" ||
-        key === "tenantId" ||
-        key === "confirmPassword"
-      ) {
-        continue;
-      }
-      formData.append(key, value);
-    }
+    const formattedData = mapHcmDataToSchema(hcmData);
+    console.log(formattedData);
 
     try {
-      const response = await axios.post(`${BASE_URL}/hcm/createhcm`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.post(
+        `${BASE_URL}/hcm/createhcm`,
+        formattedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response?.data?.hcmID) {
         const id = response.data.hcmID;
+        console.log(response);
         dispatch(createdHcm(id));
         dispatch(
           createdHcmName(
-            `${response.data.hcmData.firstName} ${response.data.hcmData.lastName}`
+            `${response.data.hcmData.personalInfo.firstName} ${response.data.hcmData.personalInfo.lastName}`
           )
         );
         toast.success("HCM is successfully created");

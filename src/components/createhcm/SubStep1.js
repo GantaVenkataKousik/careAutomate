@@ -11,7 +11,7 @@ const SubStep1 = () => {
   const dispatch = useDispatch();
   const hcmData = useSelector((state) => state.hcm);
   const [focusedField, setFocusedField] = useState(null);
-  console.log(hcmData);
+  // console.log(hcmData);
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const inputValue = type === "checkbox" ? checked : value;

@@ -1,21 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { FaSearch, FaPlus } from "react-icons/fa";
+import {
+  LiaFileInvoiceDollarSolid,
+  LiaUserEditSolid,
+  LiaTrashSolid,
+} from "react-icons/lia";
+import { MdOutlineEventAvailable } from "react-icons/md";
 import tenantImage from "../images/tenant.jpg";
 import { useNavigate } from "react-router-dom";
-import { CiCalendarDate } from "react-icons/ci";
-import { IoIosMenu } from "react-icons/io";
+import { BiUserCheck } from "react-icons/bi";
 import { TbMessage } from "react-icons/tb";
-import { IoDocumentTextOutline } from "react-icons/io5";
 import { BASE_URL } from "../config";
 import axios from "axios";
+import EditTenant from "./tenantsPage/EditTenant";
 
 const Tenants = () => {
   const navigate = useNavigate();
   const [tenants, setTenants] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [openModal, setOpenModal] = useState(false); // State for modal visibility
+  const [selectedTenant, setSelectedTenant] = useState(null); // Track selected tenant
 
   const handleAddTenantClick = () => {
     navigate("/tenants/createTenant");
+  };
+
+  const handleEditClick = (tenant) => {
+    setSelectedTenant(tenant); // Set selected tenant
+    setOpenModal(true); // Open the modal
   };
 
   const handleTenantClick = (tenantId) => {
@@ -29,8 +41,14 @@ const Tenants = () => {
     }
   };
 
-  const handleIconClick = (path) => {
-    navigate(path);
+  const handleIconClick = (path, tenant = null) => {
+    if (path === "/tenants/planUsage" && tenant) {
+      navigate(path, {
+        state: { tenantId: tenant._id },
+      });
+    } else {
+      navigate(path);
+    }
   };
 
   useEffect(() => {
@@ -53,6 +71,7 @@ const Tenants = () => {
         );
 
         const tenantsData = response.data?.data?.tenants || [];
+        // console.log(tenantsData);
         setTenants(tenantsData);
       } catch (error) {
         console.error(
@@ -69,24 +88,27 @@ const Tenants = () => {
   const filteredTenants = tenants
     .filter(
       (tenant) =>
-        tenant.tenantData?.firstName &&
-        tenant.tenantData?.lastName &&
-        (tenant.tenantData?.phoneNumber || tenant.phoneNo) &&
-        (tenant.tenantData?.email || tenant.email)
+        tenant.tenantData?.personalInfo?.firstName &&
+        tenant.tenantData?.personalInfo?.lastName &&
+        (tenant.tenantData?.personalInfo?.phoneNumber || tenant.phoneNo) &&
+        (tenant.tenantData?.personalInfo?.email || tenant.email)
     ) // Old filter for valid tenants
     .filter((tenant) => {
-      const fullName = `${tenant.tenantData?.firstName || ""} ${
-        tenant.tenantData?.lastName || ""
+      const fullName = `${tenant.tenantData?.personalInfo?.firstName || ""} ${
+        tenant.tenantData?.personalInfo?.lastName || ""
       }`;
-      const phone = tenant.tenantData?.phoneNumber || tenant.phoneNo || "";
-      const email = tenant.tenantData?.email || tenant.email || "";
-
+      const phone =
+        tenant.tenantData?.personalInfo?.phoneNumber || tenant.phoneNo || "";
+      const email =
+        tenant.tenantData?.personalInfo?.email || tenant.email || "";
       return (
         fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
         email.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }); // New search filter
+  // console.log(filteredTenants);
+
   return (
     <div style={styles.container}>
       <h1 style={styles.header}>Tenants</h1>
@@ -101,7 +123,6 @@ const Tenants = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button style={styles.searchButton}>Search</button>
         </div>
 
         <button style={styles.addTenantBtn} onClick={handleAddTenantClick}>
@@ -120,15 +141,20 @@ const Tenants = () => {
                     style={styles.tenantNameUI}
                     onClick={() => handleTenantClick(tenant._id)}
                   >
-                    {tenant.tenantData?.firstName} {tenant.tenantData?.lastName}
+                    {tenant.tenantData?.personalInfo?.firstName}{" "}
+                    {tenant.tenantData?.personalInfo?.lastName}
                   </p>
                   <p style={styles.tenantSubNameUI}>
                     {" "}
-                    {tenant.tenantData?.phoneNumber || tenant.phoneNo}
+                    {tenant.tenantData?.personalInfo?.maPMINumber}
                   </p>
                   <p style={styles.tenantSubNameUI}>
                     {" "}
-                    {tenant.tenantData?.email || tenant.email}
+                    {tenant.tenantData?.admissionInfo?.insurance}
+                  </p>
+                  <p style={styles.tenantSubNameUI}>
+                    {" "}
+                    {tenant.tenantData?.admissionInfo?.insuranceNumber}
                   </p>
                 </div>
                 <div>
@@ -139,23 +165,44 @@ const Tenants = () => {
                   ></img>
                 </div>
               </div>
-              <div style={styles.tenantIconsContainer}>
-                <CiCalendarDate
-                  style={styles.tenantIcon}
-                  onClick={() => handleIconClick("/appointments")}
-                />
-                <IoIosMenu
-                  style={styles.tenantIcon}
-                  onClick={() => handleIconClick("/visits")}
-                />
-                <TbMessage
-                  style={styles.tenantIcon}
-                  onClick={() => handleIconClick("/communication")}
-                />
-                <IoDocumentTextOutline
-                  style={styles.tenantIcon}
-                  onClick={() => handleIconClick("/settings")}
-                />
+
+              {/**Bottom Icons div */}
+              <div className="flex justify-between">
+                {/**Left side icons */}
+                <div style={styles.tenantIconsContainer}>
+                  <MdOutlineEventAvailable
+                    style={styles.tenantIcon}
+                    onClick={() => handleIconClick("/appointments", tenant)} // Pass tenant here
+                  />
+                  <BiUserCheck
+                    style={styles.tenantIcon}
+                    onClick={() => handleIconClick("/visits", tenant)} // Pass tenant here
+                  />
+
+                  <TbMessage
+                    style={styles.tenantIcon}
+                    onClick={() => handleIconClick("/communication")}
+                  />
+                  <LiaFileInvoiceDollarSolid
+                    style={styles.tenantIcon}
+                    onClick={() =>
+                      handleIconClick("/tenants/planUsage", tenant)
+                    }
+                  />
+                </div>
+                {/**Right side icons */}
+                <div style={styles.tenantIconsContainer}>
+                  <LiaUserEditSolid
+                    style={styles.tenantIcon}
+                    onClick={() => handleEditClick(tenant)}
+                  />
+                  <LiaTrashSolid
+                    style={styles.tenantIcon}
+                    onClick={() =>
+                      handleIconClick("/tenants/planUsage", tenant)
+                    }
+                  />
+                </div>
               </div>
             </div>
           ))
@@ -163,6 +210,12 @@ const Tenants = () => {
           <p style={styles.noDataText}>Loading...</p>
         )}
       </div>
+      {/* EditTenant Modal */}
+      <EditTenant
+        open={openModal} // Pass open state to EditTenant
+        setOpen={setOpenModal} // Pass setOpen to control modal visibility
+        tenant={selectedTenant} // Pass the selected tenant to EditTenant
+      />
     </div>
   );
 };
@@ -170,7 +223,6 @@ const Tenants = () => {
 const styles = {
   container: {
     padding: "10px",
-    fontFamily: "Arial, sans-serif",
     margin: "1rem",
     fontFamily: "Poppins",
   },

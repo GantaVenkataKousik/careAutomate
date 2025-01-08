@@ -140,14 +140,14 @@ const Appointment = () => {
         });
 
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         if (response.status === 200 && data.success) {
           const hcmData = data.response.map((hcm) => ({
             id: hcm._id,
             name: hcm.name,
           }));
           setHcmList(hcmData);
-          console.log(hcmList);
+          // console.log(hcmList);
         } else {
           console.error("Failed to fetch HCMs:", data.message);
         }

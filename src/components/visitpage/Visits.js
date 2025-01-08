@@ -4,11 +4,11 @@ import axios from "axios";
 // import VisitCard from "./VisitCard";
 import VisitCalendarView from "./VisitCalendarView";
 import VisitHeader from "./VisitHeader";
-import { visitsFilter } from "../../utils/visitsFilter";
+import { visitsFilter } from "../../utils/visitsUtils/visitsFilter";
 import { useDispatch } from "react-redux";
 import { setSelectedVisit } from "../../redux/visit/visitSlice";
 import { BASE_URL } from "../../config";
-import VisitCard2 from "./VisitCard2";
+import VisitCard from "./VisitCard";
 import VisitDetailsPopup from "./VisitDetailsPopup";
 
 const VisitList = () => {
@@ -40,12 +40,11 @@ const VisitList = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data.response);
       if (response.data.response) {
         // Sorting the visits by the createdAt date (most recent first)
         // console.log("raw", response.data.visits);
         // Mapping the sorted visits
-        console.log(response);
+        // console.log(response);
         const mappedVisits = response.data.response.map((visit) => ({
           _id: visit._id,
           title: visit.activity,
@@ -226,7 +225,7 @@ const VisitList = () => {
       {!isListView ? (
         <VisitCalendarView visits={visitData} />
       ) : (
-        <VisitCard2
+        <VisitCard
           visitData={visitData}
           // handleDeleteClick={handleDeleteClick}
           handleClosePopup={handleClosePopup}

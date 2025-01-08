@@ -16,8 +16,12 @@ const ProfileCard = ({ tenantData, tenantId }) => {
   const handlePlanUsageClick = () => {
     navigate("/tenants/planUsage", { state: { tenantId } });
   };
+
+  const handleNotesClick = () => {
+    navigate("/tenants/notes", { state: { tenantData } });
+  };
   const listItems = [
-    { name: "Notes", icon: <FaRegStickyNote /> },
+    { name: "Notes", icon: <FaRegStickyNote />, onClick: handleNotesClick },
     { name: "Eligibility", icon: <FaUserCheck /> },
     {
       name: "Plan Usage",
@@ -57,10 +61,10 @@ const ProfileCard = ({ tenantData, tenantId }) => {
                 {tenantData.name || "Krishika Iyer"}
               </h1>
               <p className="text-lg text-[#505254]">
-                {tenantData.tenantData.gender || "Female"},{" "}
+                {tenantData.tenantData?.personalInfo?.gender || "Female"},{" "}
                 {new Date().getFullYear() -
                   new Date(
-                    tenantData.tenantData.dob || "2000-01-01"
+                    tenantData.tenantData?.personalInfo?.dob || "2000-01-01"
                   ).getFullYear()}{" "}
                 years old
               </p>
@@ -75,7 +79,8 @@ const ProfileCard = ({ tenantData, tenantId }) => {
             </div>
             <div className="flex items-center text-gray-600 text-lg">
               <MdEmail className="mr-2 text-[#6F84F8]" />
-              {tenantData?.email || "rishikaranganath@gmail.com"}
+              {tenantData?.tenantData?.personalInfo?.email ||
+                "rishikaranganath@gmail.com"}
             </div>
           </div>
         </div>
