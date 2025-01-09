@@ -2,8 +2,8 @@ import React, { useState, useRef } from "react";
 import Footer from "./Footer";
 import "./styles/Register.css";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import registerImage from "./images/register.jpg";
 import { BASE_URL } from "../../config";
 import { API_ROUTES } from "../../routes";
@@ -32,16 +32,13 @@ export default function Register() {
   const handleSendOtp = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(
-        `${BASE_URL}/request-verification-code/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: formData.email }),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/request-verification-code/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: formData.email }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -59,16 +56,13 @@ export default function Register() {
 
   const handleVerifyOtp = async () => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/verify-email/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: formData.email, code: otp }),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/verify-email/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: formData.email, code: otp }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -109,7 +103,9 @@ export default function Register() {
 
       if (!res.ok) {
         const errorData = await res.json();
-        toast.error(errorData.message || "An error occurred. Please try again.");
+        toast.error(
+          errorData.message || "An error occurred. Please try again."
+        );
         return;
       }
 
@@ -133,8 +129,8 @@ export default function Register() {
 
   return (
     <>
-      <div className="registerContainer" style={{ color: 'black' }}>
-        <ul className='circles'>
+      <div className="registerContainer" style={{ color: "black" }}>
+        <ul className="circles">
           <li />
           <li />
           <li />
@@ -149,125 +145,130 @@ export default function Register() {
           <li />
         </ul>
         <section>
-
-          <div className='wrapper'>
+          <div className="wrapper">
             <header>SignUp</header>
-            <form onSubmit={handleSendOtp}>
-              <div className='field email'>
-                <div className='input-area'>
+            <form onSubmit={handleSubmit}>
+              <div className="field email">
+                <div className="input-area">
                   <input
-                    type='email'
-                    name='email'
-                    placeholder='Email Address'
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
                     value={formData.email}
                     onChange={handleInputChange}
                   />
-                  <i className='icon fas fa-envelope' />
-                  <i className='error error-icon fas fa-exclamation-circle' />
+                  <i className="icon fas fa-envelope" />
+                  <i className="error error-icon fas fa-exclamation-circle" />
                 </div>
-                <div className='error error-txt'>Email can't be blank</div>
+                <div className="error error-txt">Email can't be blank</div>
               </div>
-              <div className='field name'>
-                <div className='input-area'>
+              <div className="field name">
+                <div className="input-area">
                   <input
-                    type='text'
-                    name='firstName'
-                    placeholder='First Name'
+                    type="text"
+                    name="firstName"
+                    placeholder="First Name"
                     value={formData.firstName}
                     onChange={handleInputChange}
                   />
-                  <i className='icon fas fa-user' />
-                  <i className='error error-icon fas fa-exclamation-circle' />
+                  <i className="icon fas fa-user" />
+                  <i className="error error-icon fas fa-exclamation-circle" />
                 </div>
-                <div className='error error-txt'>First Name can't be blank</div>
+                <div className="error error-txt">First Name can't be blank</div>
               </div>
-              <div className='field name'>
-                <div className='input-area'>
+              <div className="field name">
+                <div className="input-area">
                   <input
-                    type='text'
-                    name='lastName'
-                    placeholder='Last Name'
+                    type="text"
+                    name="lastName"
+                    placeholder="Last Name"
                     value={formData.lastName}
                     onChange={handleInputChange}
                   />
-                  <i className='icon fas fa-user' />
-                  <i className='error error-icon fas fa-exclamation-circle' />
+                  <i className="icon fas fa-user" />
+                  <i className="error error-icon fas fa-exclamation-circle" />
                 </div>
-                <div className='error error-txt'>Last Name can't be blank</div>
+                <div className="error error-txt">Last Name can't be blank</div>
               </div>
-              <div className='field password'>
-                <div className='input-area'>
+              <div className="field password">
+                <div className="input-area">
                   <input
-                    type='password'
-                    name='password'
-                    placeholder='Password'
+                    type="password"
+                    name="password"
+                    placeholder="Password"
                     value={formData.password}
                     onChange={handleInputChange}
                   />
-                  <i className='icon fas fa-lock' />
-                  <i className='error error-icon fas fa-exclamation-circle' />
+                  <i className="icon fas fa-lock" />
+                  <i className="error error-icon fas fa-exclamation-circle" />
                 </div>
-                <div className='error error-txt'>Password can't be blank</div>
+                <div className="error error-txt">Password can't be blank</div>
               </div>
-              <div className='field confirm-password'>
-                <div className='input-area'>
+              <div className="field confirm-password">
+                <div className="input-area">
                   <input
-                    type='password'
-                    name='confirmPassword'
-                    placeholder='Confirm Password'
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                   />
-                  <i className='icon fas fa-lock' />
-                  <i className='error error-icon fas fa-exclamation-circle' />
+                  <i className="icon fas fa-lock" />
+                  <i className="error error-icon fas fa-exclamation-circle" />
                 </div>
-                <div className='error error-txt'>Confirm Password can't be blank</div>
+                <div className="error error-txt">
+                  Confirm Password can't be blank
+                </div>
               </div>
-              <div className='field company'>
-                <div className='input-area'>
+              <div className="field company">
+                <div className="input-area">
                   <input
-                    type='text'
-                    name='companyName'
-                    placeholder='Company Name'
+                    type="text"
+                    name="companyName"
+                    placeholder="Company Name"
                     value={formData.companyName}
                     onChange={handleInputChange}
                   />
-                  <i className='icon fas fa-building' />
-                  <i className='error error-icon fas fa-exclamation-circle' />
+                  <i className="icon fas fa-building" />
+                  <i className="error error-icon fas fa-exclamation-circle" />
                 </div>
-                <div className='error error-txt'>Company Name can't be blank</div>
+                <div className="error error-txt">
+                  Company Name can't be blank
+                </div>
               </div>
-              <div className='field state'>
-                <div className='input-area'>
+              <div className="field state">
+                <div className="input-area">
                   <input
-                    type='text'
-                    name='state'
-                    placeholder='State'
+                    type="text"
+                    name="state"
+                    placeholder="State"
                     value={formData.state}
                     onChange={handleInputChange}
                   />
-                  <i className='icon fas fa-map-marker-alt' />
-                  <i className='error error-icon fas fa-exclamation-circle' />
+                  <i className="icon fas fa-map-marker-alt" />
+                  <i className="error error-icon fas fa-exclamation-circle" />
                 </div>
-                <div className='error error-txt'>State can't be blank</div>
+                <div className="error error-txt">State can't be blank</div>
               </div>
-              <div className='field mobile'>
-                <div className='input-area'>
+              <div className="field mobile">
+                <div className="input-area">
                   <input
-                    type='text'
-                    name='mobileNumber'
-                    placeholder='Mobile Number'
+                    type="text"
+                    name="mobileNumber"
+                    placeholder="Mobile Number"
                     value={formData.mobileNumber}
                     onChange={handleInputChange}
                   />
-                  <i className='icon fas fa-phone' />
-                  <i className='error error-icon fas fa-exclamation-circle' />
+                  <i className="icon fas fa-phone" />
+                  <i className="error error-icon fas fa-exclamation-circle" />
                 </div>
-                <div className='error error-txt'>Mobile Number can't be blank</div>
+                <div className="error error-txt">
+                  Mobile Number can't be blank
+                </div>
               </div>
-              <input type='submit' value='Send OTP' />
-              <div className='sign-txt'>
-                Already Registered? <a href='/login'>Login now</a>
+              <input type="submit" value="Create Account" />
+              <div className="sign-txt">
+                Already Registered? <a href="/login">Login now</a>
               </div>
             </form>
           </div>
