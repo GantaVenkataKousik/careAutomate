@@ -66,7 +66,7 @@ const BillingPayments = () => {
   useEffect(() => {
     const fetchBills = async () => {
       try {
-        const response = await fetch(API_ROUTES.BILLING.BILLS_PENDING_BY_TENANT, {
+        const response = await fetch(API_ROUTES.BILLS_PENDING_BY_TENANT, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -115,7 +115,7 @@ const BillingPayments = () => {
 
     const fetchCompletedBills = async () => {
       try {
-        const response = await fetch(API_ROUTES.BILLING.BILLS_COMPLETED_BY_TENANT, {
+        const response = await fetch(API_ROUTES.BILLS_PAID_BY_TENANT, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -207,7 +207,7 @@ const BillingPayments = () => {
 
   const calculateDuration = (startTime, endTime) => {
     if (!startTime || !endTime) {
-      return 'N/A'; // Return 'N/A' or any default value if startTime or endTime is undefined
+      return 'N/A';
     }
 
     try {
@@ -215,7 +215,7 @@ const BillingPayments = () => {
       const end = new Date(endTime);
 
       if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-        return 'N/A'; // Skip if the date is invalid
+        return 'N/A';
       }
 
       const diff = (end - start) / (1000 * 60); // difference in minutes
@@ -225,7 +225,7 @@ const BillingPayments = () => {
       return `${hours}h ${minutes}m`;
     } catch (error) {
       console.error('Error parsing date:', error);
-      return 'N/A'; // Return 'N/A' if there's an error parsing the date
+      return 'N/A';
     }
   };
 

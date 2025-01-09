@@ -18,21 +18,11 @@ import activities from "../../utils/commonUtils/activities";
 const ScheduleAppointment = ({ tenantID }) => {
   const [hcm, setHcm] = useState("");
   const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [timeSlot, setTimeSlot] = useState("");
-  const [timePeriod, setTimePeriod] = useState("");
-  const [timeDuration, setTimeDuration] = useState("");
   const [planOfService, setPlanOfService] = useState("");
-  const [visitMethod, setVisitMethod] = useState("");
   const [reasonForRemote, setReasonForRemote] = useState("");
-  const [title, setTitle] = useState("");
   const [scheduleCreated, setScheduleCreated] = useState(false);
   const [activity, setActivity] = useState("");
   const [startTime, setStartTime] = useState("");
-  const [showCreateScheduleDialog, setShowCreateScheduleDialog] =
-    useState(false);
-  const [showCreateAnotherDialog, setShowCreateAnotherDialog] = useState(false);
-  const [allTenants, setAllTenants] = useState([]); // Store tenant data
   const [endTime, setEndTime] = useState("");
   const [serviceType, setServiceType] = useState("Housing Sustaining"); // Default value for service type
   const [methodOfContact, setMethodOfContact] = useState("in-person"); // Default value for method of contact
@@ -51,47 +41,6 @@ const ScheduleAppointment = ({ tenantID }) => {
 
     return `${firstName} ${middleName} ${lastName}`.trim();
   });
-  const hcmId = tenantID;
-
-  // useEffect(() => {
-  //   const fetchTenants = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       if (!token) {
-  //         console.error("Authorization token is missing.");
-  //         return;
-  //       }
-
-  //       const response = await fetch(
-  //         "https://careautomate-backend.vercel.app/tenant/all",
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({}),
-  //         }
-  //       );
-
-  //       const data = await response.json();
-
-  //       if (response.status === 200 && data.success) {
-  //         const tenantData = data.tenants.map((tenant) => ({
-  //           id: tenant._id,
-  //           name: tenant.name,
-  //         }));
-  //         setAllTenants(tenantData);
-  //       } else {
-  //         console.error("Failed to fetch tenants:", data.message);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching tenants:", error);
-  //     }
-  //   };
-
-  //   fetchTenants();
-  // }, []);
 
   useEffect(() => {
     // Update local state with data from Redux
@@ -105,12 +54,6 @@ const ScheduleAppointment = ({ tenantID }) => {
   }, [assignedHCMs]);
 
   const handleCreateAppointment = async () => {
-    // Validate date, startTime, and endTime
-    if (!startDate || !startTime) {
-      console.error("Date, start time, or end time is missing.");
-      toast.error("Please select a valid date, start time, and end time.");
-      return;
-    }
 
     if (endTime && startTime >= endTime) {
       console.error("End time must be after start time.");
@@ -118,15 +61,10 @@ const ScheduleAppointment = ({ tenantID }) => {
       return;
     }
 
-    console.log("Date:", startDate);
-    console.log("Start Time:", startTime);
-    console.log("End Time:", endTime);
-    const datePart = startDate;
-    // Combine date with startTime and endTime, then create new Date objects in UTC
-    const startDateTime = new Date(`${datePart}T${startTime}:00Z`);
-    const endDateTime = new Date(`${datePart}T${endTime}:00Z`);
+    const startDateTime = new Date(startTime);
+    const endDateTime = new Date(endTime);
 
-    // Convert to ISO 8601 strings
+    // Convert to ISO 8601 strings if needed
     const formattedStartTime = startDateTime.toISOString();
     const formattedEndTime = endDateTime.toISOString();
 
@@ -134,7 +72,7 @@ const ScheduleAppointment = ({ tenantID }) => {
     console.log("Formatted End Time:", formattedEndTime);
 
     const payload = {
-      tenantId: hcmId || "Unknown",
+      tenantId: tenantID || "Unknown",
       hcmId: hcm || "N/A",
       date: startDate, // Send date separately
       startTime: formattedStartTime,
@@ -207,6 +145,30 @@ const ScheduleAppointment = ({ tenantID }) => {
     const durationMinutes = parseInt(duration.split(" ")[0], 10) || 0;
     time.setMinutes(time.getMinutes() + durationMinutes);
     return time;
+  };
+
+  const calculateDuration = (startTime, endTime) => {
+    if (!startTime || !endTime) {
+      return 'N/A';
+    }
+
+    try {
+      const start = new Date(startTime);
+      const end = new Date(endTime);
+
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return 'N/A';
+      }
+
+      const diff = (end - start) / (1000 * 60); // difference in minutes
+      const hours = Math.floor(diff / 60);
+      const minutes = diff % 60;
+
+      return `${hours}h ${minutes}m`;
+    } catch (error) {
+      console.error('Error parsing date:', error);
+      return 'N/A';
+    }
   };
 
   return (

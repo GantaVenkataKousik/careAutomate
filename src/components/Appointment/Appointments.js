@@ -45,16 +45,12 @@ const Appointment = () => {
           },
         }
       );
-      // console.log(response.data);
+
       if (response.data.success) {
         const mappedAppointments = response.data.response.map((apt) => {
-          const startDateTime = new Date(
-            `${apt.date.split("T")[0]}T${apt.startTime}`
-          );
-          const endDateTime = new Date(
-            `${apt.date.split("T")[0]}T${apt.endTime}`
-          );
-          // console.log(apt);
+          const startDateTime = new Date(apt.startTime);
+          const endDateTime = new Date(apt.endTime);
+
           return {
             id: apt._id,
             date: new Date(apt.date).toLocaleDateString("en-US", {
@@ -63,8 +59,8 @@ const Appointment = () => {
               day: "numeric",
             }),
             startDate: apt.date,
-            startTime: apt.startTime,
-            endTime: apt.endTime,
+            startTime: startDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            endTime: endDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             location: apt.placeOfService || "N/A",
             from: apt.hcmDetails?.name || "N/A",
             service: apt.serviceType || "N/A",
@@ -74,7 +70,6 @@ const Appointment = () => {
             tenantId: apt.tenantDetails?._id,
             activity: apt.activity || "N/A",
             methodOfContact: apt.methodOfContact || "in-person",
-            // reasonForRemote: apt.reasonForRemote,
           };
         });
         setAppointments(mappedAppointments);
@@ -256,11 +251,10 @@ const Appointment = () => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-2 rounded-full font-medium ${
-                    activeTab === tab
-                      ? "bg-[#6F84F8] text-white"
-                      : "bg-gray-200 text-gray-600"
-                  }`}
+                  className={`px-4 py-2 rounded-full font-medium ${activeTab === tab
+                    ? "bg-[#6F84F8] text-white"
+                    : "bg-gray-200 text-gray-600"
+                    }`}
                 >
                   {tab}
                 </button>
@@ -288,9 +282,8 @@ const Appointment = () => {
                 {/* Calendar Button */}
                 <button
                   onClick={() => setIsListView(false)}
-                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
-                    !isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-                  } `}
+                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${!isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                    } `}
                 >
                   <IoCalendar className="text-2xl" />
                 </button>
@@ -298,9 +291,8 @@ const Appointment = () => {
                 {/* List Button */}
                 <button
                   onClick={() => setIsListView(true)}
-                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
-                    isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-                  } `}
+                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                    } `}
                 >
                   <IoList className="text-2xl" />
                 </button>
