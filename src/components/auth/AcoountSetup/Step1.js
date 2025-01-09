@@ -13,7 +13,7 @@ const Step1 = () => {
   };
 
   return (
-    <div className="mb-7">
+    <div className="mb-7 h-[410px] overflow-y-auto tenant-visits-scrollbar">
       <h1 className="underline">Personal Details</h1>
       {/* First Name and Last Name */}
       <div className="flex gap-4 mb-6">
