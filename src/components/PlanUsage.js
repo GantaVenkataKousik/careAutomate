@@ -44,7 +44,6 @@ export default function PlanUsage() {
 
         const data = response.data.response;
         setUnitsData(data);
-
         const transitionPeriod = data["Housing Transition"].period;
         const sustainingPeriod = data["Housing Sustaining"].period;
 

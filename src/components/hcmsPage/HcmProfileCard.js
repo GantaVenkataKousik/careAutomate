@@ -11,8 +11,9 @@ import {
 } from "react-icons/fa";
 
 const HcmProfileCard = ({ hcm }) => {
-  const age = hcm?.dob
-    ? new Date().getFullYear() - new Date(hcm.dob).getFullYear()
+  const age = hcm?.hcmData?.personalInfo?.dob
+    ? new Date().getFullYear() -
+      new Date(hcm?.hcmData?.personalInfo?.dob).getFullYear()
     : "N/A";
 
   const listItems = [
