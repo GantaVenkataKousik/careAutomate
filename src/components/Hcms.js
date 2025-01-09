@@ -32,15 +32,14 @@ export default function Hcms() {
   const handleIconClick = (path) => {
     navigate(path);
   };
-  const handleHcmClick = (hcmId) => {
-    const selectedHcm = Hcms.find((hcm) => hcm._id === hcmId);
-    if (!selectedHcm) {
+  const handleHcmClick = (hcmId, Hcm) => {
+    if (!Hcm) {
       console.error("HCM not found for ID:", hcmId);
       return;
     }
-    console.log(hcmId);
+    console.log(hcmId, Hcm, Hcms);
     navigate("/hcms/hcmProfile", {
-      state: { hcms: Hcms, hcmId: hcmId },
+      state: { hcms: Hcm, hcmId: hcmId },
     });
   };
 
@@ -109,11 +108,13 @@ export default function Hcms() {
         {filteredHcms.length > 0 ? (
           filteredHcms.map((Hcm, index) => (
             <div key={Hcm._id || index} style={styles.HcmCard}>
+              {console.log(index, Hcm)}
+
               <div style={styles.HcmCardUpperContainer}>
                 <div style={styles.HcmDetails}>
                   <h3
                     style={styles.HcmNameUI}
-                    onClick={() => handleHcmClick(Hcm?._id)}
+                    onClick={() => handleHcmClick(Hcm?._id, Hcm.hcmData)}
                   >
                     {Hcm?.name}
                   </h3>
@@ -125,7 +126,7 @@ export default function Hcms() {
                     src={HcmImage}
                     alt="Hcm"
                     style={styles.HcmImg}
-                    onClick={() => handleHcmClick(Hcm._id)}
+                    onClick={() => handleHcmClick(Hcm?._id, Hcm.hcmData)}
                   />
                 </div>
               </div>
