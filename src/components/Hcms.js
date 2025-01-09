@@ -134,19 +134,19 @@ export default function Hcms() {
               <div className="flex justify-between">
                 <div style={styles.HcmIconsContainer}>
                   <MdOutlineEventAvailable
-                    style={styles.HcmIcon}
+                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
                     onClick={() => handleIconClick("/appointments")}
                   />
                   <BiUserCheck
-                    style={styles.HcmIcon}
+                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
                     onClick={() => handleIconClick("/visits")}
                   />
                   <TbMessage
-                    style={styles.HcmIcon}
+                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
                     onClick={() => handleIconClick("/communication")}
                   />
                   <LiaFileInvoiceDollarSolid
-                    style={styles.HcmIcon}
+                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
                     onClick={() => handleIconClick("planUsage")}
                   />
                 </div>
@@ -154,10 +154,10 @@ export default function Hcms() {
                 {/**Right side icons */}
                 <div style={styles.HcmIconsContainer}>
                   <LiaUserEditSolid
-                    style={styles.HcmIcon}
+                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
                     onClick={() => handleEditClick(Hcm)}
                   />
-                  <LiaTrashSolid style={styles.HcmIcon} />
+                  <LiaTrashSolid className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#F57070] cursor-pointer" />
                 </div>
               </div>
             </div>

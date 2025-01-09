@@ -28,12 +28,11 @@ const VisitHeader = ({
         }
 
         const response = await fetch(`${BASE_URL}/tenant/all`, {
-          method: "POST",
+          method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({}),
         });
 
         const data = await response.json();

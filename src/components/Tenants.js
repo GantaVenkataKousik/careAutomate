@@ -92,8 +92,9 @@ const Tenants = () => {
         (tenant.tenantData?.personalInfo?.email || tenant.email)
     )
     .filter((tenant) => {
-      const fullName = `${tenant.tenantData?.personalInfo?.firstName || ""} ${tenant.tenantData?.personalInfo?.lastName || ""
-        }`;
+      const fullName = `${tenant.tenantData?.personalInfo?.firstName || ""} ${
+        tenant.tenantData?.personalInfo?.lastName || ""
+      }`;
       const phone =
         tenant.tenantData?.personalInfo?.phoneNumber || tenant.phoneNo || "";
       const email =
@@ -165,19 +166,19 @@ const Tenants = () => {
               <div className="flex justify-between">
                 <div style={styles.tenantIconsContainer}>
                   <MdOutlineEventAvailable
-                    style={styles.tenantIcon}
+                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
                     onClick={() => handleIconClick("/appointments", tenant)}
                   />
                   <BiUserCheck
-                    style={styles.tenantIcon}
+                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
                     onClick={() => handleIconClick("/visits", tenant)}
                   />
                   <TbMessage
-                    style={styles.tenantIcon}
+                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
                     onClick={() => handleIconClick("/communication", tenant)}
                   />
                   <LiaFileInvoiceDollarSolid
-                    style={styles.tenantIcon}
+                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
                     onClick={() =>
                       handleIconClick("/tenants/planUsage", tenant)
                     }
@@ -185,15 +186,10 @@ const Tenants = () => {
                 </div>
                 <div style={styles.tenantIconsContainer}>
                   <LiaUserEditSolid
-                    style={styles.tenantIcon}
+                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
                     onClick={() => handleEditClick(tenant)}
                   />
-                  <LiaTrashSolid
-                    style={styles.tenantIcon}
-                    onClick={() =>
-                      handleIconClick("/tenants/planUsage", tenant)
-                    }
-                  />
+                  <LiaTrashSolid className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#F57070] cursor-pointer" />
                 </div>
               </div>
             </div>
