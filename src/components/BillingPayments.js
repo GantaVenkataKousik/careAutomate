@@ -83,7 +83,11 @@ const BillingPayments = () => {
 
         const data = await response.json();
         console.log(data);
-        setPendingBills(data.response.Bills || []);
+
+        // Filter out bills with a null visit
+        const validBills = (data.response.Bills || []).filter(bill => bill.visit !== null);
+
+        setPendingBills(validBills);
 
         // Calculate totals for pending bills
         let unbilledAmount = 0;
@@ -92,7 +96,7 @@ const BillingPayments = () => {
         let waitingCount = 0;
         let unbilledHours = 0;
 
-        data.response.Bills.forEach(bill => {
+        validBills.forEach(bill => {
           unbilledCount += 1;
           waitingCount += 1;
           bill.serviceLine.forEach(line => {
@@ -112,7 +116,6 @@ const BillingPayments = () => {
         console.error('Error fetching bills:', error);
       }
     };
-
     const fetchCompletedBills = async () => {
       try {
         const response = await fetch(API_ROUTES.BILLS_PAID_BY_TENANT, {
@@ -127,12 +130,17 @@ const BillingPayments = () => {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch completed bills');
+          console.warn('Failed to fetch completed bills');
+          return;
         }
 
         const data = await response.json();
         console.log(data);
-        setCompletedBills(data.response.Bills || []);
+
+        // Filter out bills with a null visit
+        const validBills = (data.response.Bills || []).filter(bill => bill.visit !== null);
+
+        setCompletedBills(validBills);
 
         // Calculate totals for completed bills
         let completedAmount = 0;
@@ -140,7 +148,7 @@ const BillingPayments = () => {
         let completedCount = 0;
         let billedHours = 0;
 
-        data.response.Bills.forEach(bill => {
+        validBills.forEach(bill => {
           completedCount += 1;
           billedAmount += bill.serviceLine.reduce((sum, line) => sum + line.lineItemChargeAmount, 0);
           billedHours += bill.serviceLine.reduce((sum, line) => sum + line.serviceUnitCount, 0);
@@ -152,7 +160,7 @@ const BillingPayments = () => {
         setBilledHours(billedHours);
 
       } catch (error) {
-        console.error('Error fetching completed bills:', error);
+        console.warn('Error fetching completed bills:', error);
       }
     };
 
