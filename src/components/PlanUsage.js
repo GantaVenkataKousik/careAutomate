@@ -121,25 +121,25 @@ export default function PlanUsage() {
         <div style={styles.card}>
           <h3 style={styles.cardTitle}>Total Units</h3>
           <p>
-            Units <span style={styles.value}>{data.totalUnits}</span>
+            Units <span style={styles.valueGreen}>{data.totalUnits}</span>
           </p>
         </div>
         <div style={styles.card}>
           <h3 style={styles.cardTitle}>Worked</h3>
           <p>
-            Units <span style={styles.value}>{data.workedUnits}</span>
+            Units <span style={styles.valueGreen}>{data.workedUnits}</span>
           </p>
         </div>
         <div style={styles.card}>
           <h3 style={styles.cardTitle}>Remaining</h3>
           <p>
-            Units <span style={styles.value}>{data.unitsRemaining}</span>
+            Units <span style={styles.valueYellow}>{data.unitsRemaining}</span>
           </p>
         </div>
         <div style={styles.card}>
           <h3 style={styles.cardTitle}>Scheduled</h3>
           <p>
-            Units <span style={styles.value}>{data.scheduledUnits}</span>
+            Units <span style={styles.valueOrange}>{data.scheduledUnits}</span>
           </p>
         </div>
       </div>
@@ -230,7 +230,7 @@ export default function PlanUsage() {
 const styles = {
   container: {
     padding: "20px",
-    fontFamily: "Arial, sans-serif",
+    fontFamily: "poppins",
     textAlign: "left",
   },
   title: {
@@ -266,20 +266,36 @@ const styles = {
   card: {
     backgroundColor: "#fff",
     borderRadius: "8px",
-    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0px 4px 10px rgba(63, 81, 181, 0.4)", // Indigo shadow
     padding: "20px",
     textAlign: "center",
-    width: "200px",
+    border: "1px solid #E0E0E0", // Light border
     margin: "0.4rem",
+    transition: "transform 0.2s ease-in-out",
+  },
+  cardHover: {
+    transform: "scale(1.05)",
   },
   cardTitle: {
     fontSize: "1.2em",
-    color: "#333",
+    fontWeight: "600",
+    color: "#3F51B5", // Indigo color
     marginBottom: "10px",
   },
   value: {
     fontWeight: "bold",
-    color: "#4CAF50",
+  },
+  valueGreen: {
+    color: "#4CAF50", // Green for positive values
+  },
+  valueRed: {
+    color: "#F44336", // Red for negative values
+  },
+  valueOrange: {
+    color: "#FF9800", // Orange for intermediate values
+  },
+  valueYellow: {
+    color: "#FFC107", // Yellow for warning values
   },
   noServiceData: {
     color: "red",

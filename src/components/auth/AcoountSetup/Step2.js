@@ -12,7 +12,7 @@ const Step2 = () => {
     dispatch(updateAccountField(name, value)); // Dispatch action to update the field
   };
   return (
-    <>
+    <div className=" h-[390px] overflow-y-auto tenant-visits-scrollbar">
       <div className="mb-7">
         <h1 className="underline">MNITS Login Information</h1>
         {/**Username and password */}
@@ -89,7 +89,7 @@ const Step2 = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
