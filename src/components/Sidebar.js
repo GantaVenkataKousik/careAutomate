@@ -1,16 +1,14 @@
 import React from "react";
 import "../styles/sidebar.css";
-import {
-  FaTachometerAlt,
-  FaUsers,
-  FaCalendarAlt,
-  FaEnvelope,
-  FaChartBar,
-  FaCog,
-} from "react-icons/fa";
 // import { FaGem } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
+import { BiUserCheck } from "react-icons/bi";
+import { TbMessage } from "react-icons/tb";
+import { RiAdminLine, RiDashboardLine, RiGroupLine } from "react-icons/ri";
+import { MdOutlineEventAvailable } from "react-icons/md";
+import { HiOutlineCog } from "react-icons/hi";
+import { BsClipboardData } from "react-icons/bs";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -21,7 +19,7 @@ const Sidebar = () => {
           className={location.pathname.startsWith("/dashboard") ? "active" : ""}
         >
           <Link to="/dashboard">
-            <FaTachometerAlt className="sidebar-icon" />
+            <RiDashboardLine className="sidebar-icon" />
             <span>Dashboard</span>
           </Link>
         </li>
@@ -29,43 +27,43 @@ const Sidebar = () => {
           className={location.pathname.startsWith("/tenants") ? "active" : ""}
         >
           <Link to="/tenants">
-            <FaUsers className="sidebar-icon" />
+            <RiGroupLine className="sidebar-icon" />
             <span>Tenants</span>
           </Link>
         </li>
         <li className={location.pathname.startsWith("/hcms") ? "active" : ""}>
           <Link to="/hcms">
-            <FaUsers className="sidebar-icon" />
+            <RiAdminLine className="sidebar-icon" />
             <span>Hcms</span>
           </Link>
         </li>
         <li className={location.pathname === "/appointments" ? "active" : ""}>
           <Link to="/appointments">
-            <FaCalendarAlt className="sidebar-icon" />
+            <MdOutlineEventAvailable className="sidebar-icon" />
             <span>Appointments</span>
           </Link>
         </li>
         <li className={location.pathname === "/visits" ? "active" : ""}>
           <Link to="/visits">
-            <FaCalendarAlt className="sidebar-icon" />
+            <BiUserCheck className="sidebar-icon" />
             <span>Visits</span>
           </Link>
         </li>
         <li className={location.pathname === "/communication" ? "active" : ""}>
           <Link to="/communication">
-            <FaEnvelope className="sidebar-icon" />
+            <TbMessage className="sidebar-icon" />
             <span>Communication</span>
           </Link>
         </li>
         <li className={location.pathname === "/reports" ? "active" : ""}>
           <Link to="/reports">
-            <FaChartBar className="sidebar-icon" />
+            <BsClipboardData className="sidebar-icon" />
             <span>Reports</span>
           </Link>
         </li>
         <li className={location.pathname === "/settings" ? "active" : ""}>
           <Link to="/settings">
-            <FaCog className="sidebar-icon" />
+            <HiOutlineCog className="sidebar-icon" />
             <span>Settings</span>
           </Link>
         </li>
