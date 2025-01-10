@@ -26,7 +26,7 @@ const localizer = momentLocalizer(moment);
 
 const AppointmentCalendarView = ({ appointments }) => {
   // Apply the filter to the appointments
-  console.log(appointments);
+  // console.log(appointments);
   const events = appointmentFilter(appointments);
 
   return (

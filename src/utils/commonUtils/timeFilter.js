@@ -32,14 +32,11 @@ export const monthNames = [
 ];
 
 export const formatTime = (timeString) => {
-  const date = new Date(timeString); // Create a Date object from the time string
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12; // Convert to 12-hour format
-  hours = hours ? hours : 12; // The hour '0' should be '12'
-  const formattedTime = `${hours}:${minutes < 10 ? "0" + minutes : minutes} ${ampm}`;
-  return formattedTime;
+  const date = new Date(timeString).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  return date;
 };
 export const formatTime24Hours = (timeString) => {
   const date = new Date(timeString); // Create a Date object from the time string
