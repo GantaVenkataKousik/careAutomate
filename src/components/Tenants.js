@@ -14,6 +14,7 @@ import { BASE_URL } from "../config";
 import axios from "axios";
 import EditTenant from "./tenantsPage/EditTenant";
 import TenantFilter from "./tenantsPage/TenantFilter";
+import { applyTenantFilters } from "../utils/tenants/filterTenantsUtils/filterTenantsData";
 
 const Tenants = () => {
   const navigate = useNavigate();
@@ -21,6 +22,11 @@ const Tenants = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState(null);
+  const [activeFilters, setActiveFilters] = useState({
+    services: [],
+    insurances: [],
+    cities: [],
+  });
 
   const handleAddTenantClick = () => {
     navigate("/tenants/createTenant");
@@ -84,27 +90,15 @@ const Tenants = () => {
     fetchTenants();
   }, []);
 
-  const filteredTenants = tenants
-    .filter(
-      (tenant) =>
-        tenant.tenantData?.personalInfo?.firstName &&
-        tenant.tenantData?.personalInfo?.lastName &&
-        (tenant.tenantData?.personalInfo?.phoneNumber || tenant.phoneNo) &&
-        (tenant.tenantData?.personalInfo?.email || tenant.email)
-    )
-    .filter((tenant) => {
-      const fullName = `${tenant.tenantData?.personalInfo?.firstName || ""} ${tenant.tenantData?.personalInfo?.lastName || ""
-        }`;
-      const phone =
-        tenant.tenantData?.personalInfo?.phoneNumber || tenant.phoneNo || "";
-      const email =
-        tenant.tenantData?.personalInfo?.email || tenant.email || "";
-      return (
-        fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        email.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    });
+  const handleFilterUpdate = (newFilters) => {
+    setActiveFilters(newFilters);
+  };
+
+  const filteredTenants = applyTenantFilters(
+    tenants,
+    activeFilters,
+    searchQuery
+  );
 
   return (
     <div style={styles.container}>
@@ -134,7 +128,7 @@ const Tenants = () => {
 
       <div style={styles.mainContainer}>
         <div style={styles.filterContainer} className="tenant-visits-scrollbar">
-          <TenantFilter />
+          <TenantFilter onFilterUpdate={handleFilterUpdate} />
         </div>
         <div style={styles.tenantGridContainer}>
           <div style={styles.tenantGrid}>
@@ -216,7 +210,7 @@ const Tenants = () => {
         setOpen={setOpenModal}
         tenant={selectedTenant}
       />
-    </div >
+    </div>
   );
 };
 
