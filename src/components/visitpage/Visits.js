@@ -1,36 +1,30 @@
 import React, { useState, useEffect } from "react";
 import VisitModal from "./VisitModal"; // Ensure VisitModal is correctly implemented and imported
 import axios from "axios";
-// import VisitCard from "./VisitCard";
 import VisitCalendarView from "./VisitCalendarView";
 import VisitHeader from "./VisitHeader";
-import { visitsFilter } from "../../utils/visitsUtils/visitsFilter";
-import { useDispatch } from "react-redux";
-import { setSelectedVisit } from "../../redux/visit/visitSlice";
 import { BASE_URL } from "../../config";
 import VisitCard from "./VisitCard";
 import VisitDetailsPopup from "./VisitDetailsPopup";
+import VisitFilter from "./VisitFilter";
+import { applyVisitsFilters } from "../../utils/visitsUtils/VisitsListFilterUtils/VisitFetchFilter";
 
 const VisitList = () => {
-  const [filterOption, setFilterOption] = useState("All");
   const [detailsPopup, setDetailsPopup] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
   const [openNewVisitPopup, setOpenNewVisitPopup] = useState(false);
   const [visitData, setVisitData] = useState([]);
   const [isListView, setIsListView] = useState(true);
-  const [editVisitIndex, setEditVisitIndex] = useState(null);
   const [editVisitData, setEditVisitData] = useState(null);
-  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [allTenants, setAllTenants] = useState([]);
-  const [hcmList, setHcmList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
-  const [filters, setFilters] = useState({
-    tenantId: "",
-    hcmId: "",
-    startDate: "",
-    endDate: "",
-    status: "",
+  const [activeFilters, setActiveFilters] = useState({
+    tenant: [],
+    hcm: [],
+    status: [],
+    startDate: null,
+    endDate: null,
   });
+
   const fetchVisits = async () => {
     let url = `${BASE_URL}/visit/fetchVisits`;
     let token = localStorage.getItem("token");
@@ -72,6 +66,7 @@ const VisitList = () => {
           travelWithoutTenant: visit.travelWithoutTenant,
           response: visit.response ?? "",
         }));
+        console.log("mapped", mappedVisits);
         const sortedVisits = mappedVisits.sort((a, b) => {
           return new Date(b.createdAt) - new Date(a.createdAt);
         });
@@ -90,64 +85,6 @@ const VisitList = () => {
     fetchVisits();
   }, []);
 
-  // Handle filter changes
-  const handleInputChange = (name, value) => {
-    setFilters((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Apply filters
-  const applyFilters = async () => {
-    console.log("Applying filters with the following criteria:", filters);
-    try {
-      const response = await axios.post(
-        `${BASE_URL}/visit/filterVisits`,
-        filters,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (response.data.response) {
-        const mappedVisits = response.data.response.map((visit) => ({
-          _id: visit._id,
-          title: visit.activity,
-          startDate: visit.dateOfService || visit.date,
-          endDate: visit.dateOfService || visit.date,
-          typeMethod: visit.methodOfVisit,
-          hcm: visit.hcmId?.name || "N/A",
-          hcmId: visit.hcmId?._id || "N/A",
-          scheduledDate: visit.scheduledDate ?? "",
-          dos: visit.dateOfService || visit.date,
-          duration: `${visit.startTime} - ${visit.endTime}`,
-          details: visit.notes,
-          signature: visit.signature,
-          status: visit.status,
-          serviceType: visit.serviceType,
-          placeOfService: visit.placeOfService || visit.place,
-          approved: visit.approved,
-          rejected: visit.rejected,
-          totalMile: visit.totalMiles,
-          createdAt: visit.createdAt,
-          tenantName: visit.tenantId?.name,
-          tenantId: visit.tenantId?._id,
-          travel: visit.travel,
-          travelWithTenant: visit.travelWithTenant,
-          travelWithoutTenant: visit.travelWithoutTenant,
-          response: visit.response ?? "",
-        }));
-        // console.log(mappedVisits);
-        setVisitData(mappedVisits); // Update the visit data with filtered results
-      } else {
-        console.error("Failed to fetch visit data");
-        setVisitData([]); // Clear the visit data if no results are found
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error.response || error);
-    }
-  };
-
   const handleDetailsClick = (details) => {
     setDetailsPopup(details);
     setOpenPopup(true);
@@ -156,22 +93,16 @@ const VisitList = () => {
   const handleClosePopup = () => {
     setOpenPopup(false);
   };
-
-  const dispatch = useDispatch();
+  const handleFilterUpdate = (newFilters) => {
+    setActiveFilters(newFilters);
+  };
+  const filteredVisits = applyVisitsFilters(visitData, activeFilters);
 
   const handleEditClick = (index, id, visit) => {
     // dispatch(setSelectedVisit(visit));
     setEditVisitData(visit);
     setIsEdit(true);
     setOpenNewVisitPopup(true);
-  };
-
-  const handleFilterIconClick = (event) => {
-    setFilterAnchorEl(event.currentTarget);
-  };
-
-  const handleFilterClose = () => {
-    setFilterAnchorEl(null);
   };
 
   const handleStatusUpdate = async (index, isApproved) => {
@@ -195,23 +126,14 @@ const VisitList = () => {
     // Code for updating status
   };
 
-  // const handleDeleteClick = async (index) => {
-  //   // Code for deleting visits
-  // };
-
   return (
     <div style={{ margin: "2rem", fontFamily: "Poppins" }}>
       {/* Header Section */}
 
       <VisitHeader
         isListView={isListView}
-        filters={filters}
-        hcmList={hcmList}
-        allTenants={allTenants}
         setIsListView={setIsListView}
         setOpenNewVisitPopup={setOpenNewVisitPopup}
-        handleInputChange={handleInputChange}
-        applyFilters={applyFilters}
         visitCount={visitData.length} // Pass visit count here
       />
       {/* <-------Visit List--------> */}
@@ -225,14 +147,21 @@ const VisitList = () => {
       {!isListView ? (
         <VisitCalendarView visits={visitData} />
       ) : (
-        <VisitCard
-          visitData={visitData}
-          // handleDeleteClick={handleDeleteClick}
-          handleClosePopup={handleClosePopup}
-          handleDetailsClick={handleDetailsClick}
-          handleEditClick={handleEditClick}
-          handleStatusUpdate={handleStatusUpdate}
-        />
+        <div className="flex gap-8 w-full pt-6 h-[calc(100vh-180px)] overflow-hidden">
+          <div className="w-[280px] flex-shrink-0 border border-gray-200 rounded-[20px] p-[10px] h-full overflow-y-auto tenant-visits-scrollbar">
+            <VisitFilter onFilterUpdate={handleFilterUpdate} />
+          </div>
+          <div className="flex-grow overflow-y-auto tenant-visits-scrollbar">
+            <VisitCard
+              // visitData={visitData}
+              visitData={filteredVisits.length > 0 ? filteredVisits : visitData}
+              handleClosePopup={handleClosePopup}
+              handleDetailsClick={handleDetailsClick}
+              handleEditClick={handleEditClick}
+              handleStatusUpdate={handleStatusUpdate}
+            />
+          </div>
+        </div>
       )}
 
       <VisitDetailsPopup
