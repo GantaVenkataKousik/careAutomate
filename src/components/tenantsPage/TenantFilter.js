@@ -68,7 +68,7 @@ const DropdownFilter = ({
   );
 };
 
-const TenantFilter = () => {
+const TenantFilter = ({ onFilterUpdate }) => {
   const [filters, setFilters] = useState({
     services: [],
     insurances: [],
@@ -89,7 +89,14 @@ const TenantFilter = () => {
     {
       title: "City",
       key: "cities",
-      items: ["Bemidji", "Brooklyn", "Fridley", "St. Cloud"],
+      items: [
+        "Bemidji",
+        "Brooklyn",
+        "Fridley",
+        "St. Cloud",
+        "Brooklyn Center",
+        "Bhimavaram",
+      ],
     },
     {
       title: "Insurance Type",
@@ -105,39 +112,40 @@ const TenantFilter = () => {
         "SouthCountry",
         "UCare",
         "United Healthcare",
-      ],
+      ].map((item) => item.toLowerCase()),
     },
   ];
 
   const updateSelectedItems = (key, selectedItems) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [key]: selectedItems,
-    }));
+    setFilters((prevFilters) => {
+      const newFilters = {
+        ...prevFilters,
+        [key]: selectedItems,
+      };
+      return newFilters;
+    });
   };
 
   const handleApply = () => {
-    const noFiltersSelected = Object.values(filters).every(
-      (selectedItems) => selectedItems.length === 0
-    );
-
-    if (noFiltersSelected) {
-      console.log("No filters are selected.");
-    } else {
-      console.log("Selected Filters:", filters);
-    }
+    onFilterUpdate(filters);
   };
 
   const handleCancel = () => {
-    setFilters({});
+    const emptyFilters = {
+      services: [],
+      insurances: [],
+      cities: [],
+    };
+    setFilters(emptyFilters);
+    onFilterUpdate(emptyFilters);
   };
+
   return (
     <div className="flex flex-col h-full w-full p-2 py-4">
       <h2 className="flex justify-center text-xl text-[#6F84F8] mb-2 font-bold">
         Filter
       </h2>
 
-      {/* Dynamically render DropdownFilters */}
       {dropdownData.map(({ title, key, items }) => (
         <DropdownFilter
           key={key}
@@ -150,7 +158,6 @@ const TenantFilter = () => {
         />
       ))}
 
-      {/* Buttons */}
       <div className="flex items-center gap-2 justify-end mt-6">
         <button
           className="px-2 py-1 border border-[#F57070] text-[#F57070] rounded-lg hover:bg-[#F57070] hover:text-white"
