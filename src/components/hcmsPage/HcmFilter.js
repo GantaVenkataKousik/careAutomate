@@ -185,7 +185,9 @@ const HcmFilter = () => {
           className="flex items-center justify-between cursor-pointer"
           onClick={() => setSelectedTenantOpen(!selectTenantOpen)}
         >
-          <span className="flex gap-2 text-lg font-bold text-[#333]">
+          <span
+            className={`flex gap-2 text-lg font-bold ${selectTenantOpen ? "text-[#6F84F8]" : "text-[#333]"}`}
+          >
             Select Tenant
             <span
               className={`${selectTenantOpen ? "block" : "hidden"} h-6 w-6 flex items-center justify-center rounded-full font-bold text-lg p-2 bg-[#6F84F8] text-white`}

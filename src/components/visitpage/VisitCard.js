@@ -84,7 +84,7 @@ const VisitCard = ({
   };
 
   return (
-    <div className="flex flex-col w-full mt-10">
+    <div className="flex flex-col w-full ">
       {visitData.map((visit, index) => (
         <div
           key={visit._id}
