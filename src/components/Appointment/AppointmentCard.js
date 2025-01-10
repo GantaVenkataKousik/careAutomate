@@ -1,18 +1,14 @@
 import React from "react";
-import { formatTime24Hours } from "../../utils/commonUtils/timeFilter";
+import {
+  formatTime,
+  formatTime24Hours,
+} from "../../utils/commonUtils/timeFilter";
 import { MdOutlineLocationOn, MdAccessTime } from "react-icons/md";
 import { GoTrash } from "react-icons/go";
 import { BiEditAlt } from "react-icons/bi";
 import { BsPersonFill } from "react-icons/bs";
 import { API_ROUTES } from "../../routes";
 import { MdPersonPinCircle } from "react-icons/md";
-
-function formatTime(dateTimeString) {
-  const date = new Date(dateTimeString);
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
-}
 
 const AppointmentCard = ({
   appointment,
@@ -24,6 +20,7 @@ const AppointmentCard = ({
   setIsEdit,
   setShowModal,
 }) => {
+  console.log(appointment);
   const getColor = () => {
     let color = "#6F84F8";
     if (appointment.status === "Completed") {
@@ -93,7 +90,7 @@ const AppointmentCard = ({
           </p>
         </div>
         {/* Time and Location */}
-        <div className="w-64">
+        <div className="w-70">
           <div className="text-black-600">{appointment.service}</div>
           <div className="flex justify-between items-center mt-1">
             {/* Time */}
