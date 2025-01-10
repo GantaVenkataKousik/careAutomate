@@ -13,6 +13,7 @@ import { BiUserCheck } from "react-icons/bi";
 import { TbMessage } from "react-icons/tb";
 import { BASE_URL } from "../config";
 import EditHcmPopup from "./hcmsPage/EditHcmPopup";
+import HcmFilter from "./hcmsPage/HcmFilter";
 
 export default function Hcms() {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export default function Hcms() {
       console.error("HCM not found for ID:", hcmId);
       return;
     }
-    console.log(hcmId, Hcm, Hcms);
+    // console.log(hcmId, Hcm, Hcms);
     navigate("/hcms/hcmProfile", {
       state: { hcms: Hcm, hcmId: hcmId },
     });
@@ -104,68 +105,75 @@ export default function Hcms() {
         </button>
       </div>
 
-      <div style={styles.HcmGrid}>
-        {filteredHcms.length > 0 ? (
-          filteredHcms.map((Hcm, index) => (
-            <div key={Hcm._id || index} style={styles.HcmCard}>
-              {console.log(index, Hcm)}
+      <div style={styles.mainContainer}>
+        <div style={styles.filterContainer} className="tenant-visits-scrollbar">
+          <HcmFilter />
+        </div>
+        <div style={styles.HcmGridContainer}>
+          <div style={styles.HcmGrid}>
+            {filteredHcms.length > 0 ? (
+              filteredHcms.map((Hcm, index) => (
+                <div key={Hcm._id || index} style={styles.HcmCard}>
+                  {/* {console.log(index, Hcm)} */}
 
-              <div style={styles.HcmCardUpperContainer}>
-                <div style={styles.HcmDetails}>
-                  <h3
-                    style={styles.HcmNameUI}
-                    onClick={() => handleHcmClick(Hcm?._id, Hcm.hcmData)}
-                  >
-                    {Hcm?.name}
-                  </h3>
-                  <p style={styles.HcmSubNameUI}>{Hcm?.phoneNo}</p>
-                  <p style={styles.HcmSubNameUI}>{Hcm.email}</p>
-                </div>
-                <div>
-                  <img
-                    src={HcmImage}
-                    alt="Hcm"
-                    style={styles.HcmImg}
-                    onClick={() => handleHcmClick(Hcm?._id, Hcm.hcmData)}
-                  />
-                </div>
-              </div>
+                  <div style={styles.HcmCardUpperContainer}>
+                    <div style={styles.HcmDetails}>
+                      <h3
+                        style={styles.HcmNameUI}
+                        onClick={() => handleHcmClick(Hcm?._id, Hcm.hcmData)}
+                      >
+                        {Hcm?.name}
+                      </h3>
+                      <p style={styles.HcmSubNameUI}>{Hcm?.phoneNo}</p>
+                      <p style={styles.HcmSubNameUI}>{Hcm.email}</p>
+                    </div>
+                    <div>
+                      <img
+                        src={HcmImage}
+                        alt="Hcm"
+                        style={styles.HcmImg}
+                        onClick={() => handleHcmClick(Hcm?._id, Hcm.hcmData)}
+                      />
+                    </div>
+                  </div>
 
-              {/**Bottom Icons div */}
-              <div className="flex justify-between">
-                <div style={styles.HcmIconsContainer}>
-                  <MdOutlineEventAvailable
-                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
-                    onClick={() => handleIconClick("/appointments")}
-                  />
-                  <BiUserCheck
-                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
-                    onClick={() => handleIconClick("/visits")}
-                  />
-                  <TbMessage
-                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
-                    onClick={() => handleIconClick("/communication")}
-                  />
-                  <LiaFileInvoiceDollarSolid
-                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
-                    onClick={() => handleIconClick("planUsage")}
-                  />
-                </div>
+                  {/**Bottom Icons div */}
+                  <div className="flex justify-between">
+                    <div style={styles.HcmIconsContainer}>
+                      <MdOutlineEventAvailable
+                        className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
+                        onClick={() => handleIconClick("/appointments")}
+                      />
+                      <BiUserCheck
+                        className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
+                        onClick={() => handleIconClick("/visits")}
+                      />
+                      <TbMessage
+                        className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
+                        onClick={() => handleIconClick("/communication")}
+                      />
+                      <LiaFileInvoiceDollarSolid
+                        className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
+                        onClick={() => handleIconClick("planUsage")}
+                      />
+                    </div>
 
-                {/**Right side icons */}
-                <div style={styles.HcmIconsContainer}>
-                  <LiaUserEditSolid
-                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
-                    onClick={() => handleEditClick(Hcm)}
-                  />
-                  <LiaTrashSolid className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#F57070] cursor-pointer" />
+                    {/**Right side icons */}
+                    <div style={styles.HcmIconsContainer}>
+                      <LiaUserEditSolid
+                        className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
+                        onClick={() => handleEditClick(Hcm)}
+                      />
+                      <LiaTrashSolid className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#F57070] cursor-pointer" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p style={styles.noDataText}>No data available</p>
-        )}
+              ))
+            ) : (
+              <p style={styles.noDataText}>No data available</p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/**Edit HCM Modal */}
@@ -232,6 +240,29 @@ const styles = {
   },
   plusIcon: {
     marginRight: "5px",
+  },
+  // Updated and new styles:
+  mainContainer: {
+    display: "flex",
+    gap: "20px",
+    width: "100%",
+    height: "calc(100vh - 150px)", // Adjust based on your header height
+    overflow: "hidden",
+  },
+  filterContainer: {
+    width: "280px", // Fixed width for filter
+    flexShrink: 0,
+    border: "1px solid #eee",
+    borderRadius: "20px",
+    padding: "10px",
+    height: "100%",
+    overflowY: "auto",
+  },
+  HcmGridContainer: {
+    flex: 1,
+    overflowY: "auto",
+    padding: "10px",
+    height: "100%",
   },
   HcmGrid: {
     display: "grid",
