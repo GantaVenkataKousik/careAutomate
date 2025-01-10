@@ -13,6 +13,7 @@ import { TbMessage } from "react-icons/tb";
 import { BASE_URL } from "../config";
 import axios from "axios";
 import EditTenant from "./tenantsPage/EditTenant";
+import TenantFilter from "./tenantsPage/TenantFilter";
 
 const Tenants = () => {
   const navigate = useNavigate();
@@ -128,75 +129,84 @@ const Tenants = () => {
         </button>
       </div>
 
-      <div style={styles.tenantGrid}>
-        {filteredTenants.length > 0 ? (
-          filteredTenants.map((tenant, index) => (
-            <div style={styles.tenantCard} key={tenant._id || index}>
-              <div style={styles.tenantCardUpperContainer}>
-                <div style={styles.tenantDetails}>
-                  <p
-                    style={styles.tenantNameUI}
-                    onClick={() => handleTenantClick(tenant._id)}
-                  >
-                    {tenant.tenantData?.personalInfo?.firstName}{" "}
-                    {tenant.tenantData?.personalInfo?.lastName}
-                  </p>
-                  <p style={styles.tenantSubNameUI}>
-                    {" "}
-                    {tenant.tenantData?.personalInfo?.maPMINumber}
-                  </p>
-                  <p style={styles.tenantSubNameUI}>
-                    {" "}
-                    {tenant.tenantData?.admissionInfo?.insurance}
-                  </p>
-                  <p style={styles.tenantSubNameUI}>
-                    {" "}
-                    {tenant.tenantData?.admissionInfo?.insuranceNumber}
-                  </p>
-                </div>
-                <div>
-                  <img
-                    style={styles.tenantImg}
-                    onClick={() => handleTenantClick(tenant._id)}
-                    src={tenantImage}
-                  ></img>
-                </div>
-              </div>
+      <div style={styles.mainContainer}>
+        <div style={styles.filterContainer} className="tenant-visits-scrollbar">
+          <TenantFilter />
+        </div>
+        <div style={styles.tenantGridContainer}>
+          <div style={styles.tenantGrid}>
+            {filteredTenants.length > 0 ? (
+              filteredTenants.map((tenant, index) => (
+                <div style={styles.tenantCard} key={tenant._id || index}>
+                  <div style={styles.tenantCardUpperContainer}>
+                    <div style={styles.tenantDetails}>
+                      <p
+                        style={styles.tenantNameUI}
+                        onClick={() => handleTenantClick(tenant._id)}
+                      >
+                        {tenant.tenantData?.personalInfo?.firstName}{" "}
+                        {tenant.tenantData?.personalInfo?.lastName}
+                      </p>
+                      <p style={styles.tenantSubNameUI}>
+                        {" "}
+                        {tenant.tenantData?.personalInfo?.maPMINumber}
+                      </p>
+                      <p style={styles.tenantSubNameUI}>
+                        {" "}
+                        {tenant.tenantData?.admissionInfo?.insurance}
+                      </p>
+                      <p style={styles.tenantSubNameUI}>
+                        {" "}
+                        {tenant.tenantData?.admissionInfo?.insuranceNumber}
+                      </p>
+                    </div>
+                    <div>
+                      <img
+                        style={styles.tenantImg}
+                        onClick={() => handleTenantClick(tenant._id)}
+                        src={tenantImage}
+                      ></img>
+                    </div>
+                  </div>
 
-              <div className="flex justify-between">
-                <div style={styles.tenantIconsContainer}>
-                  <MdOutlineEventAvailable
-                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
-                    onClick={() => handleIconClick("/appointments", tenant)}
-                  />
-                  <BiUserCheck
-                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
-                    onClick={() => handleIconClick("/visits", tenant)}
-                  />
-                  <TbMessage
-                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
-                    onClick={() => handleIconClick("/communication", tenant)}
-                  />
-                  <LiaFileInvoiceDollarSolid
-                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
-                    onClick={() =>
-                      handleIconClick("/tenants/planUsage", tenant)
-                    }
-                  />
+                  <div className="flex justify-between">
+                    <div style={styles.tenantIconsContainer}>
+                      <MdOutlineEventAvailable
+                        className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
+                        onClick={() => handleIconClick("/appointments", tenant)}
+                      />
+                      <BiUserCheck
+                        className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
+                        onClick={() => handleIconClick("/visits", tenant)}
+                      />
+                      <TbMessage
+                        className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
+                        onClick={() =>
+                          handleIconClick("/communication", tenant)
+                        }
+                      />
+                      <LiaFileInvoiceDollarSolid
+                        className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
+                        onClick={() =>
+                          handleIconClick("/tenants/planUsage", tenant)
+                        }
+                      />
+                    </div>
+                    <div style={styles.tenantIconsContainer}>
+                      <LiaUserEditSolid
+                        className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
+                        onClick={() => handleEditClick(tenant)}
+                      />
+                      <LiaTrashSolid className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#F57070] cursor-pointer" />
+                    </div>
+                  </div>
                 </div>
-                <div style={styles.tenantIconsContainer}>
-                  <LiaUserEditSolid
-                    className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#6F84F8] cursor-pointer"
-                    onClick={() => handleEditClick(tenant)}
-                  />
-                  <LiaTrashSolid className="text-[1.3rem] mr-2 text-gray-700 hover:text-[#F57070] cursor-pointer" />
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p style={styles.noDataText}>Loading...</p>
-        )}
+              ))
+            ) : (
+              <p style={styles.noDataText}>Loading...</p>
+            )}
+          </div>
+        </div>
       </div>
       <EditTenant
         open={openModal}
@@ -261,6 +271,29 @@ const styles = {
   plusIcon: {
     marginRight: "5px",
   },
+  // Updated and new styles:
+  mainContainer: {
+    display: "flex",
+    gap: "20px",
+    width: "100%",
+    height: "calc(100vh - 150px)", // Adjust based on your header height
+    overflow: "hidden",
+  },
+  filterContainer: {
+    width: "280px", // Fixed width for filter
+    flexShrink: 0,
+    border: "1px solid #eee",
+    borderRadius: "20px",
+    padding: "10px",
+    height: "100%",
+    overflowY: "auto",
+  },
+  tenantGridContainer: {
+    flex: 1,
+    overflowY: "auto",
+    padding: "10px",
+    height: "100%",
+  },
   tenantGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(280px, 280px))",
@@ -272,6 +305,26 @@ const styles = {
     backgroundColor: "#fff",
     borderRadius: "1rem",
     padding: "0.5rem 1rem",
+    height: "fit-content",
+  },
+  container: {
+    padding: "20px",
+    margin: "0",
+    fontFamily: "Poppins",
+    height: "100vh",
+    display: "flex",
+    flexDirection: "column",
+  },
+  headerActions: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "20px",
+    padding: "0 10px",
+  },
+  tenantBody: {
+    display: "flex",
+    flex: 1,
+    overflow: "hidden",
   },
   tenantDetails: {
     flex: "1",
