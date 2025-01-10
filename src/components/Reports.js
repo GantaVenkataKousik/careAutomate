@@ -141,7 +141,9 @@ export default function Reports() {
           }
         `}
       </style>
-      <h1>Reports</h1>
+      <h1 style={styles.header} className="text-2xl flex items-center gap-2">
+        <span>Reports</span>
+      </h1>
       <div className="tabs">
         <div className="flex justify-between">
           <div>
@@ -169,3 +171,9 @@ export default function Reports() {
     </div>
   );
 }
+const styles = {
+  header: {
+    fontWeight: "bold",
+    marginBottom: "20px",
+  },
+};

@@ -4,29 +4,21 @@ import Modal from "react-modal";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import axios from "axios";
-import { API_ROUTES } from "../routes";
-import { useLocation, useNavigate } from "react-router-dom";
-import HcmImage from "../images/tenant.jpg";
+import { API_ROUTES } from "../../routes";
+import { useLocation } from "react-router-dom";
+import RenderPlanData from "./RenderPlanData";
 
 Modal.setAppElement("#root");
 
 export default function PlanUsage() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { tenantId } = location.state || {};
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [unitsData, setUnitsData] = useState({});
+  const [unitsData, setUnitsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState("");
   const [yearOptions, setYearOptions] = useState([]);
   const [currentPlanType, setCurrentPlanType] = useState("");
-
-  const handleHcmClick = (hcmId, hcm) => {
-    navigate("/hcms/hcmProfile", {
-      state: { hcms: hcm, hcmId: hcmId },
-    });
-    console.log("HCM clicked:", hcmId);
-  };
 
   useEffect(() => {
     const fetchUnitsData = async () => {
@@ -53,22 +45,11 @@ export default function PlanUsage() {
 
         const data = response.data.response;
         setUnitsData(data);
-        console.log(data);
-        const transitionPeriod = data.find(
-          (item) => item.serviceType === "Housing Transition"
-        )["period"]; // Directly accesses the first object
-        const sustainingPeriod = data.find(
-          (item) => item.serviceType === "Housing Sustaining"
-        )?.period;
 
-        console.log("Transition Period:", transitionPeriod);
-        console.log("Sustaining Period:", sustainingPeriod);
-
-        const periodsSet = new Set([transitionPeriod, sustainingPeriod]);
-
-        const uniquePeriods = Array.from(periodsSet).map((period) => ({
-          period,
-        }));
+        // Get unique periods from all service types
+        const uniquePeriods = Array.from(
+          new Set(data.map((item) => item.period))
+        ).map((period) => ({ period }));
 
         setYearOptions(uniquePeriods);
         if (uniquePeriods.length > 0) {
@@ -86,7 +67,7 @@ export default function PlanUsage() {
     }
   }, [tenantId]);
 
-  const hasPlanUsage = Object.keys(unitsData).length > 0;
+  const hasPlanUsage = unitsData.length > 0;
 
   const handleDownloadClick = (planType) => {
     setCurrentPlanType(planType);
@@ -95,7 +76,6 @@ export default function PlanUsage() {
 
   const handleDownloadFormat = (format) => {
     const element = document.querySelector(`#${currentPlanType}Grid`);
-
     if (!element) {
       console.error("Element not found for download");
       return;
@@ -122,162 +102,63 @@ export default function PlanUsage() {
       });
   };
 
-  const renderPlanData = (planType, period) => {
-    const data = unitsData[planType];
-    console.log("het", data);
-    if (!data) {
-      return (
-        <p style={styles.noServiceData}>
-          No services have been done for this tenant.
-        </p>
-      );
-    }
-
-    return (
-      <div>
-        {/* Existing grid for plan data */}
-        <div id={`${planType}Grid`} style={styles.grid}>
-          <div style={styles.card}>
-            <h3 style={styles.cardTitle}>Total Units</h3>
-            <p>
-              Units <span style={styles.valueGreen}>{data.totalUnits}</span>
-            </p>
-          </div>
-          <div style={styles.card}>
-            <h3 style={styles.cardTitle}>Worked</h3>
-            <p>
-              Units <span style={styles.valueGreen}>{data.workedUnits}</span>
-            </p>
-          </div>
-          <div style={styles.card}>
-            <h3 style={styles.cardTitle}>Remaining</h3>
-            <p>
-              Units{" "}
-              <span style={styles.valueYellow}>{data.unitsRemaining}</span>
-            </p>
-          </div>
-          <div style={styles.card}>
-            <h3 style={styles.cardTitle}>Scheduled</h3>
-            <p>
-              Units{" "}
-              <span style={styles.valueOrange}>{data.scheduledUnits}</span>
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-6">
-          <h2 className="flex items-center justify-center text-[#6F84F8] text-2xl font-bold">
-            Assigned HCM's
-          </h2>
-          {/* Updated HCM Details Section */}
-          {data.hcmDetails && data.hcmDetails.length > 0 && (
-            <div style={styles.HcmGrid}>
-              {data.hcmDetails.map((hcm, index) => (
-                <div key={hcm.hcmId || index} style={styles.HcmCard}>
-                  <div style={styles.HcmCardUpperContainer}>
-                    <div style={styles.HcmDetails}>
-                      <h3
-                        style={styles.HcmNameUI}
-                        onClick={() => handleHcmClick(hcm.hcmId, hcm)}
-                      >
-                        {`${hcm.hcmInfo?.personalInfo?.firstName} ${hcm.hcmInfo?.personalInfo?.lastName}`}
-                      </h3>
-                      <p style={styles.HcmSubNameUI}>
-                        {hcm.hcmInfo?.contactInfo?.phoneNumber}
-                      </p>
-                      <p style={styles.HcmSubNameUI}>
-                        {hcm.hcmInfo?.contactInfo?.email}
-                      </p>
-                    </div>
-                    <div>
-                      <img
-                        src={HcmImage}
-                        alt="Hcm"
-                        style={styles.HcmImg}
-                        // onClick={() => handleHcmClick(hcm.hcmId)}
-                      />
-                    </div>
-                  </div>
-                  {/* Additional HCM information */}
-                  <div style={styles.HcmWorkInfo}>
-                    <p style={styles.valueGreen}>
-                      <span className="font-bold text-gray-600 mr-1">
-                        Worked Hours:
-                      </span>{" "}
-                      {Number(hcm.workedHours.toFixed(4))}
-                    </p>
-                    <p style={styles.valueOrange}>
-                      <span className="font-bold text-gray-600 mr-1">
-                        Worked Units:
-                      </span>{" "}
-                      {hcm.workedUnits}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Plan Usage :</h2>
-      {hasPlanUsage && (
-        <div style={styles.dateRange}>
-          <label htmlFor="yearSelect" style={styles.periodLabel}>
-            Select Period:
-          </label>
-          <select
-            id="yearSelect"
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            style={styles.periodSelect}
-          >
-            {yearOptions.map((option, index) => (
-              <option
-                key={index}
-                value={option.period}
-                style={styles.periodOption}
-              >
-                {option.period}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+      <h2 style={styles.title} className="mb-[1rem]">
+        {" "}
+        Plan Usage :
+      </h2>
+
 
       {loading ? (
         <p style={styles.loadingMessage}>Loading service information...</p>
       ) : hasPlanUsage ? (
         <>
-          <div style={styles.planHeader}>
-            <h3 style={styles.title}>Housing Transition</h3>
-            <div style={styles.actions}>
-              <button
-                style={styles.downloadButton}
-                onClick={() => handleDownloadClick("Housing Transition")}
-              >
-                <FaDownload /> Download
-              </button>
+          {unitsData.map((serviceData, index) => (
+            <div key={index} style={styles.serviceSection}>
+              <div style={styles.planHeader}>
+                <div className="flex gap-5 items-center">
+                  <h3 style={styles.title}>{serviceData.serviceType}</h3>
+                  {hasPlanUsage && (
+                    <div style={styles.dateRange}>
+                      {/* <label htmlFor="yearSelect" style={styles.periodLabel}>
+                        Select Period:
+                      </label> */}
+                      <select
+                        id="yearSelect"
+                        value={selectedYear}
+                        onChange={(e) => setSelectedYear(e.target.value)}
+                        style={styles.periodSelect}
+                      >
+                        {yearOptions.map((option, index) => (
+                          <option
+                            key={index}
+                            value={option.period}
+                            style={styles.periodOption}
+                          >
+                            {option.period}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+                <div style={styles.actions}>
+                  <button
+                    style={styles.downloadButton}
+                    onClick={() => handleDownloadClick(serviceData.serviceType)}
+                  >
+                    <FaDownload /> Download
+                  </button>
+                </div>
+              </div>
+              <RenderPlanData
+                planType={serviceData.serviceType}
+                data={serviceData}
+                styles={styles}
+              />
             </div>
-          </div>
-          {renderPlanData(0)}
-
-          <div style={styles.planHeader}>
-            <h3 style={styles.title}>Housing Sustaining</h3>
-            <div style={styles.actions}>
-              <button
-                style={styles.downloadButton}
-                onClick={() => handleDownloadClick("Housing Sustaining")}
-              >
-                <FaDownload /> Download
-              </button>
-            </div>
-          </div>
-          {renderPlanData(1)}
+          ))}
         </>
       ) : (
         <p style={styles.noServiceData}>
@@ -311,10 +192,19 @@ export default function PlanUsage() {
 }
 
 const styles = {
+  serviceSection: {
+    border: "1px solid #E0E0E0",
+    borderRadius: "12px",
+    padding: "24px",
+    marginBottom: "32px",
+    backgroundColor: "#fff",
+    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+  },
   container: {
     padding: "20px",
     fontFamily: "poppins",
     textAlign: "left",
+    // backgroundColor: "#f5f5f5",
   },
   title: {
     fontSize: "1.5em",
@@ -323,7 +213,6 @@ const styles = {
   dateRange: {
     display: "flex",
     alignItems: "center",
-    marginBottom: "20px",
     gap: "8px",
   },
   periodLabel: {
@@ -350,7 +239,11 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: "10px",
+    marginBottom: "20px",
+    borderBottom: "2px solid #6F84F8",
+    paddingBottom: "10px",
+    fontSize: "0.95em",
+    fontWeight: "550",
   },
   actions: {
     display: "flex",
@@ -381,7 +274,7 @@ const styles = {
     transform: "scale(1.05)",
   },
   cardTitle: {
-    fontSize: "1.2em",
+    fontSize: "1.3em",
     fontWeight: "600",
     color: "#6F84F8",
     marginBottom: "10px",
@@ -390,16 +283,20 @@ const styles = {
     fontWeight: "bold",
   },
   valueGreen: {
-    color: "#4CAF50", // Green for positive values
+    color: "#4CAF50",
+    fontWeight: "550",
   },
   valueRed: {
-    color: "#F44336", // Red for negative values
+    color: "#F44336",
+    fontWeight: "550",
   },
   valueOrange: {
-    color: "#FF9800", // Orange for intermediate values
+    color: "#FF9800",
+    fontWeight: "550",
   },
   valueYellow: {
-    color: "#FFC107", // Yellow for warning values
+    color: "#FFC107",
+    fontWeight: "550",
   },
   noServiceData: {
     color: "red",

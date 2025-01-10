@@ -11,9 +11,8 @@ import {
 } from "react-icons/fa";
 
 const HcmProfileCard = ({ hcm }) => {
-  const age = hcm?.hcmData?.personalInfo?.dob
-    ? new Date().getFullYear() -
-      new Date(hcm?.hcmData?.personalInfo?.dob).getFullYear()
+  const age = hcm?.personalInfo?.dob
+    ? new Date().getFullYear() - new Date(hcm?.personalInfo?.dob).getFullYear()
     : "N/A";
 
   const listItems = [
@@ -54,10 +53,12 @@ const HcmProfileCard = ({ hcm }) => {
             />
             <div className="flex flex-col w-[25vw]">
               <h1 className="text-2xl font-bold text-[#6F84F8]">
-                {hcm?.name || "N/A"}
+                {`${hcm?.personalInfo?.firstName || ""} ${hcm?.personalInfo?.middleName || ""} ${hcm?.personalInfo?.lastName || ""}`.trim() ||
+                  "N/A"}
               </h1>
+
               <p className="text-lg text-[#505254]">
-                {hcm?.gender || "Male"}, {age} years old
+                {hcm?.personalInfo?.gender || "Male"}, {age} years old
               </p>
             </div>
           </div>
@@ -66,11 +67,11 @@ const HcmProfileCard = ({ hcm }) => {
           <div className="mt-4 space-y-2">
             <div className="flex items-center text-gray-600 text-lg">
               <FaPhoneAlt className="mr-2 text-[#6F84F8]" />
-              {hcm?.phoneNo || "N/A"}
+              {hcm?.contactInfo?.phoneNumber || "N/A"}
             </div>
             <div className="flex items-center text-gray-600 text-lg">
               <MdEmail className="mr-2 text-[#6F84F8]" />
-              {hcm?.email || "N/A"}
+              {hcm?.contactInfo?.email || "N/A"}
             </div>
           </div>
         </div>

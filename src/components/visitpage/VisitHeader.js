@@ -94,23 +94,9 @@ const VisitHeader = ({
   return (
     <div className="shadow-sm pb-3">
       <div className="flex items-center justify-between mb-5">
-        <h1 className="flex items-center text-3xl font-bold mb-0 gap-2">
+        <h1 style={styles.header} className="text-2xl flex items-center gap-2">
           <span>Visits</span>
-          <span
-            style={{
-              height: "2.25rem",
-              width: "2.25rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "50%",
-              fontWeight: "bold",
-              fontSize: "1.2rem",
-              padding: "0.5rem",
-              backgroundColor: "#6F84F8",
-              color: "white",
-            }}
-          >
+          <span className="h-9 w-9 flex items-center justify-center rounded-full font-bold text-lg p-2 bg-[#6F84F8] text-white">
             {visitCount}
           </span>
         </h1>
@@ -119,9 +105,8 @@ const VisitHeader = ({
             {/* Calendar Button */}
             <button
               onClick={() => setIsListView(false)}
-              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
-                !isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-              }`}
+              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${!isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                }`}
             >
               <IoCalendar className="text-2xl" />
             </button>
@@ -129,9 +114,8 @@ const VisitHeader = ({
             {/* List Button */}
             <button
               onClick={() => setIsListView(true)}
-              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
-                isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-              }`}
+              className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                }`}
             >
               <IoList className="text-2xl" />
             </button>
@@ -394,5 +378,10 @@ active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
     </div>
   );
 };
-
+const styles = {
+  header: {
+    fontWeight: "bold",
+    marginBottom: "20px",
+  },
+};
 export default VisitHeader;

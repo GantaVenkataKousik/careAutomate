@@ -17,7 +17,9 @@ const Profile = () => {
   return (
     <div className="w-full">
       <div className="pl-4 border-b-2 border-gray-300 font-poppins font-semibold">
-        <h1 className="text-[1.8rem]"> Profile</h1>
+        <h1 style={styles.header} className="text-2xl flex items-center gap-2">
+          <span>Profile</span>
+        </h1>
       </div>
 
       {/**Side bar */}
@@ -27,11 +29,10 @@ const Profile = () => {
             <button
               key={option}
               onClick={() => setSelectedOption(option)}
-              className={`p-4 text-base text-left ${
-                selectedOption === option
-                  ? "bg-[#6f84f8] font-semibold text-white"
-                  : "bg-transparent font-normal text-black"
-              } border-none outline-none cursor-pointer rounded-md`}
+              className={`p-4 text-base text-left ${selectedOption === option
+                ? "bg-[#6f84f8] font-semibold text-white"
+                : "bg-transparent font-normal text-black"
+                } border-none outline-none cursor-pointer rounded-md`}
             >
               {option}
             </button>
@@ -44,8 +45,14 @@ const Profile = () => {
           {selectedOption === "Banking Information" && <BankingInfo />}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
+const styles = {
+  header: {
+    fontWeight: "bold",
+    marginBottom: "20px",
+  },
+};
 export default Profile;

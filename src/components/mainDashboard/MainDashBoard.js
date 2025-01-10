@@ -22,12 +22,9 @@ const MainDashboard = () => {
     <>
       <div className="p-8 pt-0">
         <div className="flex justify-between align-center">
-          <h3
-            className="text-xl font-bold"
-            style={{ color: "rgba(0, 0, 0, 0.7)" }}
-          >
-            Dashboard
-          </h3>
+          <h1 style={styles.header} className="text-2xl flex items-center gap-2">
+            <span>Dashboard</span>
+          </h1>
         </div>
         <div className="mt-4">
           <div className="gap-4">
@@ -62,21 +59,19 @@ const MainDashboard = () => {
                 <div className="p-5">
                   <div className="flex gap-4">
                     <button
-                      className={`py-2 px-6 font-semibold transition-colors duration-300 rounded-lg ${
-                        activeSection === "visit"
-                          ? "bg-[#6F84F8] text-white shadow-lg" // Updated color
-                          : "bg-gray-200 text-black hover:bg-gray-300"
-                      }`}
+                      className={`py-2 px-6 font-semibold transition-colors duration-300 rounded-lg ${activeSection === "visit"
+                        ? "bg-[#6F84F8] text-white shadow-lg" // Updated color
+                        : "bg-gray-200 text-black hover:bg-gray-300"
+                        }`}
                       onClick={() => setActiveSection("visit")}
                     >
                       Visit Compliance
                     </button>
                     <button
-                      className={`py-2 px-6 font-semibold transition-colors duration-300 rounded-lg ${
-                        activeSection === "reassessment"
-                          ? "bg-[#6F84F8] text-white shadow-lg" // Updated color
-                          : "bg-gray-200 text-black hover:bg-gray-300"
-                      }`}
+                      className={`py-2 px-6 font-semibold transition-colors duration-300 rounded-lg ${activeSection === "reassessment"
+                        ? "bg-[#6F84F8] text-white shadow-lg" // Updated color
+                        : "bg-gray-200 text-black hover:bg-gray-300"
+                        }`}
                       onClick={() => setActiveSection("reassessment")}
                     >
                       Tenant Reassessment
@@ -102,21 +97,19 @@ const MainDashboard = () => {
                   </h3>
                   <div className="flex gap-2">
                     <button
-                      className={`py-1 px-2 rounded-lg ${
-                        activeView === "tenant"
-                          ? "bg-[#6F84F8] text-white shadow-lg"
-                          : "bg-gray-200"
-                      }`}
+                      className={`py-1 px-2 rounded-lg ${activeView === "tenant"
+                        ? "bg-[#6F84F8] text-white shadow-lg"
+                        : "bg-gray-200"
+                        }`}
                       onClick={() => setActiveView("tenant")}
                     >
                       Tenant
                     </button>
                     <button
-                      className={`py-1 px-2 rounded-lg ${
-                        activeView === "hcm"
-                          ? "bg-[#6F84F8] text-white shadow-lg"
-                          : "bg-gray-200"
-                      }`}
+                      className={`py-1 px-2 rounded-lg ${activeView === "hcm"
+                        ? "bg-[#6F84F8] text-white shadow-lg"
+                        : "bg-gray-200"
+                        }`}
                       onClick={() => setActiveView("hcm")}
                     >
                       HCM
@@ -156,5 +149,10 @@ const MainDashboard = () => {
     </>
   );
 };
-
+const styles = {
+  header: {
+    fontWeight: "bold",
+    marginBottom: "10px",
+  },
+};
 export default MainDashboard;

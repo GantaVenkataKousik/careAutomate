@@ -10,10 +10,10 @@ const HcmDashboard = () => {
   const { hcms, hcmId } = location.state || {};
 
   // Find the selected HCM
-  const selectedHcm = hcms?.find((hcm) => hcm._id === hcmId);
 
+  console.log(hcms, hcms);
   // Handle missing data
-  if (!selectedHcm) {
+  if (!hcms) {
     return (
       <div className="flex items-center justify-center h-screen">
         <h2 className="text-xl font-bold text-gray-700">
@@ -27,7 +27,7 @@ const HcmDashboard = () => {
     <div className="flex flex-col m-3 gap-5">
       <div className="flex justify-between gap-4">
         {/* Profile Card for the selected HCM */}
-        <HcmProfileCard hcm={selectedHcm} />
+        <HcmProfileCard hcm={hcms} />
 
         {/* Tenants Assigned Component */}
         <TenantsAssigned hcmId={hcmId} />

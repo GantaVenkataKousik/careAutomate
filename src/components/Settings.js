@@ -19,7 +19,9 @@ export default function Settings() {
           borderBottom: "2px solid #ccc",
         }}
       >
-        <h1 style={{ fontSize: "1.8rem" }}>Settings</h1>
+        <h1 style={styles.header} className="text-2xl flex items-center gap-2">
+          <span>Settings</span>
+        </h1>
       </div>
       <div style={{ display: "flex", padding: "1rem" }}>
         {/* Sidebar */}
@@ -73,3 +75,9 @@ export default function Settings() {
     </>
   );
 }
+const styles = {
+  header: {
+    fontWeight: "bold",
+    marginBottom: "20px",
+  },
+};
