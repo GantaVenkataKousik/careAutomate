@@ -1,22 +1,52 @@
 import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { useAuth } from "../../../AuthContext";
+import { toast } from "react-toastify";
+import { API_ROUTES } from "../../../routes";
+import axios from "axios";
 
-const AddNotes = ({ setEditMode, addNote }) => {
+const AddNotes = ({ setEditMode, addNote, tenantId }) => {
+  const { currentUser, token } = useAuth();
   const [title, setTitle] = useState("");
   const [noteDetails, setNoteDetails] = useState("");
 
-  const handleSaveNotes = (e) => {
+  const handleSaveNotes = async (e) => {
     e.preventDefault();
     const newNote = {
-      id: Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000, // Generate a unique ID
-      name: title,
+      tenantId: tenantId,
+      title: title,
       content: noteDetails,
-      notedBy: "Surya Abothula",
-      createdAt: new Date().toISOString(),
+      notedBy: currentUser?._id, // Optional chaining for safety
     };
-    // console.log(newNote);
-    addNote(newNote);
+
+    try {
+      const apiUrl = `${API_ROUTES.TENANTS.BASE}/add-tenant-note`;
+      console.log("API URL:", apiUrl);
+      console.log("New Note:", newNote);
+      console.log("Token:", token);
+
+      const response = await axios.post(apiUrl, newNote, {
+        headers: {
+          "Content-Type": "application/json",
+          Authentication: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Response:", response);
+
+      if (response.data?.success) {
+        toast.success("Note Added Successfully");
+        setEditMode(false);
+        console.log(response.data);
+      } else {
+        console.log(response.data);
+        toast.error(response.data?.message || "An error occurred");
+      }
+    } catch (error) {
+      console.error("Axios Error:", error);
+      toast.error("Notes failed to upload");
+    }
   };
 
   return (

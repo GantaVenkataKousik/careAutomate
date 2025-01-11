@@ -50,7 +50,7 @@ export const mapTenantToFormData = (tenant) => {
     diagnosisCode: admissionData?.diagnosisCode || "",
     // Case Manager
     caseManagerFirstName: caseManagerData?.firstName || "",
-    caseManagerMiddleName: caseManagerData?.middleInitial || "",
+    caseManagerMiddleName: caseManagerData?.middleName || "",
     caseManagerLastName: caseManagerData?.lastName || "",
     caseManagerPhoneNumber: caseManagerData?.phoneNumber || "",
     caseManagerEmail: caseManagerData?.email || "",
