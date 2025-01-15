@@ -3,10 +3,11 @@ import Footer from "./Footer";
 import "./styles/Register.css";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import registerImage from "./images/register.jpg";
 import { BASE_URL } from "../../config";
 import { API_ROUTES } from "../../routes";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { validateForm } from "../../utils/commonUtils/validateForm";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -21,12 +22,35 @@ export default function Register() {
     mobileNumber: "",
   });
   const [otp, setOtp] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState("");
+  const [passwordMatch, setPasswordMatch] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showOtpPopup, setShowOtpPopup] = useState(false);
+  const [loading, setLoading] = useState(false); // Loading state
   const otpRefs = useRef([]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    if (name === "password") {
+      checkPasswordStrength(value);
+    }
+
+    if (name === "confirmPassword") {
+      setPasswordMatch(value === formData.password);
+    }
+  };
+
+  const checkPasswordStrength = (password) => {
+    if (password.length < 6) {
+      setPasswordStrength("Weak (at least 6 characters)");
+    } else if (!/[!@#$%^&*]/.test(password)) {
+      setPasswordStrength("Medium (add special characters)");
+    } else {
+      setPasswordStrength("Strong");
+    }
   };
 
   const handleSendOtp = async (e) => {
@@ -80,10 +104,8 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match.");
-      return;
-    }
+    if (!validateForm(formData)) return;
+    setLoading(true); // Start loading
 
     try {
       const res = await fetch(`${API_ROUTES.AUTH.BASE}/register`, {
@@ -108,12 +130,13 @@ export default function Register() {
         );
         return;
       }
-
       toast.success("Signup successful! Redirecting to login...");
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
       console.error(err);
       toast.error("An unknown error occurred.");
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -193,32 +216,52 @@ export default function Register() {
               <div className="field password">
                 <div className="input-area">
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="Password"
                     value={formData.password}
                     onChange={handleInputChange}
                   />
                   <i className="icon fas fa-lock" />
-                  <i className="error error-icon fas fa-exclamation-circle" />
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{ cursor: "pointer" }}
+                    className="icon-container"
+                  >
+                    {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+                  </span>
                 </div>
-                <div className="error error-txt">Password can't be blank</div>
+                <div className="password-strength">
+                  {passwordStrength && formData.password.length > 0 && (
+                    <p className="text-sm text-gray-600 ml-16">
+                      Password strength: <span>{passwordStrength}</span>
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="field confirm-password">
                 <div className="input-area">
                   <input
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
                     placeholder="Confirm Password"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                   />
                   <i className="icon fas fa-lock" />
-                  <i className="error error-icon fas fa-exclamation-circle" />
+                  <span
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    style={{ cursor: "pointer" }}
+                    className="icon-container"
+                  >
+                    {showConfirmPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+                  </span>
                 </div>
-                <div className="error error-txt">
-                  Confirm Password can't be blank
-                </div>
+                {!passwordMatch && formData.confirmPassword.length > 0 && (
+                  <p className="text-sm text-red-500 ml-16">
+                    Passwords do not match.
+                  </p>
+                )}
               </div>
               <div className="field company">
                 <div className="input-area">
@@ -266,7 +309,11 @@ export default function Register() {
                   Mobile Number can't be blank
                 </div>
               </div>
-              <input type="submit" value="Create Account" />
+              <input
+                type="submit"
+                value={loading ? "Creating Account..." : "Create Account"}
+                disabled={loading} // Disable button during loading
+              />
               <div className="sign-txt">
                 Already Registered? <a href="/login">Login now</a>
               </div>

@@ -5,7 +5,7 @@ import { SlNote } from "react-icons/sl";
 import { BsCalendar2Date } from "react-icons/bs";
 import { MdOutlineAccessTime } from "react-icons/md";
 import { GrLocation } from "react-icons/gr";
-import { useSelector } from "react-redux";
+import dayjs from "dayjs";
 import axios from "axios";
 import { toast } from "react-toastify";
 import ReactQuill from "react-quill";
@@ -16,6 +16,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { BASE_URL } from "../../config";
 import activities from "../../utils/commonUtils/activities";
+import Select from "react-select";
 
 const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
   // console.log(onVisitCreated);
@@ -246,86 +247,124 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
     }
   };
 
-  const handleCreateAppointment = async () => {
+  const handleCreateVisit = async () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const creatorId = user?._id;
-    // Validate date, startTime, and endTime
-    if (!startDate || !startTime) {
-      console.error("Date, start time, or end time is missing.");
-      toast.error("Please select a valid date, start time, and end time.");
+
+    // Field validation with error messages for each missing field
+    if (!selectedTenantId) {
+      toast.error("Please select a tenant.");
       return;
     }
 
-    // Validate that start time is before end time if both are provided
+    if (!hcm) {
+      toast.error("HCM is required.");
+      return;
+    }
+
+    if (!serviceType) {
+      toast.error("Service type is required.");
+      return;
+    }
+
+    if (!activity) {
+      toast.error("Activity is required.");
+      return;
+    }
+
+    if (!startDate) {
+      toast.error("Please select a valid date.");
+      return;
+    }
+
+    if (!startTime) {
+      toast.error("Please select a start time.");
+      return;
+    }
+
+    // If endTime is provided, validate it
     if (endTime && startTime >= endTime) {
-      console.error("End time must be after start time.");
       toast.error("End time must be after start time.");
       return;
     }
 
-    // Validate reasonForRemote if methodOfVisit is "remote"
+    if (!planOfService) {
+      toast.error("Plan of service is required.");
+      return;
+    }
+
     if (
       methodOfContact === "indirect" &&
       reasonForRemote === "remote" &&
       !reasonForRemote
     ) {
-      console.error(
-        "Reason for remote is required for remote method of visit."
-      );
-      toast.error("Please provide a reason for remote visit.");
+      toast.error("Please provide a reason for the remote visit.");
       return;
     }
 
-    // Validate travel miles if travel is "yes"
+    // Validate travel-related fields
     const totalMiles =
       travel === "Yes"
         ? parseFloat(milesWithTenant || 0) + parseFloat(milesWithoutTenant || 0)
         : 0;
 
     if (travel === "Yes" && totalMiles <= 0) {
-      console.error("Total miles is required if travel is yes.");
-      toast.error("Please provide valid miles if travel is enabled.");
+      toast.error("Please provide valid travel miles.");
       return;
     }
 
-    console.log("Date:", startDate);
-    console.log("Start Time:", startTime);
-    console.log("End Time:", endTime);
-    // Combine startDate and startTime into a single Date object
-    const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
-    const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
+    if (!detailsOfVisit) {
+      toast.error("Details of the visit are required.");
+      return;
+    }
 
-    // Format the times to the desired string format
+    if (!responseOfVisit) {
+      toast.error("Response for the visit is required.");
+      return;
+    }
+
+    if (!signature) {
+      toast.error("Signature status is required.");
+      return;
+    }
+
+    // Combine startDate and startTime into a single Date object
+    const startDateTime = new Date(`${startDate}T${startTime}:00Z`);
+    const endDateTime = endTime
+      ? new Date(`${startDate}T${endTime}:00Z`)
+      : null;
+
+    // Format times
     const formattedStartTime = startDateTime.toISOString();
-    const formattedEndTime = endDateTime.toISOString();
+    const formattedEndTime = endDateTime ? endDateTime.toISOString() : null;
 
     // Prepare payload
     const payload = {
       creatorId: creatorId,
-      tenantId: selectedTenantId || "Unknown",
-      hcmId: hcm || "N/A",
+      tenantId: selectedTenantId,
+      hcmId: hcm,
       serviceType,
-      activity: activity || "N/A",
+      activity,
       date: new Date(startDate).toISOString(),
       startTime: formattedStartTime,
       endTime: formattedEndTime,
-      place: planOfService || "N/A",
+      place: planOfService,
       methodOfVisit:
-        methodOfContact === "indirect"
-          ? reasonForRemote === "remote"
-            ? "remote"
-            : "in-person"
+        methodOfContact === "indirect" && reasonForRemote === "remote"
+          ? "remote"
           : "in-person",
       reasonForRemote: reasonForRemote || null,
-      notes: detailsOfVisit || "N/A",
-      response: responseOfVisit || "N/A",
+      notes: detailsOfVisit,
+      response: responseOfVisit,
       travel: travel.toLowerCase(),
       totalMiles: travel.toLowerCase() === "yes" ? totalMiles : null,
       travelWithTenant: milesWithTenant || null,
       travelWithoutTenant: milesWithoutTenant || null,
       signature: signature === "done" ? "done" : "not done",
     };
-    console.log("payyyui", payload);
+
+    console.log("Payload:", payload);
+
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
@@ -341,11 +380,10 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
 
       if (response.status >= 200 && response.status < 300) {
         toast.success("Visit created successfully.");
-        // onVisitCreated();
         setScheduleCreated(true);
         setShowCreateScheduleDialog(true);
+        onClose();
       } else {
-        console.error("Failed to create Visit:", response.statusText);
         toast.error("Failed to create Visit.");
       }
     } catch (error) {
@@ -381,10 +419,13 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
     time.setMinutes(time.getMinutes() + durationMinutes);
     return time;
   };
-
+  const tenantOptions = allTenants.map((tenant) => ({
+    value: tenant.id,
+    label: tenant.name,
+  }));
   return isOpen ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="relative flex flex-col pb-10 max-h-[35rem] p-6 max-w-3xl mx-auto bg-white rounded-lg shadow-lg w-full">
+      <div className="relative flex flex-col pb-10 max-h-[40rem] p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-lg w-full">
         {/* "X" Close Button */}
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
@@ -401,32 +442,26 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
               <GoPerson size={24} className="mr-2" />
               Tenant
             </label>
-            <select
-              value={selectedTenantId}
-              onChange={(e) => setSelectedTenantId(e.target.value)}
-              className="border border-gray-300 rounded-md p-2 w-2/3"
-            >
-              <option value="" disabled>
-                Select a Tenant
-              </option>
-              {allTenants.length > 0 ? (
-                allTenants.map((tenant) => (
-                  <option key={tenant.id} value={tenant.id}>
-                    {tenant.name}
-                  </option>
-                ))
-              ) : (
-                <option value="" disabled>
-                  Loading tenants...
-                </option>
-              )}
-            </select>
+            <Select
+              value={
+                tenantOptions.find(
+                  (option) => option.value === selectedTenantId
+                ) || null
+              }
+              onChange={(selectedOption) =>
+                setSelectedTenantId(selectedOption ? selectedOption.value : "")
+              }
+              options={tenantOptions}
+              placeholder="Select a Tenant"
+              isLoading={allTenants.length === 0} // Show loading spinner when tenants are loading
+              className="w-2/3" // Adjust width or use style object if needed
+            />
           </div>
 
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <GoPerson size={24} className="mr-2" />
-              Assigned HCM
+              Assigned HCM's
             </label>
             <select
               value={hcm}
@@ -502,7 +537,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
               <div className="flex items-center gap-4">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
-                    // value={filters.startDate} // Bind value to filters.startDate
+                    // value={dayjs(filters.startDate)} // Bind value to filters.startDate
+                    maxDate={dayjs()}
                     onChange={(date) =>
                       setStartDate(date?.format("YYYY-MM-DD"))
                     }
@@ -600,37 +636,6 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
             </select>
           </div>
 
-          {/* Conditional rendering for radio buttons */}
-          {methodOfContact === "indirect" && (
-            <div className="flex flex-col gap-2 items-center">
-              {/* <div className="flex items-center gap-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="indirectOption"
-                    value="remote"
-                    checked={reasonForRemote === "remote"}
-                    onChange={() => setReasonForRemote("remote")}
-                    className="mr-2"
-                  />
-                  Remote
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="indirectOption"
-                    value="in-person"
-                    checked={reasonForRemote === "in-person"}
-                    onChange={() => setReasonForRemote("in-person")}
-                    className="mr-2"
-                  />
-                  In-Person
-                </label>
-              </div> */}
-
-              {/* Conditional rendering for Reason for Remote */}
-            </div>
-          )}
           {methodOfContact === "indirect" && (
             <div className="flex gap-4">
               <label className="text-sm font-medium flex items-center w-1/3">
@@ -765,7 +770,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
 
           <div className="flex gap-4 w-2/3 " style={{ marginLeft: "auto" }}>
             <button
-              onClick={isEdit ? handleEditVisit : handleCreateAppointment}
+              onClick={isEdit ? handleEditVisit : handleCreateVisit}
               className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg
               border-blue-600
               border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]

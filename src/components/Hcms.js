@@ -14,6 +14,7 @@ import { TbMessage } from "react-icons/tb";
 import { BASE_URL } from "../config";
 import EditHcmPopup from "./hcmsPage/EditHcmPopup";
 import HcmFilter from "./hcmsPage/HcmFilter";
+import { BorderBottom, Padding } from "@mui/icons-material";
 
 export default function Hcms() {
   const navigate = useNavigate();
@@ -111,9 +112,6 @@ export default function Hcms() {
       </div>
 
       <div style={styles.mainContainer}>
-        <div style={styles.filterContainer} className="tenant-visits-scrollbar">
-          <HcmFilter />
-        </div>
         <div style={styles.HcmGridContainer}>
           <div style={styles.HcmGrid}>
             {filteredHcms.length > 0 ? (
@@ -179,6 +177,10 @@ export default function Hcms() {
             )}
           </div>
         </div>
+
+        <div style={styles.filterContainer} className="tenant-visits-scrollbar">
+          <HcmFilter />
+        </div>
       </div>
 
       {/**Edit HCM Modal */}
@@ -204,7 +206,10 @@ const styles = {
   headerActions: {
     display: "flex",
     alignItems: "center",
-    marginBottom: "20px",
+    justifyContent: "space-between",
+    padding: "0px 20px 20px 20px",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+    marginBottom: "10px",
   },
   searchBar: {
     display: "flex",
@@ -255,11 +260,12 @@ const styles = {
   filterContainer: {
     width: "280px", // Fixed width for filter
     flexShrink: 0,
-    border: "1px solid #eee",
+    border: "1px solid #6f84f8",
     borderRadius: "20px",
     padding: "10px",
     height: "100%",
     overflowY: "auto",
+    marginTop: "10px",
   },
   HcmGridContainer: {
     flex: 1,

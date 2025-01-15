@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
-import Select from "react-select";
-import { BASE_URL } from "../../config";
+// import Select from "react-select";
+import { toast } from "react-toastify";
 
 const DropdownFilter = ({
   title,
@@ -75,25 +75,13 @@ const HcmFilter = () => {
     employeeTitle: [],
     employeeStatus: [],
   });
-  const [selectedTenant, setSelectedTenant] = useState([]);
-  const [selectTenantOpen, setSelectedTenantOpen] = useState(false);
-  const [tenantOptions, setTenantOptions] = useState([
-    { value: "tenant1", label: "Tenant One" },
-    { value: "tenant2", label: "Tenant Two" },
-    { value: "tenant3", label: "Tenant Three" },
-    { value: "tenant4", label: "Tenant Four" },
-  ]);
   const dropdownData = [
     {
       title: "Employee Title",
       key: "employeeTitle",
-      items: ["HCM", "Admin", "CEO", "Consultant"],
+      items: ["Contract", "Permenant"],
     },
-    {
-      title: "Employee Status",
-      key: "employeeStatus",
-      items: ["Pre Employee", "Full Time", "Part Time", "Contract"],
-    },
+
     {
       title: "City",
       key: "cities",
@@ -118,51 +106,24 @@ const HcmFilter = () => {
       (selectedItems) => selectedItems.length === 0
     );
 
-    if (noFiltersSelected && selectedTenant.length === 0) {
-      console.log("No filters or tenants are selected.");
+    if (noFiltersSelected) {
+      toast.error("No Filters are selected");
+      console.log("No filters are selected.");
     } else {
       console.log("Selected Filters:", filters);
-      console.log("Selected Tenants:", selectedTenant);
     }
   };
 
   const handleCancel = () => {
     setFilters({
       employeeTitle: [],
-      employeeStatus: [],
+      city: [],
     });
-    setSelectedTenant([]);
   };
-
-  useEffect(() => {
-    const fetchAllTenants = async () => {
-      const token = localStorage.getItem("token");
-
-      try {
-        const response = await fetch(`${BASE_URL}/tenant/all`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        const formattedTenants = data.response.map((tenant) => ({
-          value: tenant.info_id,
-          label: tenant.name,
-        }));
-        setTenantOptions(formattedTenants);
-      } catch (error) {
-        console.log("Error fetching tenants:", error);
-      }
-    };
-
-    fetchAllTenants();
-  }, []);
 
   return (
     <div className="flex flex-col h-full w-full p-2 py-4">
-      <h2 className="flex justify-center text-xl text-[#6F84F8] mb-2 font-bold">
+      <h2 className="flex justify-center text-3xl text-[#6F84F8] mb-4 font-black">
         Filter
       </h2>
 
@@ -178,53 +139,6 @@ const HcmFilter = () => {
           }
         />
       ))}
-
-      {/* Custom Tenant Dropdown with Multiple Selection */}
-      <div className="flex flex-col mb-4">
-        <div
-          className="flex items-center justify-between cursor-pointer"
-          onClick={() => setSelectedTenantOpen(!selectTenantOpen)}
-        >
-          <span
-            className={`flex gap-2 text-lg font-bold ${selectTenantOpen ? "text-[#6F84F8]" : "text-[#333]"}`}
-          >
-            Select Tenant
-            <span
-              className={`${selectTenantOpen ? "block" : "hidden"} h-6 w-6 flex items-center justify-center rounded-full font-bold text-lg p-2 bg-[#6F84F8] text-white`}
-            >
-              {selectedTenant.length}
-            </span>
-          </span>
-          <span
-            className={`transform transition-all ${
-              selectTenantOpen ? "rotate-180" : ""
-            }`}
-          >
-            <FaChevronDown
-              className={`${selectTenantOpen ? "text-[#6F84F8]" : ""}`}
-            />
-          </span>
-        </div>
-        {selectTenantOpen && (
-          <Select
-            options={tenantOptions}
-            value={tenantOptions.filter((option) =>
-              selectedTenant.includes(option.value)
-            )}
-            onChange={(selectedOptions) =>
-              setSelectedTenant(
-                selectedOptions ? selectedOptions.map((o) => o.value) : []
-              )
-            }
-            isMulti
-            isClearable
-            placeholder="Choose tenants..."
-            styles={{
-              container: (base) => ({ ...base, marginTop: "0.5rem" }),
-            }}
-          />
-        )}
-      </div>
 
       {/* Buttons */}
       <div className="flex items-center gap-2 justify-end mt-6">

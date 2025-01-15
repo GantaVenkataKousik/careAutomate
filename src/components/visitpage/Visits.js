@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import VisitModal from "./VisitModal"; // Ensure VisitModal is correctly implemented and imported
 import axios from "axios";
 import VisitCalendarView from "./VisitCalendarView";
@@ -96,7 +96,10 @@ const VisitList = () => {
   const handleFilterUpdate = (newFilters) => {
     setActiveFilters(newFilters);
   };
-  const filteredVisits = applyVisitsFilters(visitData, activeFilters);
+  const filteredVisits = useMemo(
+    () => applyVisitsFilters(visitData, activeFilters),
+    [visitData, activeFilters]
+  );
 
   const handleEditClick = (index, id, visit) => {
     // dispatch(setSelectedVisit(visit));
@@ -148,18 +151,22 @@ const VisitList = () => {
         <VisitCalendarView visits={visitData} />
       ) : (
         <div className="flex gap-8 w-full pt-6 h-[calc(100vh-180px)] overflow-hidden">
-          <div className="w-[280px] flex-shrink-0 border border-gray-200 rounded-[20px] p-[10px] h-full overflow-y-auto tenant-visits-scrollbar">
-            <VisitFilter onFilterUpdate={handleFilterUpdate} />
-          </div>
           <div className="flex-grow overflow-y-auto tenant-visits-scrollbar">
             <VisitCard
               // visitData={visitData}
-              visitData={filteredVisits.length > 0 ? filteredVisits : visitData}
+              visitData={
+                filteredVisits.length > 0 || activeFilters.status.length > 0
+                  ? filteredVisits
+                  : visitData
+              }
               handleClosePopup={handleClosePopup}
               handleDetailsClick={handleDetailsClick}
               handleEditClick={handleEditClick}
               handleStatusUpdate={handleStatusUpdate}
             />
+          </div>
+          <div className="w-[280px] flex-shrink-0 border border-gray-200 rounded-[20px] p-[10px] h-full overflow-y-auto tenant-visits-scrollbar">
+            <VisitFilter onFilterUpdate={handleFilterUpdate} />
           </div>
         </div>
       )}

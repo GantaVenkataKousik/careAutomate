@@ -1,7 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-
-
-
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
 
 .registerContainer {
   margin: 0;
@@ -41,7 +38,6 @@
 }
 
 @keyframes shake {
-
   0%,
   100% {
     margin-left: 0px;
@@ -64,6 +60,15 @@
   position: relative;
 }
 
+.registerContainer .field .input-area .icon-container {
+  position: absolute;
+  top: 50%;
+  right: 10px; /* Align icon to the right side */
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #bfbfbf;
+  transition: color 0.2s ease;
+}
 .registerContainer form input {
   width: 100%;
   height: 100%;
@@ -102,20 +107,18 @@
   transition: color 0.2s ease;
 }
 
-
-
 .registerContainer .input-area .error-icon {
   right: 15px;
   color: #dc3545;
 }
 
-.registerContainer form input:focus~.icon,
+.registerContainer form input:focus ~ .icon,
 .registerContainer form .field.valid .icon {
   color: #6f84f8;
 }
 
-.registerContainer form .field.shake input:focus~.icon,
-.registerContainer form .field.error input:focus~.icon {
+.registerContainer form .field.shake input:focus ~ .icon,
+.registerContainer form .field.error input:focus ~ .icon {
   color: #bfbfbf;
 }
 
@@ -171,6 +174,7 @@
 
 .registerContainer section {
   width: 100%;
+  height: 88vh;
   justify-content: center;
   display: flex;
   flex-direction: row-reverse;
@@ -181,8 +185,8 @@
 .registerContainer .wrapper {
   cursor: pointer;
   width: 450px;
-  height: 480px;
-  padding: 3rem;
+  height: 100%;
+  padding: 10px 3rem;
   border-radius: 0px 5px 5px 0px;
   background: #fff;
   text-align: center;
@@ -229,7 +233,6 @@
   font-size: 1.3rem;
 }
 
-
 .circles {
   position: absolute;
   top: 0;
@@ -248,7 +251,6 @@
   background: rgba(255, 255, 255, 0.2);
   animation: animate 5s linear infinite;
   bottom: -150px;
-
 }
 
 .circles li:nth-child(1) {
@@ -257,7 +259,6 @@
   height: 80px;
   animation-delay: 0s;
 }
-
 
 .circles li:nth-child(2) {
   left: 10%;
@@ -345,9 +346,7 @@
   /* Faster animation */
 }
 
-
 @keyframes animate {
-
   0% {
     transform: translateY(0) rotate(0deg);
     opacity: 1;
@@ -359,7 +358,6 @@
     opacity: 0;
     border-radius: 50%;
   }
-
 }
 
 .policy {

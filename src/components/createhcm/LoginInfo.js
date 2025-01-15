@@ -6,13 +6,36 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 const LoginInfo = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState("");
+  const [passwordMatch, setPasswordMatch] = useState(true);
+
   const dispatch = useDispatch();
   const hcmData = useSelector((state) => state.hcm);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    const inputValue = type === "checkbox" ? checked : value;
-    dispatch(updateHcmInfo({ [name]: inputValue }));
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+
+    // Dispatch the update to Redux
+    dispatch(updateHcmInfo({ [name]: value }));
+
+    if (name === "password") {
+      // Check password strength
+      if (value.length < 6) {
+        setPasswordStrength("Weak (at least 6 characters)");
+      } else if (!/[!@#$%^&*]/.test(value)) {
+        setPasswordStrength("Medium (add special characters)");
+      } else {
+        setPasswordStrength("Strong");
+      }
+
+      // Update match status
+      setPasswordMatch(value === hcmData.confirmPassword);
+    }
+
+    if (name === "confirmPassword") {
+      // Update match status
+      setPasswordMatch(value === hcmData.password);
+    }
   };
 
   return (
@@ -26,53 +49,74 @@ const LoginInfo = () => {
           }
           name="userName"
           value={hcmData.userName}
-          onChange={handleChange}
-          required
-        />
-        <InputField
-          label={
-            <>
-              Password <span className="required">*</span>
-            </>
+          onChange={(e) =>
+            dispatch(updateHcmInfo({ [e.target.name]: e.target.value }))
           }
-          name="password"
-          value={hcmData.password}
-          onChange={handleChange}
-          type={showPassword ? "text" : "password"}
           required
-          showPassword={showPassword}
-          setShowPassword={setShowPassword}
         />
-        <InputField
-          label={
-            <>
-              Confirm Password <span className="required">*</span>
-            </>
-          }
-          name="confirmPassword"
-          value={hcmData.confirmPassword}
-          onChange={handleChange}
-          type={showConfirmPassword ? "text" : "password"}
-          required
-          showPassword={showConfirmPassword}
-          setShowPassword={setShowConfirmPassword}
-        />
+        <div className="flex flex-col ">
+          <InputField
+            label={
+              <>
+                Password <span className="required">*</span>
+              </>
+            }
+            name="password"
+            value={hcmData.password}
+            onChange={handlePasswordChange}
+            type={showPassword ? "text" : "password"}
+            required
+            showPassword={showPassword}
+            setShowPassword={setShowPassword}
+          />
+          {passwordStrength && (
+            <p
+              style={{
+                fontSize: "0.875rem",
+                color: "#666",
+              }}
+            >
+              Password strength: <span>{passwordStrength}</span>
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-col">
+          <InputField
+            label={
+              <>
+                Confirm Password <span className="required">*</span>
+              </>
+            }
+            name="confirmPassword"
+            value={hcmData.confirmPassword}
+            onChange={handlePasswordChange}
+            type={showConfirmPassword ? "text" : "password"}
+            required
+            showPassword={showConfirmPassword}
+            setShowPassword={setShowConfirmPassword}
+          />
+          {!passwordMatch && (
+            <p
+              style={{ marginLeft: "16px", fontSize: "0.875rem", color: "red" }}
+            >
+              Passwords do not match.
+            </p>
+          )}
+        </div>
       </Section>
     </div>
   );
 };
 
+// Reusable InputField Component
 const InputField = ({
   label,
   name,
   value,
   onChange,
   type = "text",
-  options = [],
   required = false,
-  focused,
-  onFocus,
-  onBlur,
   showPassword,
   setShowPassword,
 }) => (
@@ -80,53 +124,31 @@ const InputField = ({
     <label style={styles.label} htmlFor={name}>
       {label}
     </label>
-    {type === "select" ? (
-      <select
+    <div className="flex items-center relative">
+      <input
+        type={type}
         name={name}
         value={value}
         onChange={onChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        style={{ ...styles.input, ...(focused ? styles.inputFocused : {}) }}
+        style={{
+          ...styles.input,
+          paddingRight: "2.5rem",
+        }}
         required={required}
-      >
-        <option value="">Select</option>
-        {options.map((option) => (
-          <option key={option} value={option.toLowerCase()}>
-            {option}
-          </option>
-        ))}
-      </select>
-    ) : (
-      <div className="flex items-center relative">
-        <input
-          type={type}
-          name={name}
-          value={value}
-          onChange={onChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          style={{
-            ...styles.input,
-            paddingRight: "2.5rem", // Adds space for the icon inside the input
-            ...(focused ? styles.inputFocused : {}),
-          }}
-          required={required}
-        />
-        {name === "password" || name === "confirmPassword" ? (
-          <span
-            className="absolute left-[70%] top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-black"
-            onClick={() => setShowPassword((prev) => !prev)}
-          >
-            {showPassword ? (
-              <FaRegEye className="w-5 h-5" />
-            ) : (
-              <FaRegEyeSlash className="w-5 h-5" />
-            )}
-          </span>
-        ) : null}
-      </div>
-    )}
+      />
+      {(name === "password" || name === "confirmPassword") && (
+        <span
+          className="absolute left-[70%] top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-black"
+          onClick={() => setShowPassword((prev) => !prev)}
+        >
+          {showPassword ? (
+            <FaRegEye className="w-5 h-5" />
+          ) : (
+            <FaRegEyeSlash className="w-5 h-5" />
+          )}
+        </span>
+      )}
+    </div>
   </div>
 );
 
@@ -170,10 +192,6 @@ const styles = {
     outline: "none",
     transition: "border-color 0.3s",
     textAlign: "center",
-  },
-  inputFocused: {
-    borderColor: "#4A90E2",
-    boxShadow: "0px 0px 4px rgba(74, 144, 226, 0.5)",
   },
 };
 
