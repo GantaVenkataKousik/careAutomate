@@ -235,6 +235,12 @@ const AppointmentModal = ({
     }
   };
   const handleCreateAppointment = async () => {
+    // Validate all fields
+    if (!selectedTenantId || !selectedHcmId || !serviceType || !activity || !methodOfContact || !planOfService || !startDate || !startTime || !endTime) {
+      toast.error("Please fill all the mandatory fields.");
+      return;
+    }
+
     // Validate date, startTime, and endTime
     if (!startDate || !startTime) {
       console.error("Date, start time, or end time is missing.");
@@ -326,6 +332,12 @@ const AppointmentModal = ({
     return time;
   };
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredTenants = allTenants.filter(tenant =>
+    tenant.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return isOpen ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="relative flex flex-col pb-10 max-h-[40rem] p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-lg w-full">
@@ -343,34 +355,41 @@ const AppointmentModal = ({
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <GoPerson size={24} className="mr-2" />
-              Tenant
+              Tenant <span className="text-red-500">*</span>
             </label>
-            <select
-              value={selectedTenantId}
-              onChange={(e) => setSelectedTenantId(e.target.value)}
-              className="border border-gray-300 rounded-md p-2 w-2/3"
-            >
-              <option value="" disabled>
-                Select a Tenant
-              </option>
-              {allTenants.length > 0 ? (
-                allTenants.map((tenant) => (
-                  <option key={tenant.id} value={tenant.id}>
-                    {tenant.name}
-                  </option>
-                ))
+            <div className="w-2/3">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search for a tenant"
+                className="border border-gray-300 rounded-md p-2 w-full"
+              />
+              {filteredTenants.length > 0 ? (
+                <ul className="border border-gray-300 rounded-md mt-2 max-h-40 overflow-y-auto">
+                  {filteredTenants.map((tenant) => (
+                    <li
+                      key={tenant.id}
+                      onClick={() => {
+                        setSelectedTenantId(tenant.id);
+                        setSearchTerm(tenant.name); // Set search term to selected tenant's name
+                      }}
+                      className={`p-2 cursor-pointer ${selectedTenantId === tenant.id ? 'bg-blue-100' : ''}`}
+                    >
+                      {tenant.name}
+                    </li>
+                  ))}
+                </ul>
               ) : (
-                <option value="" disabled>
-                  Loading tenants...
-                </option>
+                <p className="mt-2 text-sm text-gray-500">No tenants found</p>
               )}
-            </select>
+            </div>
           </div>
 
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <GoPerson size={24} className="mr-2" />
-              Assigned HCM
+              Assigned HCM's <span className="text-red-500">*</span>
             </label>
             <select
               value={selectedHcmId}
@@ -394,24 +413,10 @@ const AppointmentModal = ({
             </select>
           </div>
 
-          {/* <div className="flex gap-4">
-          <label className="text-sm font-medium flex items-center w-1/3">
-            <GoPerson size={24} className="mr-2" />
-            Designated Tenant
-          </label>
-          <input
-            type="text"
-            // value={title}
-            // onChange={(e) => setTitle(e.target.value)}
-            // placeholder="Appointment Title"
-            className="border border-gray-300 rounded-md p-2 w-2/3"
-          />
-        </div> */}
-
           <div className="flex gap-4 mb-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <RiServiceLine size={24} className="mr-2" />
-              Service Type
+              Service Type <span className="text-red-500">*</span>
             </label>
             <select
               value={serviceType}
@@ -426,7 +431,7 @@ const AppointmentModal = ({
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <SlNote size={24} className="mr-2" />
-              Activity
+              Activity <span className="text-red-500">*</span>
             </label>
             <select
               value={activity}
@@ -445,7 +450,7 @@ const AppointmentModal = ({
           <div className="flex gap-4 justify-between">
             <label className="text-sm font-medium flex items-center mb-1 w-1/3">
               <BsCalendar2Date size={24} className="mr-2" />
-              Date
+              Date<span className="text-red-500">*</span>
             </label>
             {/* Date Input */}
             <div className="flex gap-6 w-2/3">
@@ -484,7 +489,7 @@ const AppointmentModal = ({
               <div className="flex gap-2">
                 <label className="text-sm font-medium flex items-center mb-1">
                   {/* <MdOutlineAccessTime size={24} className="mr-2" /> */}
-                  Start
+                  Start<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="time"
@@ -498,7 +503,7 @@ const AppointmentModal = ({
               <div className="flex gap-2 ">
                 <label className="text-sm font-medium flex items-center mb-1">
                   {/* <MdOutlineAccessTime size={24} className="mr-2" /> */}
-                  End
+                  End<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="time"
@@ -513,7 +518,7 @@ const AppointmentModal = ({
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <GrLocation size={24} className="mr-2" />
-              Place of Service
+              Place of Service<span className="text-red-500">*</span>
             </label>
             <select
               value={planOfService}
@@ -535,7 +540,7 @@ const AppointmentModal = ({
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <MdOutlineAccessTime size={24} className="mr-2" />
-              Method of Visit
+              Method of Visit<span className="text-red-500">*</span>
             </label>
             <select
               value={methodOfContact}

@@ -86,7 +86,7 @@ export default function Register() {
     }
 
     try {
-      const res = await fetch(`${API_ROUTES.AUTH.BASE}/register`, {
+      const res = await fetch(`${API_ROUTES.AUTH.BASE}/register/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

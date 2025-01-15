@@ -7,29 +7,30 @@ const CardData = () => {
     const [newMessagesCount, setNewMessagesCount] = useState(null);
     const [visitsWaitingCount, setVisitsWaitingCount] = useState(null);
     const [tenantsRunningOutCount, setTenantsRunningOutCount] = useState(null);
+    const [billsPendingCount, setBillsPendingCount] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
 
         const fetchNewMessagesCount = async () => {
             try {
-                const response = await fetch(API_ROUTES.MESSAGES.NEW_COUNT, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({
-                        userId: "673a06baec7284a31e0af34e",
-                    }),
-                });
+                // const response = await fetch(API_ROUTES.MESSAGES.NEW_COUNT, {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //         'Authorization': `Bearer ${token}`,
+                //     },
+                //     body: JSON.stringify({
+                //         userId: "673a06baec7284a31e0af34e",
+                //     }),
+                // });
 
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                // if (!response.ok) {
+                //     throw new Error('Network response was not ok');
+                // }
 
-                const result = await response.json();
-                setNewMessagesCount(result.response);
+                // const result = await response.json();
+                setNewMessagesCount(0);
             } catch (error) {
                 console.error('Error fetching new messages count:', error);
             }
@@ -73,9 +74,25 @@ const CardData = () => {
             }
         };
 
+        const fetchBillsPendingCount = async () => {
+            try {
+                const response = await fetch(API_ROUTES.BILLING.GET_BILLS_PENDING, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                const result = await response.json();
+                setBillsPendingCount(result.response.count);
+            }
+            catch (error) {
+                console.error('Error fetching bills pending count:', error);
+            }
+        }
+
         fetchNewMessagesCount();
         fetchVisitsWaitingCount();
         fetchTenantsRunningOutCount();
+        fetchBillsPendingCount();
     }, []);
 
     return (
@@ -94,7 +111,7 @@ const CardData = () => {
                 description="Tenants running out of Units"
             />
             <InfoCard
-                count={tenantsRunningOutCount !== null ? tenantsRunningOutCount : '-'}
+                count={billsPendingCount !== null ? billsPendingCount : '-'}
                 description="Bills Pending"
             />
         </div>

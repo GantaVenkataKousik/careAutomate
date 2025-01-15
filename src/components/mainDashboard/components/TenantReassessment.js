@@ -29,7 +29,6 @@ const TenantReassessment = () => {
                 }
 
                 const result = await response.json();
-                console.log(result);
                 setDayCounts(result.response);
                 setLoading(false);
             } catch (error) {

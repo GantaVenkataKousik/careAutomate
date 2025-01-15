@@ -470,5 +470,10 @@ const ProfilePage = () => {
     </div>
   );
 };
-
+const styles = {
+  header: {
+    fontWeight: "bold",
+    marginBottom: "20px",
+  },
+};
 export default ProfilePage;

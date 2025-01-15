@@ -118,17 +118,11 @@ const MainDashboard = () => {
                   <div className="mt-2">
                     {activeView === "tenant" && (
                       <>
-                        <h3 className="mt-2 ml-2 text-xl text-[#6f84f8] font-bold">
-                          Tenant
-                        </h3>
                         <TenantInfoChart style={{ height: "150px" }} />{" "}
                       </>
                     )}
                     {activeView === "hcm" && (
                       <>
-                        <h3 className="mt-2 ml-2 text-xl text-[#6f84f8] font-bold">
-                          HCM
-                        </h3>
                         <HCMInfoChart style={{ height: "150px" }} />{" "}
                       </>
                     )}

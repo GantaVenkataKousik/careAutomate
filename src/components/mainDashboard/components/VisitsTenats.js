@@ -31,26 +31,29 @@ const VisitsTenats = () => {
         }
 
         const result = await response.json();
-        // console.log('visit compliance : ', result);
-        const availableYears = Object.keys(result.response);
-        setYears(availableYears);
 
-        const data = result.response[year] || {}; // Corrected access to response
+        if (result.success) {
+          const availableYears = Object.keys(result.response);
+          setYears(availableYears);
 
-        const direct = [];
-        const indirect = [];
-        const remote = [];
-        const months = [];
+          const data = result.response[year] || {};
 
-        Object.entries(data).forEach(([month, counts]) => {
-          months.push(month);
-          direct.push(counts.direct);
-          indirect.push(counts.indirect);
-          remote.push(counts.remote);
-        });
+          const allMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          const direct = [];
+          const indirect = [];
+          const remote = [];
 
-        setCategories(months);
-        setVisitData({ direct, indirect, remote });
+          allMonths.forEach(month => {
+            const counts = data[month] || {};
+            direct.push(counts.direct ?? 0);
+            indirect.push(counts.indirect ?? 0);
+            remote.push(counts.remote ?? 0);
+          });
+
+          setCategories(allMonths);
+          setVisitData({ direct, indirect, remote });
+        }
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching visit data:", error);

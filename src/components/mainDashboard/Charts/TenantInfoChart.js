@@ -39,6 +39,9 @@ const TenantAreaChart = () => {
         }
     });
 
+    const [selectedYear, setSelectedYear] = useState("");
+    const [availableYears, setAvailableYears] = useState([]);
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         const fetchData = async () => {
@@ -52,13 +55,17 @@ const TenantAreaChart = () => {
                 const result = await response.json();
 
                 if (result.success) {
-                    const data = result.response["2024"];
-                    const allMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                    const months = Object.keys(data);
-                    const getRandomValue = () => Math.floor(Math.random() * 9) + 2;
+                    const years = Object.keys(result.response);
+                    setAvailableYears(years);
+                    setSelectedYear(years[0]); // Set the first available year as the default
 
-                    const movedOutData = allMonths.map(month => data[month]?.movedOut ?? getRandomValue());
-                    const receivingServicesData = allMonths.map(month => data[month]?.receivingServices ?? getRandomValue());
+                    const data = result.response[years[0]];
+                    const allMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+                    // Use 0 as default if data for a month is not available
+                    const movedOutData = allMonths.map(month => data[month]?.movedOut ?? 0);
+                    const receivingServicesData = allMonths.map(month => data[month]?.receivingServices ?? 0);
+
                     setChartData({
                         series: [
                             {
@@ -86,8 +93,70 @@ const TenantAreaChart = () => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        if (!selectedYear) return;
+
+        const token = localStorage.getItem('token');
+        const fetchDataForYear = async () => {
+            try {
+                const response = await fetch(`${API_ROUTES.TENANTS.GET_INFO}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    const data = result.response[selectedYear];
+                    const allMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+                    // Use 0 as default if data for a month is not available
+                    const movedOutData = allMonths.map(month => data[month]?.movedOut ?? 0);
+                    const receivingServicesData = allMonths.map(month => data[month]?.receivingServices ?? 0);
+
+                    setChartData({
+                        series: [
+                            {
+                                name: "Active",
+                                data: receivingServicesData
+                            },
+                            {
+                                name: "Released",
+                                data: movedOutData
+                            }
+                        ],
+                        options: {
+                            ...chartData.options,
+                            xaxis: {
+                                categories: allMonths
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchDataForYear();
+    }, [selectedYear]);
+
     return (
         <div>
+            <div className="mb-4">
+                <label htmlFor="year-select" className="mr-2">Select Year:</label>
+                <select
+                    id="year-select"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    className="border border-gray-300 rounded-md p-2"
+                >
+                    {availableYears.map(year => (
+                        <option key={year} value={year}>{year}</option>
+                    ))}
+                </select>
+            </div>
             <div id="chart">
                 <ReactApexChart
                     options={chartData.options}
