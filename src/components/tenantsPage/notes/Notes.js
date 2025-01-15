@@ -76,7 +76,7 @@ const Notes = () => {
   }, [tenantData, token, shouldRefetchNotes]);
 
   const addNote = (newNote) => {
-    console.log("add", newNote);
+    // console.log("add", newNote);
     const mappedNotes = newNote.map((note) => ({
       id: note.noteId,
       title: note.title,

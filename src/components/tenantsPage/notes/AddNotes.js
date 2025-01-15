@@ -22,9 +22,9 @@ const AddNotes = ({ setEditMode, addNote, tenantId }) => {
 
     try {
       const apiUrl = `${API_ROUTES.TENANTS.BASE}/add-tenant-note`;
-      console.log("API URL:", apiUrl);
-      console.log("New Note:", newNote);
-      console.log("Token:", token);
+      // console.log("API URL:", apiUrl);
+      // console.log("New Note:", newNote);
+      // console.log("Token:", token);
 
       const response = await axios.post(apiUrl, newNote, {
         headers: {
@@ -33,7 +33,7 @@ const AddNotes = ({ setEditMode, addNote, tenantId }) => {
         },
       });
 
-      console.log("Response:", response);
+      // console.log("Response:", response);
 
       if (response.data?.success) {
         toast.success("Note Added Successfully");
