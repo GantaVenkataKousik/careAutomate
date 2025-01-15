@@ -17,27 +17,30 @@ const AddNotes = ({ setEditMode, addNote, tenantId }) => {
       tenantId: tenantId,
       title: title,
       content: noteDetails,
-      notedBy: currentUser?._id, // Optional chaining for safety
+      notedBy: currentUser._id, // Optional chaining for safety
     };
 
     try {
       const apiUrl = `${API_ROUTES.TENANTS.BASE}/add-tenant-note`;
-      console.log("API URL:", apiUrl);
-      console.log("New Note:", newNote);
-      console.log("Token:", token);
+      // console.log("API URL:", apiUrl);
+      // console.log("New Note:", newNote);
+      // console.log("Token:", token);
 
       const response = await axios.post(apiUrl, newNote, {
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-          Authentication: `Bearer ${token}`,
         },
       });
 
-      console.log("Response:", response);
+      // console.log("Response:", response);
 
       if (response.data?.success) {
         toast.success("Note Added Successfully");
         setEditMode(false);
+        if (response.data.response?.tenantNotes) {
+          addNote(response.data.response.tenantNotes.notes);
+        }
         console.log(response.data);
       } else {
         console.log(response.data);
