@@ -6,7 +6,7 @@ import Preferences from "./settings/Preferences";
 export default function Settings() {
   const [selectedOption, setSelectedOption] = useState("Child Accounts");
 
-  const menuOptions = ["Child Accounts", "Security", "Preferences"];
+  const menuOptions = ["Child Accounts", "Security"];
 
   return (
     <>

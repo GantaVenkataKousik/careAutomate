@@ -24,11 +24,11 @@ const VisitCalendarView = ({ visits }) => {
         eventPropGetter={(event) => {
           let backgroundColor = "#D5D8DC"; // Default gray
 
-          if (event.approved && !event.rejected) {
+          if (event.status === "approved") {
             backgroundColor = "#6DD98C"; // Green for approved
-          } else if (!event.approved && event.rejected) {
+          } else if (event.status === "rejected") {
             backgroundColor = "#FF6B6B"; // Red for rejected
-          } else if (!event.approved && !event.rejected) {
+          } else if (event.status === "pending") {
             backgroundColor = "#6F84F8"; // Purple for neither
           }
 

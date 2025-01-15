@@ -5,9 +5,9 @@ const MnitsLogin = () => {
   const [editMode, setEditMode] = useState(false);
   const [email, setEmail] = useState("surya.abothula@gmail.com");
   const [password, setPassword] = useState("surya1234");
-  const [confirmPassword, setConfirmPassword] = useState("surya1234");
+  // const [confirmPassword, setConfirmPassword] = useState("surya1234");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const getInputProps = () => {
     if (editMode) {
@@ -22,7 +22,7 @@ const MnitsLogin = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
+    if (!password) {
       console.log("Password and Confirm Password are same");
       return;
     }
@@ -88,33 +88,6 @@ const MnitsLogin = () => {
               </span>
             </div>
           </div>
-
-          {editMode && (
-            <div className="flex gap-5 items-center p-2 mt-5 w-2/3">
-              <label htmlFor="confirmPassword" className="text-xl w-1/3">
-                Confirm Password:
-              </label>
-              <div className="relative w-2/3">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="border-2 border-gray-300 rounded-lg px-5 py-2 w-full"
-                  required
-                />
-                <span
-                  className="absolute top-2.5 right-3 cursor-pointer text-gray-500 hover:text-black"
-                  onClick={() => setShowConfirmPassword((prev) => !prev)}
-                >
-                  {showConfirmPassword ? (
-                    <FaRegEye className="w-5 h-5" />
-                  ) : (
-                    <FaRegEyeSlash className="w-5 h-5" />
-                  )}
-                </span>
-              </div>
-            </div>
-          )}
 
           {/**Buttons div */}
           {editMode && (

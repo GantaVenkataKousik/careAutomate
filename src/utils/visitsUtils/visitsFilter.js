@@ -3,13 +3,12 @@ export const visitsFilter = (visitsData) => {
   return visitsData.map((visit) => {
     const {
       serviceType,
+      tenantName,
       duration,
       details,
       status,
       hcm,
       startDate,
-      rejected,
-      approved,
       dummy,
     } = visit;
 
@@ -47,13 +46,11 @@ export const visitsFilter = (visitsData) => {
     }
 
     return {
-      title: serviceType || "Service", // Default title if not provided
+      title: `${tenantName || "Details"} with ${hcm || "Person"}`, // Default title if not provided
       start: startTime || null, // Full start date-time as Date object
       end: endTime || null, // Full end date-time
-      description: `${details || "Details"} with ${hcm || "Person"}`, // Combine details and person
+      description: `${serviceType || "Details"} with ${hcm || "Person"}`, // Combine details and person
       status: status || "unknown", // Retain appointment status
-      approved: !!approved, // Ensure boolean
-      rejected: !!rejected, // Ensure boolean
     };
   });
 };

@@ -268,6 +268,12 @@ const PopupPage = () => {
         return;
       }
     }
+    if (currentStep == 1) {
+      if (hcmData.password != hcmData.confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+      }
+    }
     if (currentStep === 2) {
       try {
         const confirmProceed = window.confirm(
