@@ -76,6 +76,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
   const [responseOfVisit, setResponseOfVisit] = useState(
     isEdit ? onVisitCreated.response : ""
   );
+  const [tenantServices, setTenantServices] = useState([]);
+  const [loadingServices, setLoadingServices] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userName = user?.name;
@@ -423,6 +425,41 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
     value: tenant.id,
     label: tenant.name,
   }));
+
+  useEffect(() => {
+    const fetchTenantServices = async () => {
+      if (!selectedTenantId) return;
+
+      setLoadingServices(true);
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_ROUTES.SERVICE_TRACKING.GET_ALL_SERVICES}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.status === 200 && data.success) {
+          const services = data.response.filter(
+            (service) => service.tenantId === selectedTenantId
+          );
+          setTenantServices(services);
+        } else {
+          console.error("Failed to fetch services:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      } finally {
+        setLoadingServices(false);
+      }
+    };
+
+    fetchTenantServices();
+  }, [selectedTenantId]);
+
   return isOpen ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="relative flex flex-col pb-10 max-h-[40rem] p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-lg w-full">
@@ -485,18 +522,24 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
             </select>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 mb-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <RiServiceLine size={24} className="mr-2" />
-              Service Type
+              Service Type <span className="text-red-500">*</span>
             </label>
             <select
               value={serviceType}
               onChange={(e) => setServiceType(e.target.value)}
               className="border border-gray-300 rounded-md p-2 w-2/3"
             >
-              <option value="Housing Sustaining">Housing Sustaining</option>
-              <option value="Housing Transition">Housing Transition</option>
+              <option value="" disabled>
+                {loadingServices ? "Loading services..." : "Select a service"}
+              </option>
+              {tenantServices.map((service) => (
+                <option key={service._id} value={service.serviceType}>
+                  {service.serviceType} ({dayjs(service.startDate).format("MM/DD/YYYY")} - {dayjs(service.endDate).format("MM/DD/YYYY")})
+                </option>
+              ))}
             </select>
           </div>
 
@@ -714,7 +757,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
                   value={
                     travel === "Yes"
                       ? parseFloat(milesWithTenant || 0) +
-                        parseFloat(milesWithoutTenant || 0)
+                      parseFloat(milesWithoutTenant || 0)
                       : 0
                   }
                   readOnly

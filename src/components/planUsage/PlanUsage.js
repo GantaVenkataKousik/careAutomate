@@ -7,6 +7,7 @@ import axios from "axios";
 import { API_ROUTES } from "../../routes";
 import { useLocation } from "react-router-dom";
 import RenderPlanData from "./RenderPlanData";
+import dayjs from "dayjs";
 
 Modal.setAppElement("#root");
 
@@ -49,7 +50,12 @@ export default function PlanUsage() {
         // Get unique periods from all service types
         const uniquePeriods = Array.from(
           new Set(data.map((item) => item.period))
-        ).map((period) => ({ period }));
+        ).map((period) => {
+          const [start, end] = period.split(" to ");
+          return {
+            period: `${dayjs(start).format("MM/DD/YYYY")} - ${dayjs(end).format("MM/DD/YYYY")}`,
+          };
+        });
 
         setYearOptions(uniquePeriods);
         if (uniquePeriods.length > 0) {

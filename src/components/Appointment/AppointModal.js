@@ -16,6 +16,7 @@ import dayjs from "dayjs";
 import { BASE_URL } from "../../config";
 import { API_ROUTES } from "../../routes";
 import activities from "../../utils/commonUtils/activities";
+import Select from "react-select";
 
 const AppointmentModal = ({
   isOpen,
@@ -35,6 +36,7 @@ const AppointmentModal = ({
   const [selectedHcmId, setSelectedHcmId] = useState("");
   const [activity, setActivity] = useState("");
   const [tenantServices, setTenantServices] = useState([]);
+  const [loadingServices, setLoadingServices] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -72,6 +74,7 @@ const AppointmentModal = ({
   const [allTenants, setAllTenants] = useState([]);
   const [hcmList, setHcmList] = useState([]);
   const [scheduleCreated, setScheduleCreated] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchTenants = async () => {
@@ -94,8 +97,8 @@ const AppointmentModal = ({
 
         if (response.status === 200 && data.success) {
           const tenantData = data.response.map((tenant) => ({
-            id: tenant._id,
-            name: tenant.name,
+            value: tenant._id,
+            label: tenant.name,
           }));
           setAllTenants(tenantData);
         } else {
@@ -150,6 +153,7 @@ const AppointmentModal = ({
     const fetchTenantServices = async () => {
       if (!selectedTenantId) return;
 
+      setLoadingServices(true);
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(`${API_ROUTES.SERVICE_TRACKING.GET_ALL_SERVICES}`, {
@@ -171,6 +175,8 @@ const AppointmentModal = ({
         }
       } catch (error) {
         console.error("Error fetching services:", error);
+      } finally {
+        setLoadingServices(false);
       }
     };
 
@@ -366,12 +372,6 @@ const AppointmentModal = ({
     return time;
   };
 
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const filteredTenants = allTenants.filter(tenant =>
-    tenant.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return isOpen ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="relative flex flex-col pb-10 max-h-[40rem] p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-lg w-full">
@@ -391,38 +391,24 @@ const AppointmentModal = ({
               <GoPerson size={24} className="mr-2" />
               Tenant <span className="text-red-500">*</span>
             </label>
-            <div className="w-2/3">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search for a tenant"
-                className="border border-gray-300 rounded-md p-2 w-full"
-              />
-              {filteredTenants.length > 0 ? (
-                <ul className="border border-gray-300 rounded-md mt-2 max-h-40 overflow-y-auto">
-                  {filteredTenants.map((tenant) => (
-                    <li
-                      key={tenant.id}
-                      onClick={() => {
-                        setSelectedTenantId(tenant.id);
-                        setSearchTerm(tenant.name); // Set search term to selected tenant's name
-                      }}
-                      className={`p-2 cursor-pointer ${selectedTenantId === tenant.id ? 'bg-blue-100' : ''}`}
-                    >
-                      {tenant.name}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-2 text-sm text-gray-500">No tenants found</p>
-              )}
-            </div>
+            <Select
+              value={
+                allTenants.find((option) => option.value === selectedTenantId) ||
+                null
+              }
+              onChange={(selectedOption) =>
+                setSelectedTenantId(selectedOption ? selectedOption.value : "")
+              }
+              options={allTenants}
+              placeholder="Select a Tenant"
+              isLoading={allTenants.length === 0}
+              className="w-2/3"
+            />
           </div>
 
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
-              Assigned HCM's <span className="text-red-500">*</span>
+              <GoPerson size={24} className="mr-2" />Assigned HCM's <span className="text-red-500">*</span>
             </label>
             <select
               value={selectedHcmId}
@@ -457,7 +443,7 @@ const AppointmentModal = ({
               className="border border-gray-300 rounded-md p-2 w-2/3"
             >
               <option value="" disabled>
-                Select a service
+                {loadingServices ? "Loading services..." : "Select a service"}
               </option>
               {tenantServices.map((service) => (
                 <option key={service._id} value={service.serviceType}>
