@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { API_ROUTES } from "../routes";
 import { formatTime, monthNames, today } from "../utils/commonUtils/timeFilter";
 import ProfileCard from "./tenantsPage/ProfileCard";
+import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -190,9 +191,9 @@ const ProfilePage = () => {
 
   const handleBillingPaymentsClick = (tenantId) => {
     if (tenantId) {
-      navigate('/tenants/billsAndPayments', { state: { tenantId } });
+      navigate("/tenants/billsAndPayments", { state: { tenantId } });
     } else {
-      console.error('Tenant ID is missing');
+      console.error("Tenant ID is missing");
     }
   };
 
@@ -206,7 +207,7 @@ const ProfilePage = () => {
         <ProfileCard tenantData={tenantData} tenantId={tenantId} />
 
         {/* 30% Column */}
-        <div className="bg-white p-5 rounded-[20px] shadow-lg max-w-lg mx-auto">
+        <div className="relative bg-white p-5 rounded-[20px] shadow-lg max-w-lg mx-auto">
           {/* Assigned HCMs Header */}
           <div className="flex flex-col mb-6">
             <div className="flex items-center gap-3">
@@ -215,17 +216,16 @@ const ProfilePage = () => {
                 Assigned HCM's
               </h2>
             </div>
-            <a
-              href="/assign-hcm"
-              className="text-[#5970F4] hover:underline text-sm ml-auto mt-2"
-            >
-              View More
-            </a>
           </div>
 
           {/* List of Assigned HCMs */}
           <div className="space-y-3">
             <AssignedHcms tenantId={tenantId} />
+          </div>
+          {/* Icons at Bottom */}
+          <div className="absolute bottom-5 right-5 flex space-x-2">
+            <AiFillPlusCircle className="text-3xl text-[#6DD98C] cursor-pointer" />
+            <AiFillMinusCircle className=" text-3xl text-[#F57070] cursor-pointer" />
           </div>
         </div>
       </div>
@@ -253,7 +253,7 @@ const ProfilePage = () => {
             <div className="space-y-2 overflow-y-auto max-h-[calc(5*7rem)] mt-2 tenant-visits-scrollbar">
               {/* Display upcoming appointments */}
               {appointments?.appointments?.upcoming &&
-                Object.keys(appointments.appointments.upcoming).length > 0 ? (
+              Object.keys(appointments.appointments.upcoming).length > 0 ? (
                 Object.entries(appointments.appointments.upcoming).map(
                   ([year, months]) =>
                     Object.entries(months).map(([month, days]) =>

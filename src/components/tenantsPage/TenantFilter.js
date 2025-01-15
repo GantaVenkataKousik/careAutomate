@@ -142,7 +142,7 @@ const TenantFilter = ({ onFilterUpdate }) => {
 
   return (
     <div className="flex flex-col h-full w-full p-2 py-4">
-      <h2 className="flex justify-center text-xl text-[#6F84F8] mb-2 font-bold">
+      <h2 className="flex justify-center text-3xl text-[#6F84F8] mb-4 font-black">
         Filter
       </h2>
 

@@ -37,6 +37,10 @@ export const API_ROUTES = {
     GET_BILLS_PENDING: `${BASE_URL}/bill/get-bills-pending/`,
     GET_BILLS_RECEIVED: `${BASE_URL}/bill/get-bills-received/`,
   },
+  SERVICE_TRACKING: {
+    BASE: `${BASE_URL}/service-tracking`,
+    GET_ALL_SERVICES: `${BASE_URL}/serviceTracking/get-all-services/`,
+  },
   TENANTS: {
     BASE: `${BASE_URL}/tenant`,
     UPDATE_TENANT: `${BASE_URL}/tenant/update-tenant/`,

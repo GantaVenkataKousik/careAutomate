@@ -29,11 +29,12 @@ const AppointmentModal = ({
   const [reasonForRemote, setReasonForRemote] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [serviceType, setServiceType] = useState("Housing Sustaining");
+  const [serviceType, setServiceType] = useState("");
   const [methodOfContact, setMethodOfContact] = useState("in-person");
   const [selectedTenantId, setSelectedTenantId] = useState("");
   const [selectedHcmId, setSelectedHcmId] = useState("");
   const [activity, setActivity] = useState("");
+  const [tenantServices, setTenantServices] = useState([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -47,7 +48,7 @@ const AppointmentModal = ({
         setPlanOfService(appointmentData.location || "");
         setStartTime(dayjs(appointmentData.startTime).format("HH:mm") || "");
         setEndTime(dayjs(appointmentData.endTime).format("HH:mm") || "");
-        setServiceType(appointmentData.service || "Housing Sustaining");
+        setServiceType(appointmentData.service || "");
         setMethodOfContact(appointmentData.methodOfContact || "in-person");
         setSelectedTenantId(appointmentData.tenantId || "");
         setSelectedHcmId(appointmentData.hcmId || "");
@@ -59,7 +60,7 @@ const AppointmentModal = ({
         setReasonForRemote("");
         setStartTime("");
         setEndTime("");
-        setServiceType("Housing Sustaining");
+        setServiceType("");
         setMethodOfContact("in-person");
         setSelectedTenantId("");
         setSelectedHcmId("");
@@ -144,6 +145,38 @@ const AppointmentModal = ({
 
     fetchHcm();
   }, []);
+
+  useEffect(() => {
+    const fetchTenantServices = async () => {
+      if (!selectedTenantId) return;
+
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_ROUTES.SERVICE_TRACKING.GET_ALL_SERVICES}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.status === 200 && data.success) {
+          const services = data.response.filter(
+            (service) => service.tenantId === selectedTenantId
+          );
+          setTenantServices(services);
+        } else {
+          console.error("Failed to fetch services:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+
+    fetchTenantServices();
+  }, [selectedTenantId]);
+
   const handleSubmit = () => {
     if (isEdit) {
       handleUpdateAppointment();
@@ -234,6 +267,7 @@ const AppointmentModal = ({
       toast.error("Error updating appointment. Please try again.");
     }
   };
+
   const handleCreateAppointment = async () => {
     // Validate all fields
     if (!selectedTenantId || !selectedHcmId || !serviceType || !activity || !methodOfContact || !planOfService || !startDate || !startTime || !endTime) {
@@ -388,7 +422,6 @@ const AppointmentModal = ({
 
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
-              <GoPerson size={24} className="mr-2" />
               Assigned HCM's <span className="text-red-500">*</span>
             </label>
             <select
@@ -423,8 +456,14 @@ const AppointmentModal = ({
               onChange={(e) => setServiceType(e.target.value)}
               className="border border-gray-300 rounded-md p-2 w-2/3"
             >
-              <option value="Housing Sustaining">Housing Sustaining</option>
-              <option value="Housing Transition">Housing Transition</option>
+              <option value="" disabled>
+                Select a service
+              </option>
+              {tenantServices.map((service) => (
+                <option key={service._id} value={service.serviceType}>
+                  {service.serviceType} ({dayjs(service.startDate).format("MM/DD/YYYY")} - {dayjs(service.endDate).format("MM/DD/YYYY")})
+                </option>
+              ))}
             </select>
           </div>
 
@@ -439,7 +478,7 @@ const AppointmentModal = ({
               className="border border-gray-300 rounded-md p-2 w-2/3"
             >
               <option value="">Select an activity</option>
-              {activities[serviceType].map((activity, index) => (
+              {activities[serviceType]?.map((activity, index) => (
                 <option key={index} value={activity}>
                   {activity}
                 </option>

@@ -3,6 +3,7 @@ import axios from "axios";
 import { FaUserTie } from "react-icons/fa";
 import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
 import { BASE_URL } from "../../config";
+import { AiFillPlusCircle, AiFillMinusCircle } from "react-icons/ai";
 
 // Component for each row
 const HCMRow = ({ name, onCallClick }) => (
@@ -54,7 +55,7 @@ const TenantsAssigned = ({ hcmId }) => {
   }, [hcmId]);
 
   return (
-    <div className="bg-white p-5 rounded-[20px] shadow-lg max-w-md mx-auto">
+    <div className="relative bg-white p-5 rounded-[20px] shadow-lg max-w-md mx-auto">
       {/* Assigned HCMs Header */}
       <div className="flex flex-col mb-6">
         <div className="flex items-center gap-3">
@@ -63,16 +64,10 @@ const TenantsAssigned = ({ hcmId }) => {
             Assigned Tenant's
           </h2>
         </div>
-        <a
-          href="/assign-tenants"
-          className="text-[#5970F4] hover:underline text-sm ml-auto mt-2"
-        >
-          View More
-        </a>
       </div>
 
       {/* List of Assigned HCMs */}
-      <div className="space-y-3 overflow-y-auto max-h-[calc(5*3rem)] mt-2 tenant-visits-scrollbar">
+      <div className=" space-y-3 overflow-y-auto max-h-[calc(5*3rem)] mt-2 tenant-visits-scrollbar">
         {tenants.map((tenant) => (
           <div
             className="bg-[#e3e7f8] flex items-center justify-between p-3 rounded-lg shadow-sm "
@@ -85,6 +80,12 @@ const TenantsAssigned = ({ hcmId }) => {
             <PhoneInTalkIcon className="text-black" />
           </div>
         ))}
+      </div>
+
+      {/* Icons at Bottom */}
+      <div className="absolute bottom-5 right-5 flex space-x-2">
+        <AiFillPlusCircle className="text-3xl text-[#6DD98C] cursor-pointer" />
+        <AiFillMinusCircle className=" text-3xl text-[#F57070] cursor-pointer" />
       </div>
     </div>
   );

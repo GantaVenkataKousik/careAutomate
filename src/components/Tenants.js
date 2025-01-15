@@ -127,9 +127,6 @@ const Tenants = () => {
       </div>
 
       <div style={styles.mainContainer}>
-        <div style={styles.filterContainer} className="tenant-visits-scrollbar">
-          <TenantFilter onFilterUpdate={handleFilterUpdate} />
-        </div>
         <div style={styles.tenantGridContainer}>
           <div style={styles.tenantGrid}>
             {filteredTenants.length > 0 ? (
@@ -204,6 +201,9 @@ const Tenants = () => {
             )}
           </div>
         </div>
+        <div style={styles.filterContainer} className="tenant-visits-scrollbar">
+          <TenantFilter onFilterUpdate={handleFilterUpdate} />
+        </div>
       </div>
       <EditTenant
         open={openModal}
@@ -228,7 +228,10 @@ const styles = {
   headerActions: {
     display: "flex",
     alignItems: "center",
-    marginBottom: "20px",
+    justifyContent: "space-between",
+    padding: "0px 20px 20px 20px",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+    marginBottom: "10px",
   },
   searchBar: {
     display: "flex",
@@ -278,11 +281,12 @@ const styles = {
   filterContainer: {
     width: "280px", // Fixed width for filter
     flexShrink: 0,
-    border: "1px solid #eee",
+    border: "1px solid #6f84f8",
     borderRadius: "20px",
     padding: "10px",
     height: "100%",
     overflowY: "auto",
+    marginTop: "10px",
   },
   tenantGridContainer: {
     flex: 1,
@@ -311,12 +315,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
   },
-  headerActions: {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: "20px",
-    padding: "0 10px",
-  },
+
   tenantBody: {
     display: "flex",
     flex: 1,

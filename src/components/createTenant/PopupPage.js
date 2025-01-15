@@ -16,6 +16,7 @@ import { BASE_URL } from "../../config";
 import ChecklistHCMs from "./AssignHCMs";
 import { setServices } from "../../redux/tenant/tenantSlice";
 import { current } from "@reduxjs/toolkit";
+
 import {
   Dialog,
   DialogActions,
@@ -41,10 +42,6 @@ const steps = [
   {
     name: "Documentation",
     subSteps: [Substep12, Substep22],
-  },
-  {
-    name: "Schedule",
-    subSteps: [ScheduleAppointment],
   },
 ];
 
@@ -99,12 +96,8 @@ const PopupPage = () => {
       { key: "insurance", label: "Insurance Type" },
       { key: "insuranceNumber", label: "Insurance Number" },
       { key: "diagnosisCode", label: "Diagnosis Code" },
-      { key: "caseManagerFirstName", label: "Case Manager First Name" },
-      { key: "caseManagerLastName", label: "Case Manager Last Name" },
-      { key: "caseManagerPhoneNumber", label: "Case Manager Phone Number" },
-      { key: "caseManagerEmail", label: "Case Manager Email" },
-      { key: "race", label: "Race" },
-      { key: "ethnicity", label: "Ethnicity" },
+      // { key: "race", label: "Race" },
+      // { key: "ethnicity", label: "Ethnicity" },
     ];
     console.log(tenantData);
     for (let field of requiredFields) {
@@ -113,7 +106,6 @@ const PopupPage = () => {
         return;
       }
     }
-
     // if (currentStep === 0) {
     //   await handleSave();
     // }
@@ -147,7 +139,7 @@ const PopupPage = () => {
       return;
     }
 
-    if (currentStep === steps.length - 2) {
+    if (currentStep === steps.length - 1) {
       const confirmProceed = window.confirm(
         "Are you sure you want to proceed to create the tenant?"
       );
@@ -156,7 +148,7 @@ const PopupPage = () => {
       }
     }
 
-    if (currentStep === steps.length - 3 && assignedHCMs.ids.length === 0) {
+    if (currentStep === steps.length - 2 && assignedHCMs.ids.length === 0) {
       toast.error("Please select atleast one HCM.");
       return;
     }
@@ -260,8 +252,17 @@ const PopupPage = () => {
     if (currentStep === 3) {
       try {
         const tenantID = await handleSave(); // Wait for handleSave to complete and return tenantID
+        if (!tenantID) {
+          throw new Error(
+            "Failed to save tenant data. Tenant ID is null or undefined."
+          );
+        }
+
         await handleAssignService(tenantID); // Pass tenantID if needed here
         await assignHCMToTenant(tenantID); // Pass tenantID explicitly
+
+        // If all promises resolve successfully
+        setComplete(true);
       } catch (error) {
         console.error("Error in step 3 operations:", error);
         toast.error("Please try again!");
@@ -271,7 +272,7 @@ const PopupPage = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      setComplete(true);
+      // setComplete(true);
     }
   };
 
@@ -395,7 +396,21 @@ const PopupPage = () => {
       }
     } catch (error) {
       console.error("Error during API call:", error);
-      toast.error("Error saving tenant data. Please try again.");
+
+      // Check if the error response contains specific information
+      if (error.response && error.response.status === 400) {
+        const errorMessage = error.response.data?.message; // Adjust based on your API's error format
+        console.log("pp", errorMessage);
+        if (errorMessage && errorMessage.includes("email")) {
+          toast.error("User already exists with that email.");
+        } else {
+          toast.error("Error saving tenant data. Please try again.");
+        }
+      } else {
+        // Fallback for other errors
+        toast.error("An unexpected error occurred. Please try again later.");
+      }
+
       return null;
     }
   };
@@ -583,18 +598,16 @@ const PopupPage = () => {
               <div className="flex w-full justify-between">
                 <button
                   className={`flex items-center px-4 py-2 rounded ${
-                    currentStep === 0 || currentStep === steps.length - 1
+                    currentStep === 0
                       ? "bg-white text-white "
                       : "bg-blue-500 text-white hover:bg-blue-700"
                   }`}
                   onClick={() =>
-                    currentStep !== 0 && currentStep !== steps.length - 1
+                    currentStep !== 0
                       ? setCurrentStep((prev) => Math.max(prev - 1, 0))
                       : null
                   }
-                  disabled={
-                    currentStep === 0 || currentStep === steps.length - 1
-                  }
+                  disabled={currentStep === 0}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -614,7 +627,7 @@ const PopupPage = () => {
                   >
                     <span className="flex items-center">
                       <span>
-                        {currentStep == steps.length - 2
+                        {currentStep == steps.length - 1
                           ? "Create Tenant"
                           : "Next"}
                       </span>

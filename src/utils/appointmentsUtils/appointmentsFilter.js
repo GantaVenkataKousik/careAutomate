@@ -3,7 +3,7 @@ export const appointmentFilter = (appointments) => {
   return appointments
     .map((appointment) => {
       const {
-        date,
+        // date,
         startTime,
         endTime,
         service,
@@ -12,6 +12,7 @@ export const appointmentFilter = (appointments) => {
         status,
         hcmId,
         tenantId,
+        activity,
       } = appointment;
 
       // Ensure startTime and endTime are valid Date objects
@@ -28,10 +29,10 @@ export const appointmentFilter = (appointments) => {
 
       // Construct the standardized appointment object
       return {
-        title: service, // Title of the event
+        title: `${from} with ${personWith}`, // Title of the event
         start, // Start time of the appointment
         end, // End time of the appointment
-        description: `${from} with ${personWith}`, // Description
+        description: `${service} - ${activity}`, // Description
         status, // Appointment status
         hcmId,
         tenantId,

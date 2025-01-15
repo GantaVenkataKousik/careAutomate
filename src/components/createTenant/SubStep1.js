@@ -7,6 +7,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import InputMask from "react-input-mask";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 const updateResponsibleParty = (hasResponsibleParty) => ({
   type: "UPDATE_RESPONSIBLE_PARTY",
@@ -21,6 +22,9 @@ const SubStep1 = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordMatch, setPasswordMatch] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState("");
   const [isMailingAddress, setIsMailingAddress] = useState(false);
 
   const handleChange = (e) => {
@@ -38,15 +42,28 @@ const SubStep1 = () => {
   };
 
   const handlePasswordChange = (e) => {
-    const { value } = e.target;
-    setPassword(value);
-    setPasswordMatch(value === confirmPassword);
+    const { name, value } = e.target;
+
+    if (name === "password") {
+      setPassword(value);
+      // Check password strength
+      if (value.length < 6) {
+        setPasswordStrength("Weak (at least 6 characters)");
+      } else if (!/[!@#$%^&*]/.test(value)) {
+        setPasswordStrength("Medium (add special characters)");
+      } else {
+        setPasswordStrength("Strong");
+      }
+      setPasswordMatch(value === confirmPassword);
+      dispatch(updateTenantInfo({ [name]: value }));
+    }
   };
 
   const handleConfirmPasswordChange = (e) => {
     const { value } = e.target;
     setConfirmPassword(value);
     setPasswordMatch(password === value);
+    dispatch(updateTenantInfo({ confirmPassword: value }));
   };
   const hasResponsibleParty = useSelector(
     (state) => state.tenant.hasResponsibleParty
@@ -350,7 +367,7 @@ const SubStep1 = () => {
         {/* Left side: Races checkboxes */}
         <div className="mr-10">
           <label style={{ fontWeight: "bold", marginBottom: "10px" }}>
-            Race & Ethnicity - <span className="text-red-500">*</span>
+            Race & Ethnicity -
           </label>
           <div>
             <label>
@@ -530,6 +547,8 @@ const SubStep1 = () => {
         <InputField
           label="Relationship"
           name="emergencyRelationship"
+          type="select"
+          options={["Father", "Mother", "Spouse", "Child", "Other"]}
           value={tenantData.emergencyRelationship}
           onChange={handleChange}
         />
@@ -555,6 +574,10 @@ const SubStep1 = () => {
             "Hennepin Health",
             "IMCare",
             "Medica",
+            "PrimeWest",
+            "SouthCountry",
+            "UCare",
+            "United Healthcare",
           ]}
           onFocus={() => setFocusedField("insuranceType")}
           onBlur={() => setFocusedField(null)}
@@ -650,11 +673,7 @@ const SubStep1 = () => {
       ></hr>
       <Section title="Case Manager Information">
         <InputField
-          label={
-            <>
-              First Name <span className="required">*</span>
-            </>
-          }
+          label={<>First Name</>}
           name="caseManagerFirstName"
           value={tenantData.caseManagerFirstName}
           onChange={handleChange}
@@ -667,21 +686,13 @@ const SubStep1 = () => {
           onChange={handleChange}
         />
         <InputField
-          label={
-            <>
-              Last Name <span className="required">*</span>
-            </>
-          }
+          label={<>Last Name</>}
           name="caseManagerLastName"
           value={tenantData.caseManagerLastName}
           onChange={handleChange}
         />
         <InputField
-          label={
-            <>
-              Phone Number <span className="required">*</span>
-            </>
-          }
+          label={<>Phone Number</>}
           name="caseManagerPhoneNumber"
           value={tenantData.caseManagerPhoneNumber}
           onChange={handleChange}
@@ -690,11 +701,7 @@ const SubStep1 = () => {
           required
         />
         <InputField
-          label={
-            <>
-              Email <span className="required">*</span>
-            </>
-          }
+          label={<>Email</>}
           name="caseManagerEmail"
           value={tenantData.caseManagerEmail}
           onChange={handleChange}
@@ -728,33 +735,48 @@ const SubStep1 = () => {
             onChange={handleChange}
             required
           />
-          <InputField
-            label={
-              <>
-                Password <span className="required">*</span>
-              </>
-            }
-            name="password"
-            value={tenantData.password}
-            onChange={handleChange}
-            type="password"
-            required
-          />
-          {/* <InputField
-            label={
-              <>
-                Confirm Password <span className="required">*</span>
-              </>
-            }
-            name="confirmPassword"
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            type="password"
-            required
-          />
-          <p style={{ color: passwordMatch ? "green" : "red" }}>
-            {passwordMatch ? "Passwords match" : "Passwords do not match"}
-          </p> */}
+          <div className="flex flex-col">
+            <InputField
+              label={
+                <>
+                  Password <span className="required">*</span>
+                </>
+              }
+              name="password"
+              value={password}
+              onChange={handlePasswordChange}
+              type={showPassword ? "text" : "password"}
+              required
+              showPassword={showPassword}
+              setShowPassword={setShowPassword}
+            />
+            {passwordStrength && (
+              <p style={{ fontSize: "0.875rem", color: "#666" }}>
+                Password strength: <span>{passwordStrength}</span>
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <InputField
+              label={
+                <>
+                  Confirm Password <span className="required">*</span>
+                </>
+              }
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              type={showConfirmPassword ? "text" : "password"}
+              required
+              showPassword={showConfirmPassword}
+              setShowPassword={setShowConfirmPassword}
+            />
+            {!passwordMatch && (
+              <p style={{ fontSize: "0.875rem", color: "red" }}>
+                Passwords do not match
+              </p>
+            )}
+          </div>
         </Section>
       )}
 
@@ -842,6 +864,8 @@ const SubStep1 = () => {
             }
             name="responsibleRelationship"
             value={tenantData.responsibleRelationship}
+            type="select"
+            options={["Father", "Mother", "Spouse", "Child", "Other"]}
             onChange={handleChange}
             onFocus={() => setFocusedField("responsibleRelationship")}
             onBlur={() => setFocusedField(null)}
@@ -868,11 +892,13 @@ const InputField = ({
   onFocus,
   onBlur,
   maxLength,
+  showPassword,
+  setShowPassword,
   pattern,
   placeholder,
   mask,
 }) => (
-  <div style={{ marginBottom: "2px" }}>
+  <div style={{ marginBottom: "2px", position: "relative" }}>
     <label style={styles.label} htmlFor={name}>
       {label}
     </label>
@@ -924,19 +950,38 @@ const InputField = ({
         required={required}
       />
     ) : (
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        style={{ ...styles.input, ...(focused ? styles.inputFocused : {}) }}
-        required={required}
-        maxLength={maxLength}
-        pattern={pattern}
-        placeholder={placeholder}
-      />
+      <div className="flex items-center relative w-4/5">
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          style={{
+            ...styles.input,
+            ...(focused ? styles.inputFocused : {}),
+            width: "100%",
+            paddingRight: type === "password" ? "2.5rem" : "10px",
+          }}
+          required={required}
+          maxLength={maxLength}
+          pattern={pattern}
+          placeholder={placeholder}
+        />
+        {type === "password" && (
+          <span
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-black"
+            onClick={() => setShowPassword?.((prev) => !prev)}
+          >
+            {showPassword ? (
+              <FaRegEye className="w-5 h-5" />
+            ) : (
+              <FaRegEyeSlash className="w-5 h-5" />
+            )}
+          </span>
+        )}
+      </div>
     )}
   </div>
 );
