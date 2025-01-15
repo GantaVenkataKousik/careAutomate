@@ -98,7 +98,7 @@ const VisitFilter = ({ onFilterUpdate }) => {
         });
         const tenantsData = await tenantsResponse.json();
         const formattedTenants = tenantsData.response.map((tenant) => ({
-          value: tenant.info_id,
+          value: tenant._id,
           label: tenant.name,
         }));
 
@@ -136,7 +136,7 @@ const VisitFilter = ({ onFilterUpdate }) => {
       startDate: startDate ? dayjs(startDate).format("YYYY-MM-DD") : null,
       endDate: endDate ? dayjs(endDate).format("YYYY-MM-DD") : null,
     };
-    console.log(filtersToApply);
+    // console.log(filtersToApply);
     onFilterUpdate(filtersToApply);
     // Pass filtersToApply to any onFilterUpdate function or API request as needed
   };
