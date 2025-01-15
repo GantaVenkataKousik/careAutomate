@@ -17,7 +17,7 @@ const AddNotes = ({ setEditMode, addNote, tenantId }) => {
       tenantId: tenantId,
       title: title,
       content: noteDetails,
-      notedBy: currentUser?._id, // Optional chaining for safety
+      notedBy: currentUser._id, // Optional chaining for safety
     };
 
     try {
@@ -28,8 +28,8 @@ const AddNotes = ({ setEditMode, addNote, tenantId }) => {
 
       const response = await axios.post(apiUrl, newNote, {
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-          Authentication: `Bearer ${token}`,
         },
       });
 
@@ -38,6 +38,9 @@ const AddNotes = ({ setEditMode, addNote, tenantId }) => {
       if (response.data?.success) {
         toast.success("Note Added Successfully");
         setEditMode(false);
+        if (response.data.response?.tenantNotes) {
+          addNote(response.data.response.tenantNotes.notes);
+        }
         console.log(response.data);
       } else {
         console.log(response.data);

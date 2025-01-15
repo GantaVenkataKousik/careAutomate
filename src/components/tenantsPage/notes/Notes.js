@@ -76,7 +76,16 @@ const Notes = () => {
   }, [tenantData, token, shouldRefetchNotes]);
 
   const addNote = (newNote) => {
-    setNotes((prevNotes) => [...prevNotes, newNote]);
+    console.log("add", newNote);
+    const mappedNotes = newNote.map((note) => ({
+      id: note.noteId,
+      title: note.title,
+      content: note.content,
+      notedBy: note.notedBy?.name || "Unknown",
+      createdAt: note.createdAt,
+    }));
+
+    setNotes(mappedNotes);
     setEditMode(false); // Exit edit mode after adding
   };
 
