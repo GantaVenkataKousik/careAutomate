@@ -51,6 +51,7 @@ const initialState = {
   rateOfPay: "",
   userName: "",
   password: "",
+  confirmPassword: "",
   responsibleFirstName: "",
   responsibleMiddleName: "",
   responsibleLastName: "",

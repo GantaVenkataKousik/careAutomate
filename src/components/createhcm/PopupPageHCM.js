@@ -157,8 +157,19 @@ const PopupPage = () => {
         console.error("HCM ID not found in the response");
       }
     } catch (error) {
-      console.error("Error during API call to create HCM:", error);
-      toast.error("Error saving HCM data. Please try again.");
+      // Check if the error response contains specific information
+      if (error.response && error.response.status === 400) {
+        const errorMessage = error.response.data?.message; // Adjust based on your API's error format
+        console.log("pp", errorMessage);
+        if (errorMessage && errorMessage.includes("email")) {
+          toast.error("User already exists with that email.");
+        } else {
+          toast.error("Error saving tenant data. Please try again.");
+        }
+      } else {
+        // Fallback for other errors
+        toast.error("An unexpected error occurred. Please try again later.");
+      }
     }
   };
   function base64ToFile(base64String, fileName, fileType) {
@@ -283,7 +294,11 @@ const PopupPage = () => {
           return; // Stop if user cancels
         }
         const hcmId = await handleSave();
-
+        if (!hcmId) {
+          throw new Error(
+            "Failed to save HCM's data. HCM ID is null or undefined."
+          );
+        }
         // Only call assignTenant if assignTenantLater is false
         if (!assignTenantLater) {
           await assignTenant(hcmId);
@@ -304,7 +319,7 @@ const PopupPage = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      setComplete(true);
+      // setComplete(true);
     }
   };
 
