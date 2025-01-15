@@ -1,11 +1,15 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
-// Extend dayjs with the UTC plugin
+// Extend dayjs with required plugins
 dayjs.extend(utc);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 export const applyVisitsFilters = (visitData, activeFilters) => {
-  // Return an empty array if visitData is null/undefined or activeFilters is null/undefined
+  // Return an empty array if visitData or activeFilters is null/undefined
   if (!visitData || !activeFilters) {
     return [];
   }
@@ -16,39 +20,44 @@ export const applyVisitsFilters = (visitData, activeFilters) => {
   // Date filtering
   if (activeFilters.startDate || activeFilters.endDate) {
     filteredData = filteredData.filter((visit) => {
-      const visitDate = dayjs(visit.dos).utc(); // Convert visit date to UTC
+      // Convert all dates to start of day for consistent comparison
+      const visitDate = dayjs(visit.dos).startOf("day");
       const start = activeFilters.startDate
-        ? dayjs(activeFilters.startDate).utc() // Convert start date to UTC
+        ? dayjs(activeFilters.startDate).startOf("day")
         : null;
       const end = activeFilters.endDate
-        ? dayjs(activeFilters.endDate).utc()
-        : null; // Convert end date to UTC
+        ? dayjs(activeFilters.endDate).startOf("day")
+        : null;
 
-      // Handle date comparisons
+      // When start and end dates are the same
       if (start && end && start.isSame(end)) {
-        return visitDate.isSame(start);
-      } else if (start && end) {
-        return (
-          visitDate.isSame(start) ||
-          visitDate.isSame(end) ||
-          (visitDate.isAfter(start) && visitDate.isBefore(end))
-        );
-      } else if (start) {
-        return visitDate.isSame(start) || visitDate.isAfter(start);
-      } else if (end) {
-        return visitDate.isSame(end) || visitDate.isBefore(end);
+        return visitDate.isSame(start, "day");
       }
+
+      // When both start and end dates are provided
+      if (start && end) {
+        return (
+          visitDate.isSameOrAfter(start, "day") &&
+          visitDate.isSameOrBefore(end, "day")
+        );
+      }
+
+      // When only start date is provided
+      if (start) {
+        return visitDate.isSameOrAfter(start, "day");
+      }
+
+      // When only end date is provided
+      if (end) {
+        return visitDate.isSameOrBefore(end, "day");
+      }
+
       return true;
     });
   }
 
   // Tenant and HCM filtering
-  if (
-    activeFilters.tenant &&
-    activeFilters.tenant.length > 0 &&
-    activeFilters.hcm &&
-    activeFilters.hcm.length > 0
-  ) {
+  if (activeFilters.tenant?.length > 0 && activeFilters.hcm?.length > 0) {
     filteredData = filteredData.filter(
       (visit) =>
         visit.tenantId &&
@@ -57,14 +66,14 @@ export const applyVisitsFilters = (visitData, activeFilters) => {
         activeFilters.hcm.includes(visit.hcmId)
     );
   } else {
-    if (activeFilters.tenant && activeFilters.tenant.length > 0) {
+    if (activeFilters.tenant?.length > 0) {
       filteredData = filteredData.filter(
         (visit) =>
           visit.tenantId && activeFilters.tenant.includes(visit.tenantId)
       );
     }
 
-    if (activeFilters.hcm && activeFilters.hcm.length > 0) {
+    if (activeFilters.hcm?.length > 0) {
       filteredData = filteredData.filter(
         (visit) => visit.hcmId && activeFilters.hcm.includes(visit.hcmId)
       );
@@ -72,19 +81,16 @@ export const applyVisitsFilters = (visitData, activeFilters) => {
   }
 
   // Status filtering
-  if (activeFilters.status && activeFilters.status.length > 0) {
-    filteredData = filteredData.filter((visit) => {
-      return (
+  if (activeFilters.status?.length > 0) {
+    filteredData = filteredData.filter(
+      (visit) =>
         visit.status &&
         activeFilters.status.some(
           (filterStatus) =>
             filterStatus.toLowerCase() === visit.status.toLowerCase()
         )
-      );
-    });
+    );
   }
 
-  // Return the filtered data or an empty array if no matches found
-  console.log("fiter", filteredData);
   return filteredData.length > 0 ? filteredData : [];
 };

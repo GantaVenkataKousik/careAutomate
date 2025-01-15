@@ -66,7 +66,7 @@ const VisitList = () => {
           travelWithoutTenant: visit.travelWithoutTenant,
           response: visit.response ?? "",
         }));
-        console.log("mapped", mappedVisits);
+        // console.log("mapped", mappedVisits);
         const sortedVisits = mappedVisits.sort((a, b) => {
           return new Date(b.createdAt) - new Date(a.createdAt);
         });
