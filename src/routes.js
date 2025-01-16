@@ -46,6 +46,12 @@ export const API_ROUTES = {
     UPDATE_TENANT: `${BASE_URL}/tenant/update-tenant/`,
     GET_INFO: `${BASE_URL}/tenant/get-tenant-info/`,
     REASSESSMENTS: `${BASE_URL}/tenant/tenant-reassessments/`,
+    NOTES: {
+      GET_NOTES: `${BASE_URL}/tenant/get-tenant-notes/`,
+      ADD_NOTE: `${BASE_URL}/tenant/add-tenant-note/`,
+      UPDATE_NOTES: `${BASE_URL}/tenant/update-tenant-note/`,
+      DELETE_NOTE: `${BASE_URL}/tenant/delete-tenant-note/`,
+    },
     // Add other tenant-related routes here
   },
   // Add other general routes here
