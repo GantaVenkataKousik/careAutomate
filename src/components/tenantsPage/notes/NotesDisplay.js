@@ -7,12 +7,18 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material"; // Import MUI Dialog components
+import { MdEdit } from "react-icons/md";
 import axios from "axios";
 import { API_ROUTES } from "../../../routes";
 import { toast } from "react-toastify";
 import { useAuth } from "../../../AuthContext";
 
-const NotesDisplay = ({ noteContent, tenantId, setShouldRefetchNotes }) => {
+const NotesDisplay = ({
+  noteContent,
+  tenantId,
+  setShouldRefetchNotes,
+  onEditNote,
+}) => {
   const { token } = useAuth();
   const [showDelete, setShowDelete] = useState(false);
   const sanitizeHTML = (html) => DOMPurify.sanitize(html);
@@ -38,10 +44,15 @@ const NotesDisplay = ({ noteContent, tenantId, setShouldRefetchNotes }) => {
     const day = date.getDate();
     const month = months[date.getMonth()];
     const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
 
-    return `${month} ${day}, ${year}  ${hours}:${minutes}`;
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const amPm = hours >= 12 ? "PM" : "AM";
+
+    // Convert to 12-hour format
+    hours = hours % 12 || 12; // If hours is 0, set it to 12.
+
+    return `${month} ${day}, ${year}  ${hours}:${minutes} ${amPm}`;
   };
 
   const handleCloseDialog = () => {
@@ -60,7 +71,7 @@ const NotesDisplay = ({ noteContent, tenantId, setShouldRefetchNotes }) => {
     // Delete the note here
     try {
       const response = await axios.post(
-        `${API_ROUTES.TENANTS.BASE}/delete-tenant-note`,
+        `${API_ROUTES.TENANTS.NOTES.DELETE_NOTE}`,
         {
           noteId: noteId,
           tenantId: tenantId,
@@ -96,7 +107,9 @@ const NotesDisplay = ({ noteContent, tenantId, setShouldRefetchNotes }) => {
       </div>
     );
   }
-
+  const handleEditNotes = () => {
+    onEditNote(noteContent);
+  };
   return (
     <div className="m-4 border-2 border-gray-300 rounded-xl p-5 w-full">
       {/* Header: Notes Title */}
@@ -107,13 +120,25 @@ const NotesDisplay = ({ noteContent, tenantId, setShouldRefetchNotes }) => {
             {noteContent.title || "Untitled Note"}
           </h2>
         </div>
-        <button
-          className={`flex items-center gap-2 text-white p-2 px-5 rounded-full bg-[#F57070]`}
-          onClick={() => setShowDelete(true)}
-        >
-          <FaTrashCan />
-          <span>Delete</span>
-        </button>
+
+        {/**Buttons */}
+        <div className="flex gap-2">
+          <button
+            className={`flex items-center gap-2 text-white p-2 px-5 rounded-full bg-[#F57070]`}
+            onClick={() => setShowDelete(true)}
+          >
+            <FaTrashCan />
+            <span>Delete</span>
+          </button>
+
+          <button
+            className={`flex items-center gap-2 text-[#6F84F8] border-2 border-[#6F84F8] p-2 px-5 rounded-full hover:text-white hover:bg-[#6F84F8] `}
+            onClick={() => handleEditNotes()}
+          >
+            <MdEdit />
+            <span>Edit</span>
+          </button>
+        </div>
       </div>
 
       {/* Content Container */}
