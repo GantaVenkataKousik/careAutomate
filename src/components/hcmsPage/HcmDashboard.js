@@ -1,17 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import HcmProfileCard from "./HcmProfileCard";
 import TenantsAssigned from "./TenantsAssigned";
 import AppoinmentVisits from "./AppoinmentVisits";
 import CommunicationsCard from "./CommunicationsCard";
+import AssignTenantsPopup from "./AssignTenantsPopup";
 
 const HcmDashboard = () => {
   const location = useLocation();
   const { hcms, hcmId } = location.state || {};
-
+  const [openAssignTenantModal, setOpenAssignTenantModal] = useState(false);
+  const [shouldRefreshAssignedTenants, setShouldRefreshAssignedTenants] =
+    useState(false);
   // Find the selected HCM
 
-  console.log(hcms, hcms);
+  // console.log(hcms, hcms);
   // Handle missing data
   if (!hcms) {
     return (
@@ -30,13 +33,26 @@ const HcmDashboard = () => {
         <HcmProfileCard hcm={hcms} />
 
         {/* Tenants Assigned Component */}
-        <TenantsAssigned hcmId={hcmId} />
+        <TenantsAssigned
+          hcmId={hcmId}
+          setOpenAssignTenantModal={setOpenAssignTenantModal}
+          shouldRefreshAssignedTenants={shouldRefreshAssignedTenants}
+        />
       </div>
       <div className="flex gap-5">
         {/* Appointments and Communications */}
         <AppoinmentVisits hcmId={hcmId} />
         <CommunicationsCard />
       </div>
+
+      {openAssignTenantModal && (
+        <AssignTenantsPopup
+          hcm={hcms}
+          setShouldRefreshAssignedTenants={setShouldRefreshAssignedTenants}
+          open={openAssignTenantModal}
+          onClose={() => setOpenAssignTenantModal(false)}
+        />
+      )}
     </div>
   );
 };
