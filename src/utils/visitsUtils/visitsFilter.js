@@ -5,7 +5,7 @@ export const visitsFilter = (visitsData) => {
       serviceType,
       tenantName,
       duration,
-      details,
+      // details,
       status,
       hcm,
       startDate,
@@ -46,7 +46,7 @@ export const visitsFilter = (visitsData) => {
     }
 
     return {
-      title: `${tenantName || "Details"} with ${hcm || "Person"}`, // Default title if not provided
+      title: `(HCM)${hcm || "HCM"} with ${tenantName || "Tenant"}`, // Default title if not provided
       start: startTime || null, // Full start date-time as Date object
       end: endTime || null, // Full end date-time
       description: `${serviceType || "Details"} with ${hcm || "Person"}`, // Combine details and person
