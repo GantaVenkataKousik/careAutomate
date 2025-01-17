@@ -154,7 +154,9 @@ const VisitModal = ({
       setReasonForRemote(editVisitData?.reasonForRemote);
       setTitle(editVisitData.title);
       setActivity(editVisitData.title);
-      setEndTime(new Date(editVisitData.endDate));
+      // setEndTime(new Date(editVisitData.endDate));
+      setEndTime(dayjs(editVisitData.endTime).format("HH:mm") || "");
+      setStartTime(dayjs(editVisitData.startTime).format("HH:mm") || "");
       setServiceType(editVisitData.serviceType || "Housing Sustaining");
       setMethodOfContact(editVisitData.typeMethod || "in-person");
       setTravel(editVisitData.travel.toLowerCase() === "yes" ? "Yes" : "No");
