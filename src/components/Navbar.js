@@ -7,7 +7,7 @@ import { FiHelpCircle } from "react-icons/fi";
 import { IoLogOutOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
-
+import { CgOrganisation } from "react-icons/cg";
 const Navbar = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const navigate = useNavigate();
@@ -61,8 +61,11 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div className="navbar-left">
+      <div className="navbar-left flex items-center justify-between">
         <h2>CareAutomate</h2>
+        <div className=" flex items-center gap-2 organisation bg-[#fff] border border-[#6F84F8] rounded-lg p-1.5 pl-4 pr-4 ml-4 font-bold  text-[#000]">
+          <CgOrganisation className="text-xl font-bold" /><span className="text-sm ">Aunstin Group</span>
+        </div>
       </div>
       <div className="navbar-right">
         <div className="user-profile" onClick={toggleDropdown}>
@@ -78,44 +81,39 @@ const Navbar = () => {
             <div onClick={() => handleOptionClick("Profile")}>
               <CgProfile
                 className="profile-icon"
-                // style={{
-                //   marginRight: "10px",
-                //   color: "#6f84f8",
-                //   fontSize: "20px",
-                // }}
               />
               Profile
             </div>
             <div onClick={() => handleOptionClick("Settings")}>
               <IoSettingsOutline
                 className="profile-icon"
-                // style={{
-                //   marginRight: "10px",
-                //   color: "#6f84f8",
-                //   fontSize: "20px",
-                // }}
+              // style={{
+              //   marginRight: "10px",
+              //   color: "#6f84f8",
+              //   fontSize: "20px",
+              // }}
               />
               Settings
             </div>
             <div onClick={() => handleOptionClick("Help")}>
               <FiHelpCircle
                 className="profile-icon"
-                // style={{
-                //   marginRight: "10px",
-                //   color: "#6f84f8",
-                //   fontSize: "20px",
-                // }}
+              // style={{
+              //   marginRight: "10px",
+              //   color: "#6f84f8",
+              //   fontSize: "20px",
+              // }}
               />
               Help
             </div>
             <div onClick={() => handleOptionClick("Logout")}>
               <IoLogOutOutline
                 className="profile-icon"
-                // style={{
-                //   marginRight: "10px",
-                //   color: "#6f84f8",
-                //   fontSize: "20px",
-                // }}
+              // style={{
+              //   marginRight: "10px",
+              //   color: "#6f84f8",
+              //   fontSize: "20px",
+              // }}
               />
               Logout
             </div>

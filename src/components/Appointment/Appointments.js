@@ -256,8 +256,8 @@ const Appointment = () => {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`px-4 py-2 rounded-full font-medium ${activeTab === tab
-                      ? "bg-[#6F84F8] text-white"
-                      : "bg-gray-200 text-gray-600"
+                    ? "bg-[#6F84F8] text-white"
+                    : "bg-gray-200 text-gray-600"
                     }`}
                 >
                   {tab}

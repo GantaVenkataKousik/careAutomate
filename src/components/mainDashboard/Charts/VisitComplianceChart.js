@@ -1,7 +1,7 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 
-const VisitComplianceChart = ({ categories, visitData }) => {
+const VisitComplianceChart = ({ categories, visitData, onBarClick }) => {
     const chartOptions = {
         chart: {
             type: "bar",
@@ -10,12 +10,21 @@ const VisitComplianceChart = ({ categories, visitData }) => {
             toolbar: {
                 show: false,
             },
+            events: {
+                dataPointSelection: (event, chartContext, config) => {
+                    const { dataPointIndex, seriesIndex } = config;
+                    const method = ["direct", "indirect", "remote"][seriesIndex];
+                    const month = categories[dataPointIndex];
+                    onBarClick(method, month);
+                },
+            },
         },
         plotOptions: {
             bar: {
                 horizontal: false,
                 columnWidth: "55%",
                 borderRadius: 5,
+                cursor: 'pointer',
             },
         },
         xaxis: {
@@ -33,7 +42,11 @@ const VisitComplianceChart = ({ categories, visitData }) => {
             y: {
                 formatter: (val) => val,
             },
+        }, legend: {
+            position: "bottom",
+            horizontalAlign: "center",
         },
+        colors: ["#1E90FF", "#FF6347", "#32CD32"],
     };
 
     const chartSeries = [

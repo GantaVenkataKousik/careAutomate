@@ -23,7 +23,7 @@ const HCMInfoChart = () => {
                 curve: 'straight'
             },
             markers: {
-                size: 5, // Size of the dots
+                size: 6, // Size of the dots
             },
             xaxis: {
                 categories: [], // Months
@@ -63,9 +63,9 @@ const HCMInfoChart = () => {
                     const data = result.response[years[0]];
                     const allMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-                    // Use 0 as default if data for a month is not available
-                    const movedOutData = allMonths.map(month => data[month]?.movedOut ?? 0);
-                    const receivingServicesData = allMonths.map(month => data[month]?.receivingServices ?? 0);
+                    // Use null for months without data
+                    const movedOutData = allMonths.map(month => data[month]?.movedOut ?? null);
+                    const receivingServicesData = allMonths.map(month => data[month]?.receivingServices ?? null);
 
                     setChartData({
                         series: [
@@ -112,9 +112,9 @@ const HCMInfoChart = () => {
                     const data = result.response[selectedYear];
                     const allMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-                    // Use 0 as default if data for a month is not available
-                    const movedOutData = allMonths.map(month => data[month]?.movedOut ?? 0);
-                    const receivingServicesData = allMonths.map(month => data[month]?.receivingServices ?? 0);
+                    // Use null for months without data
+                    const movedOutData = allMonths.map(month => data[month]?.movedOut ?? null);
+                    const receivingServicesData = allMonths.map(month => data[month]?.receivingServices ?? null);
 
                     setChartData({
                         series: [

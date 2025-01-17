@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 export default function Reports() {
   const [activeTab, setActiveTab] = useState('Tenant');
   const [activeSubTab, setActiveSubTab] = useState('Personal Info');
-  const [selectedColumns, setSelectedColumns] = useState({
+  const [tenantSelectedColumns, setTenantSelectedColumns] = useState({
     firstName: false,
     lastName: false,
     pmi: false,
@@ -29,38 +29,58 @@ export default function Reports() {
     visitType: false,
     methodOfVisit: false,
     mileage: false,
-    hcmName: false,
-    assignedTenants: false,
+  });
+  const [hcmSelectedColumns, setHcmSelectedColumns] = useState({
+    firstName: false,
+    lastName: false,
+    address: false,
+    city: false,
+    state: false,
+    zip: false,
+    hireDate: false,
+    username: false,
+    password: false,
   });
 
   const dummyData = {
-    personalInfo: [
-      { firstName: 'John', lastName: 'Doe', pmi: '12345', address: '123 Main St', city: 'Anytown', state: 'CA', zip: '12345', designate: 'Yes' },
-      { firstName: 'Jane', lastName: 'Smith', pmi: '67890', address: '456 Elm St', city: 'Othertown', state: 'NY', zip: '67890', designate: 'No' },
-    ],
-    servicePlanInfo: [
-      { tenantName: 'John Doe', assignedHCMs: 'HCM 1, HCM 2', serviceTypes: 'Type A (Jan 2023 - Dec 2023)', scheduledUnits: 100, visitedUnits: 80, remainingUnits: 20 },
-      { tenantName: 'Jane Smith', assignedHCMs: 'HCM 3', serviceTypes: 'Type B (Feb 2023 - Nov 2023)', scheduledUnits: 120, visitedUnits: 90, remainingUnits: 30 },
-    ],
-    financial: [
-      { statusOfClaim: 'Pending', tenantName: 'John Doe', assignedHCM: 'HCM 1', serviceType: 'Type A', dateOfService: '2023-01-01', duration: '2h', billedUnits: 10, billedAmount: 200, receivedAmount: 150 },
-      { statusOfClaim: 'Approved', tenantName: 'Jane Smith', assignedHCM: 'HCM 3', serviceType: 'Type B', dateOfService: '2023-02-01', duration: '3h', billedUnits: 15, billedAmount: 300, receivedAmount: 250 },
-    ],
-    compliance: [
-      { tenantName: 'John Doe', assignedHCM: 'HCM 1', serviceType: 'Type A', dateOfService: '2023-01-01', duration: '2h', visitType: 'In-person', methodOfVisit: 'Car', mileage: 10 },
-      { tenantName: 'Jane Smith', assignedHCM: 'HCM 3', serviceType: 'Type B', dateOfService: '2023-02-01', duration: '3h', visitType: 'Remote', methodOfVisit: 'Online', mileage: 0 },
-    ],
-    hcm: [
-      { hcmName: 'HCM 1', assignedTenants: 'Tenant A, Tenant B', serviceType: 'Type A', dateOfService: '2023-01-01', duration: '2h', visitType: 'In-person', methodOfVisit: 'Car', mileage: 10 },
-      { hcmName: 'HCM 2', assignedTenants: 'Tenant C', serviceType: 'Type B', dateOfService: '2023-02-02', duration: '3h', visitType: 'Remote', methodOfVisit: 'Online', mileage: 0 },
-    ],
+    tenant: {
+      personalInfo: [
+        { firstName: 'John', lastName: 'Doe', pmi: '12345', address: '123 Main St', city: 'Anytown', state: 'CA', zip: '12345', designate: 'Yes' },
+        { firstName: 'Jane', lastName: 'Smith', pmi: '67890', address: '456 Elm St', city: 'Othertown', state: 'NY', zip: '67890', designate: 'No' },
+      ],
+      servicePlanInfo: [
+        { tenantName: 'John Doe', assignedHCMs: 'HCM 1, HCM 2', serviceTypes: 'Type A (Jan 2023 - Dec 2023)', scheduledUnits: 100, visitedUnits: 80, remainingUnits: 20 },
+        { tenantName: 'Jane Smith', assignedHCMs: 'HCM 3', serviceTypes: 'Type B (Feb 2023 - Nov 2023)', scheduledUnits: 120, visitedUnits: 90, remainingUnits: 30 },
+      ],
+      financial: [
+        { statusOfClaim: 'Pending', tenantName: 'John Doe', assignedHCM: 'HCM 1', serviceType: 'Type A', dateOfService: '2023-01-01', duration: '2h', billedUnits: 10, billedAmount: 200, receivedAmount: 150 },
+        { statusOfClaim: 'Approved', tenantName: 'Jane Smith', assignedHCM: 'HCM 3', serviceType: 'Type B', dateOfService: '2023-02-01', duration: '3h', billedUnits: 15, billedAmount: 300, receivedAmount: 250 },
+      ],
+      compliance: [
+        { tenantName: 'John Doe', assignedHCM: 'HCM 1', serviceType: 'Type A', dateOfService: '2023-01-01', duration: '2h', visitType: 'In-person', methodOfVisit: 'Car', mileage: 10 },
+        { tenantName: 'Jane Smith', assignedHCM: 'HCM 3', serviceType: 'Type B', dateOfService: '2023-02-01', duration: '3h', visitType: 'Remote', methodOfVisit: 'Online', mileage: 0 },
+      ],
+    },
+    hcm: {
+      personalInfoAdmin: [
+        { firstName: 'John', lastName: 'Doe', address: '123 Main St', city: 'Anytown', state: 'CA', zip: '12345', hireDate: '2023-01-01', username: 'johndoe', password: 'password123' },
+        { firstName: 'Jane', lastName: 'Smith', address: '456 Elm St', city: 'Othertown', state: 'NY', zip: '67890', hireDate: '2023-02-01', username: 'janesmith', password: 'password456' },
+      ],
+    },
   };
 
-  const handleCheckboxChange = (column) => {
-    setSelectedColumns((prev) => ({
-      ...prev,
-      [column]: !prev[column],
-    }));
+  const handleCheckboxChange = (column, type) => {
+    if (type === 'tenant') {
+      setTenantSelectedColumns((prev) => ({
+        ...prev,
+        [column]: !prev[column],
+      }));
+    } else {
+      setHcmSelectedColumns((prev) => ({
+        ...prev,
+        [column]: !prev[column],
+      }));
+    }
   };
 
   const renderTableHeaders = () => {
@@ -69,96 +89,99 @@ export default function Reports() {
         case 'Personal Info':
           return (
             <tr>
-              <th><input type="checkbox" checked={selectedColumns.firstName} onChange={() => handleCheckboxChange('firstName')} /> First Name</th>
-              <th><input type="checkbox" checked={selectedColumns.lastName} onChange={() => handleCheckboxChange('lastName')} /> Last Name</th>
-              <th><input type="checkbox" checked={selectedColumns.pmi} onChange={() => handleCheckboxChange('pmi')} /> PMI</th>
-              <th><input type="checkbox" checked={selectedColumns.address} onChange={() => handleCheckboxChange('address')} /> Address</th>
-              <th><input type="checkbox" checked={selectedColumns.city} onChange={() => handleCheckboxChange('city')} /> City</th>
-              <th><input type="checkbox" checked={selectedColumns.state} onChange={() => handleCheckboxChange('state')} /> State</th>
-              <th><input type="checkbox" checked={selectedColumns.zip} onChange={() => handleCheckboxChange('zip')} /> Zip</th>
-              <th><input type="checkbox" checked={selectedColumns.designate} onChange={() => handleCheckboxChange('designate')} /> Designate</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.firstName} onChange={() => handleCheckboxChange('firstName', 'tenant')} /> First Name</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.lastName} onChange={() => handleCheckboxChange('lastName', 'tenant')} /> Last Name</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.pmi} onChange={() => handleCheckboxChange('pmi', 'tenant')} /> PMI</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.address} onChange={() => handleCheckboxChange('address', 'tenant')} /> Address</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.city} onChange={() => handleCheckboxChange('city', 'tenant')} /> City</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.state} onChange={() => handleCheckboxChange('state', 'tenant')} /> State</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.zip} onChange={() => handleCheckboxChange('zip', 'tenant')} /> Zip</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.designate} onChange={() => handleCheckboxChange('designate', 'tenant')} /> Designate</th>
             </tr>
           );
         case 'Service Plan Info':
           return (
             <tr>
-              <th><input type="checkbox" checked={selectedColumns.tenantName} onChange={() => handleCheckboxChange('tenantName')} /> Tenant Name</th>
-              <th><input type="checkbox" checked={selectedColumns.assignedHCMs} onChange={() => handleCheckboxChange('assignedHCMs')} /> Assigned HCM’s Names</th>
-              <th><input type="checkbox" checked={selectedColumns.serviceTypes} onChange={() => handleCheckboxChange('serviceTypes')} /> Service types (Date range of Service types)</th>
-              <th><input type="checkbox" checked={selectedColumns.scheduledUnits} onChange={() => handleCheckboxChange('scheduledUnits')} /> Scheduled units</th>
-              <th><input type="checkbox" checked={selectedColumns.visitedUnits} onChange={() => handleCheckboxChange('visitedUnits')} /> Visited units</th>
-              <th><input type="checkbox" checked={selectedColumns.remainingUnits} onChange={() => handleCheckboxChange('remainingUnits')} /> Remaining units</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.tenantName} onChange={() => handleCheckboxChange('tenantName', 'tenant')} /> Tenant Name</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.assignedHCMs} onChange={() => handleCheckboxChange('assignedHCMs', 'tenant')} /> Assigned HCM’s Names</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.serviceTypes} onChange={() => handleCheckboxChange('serviceTypes', 'tenant')} /> Service types (Date range of Service types)</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.scheduledUnits} onChange={() => handleCheckboxChange('scheduledUnits', 'tenant')} /> Scheduled units</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.visitedUnits} onChange={() => handleCheckboxChange('visitedUnits', 'tenant')} /> Visited units</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.remainingUnits} onChange={() => handleCheckboxChange('remainingUnits', 'tenant')} /> Remaining units</th>
             </tr>
           );
         case 'Financial':
           return (
             <tr>
-              <th><input type="checkbox" checked={selectedColumns.statusOfClaim} onChange={() => handleCheckboxChange('statusOfClaim')} /> Status of Claim</th>
-              <th><input type="checkbox" checked={selectedColumns.tenantName} onChange={() => handleCheckboxChange('tenantName')} /> Tenant Name</th>
-              <th><input type="checkbox" checked={selectedColumns.assignedHCM} onChange={() => handleCheckboxChange('assignedHCM')} /> Assigned HCM</th>
-              <th><input type="checkbox" checked={selectedColumns.serviceType} onChange={() => handleCheckboxChange('serviceType')} /> Service type</th>
-              <th><input type="checkbox" checked={selectedColumns.dateOfService} onChange={() => handleCheckboxChange('dateOfService')} /> Date of Service</th>
-              <th><input type="checkbox" checked={selectedColumns.duration} onChange={() => handleCheckboxChange('duration')} /> Duration</th>
-              <th><input type="checkbox" checked={selectedColumns.billedUnits} onChange={() => handleCheckboxChange('billedUnits')} /> Billed Units</th>
-              <th><input type="checkbox" checked={selectedColumns.billedAmount} onChange={() => handleCheckboxChange('billedAmount')} /> Billed Amount</th>
-              <th><input type="checkbox" checked={selectedColumns.receivedAmount} onChange={() => handleCheckboxChange('receivedAmount')} /> Received Amount</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.statusOfClaim} onChange={() => handleCheckboxChange('statusOfClaim', 'tenant')} /> Status of Claim</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.tenantName} onChange={() => handleCheckboxChange('tenantName', 'tenant')} /> Tenant Name</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.assignedHCM} onChange={() => handleCheckboxChange('assignedHCM', 'tenant')} /> Assigned HCM</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.serviceType} onChange={() => handleCheckboxChange('serviceType', 'tenant')} /> Service type</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.dateOfService} onChange={() => handleCheckboxChange('dateOfService', 'tenant')} /> Date of Service</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.duration} onChange={() => handleCheckboxChange('duration', 'tenant')} /> Duration</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.billedUnits} onChange={() => handleCheckboxChange('billedUnits', 'tenant')} /> Billed Units</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.billedAmount} onChange={() => handleCheckboxChange('billedAmount', 'tenant')} /> Billed Amount</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.receivedAmount} onChange={() => handleCheckboxChange('receivedAmount', 'tenant')} /> Received Amount</th>
             </tr>
           );
         case 'Compliance':
           return (
             <tr>
-              <th><input type="checkbox" checked={selectedColumns.tenantName} onChange={() => handleCheckboxChange('tenantName')} /> Tenant Name</th>
-              <th><input type="checkbox" checked={selectedColumns.assignedHCM} onChange={() => handleCheckboxChange('assignedHCM')} /> Assigned HCM</th>
-              <th><input type="checkbox" checked={selectedColumns.serviceType} onChange={() => handleCheckboxChange('serviceType')} /> Service Type</th>
-              <th><input type="checkbox" checked={selectedColumns.dateOfService} onChange={() => handleCheckboxChange('dateOfService')} /> Date of Service</th>
-              <th><input type="checkbox" checked={selectedColumns.duration} onChange={() => handleCheckboxChange('duration')} /> Duration</th>
-              <th><input type="checkbox" checked={selectedColumns.visitType} onChange={() => handleCheckboxChange('visitType')} /> Visit type</th>
-              <th><input type="checkbox" checked={selectedColumns.methodOfVisit} onChange={() => handleCheckboxChange('methodOfVisit')} /> Method of Visit</th>
-              <th><input type="checkbox" checked={selectedColumns.mileage} onChange={() => handleCheckboxChange('mileage')} /> Mileage</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.tenantName} onChange={() => handleCheckboxChange('tenantName', 'tenant')} /> Tenant Name</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.assignedHCM} onChange={() => handleCheckboxChange('assignedHCM', 'tenant')} /> Assigned HCM</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.serviceType} onChange={() => handleCheckboxChange('serviceType', 'tenant')} /> Service Type</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.dateOfService} onChange={() => handleCheckboxChange('dateOfService', 'tenant')} /> Date of Service</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.duration} onChange={() => handleCheckboxChange('duration', 'tenant')} /> Duration</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.visitType} onChange={() => handleCheckboxChange('visitType', 'tenant')} /> Visit type</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.methodOfVisit} onChange={() => handleCheckboxChange('methodOfVisit', 'tenant')} /> Method of Visit</th>
+              <th><input type="checkbox" checked={tenantSelectedColumns.mileage} onChange={() => handleCheckboxChange('mileage', 'tenant')} /> Mileage</th>
             </tr>
           );
         default:
           return null;
       }
-    } else if (activeTab === 'HCM') {
+    } else if (activeTab === 'HCM' && activeSubTab === 'Personal Info') {
       return (
         <tr>
-          <th><input type="checkbox" checked={selectedColumns.hcmName} onChange={() => handleCheckboxChange('hcmName')} /> HCM Name</th>
-          <th><input type="checkbox" checked={selectedColumns.assignedTenants} onChange={() => handleCheckboxChange('assignedTenants')} /> Assigned Tenants</th>
-          <th><input type="checkbox" checked={selectedColumns.serviceType} onChange={() => handleCheckboxChange('serviceType')} /> Service Type</th>
-          <th><input type="checkbox" checked={selectedColumns.dateOfService} onChange={() => handleCheckboxChange('dateOfService')} /> Date of Service</th>
-          <th><input type="checkbox" checked={selectedColumns.duration} onChange={() => handleCheckboxChange('duration')} /> Duration</th>
-          <th><input type="checkbox" checked={selectedColumns.visitType} onChange={() => handleCheckboxChange('visitType')} /> Visit Type</th>
-          <th><input type="checkbox" checked={selectedColumns.methodOfVisit} onChange={() => handleCheckboxChange('methodOfVisit')} /> Method of Visit</th>
-          <th><input type="checkbox" checked={selectedColumns.mileage} onChange={() => handleCheckboxChange('mileage')} /> Mileage</th>
+          <th><input type="checkbox" checked={hcmSelectedColumns.firstName} onChange={() => handleCheckboxChange('firstName', 'hcm')} /> First Name</th>
+          <th><input type="checkbox" checked={hcmSelectedColumns.lastName} onChange={() => handleCheckboxChange('lastName', 'hcm')} /> Last Name</th>
+          <th><input type="checkbox" checked={hcmSelectedColumns.address} onChange={() => handleCheckboxChange('address', 'hcm')} /> Address</th>
+          <th><input type="checkbox" checked={hcmSelectedColumns.city} onChange={() => handleCheckboxChange('city', 'hcm')} /> City</th>
+          <th><input type="checkbox" checked={hcmSelectedColumns.state} onChange={() => handleCheckboxChange('state', 'hcm')} /> State</th>
+          <th><input type="checkbox" checked={hcmSelectedColumns.zip} onChange={() => handleCheckboxChange('zip', 'hcm')} /> Zip</th>
+          <th><input type="checkbox" checked={hcmSelectedColumns.hireDate} onChange={() => handleCheckboxChange('hireDate', 'hcm')} /> Hire Date</th>
+          <th><input type="checkbox" checked={hcmSelectedColumns.username} onChange={() => handleCheckboxChange('username', 'hcm')} /> Username</th>
+          <th><input type="checkbox" checked={hcmSelectedColumns.password} onChange={() => handleCheckboxChange('password', 'hcm')} /> Password</th>
         </tr>
       );
     }
+    return null;
   };
 
   const renderTableRows = () => {
-    const data = activeTab === 'Tenant' ? dummyData[activeSubTab.toLowerCase().replace(/ /g, '')] : dummyData.hcm;
+    const data = activeTab === 'Tenant'
+      ? dummyData.tenant[activeSubTab.toLowerCase().replace(/ /g, '')]
+      : dummyData.hcm.personalInfoAdmin;
 
-    // Check if data is defined and is an array
-    if (!Array.isArray(data)) {
-      return null; // or return an empty array or a message indicating no data
+    if (!data) {
+      return null; // Return null or a message indicating no data
     }
 
     return data.map((row, index) => (
       <tr key={index}>
         {Object.keys(row).map((key) => (
-          selectedColumns[key] && <td key={key}>{row[key]}</td>
+          (activeTab === 'Tenant' ? tenantSelectedColumns[key] : hcmSelectedColumns[key]) && <td key={key}>{row[key]}</td>
         ))}
       </tr>
     ));
   };
 
   const downloadExcel = () => {
-    const columnsToDownload = Object.values(selectedColumns).some((value) => value)
-      ? selectedColumns
-      : Object.keys(selectedColumns).reduce((acc, key) => ({ ...acc, [key]: true }), {});
+    const columnsToDownload = activeTab === 'Tenant'
+      ? tenantSelectedColumns
+      : hcmSelectedColumns;
 
-    const filteredData = (activeTab === 'Tenant' ? dummyData[activeSubTab.toLowerCase().replace(/ /g, '')] : dummyData.hcm).map((row) => {
+    const filteredData = (activeTab === 'Tenant' ? dummyData.tenant[activeSubTab.toLowerCase().replace(/ /g, '')] : dummyData.hcm.personalInfoAdmin).map((row) => {
       const filteredRow = {};
       Object.keys(columnsToDownload).forEach((key) => {
         if (columnsToDownload[key]) {
@@ -245,6 +268,11 @@ export default function Reports() {
           <button onClick={() => setActiveSubTab('Service Plan Info')} className={activeSubTab === 'Service Plan Info' ? 'active' : ''}>Service Plan Info</button>
           <button onClick={() => setActiveSubTab('Financial')} className={activeSubTab === 'Financial' ? 'active' : ''}>Financial</button>
           <button onClick={() => setActiveSubTab('Compliance')} className={activeSubTab === 'Compliance' ? 'active' : ''}>Compliance</button>
+        </div>
+      )}
+      {activeTab === 'HCM' && (
+        <div className="sub-tabs">
+          <button onClick={() => setActiveSubTab('Personal Info')} className={activeSubTab === 'Personal Info' ? 'active' : ''}>Personal Info</button>
         </div>
       )}
       <table className="reports-table">
