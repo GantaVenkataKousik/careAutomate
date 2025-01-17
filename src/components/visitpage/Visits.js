@@ -25,6 +25,7 @@ const VisitList = () => {
     startDate: null,
     endDate: null,
   });
+  const [shouldRefreshVisit, setShouldRefreshVisit] = useState(false);
 
   const fetchVisits = async () => {
     let url = `${BASE_URL}/visit/fetchVisits`;
@@ -84,7 +85,7 @@ const VisitList = () => {
   // Fetch all visits initially
   useEffect(() => {
     fetchVisits();
-  }, []);
+  }, [shouldRefreshVisit]);
 
   const handleDetailsClick = (details) => {
     setDetailsPopup(details);
@@ -192,8 +193,10 @@ const VisitList = () => {
       <VisitModal
         isOpen={openNewVisitPopup}
         onClose={() => setOpenNewVisitPopup(false)}
-        onVisitCreated={editVisitData}
+        editVisitData={editVisitData}
         isEdit={isEdit}
+        setIsEdit={setIsEdit}
+        setShouldRefreshVisit={setShouldRefreshVisit}
       />
     </div>
   );
