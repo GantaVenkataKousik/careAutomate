@@ -11,6 +11,7 @@ import { applyVisitsFilters } from "../../utils/visitsUtils/VisitsListFilterUtil
 
 const VisitList = () => {
   const [detailsPopup, setDetailsPopup] = useState("");
+  const [activeTab, setActiveTab] = useState("Approved");
   const [openPopup, setOpenPopup] = useState(false);
   const [openNewVisitPopup, setOpenNewVisitPopup] = useState(false);
   const [visitData, setVisitData] = useState([]);
@@ -24,6 +25,7 @@ const VisitList = () => {
     startDate: null,
     endDate: null,
   });
+  const [shouldRefreshVisit, setShouldRefreshVisit] = useState(false);
 
   const fetchVisits = async () => {
     let url = `${BASE_URL}/visit/fetchVisits`;
@@ -83,7 +85,7 @@ const VisitList = () => {
   // Fetch all visits initially
   useEffect(() => {
     fetchVisits();
-  }, []);
+  }, [shouldRefreshVisit]);
 
   const handleDetailsClick = (details) => {
     setDetailsPopup(details);
@@ -96,10 +98,18 @@ const VisitList = () => {
   const handleFilterUpdate = (newFilters) => {
     setActiveFilters(newFilters);
   };
-  const filteredVisits = useMemo(
-    () => applyVisitsFilters(visitData, activeFilters),
-    [visitData, activeFilters]
-  );
+  const filteredVisits = useMemo(() => {
+    // Filter visits based on the activeTab and any other filters
+    const tabFilteredVisits = visitData.filter((visit) => {
+      if (activeTab === "Approved") return visit.status === "approved";
+      if (activeTab === "Rejected") return visit.status === "rejected";
+      if (activeTab === "Pending") return visit.status === "pending";
+      return true; // Default, show all if no matching tab
+    });
+
+    // Apply additional filters (like tenant, HCM, etc.)
+    return applyVisitsFilters(tabFilteredVisits, activeFilters);
+  }, [visitData, activeFilters, activeTab]);
 
   const handleEditClick = (index, id, visit) => {
     // dispatch(setSelectedVisit(visit));
@@ -136,6 +146,8 @@ const VisitList = () => {
       <VisitHeader
         isListView={isListView}
         setIsListView={setIsListView}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
         setOpenNewVisitPopup={setOpenNewVisitPopup}
         visitCount={visitData.length} // Pass visit count here
       />
@@ -148,7 +160,7 @@ const VisitList = () => {
 
       {/* Visit List */}
       {!isListView ? (
-        <VisitCalendarView visits={visitData} />
+        <VisitCalendarView visits={filteredVisits} />
       ) : (
         <div className="flex gap-8 w-full pt-6 h-[calc(100vh-180px)] overflow-hidden">
           <div className="flex-grow overflow-y-auto tenant-visits-scrollbar">
@@ -181,8 +193,10 @@ const VisitList = () => {
       <VisitModal
         isOpen={openNewVisitPopup}
         onClose={() => setOpenNewVisitPopup(false)}
-        onVisitCreated={editVisitData}
+        editVisitData={editVisitData}
         isEdit={isEdit}
+        setIsEdit={setIsEdit}
+        setShouldRefreshVisit={setShouldRefreshVisit}
       />
     </div>
   );

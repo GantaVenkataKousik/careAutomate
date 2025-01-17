@@ -18,63 +18,63 @@ import { BASE_URL } from "../../config";
 import activities from "../../utils/commonUtils/activities";
 import Select from "react-select";
 
-const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
-  // console.log(onVisitCreated);
-  const [hcm, setHcm] = useState(isEdit ? onVisitCreated.hcmId : "");
+const VisitModal = ({
+  isOpen,
+  onClose,
+  editVisitData,
+  isEdit,
+  setIsEdit,
+  setShouldRefreshVisit,
+}) => {
+  // console.log(editVisitData);
+  const [hcm, setHcm] = useState(isEdit ? editVisitData.hcmId : "");
   const [startDate, setStartDate] = useState(
-    isEdit ? new Date(onVisitCreated.startDate) : null
+    isEdit ? new Date(editVisitData.startDate) : null
   );
   const [planOfService, setPlanOfService] = useState(
-    isEdit ? onVisitCreated.placeOfService : ""
+    isEdit ? editVisitData.placeOfService : ""
   );
   const [reasonForRemote, setReasonForRemote] = useState(
-    isEdit ? onVisitCreated?.reasonForRemote : ""
+    isEdit ? editVisitData?.reasonForRemote : ""
   );
-  const [title, setTitle] = useState(isEdit ? onVisitCreated.title : "");
-  const [scheduleCreated, setScheduleCreated] = useState(false);
-  const [activity, setActivity] = useState(isEdit ? onVisitCreated.title : "");
+  const [title, setTitle] = useState(isEdit ? editVisitData.title : "");
+  const [activity, setActivity] = useState(isEdit ? editVisitData.title : "");
   const [startTime, setStartTime] = useState(
-    isEdit ? onVisitCreated.startDate.substring(11, 16) : ""
+    isEdit ? editVisitData.startDate.substring(11, 16) : ""
   );
-  const [showCreateScheduleDialog, setShowCreateScheduleDialog] =
-    useState(false);
   const [allTenants, setAllTenants] = useState([]); // Store tenant data
   const [endTime, setEndTime] = useState(
-    isEdit ? onVisitCreated.endDate.substring(11, 16) : ""
+    isEdit ? editVisitData.endDate.substring(11, 16) : ""
   );
   const [serviceType, setServiceType] = useState(
-    isEdit ? onVisitCreated.serviceType : "Housing Sustaining"
+    isEdit ? editVisitData.serviceType : "Housing Sustaining"
   ); // Default value for service type
   const [methodOfContact, setMethodOfContact] = useState(
-    isEdit ? onVisitCreated.typeMethod : "in-person"
+    isEdit ? editVisitData.typeMethod : "in-person"
   ); // Default value for method of contact
 
   const [travel, setTravel] = useState(
-    isEdit
-      ? onVisitCreated.travel.toLowerCase() == "yes"
-        ? "Yes"
-        : "NO"
-      : "No"
+    isEdit ? (editVisitData.travel.toLowerCase() == "yes" ? "Yes" : "NO") : "No"
   );
   const [milesWithTenant, setMilesWithTenant] = useState(
-    isEdit ? onVisitCreated.travelWithTenant : ""
+    isEdit ? editVisitData.travelWithTenant : ""
   );
   const [milesWithoutTenant, setMilesWithoutTenant] = useState(
-    isEdit ? onVisitCreated.travelWithoutTenant : ""
+    isEdit ? editVisitData.travelWithoutTenant : ""
   );
   const [signature, setSignature] = useState(
-    isEdit ? onVisitCreated.signature : ""
+    isEdit ? editVisitData.signature : ""
   );
   const [hcmList, setHcmList] = useState([]); // List of HCMs
   const [selectedTenantId, setSelectedTenantId] = useState(
-    isEdit ? onVisitCreated.tenantId : ""
+    isEdit ? editVisitData.tenantId : ""
   ); // Selected tenant ID
   const [detailsOfVisit, setDetailsOfVisit] = useState(
-    isEdit ? onVisitCreated.details : ""
+    isEdit ? editVisitData.details : ""
   );
   //prettier-ignore
   const [responseOfVisit, setResponseOfVisit] = useState(
-    isEdit ? onVisitCreated.response : ""
+    isEdit ? editVisitData.response : ""
   );
   const [tenantServices, setTenantServices] = useState([]);
   const [loadingServices, setLoadingServices] = useState(false);
@@ -148,22 +148,22 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
   useEffect(() => {
     if (isOpen && isEdit) {
       // Reset the state to the visit data when the modal is opened for editing
-      setHcm(onVisitCreated.hcmId);
-      setStartDate(new Date(onVisitCreated.startDate));
-      setPlanOfService(onVisitCreated.placeOfService);
-      setReasonForRemote(onVisitCreated?.reasonForRemote);
-      setTitle(onVisitCreated.title);
-      setActivity(onVisitCreated.title);
-      setEndTime(new Date(onVisitCreated.endDate));
-      setServiceType(onVisitCreated.serviceType || "Housing Sustaining");
-      setMethodOfContact(onVisitCreated.typeMethod || "in-person");
-      setTravel(onVisitCreated.travel.toLowerCase() === "yes" ? "Yes" : "No");
-      setMilesWithTenant(onVisitCreated.travelWithTenant);
-      setMilesWithoutTenant(onVisitCreated.travelWithoutTenant);
-      setSignature(onVisitCreated.signature);
-      setSelectedTenantId(onVisitCreated.tenantId);
-      setDetailsOfVisit(onVisitCreated.details);
-      setResponseOfVisit(onVisitCreated.response);
+      setHcm(editVisitData.hcmId);
+      setStartDate(new Date(editVisitData.startDate));
+      setPlanOfService(editVisitData.placeOfService);
+      setReasonForRemote(editVisitData?.reasonForRemote);
+      setTitle(editVisitData.title);
+      setActivity(editVisitData.title);
+      setEndTime(new Date(editVisitData.endDate));
+      setServiceType(editVisitData.serviceType || "Housing Sustaining");
+      setMethodOfContact(editVisitData.typeMethod || "in-person");
+      setTravel(editVisitData.travel.toLowerCase() === "yes" ? "Yes" : "No");
+      setMilesWithTenant(editVisitData.travelWithTenant);
+      setMilesWithoutTenant(editVisitData.travelWithoutTenant);
+      setSignature(editVisitData.signature);
+      setSelectedTenantId(editVisitData.tenantId);
+      setDetailsOfVisit(editVisitData.details);
+      setResponseOfVisit(editVisitData.response);
     } else {
       // Reset state when the modal is closed or not in edit mode
       setHcm("");
@@ -184,49 +184,49 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       setDetailsOfVisit("");
       setResponseOfVisit("");
     }
-  }, [isOpen, isEdit, onVisitCreated]);
+  }, [isOpen, isEdit, editVisitData]);
   useEffect(() => {
     fetchTenants();
     fetchHcm();
   }, []);
   const handleEditVisit = async () => {
-    console.log("Editing Visit:");
+    // console.log("Editing Visit:");
 
     let changedFields = {};
 
     // Compare each field with its initial value and add to `changedFields` if it's different
-    if (hcm !== onVisitCreated.hcm) changedFields.hcm = hcm;
-    if (startDate && startDate !== new Date(onVisitCreated.startDate))
+    if (hcm !== editVisitData.hcm) changedFields.hcm = hcm;
+    if (startDate && startDate !== new Date(editVisitData.startDate))
       changedFields.date = startDate;
-    if (planOfService !== onVisitCreated.placeOfService)
+    if (planOfService !== editVisitData.placeOfService)
       changedFields.planOfService = planOfService;
-    if (reasonForRemote !== onVisitCreated.reasonForRemote)
+    if (reasonForRemote !== editVisitData.reasonForRemote)
       changedFields.reasonForRemote = reasonForRemote;
-    if (activity !== onVisitCreated.title) changedFields.title = activity;
-    if (startTime && startTime !== new Date(onVisitCreated.endDate))
+    if (activity !== editVisitData.title) changedFields.title = activity;
+    if (startTime && startTime !== new Date(editVisitData.endDate))
       changedFields.startTime = startTime;
-    if (endTime && endTime !== new Date(onVisitCreated.endDate))
+    if (endTime && endTime !== new Date(editVisitData.endDate))
       changedFields.endTime = endTime;
-    if (serviceType !== onVisitCreated.serviceType)
+    if (serviceType !== editVisitData.serviceType)
       changedFields.serviceType = serviceType;
-    if (methodOfContact !== onVisitCreated.typeMethod)
+    if (methodOfContact !== editVisitData.typeMethod)
       changedFields.methodOfContact = methodOfContact;
-    if (milesWithTenant !== onVisitCreated.milesWithTenant)
+    if (milesWithTenant !== editVisitData.milesWithTenant)
       changedFields.milesWithTenant = milesWithTenant;
-    if (signature !== onVisitCreated.signature)
+    if (signature !== editVisitData.signature)
       changedFields.signature = signature;
-    if (selectedTenantId !== onVisitCreated.tenantName)
+    if (selectedTenantId !== editVisitData.tenantName)
       changedFields.selectedTenantId = selectedTenantId;
-    if (detailsOfVisit !== onVisitCreated.notes)
+    if (detailsOfVisit !== editVisitData.notes)
       changedFields.notes = detailsOfVisit;
-    if (responseOfVisit !== onVisitCreated.response)
+    if (responseOfVisit !== editVisitData.response)
       changedFields.response = responseOfVisit;
     // console.log(changedFields);
 
     if (Object.keys(changedFields).length > 0) {
       // Make the API call to update the visit
       const response = await fetch(
-        `${API_ROUTES.VISITS.BASE}/${onVisitCreated._id}`,
+        `${API_ROUTES.VISITS.BASE}/${editVisitData._id}`,
         {
           method: "PUT",
           headers: {
@@ -236,10 +236,13 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
           body: JSON.stringify(changedFields),
         }
       );
-
+      // console.log(response);
       if (response.ok) {
         console.log("Visit updated successfully!");
         toast.success("Visit updated successfully!");
+        setIsEdit(false);
+        setShouldRefreshVisit(true);
+        onClose();
         // Handle success (e.g., show toast or close modal)
       } else {
         console.error("Failed to update visit:", await response.json());
@@ -325,10 +328,10 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       return;
     }
 
-    if (!signature) {
-      toast.error("Signature status is required.");
-      return;
-    }
+    // if (!signature) {
+    //   toast.error("Signature status is required.");
+    //   return;
+    // }
 
     // Combine startDate and startTime into a single Date object
     const startDateTime = new Date(`${startDate}T${startTime}:00Z`);
@@ -365,7 +368,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       signature: signature === "done" ? "done" : "not done",
     };
 
-    console.log("Payload:", payload);
+    // console.log("Payload:", payload);
 
     try {
       const token = localStorage.getItem("token");
@@ -382,8 +385,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
 
       if (response.status >= 200 && response.status < 300) {
         toast.success("Visit created successfully.");
-        setScheduleCreated(true);
-        setShowCreateScheduleDialog(true);
+        setShouldRefreshVisit(true);
         onClose();
       } else {
         toast.error("Failed to create Visit.");
@@ -396,6 +398,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
 
   const handleCancelAppointment = () => {
     resetFormState();
+    setIsEdit(false);
+    onClose();
   };
 
   const resetFormState = () => {
@@ -433,12 +437,15 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
       setLoadingServices(true);
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${API_ROUTES.SERVICE_TRACKING.GET_ALL_SERVICES}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `${API_ROUTES.SERVICE_TRACKING.GET_ALL_SERVICES}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         const data = await response.json();
 
@@ -478,6 +485,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
             <label className="text-sm font-medium flex items-center w-1/3">
               <GoPerson size={24} className="mr-2" />
               Tenant
+              <span className="text-red-500">*</span>
             </label>
             <Select
               value={
@@ -499,6 +507,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
             <label className="text-sm font-medium flex items-center w-1/3">
               <GoPerson size={24} className="mr-2" />
               Assigned HCM's
+              <span className="text-red-500">*</span>
             </label>
             <select
               value={hcm}
@@ -525,7 +534,8 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
           <div className="flex gap-4 mb-4">
             <label className="text-sm font-medium flex items-center w-1/3">
               <RiServiceLine size={24} className="mr-2" />
-              Service Type <span className="text-red-500">*</span>
+              Service Type
+              <span className="text-red-500">*</span>
             </label>
             <select
               value={serviceType}
@@ -537,7 +547,9 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
               </option>
               {tenantServices.map((service) => (
                 <option key={service._id} value={service.serviceType}>
-                  {service.serviceType} ({dayjs(service.startDate).format("MM/DD/YYYY")} - {dayjs(service.endDate).format("MM/DD/YYYY")})
+                  {service.serviceType} (
+                  {dayjs(service.startDate).format("MM/DD/YYYY")} -{" "}
+                  {dayjs(service.endDate).format("MM/DD/YYYY")})
                 </option>
               ))}
             </select>
@@ -547,6 +559,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
             <label className="text-sm font-medium flex items-center w-1/3">
               <SlNote size={24} className="mr-2" />
               Title
+              <span className="text-red-500">*</span>
             </label>
             <select
               value={activity}
@@ -574,13 +587,14 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
             <label className="text-sm font-medium flex items-center mb-1 w-1/3">
               <BsCalendar2Date size={24} className="mr-2" />
               Date
+              <span className="text-red-500">*</span>
             </label>
             {/* Date Input */}
             <div className="flex gap-6 w-2/3">
               <div className="flex items-center gap-4">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
-                    // value={dayjs(filters.startDate)} // Bind value to filters.startDate
+                    value={dayjs(startDate)} // Bind value to filters.startDate
                     maxDate={dayjs()}
                     onChange={(date) =>
                       setStartDate(date?.format("YYYY-MM-DD"))
@@ -614,6 +628,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
                 <label className="text-sm font-medium flex items-center mb-1">
                   {/* <MdOutlineAccessTime size={24} className="mr-2" /> */}
                   Start
+                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="time"
@@ -628,6 +643,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
                 <label className="text-sm font-medium flex items-center mb-1">
                   {/* <MdOutlineAccessTime size={24} className="mr-2" /> */}
                   End
+                  <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="time"
@@ -644,6 +660,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
             <label className="text-sm font-medium flex items-center w-1/3">
               <GrLocation size={24} className="mr-2" />
               Place of Service
+              <span className="text-red-500">*</span>
             </label>
             <select
               value={planOfService}
@@ -665,6 +682,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
             <label className="text-sm font-medium flex items-center w-1/3">
               <MdOutlineAccessTime size={24} className="mr-2" />
               Method of Visit
+              <span className="text-red-500">*</span>
             </label>
             <select
               value={methodOfContact}
@@ -684,6 +702,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
               <label className="text-sm font-medium flex items-center w-1/3">
                 <RiServiceLine size={24} className="mr-2" />
                 Reason for Remote
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -698,6 +717,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
           <div className="flex gap-4 mb-6">
             <label className="text-sm font-medium flex w-1/3">
               Details of Visit
+              <span className="text-red-500">*</span>
             </label>
             <ReactQuill
               value={detailsOfVisit}
@@ -718,6 +738,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
           <div className="flex gap-4 mb-4">
             <label className="text-sm font-medium flex w-1/3">
               Response of Visit
+              <span className="text-red-500">*</span>
             </label>
             <ReactQuill
               value={responseOfVisit}
@@ -738,6 +759,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
           <div className="flex gap-4 items-center">
             <label className="text-sm font-medium flex items-center w-1/3">
               Travel
+              <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-4 w-2/3">
               <select
@@ -751,13 +773,15 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
 
               {/* Total Miles */}
               <div className="flex items-center">
-                <label className="mr-2 text-sm font-medium">Total Miles:</label>
+                <label className="mr-2 text-sm font-medium">
+                  Total Miles:<span className="text-red-500">*</span>
+                </label>
                 <input
                   type="number"
                   value={
                     travel === "Yes"
                       ? parseFloat(milesWithTenant || 0) +
-                      parseFloat(milesWithoutTenant || 0)
+                        parseFloat(milesWithoutTenant || 0)
                       : 0
                   }
                   readOnly
@@ -807,7 +831,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
               Signature
             </label>
             <div className="border border-gray-300 rounded-md p-2 w-2/3 bg-gray-100 text-gray-700">
-              {user?.name || "No name available"}
+              {signature || user?.name || "No name available"}
             </div>
           </div>
 
@@ -822,7 +846,7 @@ const VisitModal = ({ isOpen, onClose, onVisitCreated, isEdit }) => {
               {isEdit ? "Update Visit" : "Create Visit"}
             </button>
             <button
-              onClick={onClose || handleCancelAppointment}
+              onClick={handleCancelAppointment}
               className=" cursor-pointer transition-all bg-[#F57070] text-white 
               px-6 py-2 rounded-lg 
               border-red-700 border-b-[4px] 

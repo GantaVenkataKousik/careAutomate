@@ -29,7 +29,7 @@ export const appointmentFilter = (appointments) => {
 
       // Construct the standardized appointment object
       return {
-        title: `${from} with ${personWith}`, // Title of the event
+        title: `(HCM)${from} with ${personWith}`, // Title of the event
         start, // Start time of the appointment
         end, // End time of the appointment
         description: `${service} - ${activity}`, // Description
