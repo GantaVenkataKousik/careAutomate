@@ -137,7 +137,7 @@ const VisitCard = ({
                     visit.status === "approved"
                       ? "bg-[#F57070] text-white border-[#F57070] hover:bg-white hover:text-[#F57070]"
                       : "bg-[#6DD98C] text-white border-[#6DD98C] hover:bg-white hover:text-[#6DD98C]"
-                  } px-6 py-2 rounded-full border-2 transition-all duration-300`}
+                  } px-4 py-1 rounded-full border-2 transition-all duration-300`}
                   onClick={() => handleStatusUpdate(visit._id, "pending")}
                 >
                   {visit.status === "approved"
@@ -147,13 +147,13 @@ const VisitCard = ({
               ) : (
                 <>
                   <button
-                    className="bg-[#F57070] text-white px-6 py-2 rounded-full border-2 border-[#F57070] transition-all duration-300 hover:bg-white hover:text-[#F57070] hover:border-[#F57070]"
+                    className="bg-[#F57070] text-white px-4 py-1 rounded-full border-2 border-[#F57070] transition-all duration-300 hover:bg-white hover:text-[#F57070] hover:border-[#F57070]"
                     onClick={() => handleStatusUpdate(visit._id, "rejected")}
                   >
                     Reject
                   </button>
                   <button
-                    className="bg-[#6DD98C] text-white px-6 py-2 rounded-full border-2 border-[#6DD98C] transition-all duration-300 hover:bg-white hover:text-[#6DD98C] hover:border-[#6DD98C]"
+                    className="bg-[#6DD98C] text-white px-4 py-1 rounded-full border-2 border-[#6DD98C] transition-all duration-300 hover:bg-white hover:text-[#6DD98C] hover:border-[#6DD98C]"
                     onClick={() => handleStatusUpdate(visit._id, "approved")}
                   >
                     Approve
