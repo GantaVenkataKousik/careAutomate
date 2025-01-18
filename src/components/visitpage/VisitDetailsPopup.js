@@ -6,8 +6,11 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
+import DOMPurify from "dompurify";
 
 const VisitDetailsPopup = ({ openPopup, handleClosePopup, detailsPopup }) => {
+  const sanitizeHTML = (html) => DOMPurify.sanitize(html);
+
   return (
     <Dialog
       open={openPopup}
@@ -42,7 +45,15 @@ const VisitDetailsPopup = ({ openPopup, handleClosePopup, detailsPopup }) => {
           paddingTop: "10px", // Padding top for content
         }}
       >
-        <p>{detailsPopup}</p>
+        <div
+          className="p-5"
+          dangerouslySetInnerHTML={{
+            __html: sanitizeHTML(
+              detailsPopup || "<p>No content available.</p>"
+            ),
+          }}
+        />
+        {/* <p>{detailsPopup}</p> */}
       </DialogContent>
 
       <DialogActions

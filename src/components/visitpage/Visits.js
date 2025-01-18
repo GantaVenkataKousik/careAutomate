@@ -11,7 +11,7 @@ import { applyVisitsFilters } from "../../utils/visitsUtils/VisitsListFilterUtil
 
 const VisitList = () => {
   const [detailsPopup, setDetailsPopup] = useState("");
-  const [activeTab, setActiveTab] = useState("Approved");
+  const [activeTab, setActiveTab] = useState("Pending");
   const [openPopup, setOpenPopup] = useState(false);
   const [openNewVisitPopup, setOpenNewVisitPopup] = useState(false);
   const [visitData, setVisitData] = useState([]);
@@ -38,7 +38,7 @@ const VisitList = () => {
       });
       if (response.data.response) {
         // Sorting the visits by the createdAt date (most recent first)
-        // console.log("raw", response.data.visits);
+        // console.log("raw", response.data.response);
         // Mapping the sorted visits
         // console.log(response);
         const mappedVisits = response.data.response.map((visit) => ({
@@ -46,7 +46,7 @@ const VisitList = () => {
           title: visit.activity,
           startDate: visit.dateOfService || visit.date,
           endDate: visit.dateOfService || visit.date,
-          typeMethod: visit.methodOfVisit,
+          typeMethod: visit.methodOfContact,
           hcm: visit.hcmId?.name || "N/A",
           hcmId: visit.hcmId?._id || "N/A",
           scheduledDate: visit.scheduledDate ?? "",
@@ -163,7 +163,7 @@ const VisitList = () => {
         <VisitCalendarView visits={filteredVisits} />
       ) : (
         <div className="flex gap-8 w-full pt-6 h-[calc(100vh-180px)] overflow-hidden">
-          <div className="flex-grow overflow-y-auto tenant-visits-scrollbar">
+          <div className="flex-grow overflow-y-auto px-4 tenant-visits-scrollbar">
             <VisitCard
               // visitData={visitData}
               visitData={
@@ -177,7 +177,7 @@ const VisitList = () => {
               handleStatusUpdate={handleStatusUpdate}
             />
           </div>
-          <div className="w-[280px] flex-shrink-0 border border-gray-200 rounded-[20px] p-[10px] h-full overflow-y-auto tenant-visits-scrollbar">
+          <div className="w-[280px] flex-shrink-0 border border-[#6F84F8] rounded-[20px] p-[10px] h-full overflow-y-auto tenant-visits-scrollbar">
             <VisitFilter onFilterUpdate={handleFilterUpdate} />
           </div>
         </div>

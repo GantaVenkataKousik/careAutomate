@@ -6,6 +6,7 @@ import { formatTimeFormate } from "../../utils/commonUtils/timeFilter";
 import { GrLocation } from "react-icons/gr";
 import { GiPathDistance } from "react-icons/gi";
 import { API_ROUTES } from "../../routes";
+import { RiAdminLine, RiUserLine } from "react-icons/ri";
 
 const VisitCard = ({
   visitData,
@@ -95,7 +96,12 @@ const VisitCard = ({
         >
           <div className="flex items-center mb-2">
             <h3 className="mr-[2rem] flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-              Service Type -{" "}
+              <span
+                className={`${getColorClass(visit.status, "text")} font-bold`}
+              >
+                {visit.serviceType}
+              </span>{" "}
+              -{" "}
               <span className="text">
                 {visit.title && visit.title.length > 40
                   ? visit.title.substring(0, 45) + "..."
@@ -132,85 +138,127 @@ const VisitCard = ({
               </div>
             </div>
           </div>
-
-          <div className="flex pb-2 gap-10 w-full">
-            <div className="flex flex-col gap-3 max-w-[400px]">
-              <p>
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-4 justify-start mb-2">
+              <p className="flex items-center gap-2">
+                <RiAdminLine className="w-4 h-4" />
                 HCM -
                 <span
-                  className={`${getColorClass(visit.status, "text")} ml-2 font-bold`}
+                  className={`${getColorClass(visit.status, "text")} font-bold`}
                 >
                   {visit.hcm}
                 </span>
               </p>
-              <div className="flex items-center">
-                <CiCalendarDate style={{ fontSize: "2rem" }} />
-                <p
-                  className={`${getColorClass(visit.status, "text")} text-lg pl-2 pt-1`}
+              <p className="text-gray-600">with</p>
+              <p className="flex items-center gap-2">
+                <RiUserLine className="w-4 h-4" />
+                Tenant -
+                <span
+                  className={`${getColorClass(visit.status, "text")} font-bold`}
                 >
-                  {formatTimeFormate(visit.dos?.split("T")[0])}
-                </p>
-              </div>
-              <div className="flex items-center">
-                <strong>
-                  <GrLocation className="text-2xl ml-1" />
-                </strong>
-                <div>
+                  {visit.tenantName}
+                </span>
+              </p>
+            </div>
+            <div className="flex pb-2 gap-10 w-full">
+              <div className="flex flex-col gap-3 max-w-[400px]">
+                <div className="flex items-center">
+                  <CiCalendarDate style={{ fontSize: "2rem" }} />
                   <p
-                    className={`${getColorClass(visit.status, "text")} text-lg pl-3 pt-1 font-bold`}
+                    className={`${getColorClass(visit.status, "text")} text-lg pl-2 pt-1`}
                   >
-                    {visit.placeOfService}
+                    {formatTimeFormate(visit.dos?.split("T")[0])}
                   </p>
-                  <p className="pl-3"> {visit.typeMethod}</p>
+                </div>
+                <div className="flex items-center">
+                  <strong>
+                    <GrLocation className="text-2xl ml-1" />
+                  </strong>
+                  <div>
+                    <p
+                      className={`${getColorClass(visit.status, "text")} text-lg pl-3 pt-1 font-bold`}
+                    >
+                      {visit.placeOfService}
+                    </p>
+                    <p className="pl-3"> {visit.typeMethod}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <strong>
+                    <GiPathDistance style={{ fontSize: "2rem" }} />
+                  </strong>
+                  <p
+                    className={`${getColorClass(visit.status, "text")} text-lg pl-3 pt-1`}
+                  >
+                    {(visit.totalMile || "0") + " Miles"}
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center">
-                <strong>
-                  <GiPathDistance style={{ fontSize: "2rem" }} />
-                </strong>
-                <p
-                  className={`${getColorClass(visit.status, "text")} text-lg pl-3 pt-1`}
-                >
-                  {(visit.totalMile || "0") + " Miles"}
-                </p>
+
+              <div
+                className={`flex-1 ml-[2px] border-2 ${getColorClass(visit.status, "border")} px-2 pt-2 rounded-xl`}
+              >
+                <div>
+                  <p className={`${getColorClass(visit.status, "text")}`}>
+                    Visit Details
+                  </p>
+                  <div
+                    className={`${getColorClass(visit.status, "border")} overflow-hidden h-8 leading-6 pl-4 text-[#505254] `}
+                  >
+                    {visit.details && visit.details.length > 20 ? (
+                      <>
+                        {visit.details.substring(0, 20)}...
+                        <button
+                          className={`${getColorClass("visit.status", "text")} ml-2 rounded-full px-2`}
+                          onClick={() => {
+                            handleDetailsClick(visit.details);
+                          }}
+                        >
+                          View More
+                        </button>
+                      </>
+                    ) : (
+                      visit.details || "No details provided."
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <p className={`${getColorClass(visit.status, "text")} mt-1`}>
+                    Response of the Visit
+                  </p>
+                  <div
+                    className={`${getColorClass(visit.status, "border")} overflow-hidden h-8 leading-6  pl-4 text-[#505254] `}
+                  >
+                    {visit.response && visit.response.length > 20 ? (
+                      <>
+                        {visit.response.substring(0, 30)}...
+                        <button
+                          className={`${getColorClass("visit.status", "text")} ml-2 rounded-full px-2`}
+                          onClick={() => {
+                            handleDetailsClick(visit.response);
+                          }}
+                        >
+                          View More
+                        </button>
+                      </>
+                    ) : (
+                      visit.response || "No response provided."
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div className="flex-1 ml-[2px]">
-              <div>
-                <p className={`${getColorClass(visit.status, "text")}`}>
-                  Visit Details
-                </p>
-                <div
-                  className={`${getColorClass(visit.status, "border")} border-2 overflow-hidden h-24 leading-6 p-2 pl-4 rounded-xl text-[#505254] mt-1`}
+            <div className="flex justify-end items-center ml-auto">
+              <span className="ml-auto">
+                Signature:{" "}
+                <span
+                  className={`${getColorClass(visit.status, "text")} font-bold`}
                 >
-                  {visit.details && visit.details.length > 20 ? (
-                    <>
-                      {visit.details.substring(0, 20)}...
-                      <button
-                        className={`${getColorClass("visit.status", "text")} ml-2 rounded-full px-2`}
-                        onClick={() => {
-                          handleDetailsClick(visit.details);
-                        }}
-                      >
-                        View More
-                      </button>
-                    </>
-                  ) : (
-                    visit.details || "No details provided."
-                  )}
-                </div>
-              </div>
-              <div className="flex justify-end items-center">
-                <span className="ml-auto mt-6">
-                  Signature:{" "}
-                  <span
-                    className={`${getColorClass(visit.status, "text")} font-bold`}
-                  >
-                    {visit.signature || "N/A"}
-                  </span>
+                  {visit.signature === "done"
+                    ? visit.hcm
+                    : visit.signature || "N/A"}
                 </span>
-              </div>
+              </span>
             </div>
           </div>
 
