@@ -17,6 +17,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { BASE_URL } from "../../config";
 import activities from "../../utils/commonUtils/activities";
 import Select from "react-select";
+import { convertToUTCString } from "../../utils/commonUtils/timeFilter";
 
 const VisitModal = ({
   isOpen,
@@ -26,7 +27,10 @@ const VisitModal = ({
   setIsEdit,
   setShouldRefreshVisit,
 }) => {
-  // console.log(editVisitData);
+  console.log(
+    editVisitData,
+    dayjs(editVisitData?.duration.split(" - ")[0]).format("HH:mm")
+  );
   const [hcm, setHcm] = useState(isEdit ? editVisitData.hcmId : "");
   const [startDate, setStartDate] = useState(
     isEdit ? new Date(editVisitData.startDate) : null
@@ -40,11 +44,11 @@ const VisitModal = ({
   const [title, setTitle] = useState(isEdit ? editVisitData.title : "");
   const [activity, setActivity] = useState(isEdit ? editVisitData.title : "");
   const [startTime, setStartTime] = useState(
-    isEdit ? editVisitData.startDate.substring(11, 16) : ""
+    isEdit ? dayjs(editVisitData?.duration.split(" - ")[0]).format("HH:mm") : ""
   );
   const [allTenants, setAllTenants] = useState([]); // Store tenant data
   const [endTime, setEndTime] = useState(
-    isEdit ? editVisitData.endDate.substring(11, 16) : ""
+    isEdit ? dayjs(editVisitData?.duration.split(" - ")[1]).format("HH:mm") : ""
   );
   const [serviceType, setServiceType] = useState(
     isEdit ? editVisitData.serviceType : "Housing Sustaining"
@@ -54,7 +58,11 @@ const VisitModal = ({
   ); // Default value for method of contact
 
   const [travel, setTravel] = useState(
-    isEdit ? (editVisitData.travel.toLowerCase() == "yes" ? "Yes" : "NO") : "No"
+    isEdit
+      ? editVisitData.travel.toLowerCase() === "yes"
+        ? "Yes"
+        : "NO"
+      : "No"
   );
   const [milesWithTenant, setMilesWithTenant] = useState(
     isEdit ? editVisitData.travelWithTenant : ""
@@ -154,7 +162,13 @@ const VisitModal = ({
       setReasonForRemote(editVisitData?.reasonForRemote);
       setTitle(editVisitData.title);
       setActivity(editVisitData.title);
-      setEndTime(new Date(editVisitData.endDate));
+      // setEndTime(new Date(editVisitData.endDate));
+      setEndTime(
+        dayjs(editVisitData?.duration.split(" - ")[1]).format("HH:mm") || ""
+      );
+      setStartTime(
+        dayjs(editVisitData?.duration.split(" - ")[0]).format("HH:mm") || ""
+      );
       setServiceType(editVisitData.serviceType || "Housing Sustaining");
       setMethodOfContact(editVisitData.typeMethod || "in-person");
       setTravel(editVisitData.travel.toLowerCase() === "yes" ? "Yes" : "No");
@@ -195,34 +209,40 @@ const VisitModal = ({
     let changedFields = {};
 
     // Compare each field with its initial value and add to `changedFields` if it's different
-    if (hcm !== editVisitData.hcm) changedFields.hcm = hcm;
+    if (hcm !== editVisitData.hcmId) changedFields.hcm = hcm;
     if (startDate && startDate !== new Date(editVisitData.startDate))
-      changedFields.date = startDate;
+      changedFields.date = startDate.toISOString();
     if (planOfService !== editVisitData.placeOfService)
       changedFields.planOfService = planOfService;
     if (reasonForRemote !== editVisitData.reasonForRemote)
       changedFields.reasonForRemote = reasonForRemote;
     if (activity !== editVisitData.title) changedFields.title = activity;
-    if (startTime && startTime !== new Date(editVisitData.endDate))
-      changedFields.startTime = startTime;
+    if (startTime && startTime !== new Date(editVisitData.startTime))
+      changedFields.startTime = convertToUTCString(
+        dayjs(startDate).format("YYYY-MM-DD"),
+        startTime
+      );
     if (endTime && endTime !== new Date(editVisitData.endDate))
-      changedFields.endTime = endTime;
+      changedFields.endTime = convertToUTCString(
+        dayjs(startDate).format("YYYY-MM-DD"),
+        startTime
+      );
     if (serviceType !== editVisitData.serviceType)
       changedFields.serviceType = serviceType;
-    if (methodOfContact !== editVisitData.typeMethod)
+    if (methodOfContact !== editVisitData.methodOfContact)
       changedFields.methodOfContact = methodOfContact;
-    if (milesWithTenant !== editVisitData.milesWithTenant)
-      changedFields.milesWithTenant = milesWithTenant;
+    if (milesWithTenant !== editVisitData.travelWithTenant)
+      changedFields.travelWithTenant = milesWithTenant;
     if (signature !== editVisitData.signature)
       changedFields.signature = signature;
-    if (selectedTenantId !== editVisitData.tenantName)
+    if (selectedTenantId !== editVisitData.tenantId)
       changedFields.selectedTenantId = selectedTenantId;
     if (detailsOfVisit !== editVisitData.notes)
       changedFields.notes = detailsOfVisit;
     if (responseOfVisit !== editVisitData.response)
       changedFields.response = responseOfVisit;
-    // console.log(changedFields);
-
+    console.log(changedFields);
+    // return;
     if (Object.keys(changedFields).length > 0) {
       // Make the API call to update the visit
       const response = await fetch(

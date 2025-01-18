@@ -6,11 +6,12 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-import DOMPurify from "dompurify";
 
-const VisitDetailsPopup = ({ openPopup, handleClosePopup, detailsPopup }) => {
-  const sanitizeHTML = (html) => DOMPurify.sanitize(html);
-
+const AppointmentDetailsPopup = ({
+  openPopup,
+  handleClosePopup,
+  detailsPopup,
+}) => {
   return (
     <Dialog
       open={openPopup}
@@ -34,7 +35,7 @@ const VisitDetailsPopup = ({ openPopup, handleClosePopup, detailsPopup }) => {
           paddingBottom: "10px", // Padding bottom for title
         }}
       >
-        Visit Details
+        Reason for Remote
       </DialogTitle>
 
       <DialogContent
@@ -45,15 +46,7 @@ const VisitDetailsPopup = ({ openPopup, handleClosePopup, detailsPopup }) => {
           paddingTop: "10px", // Padding top for content
         }}
       >
-        <div
-          className="p-5"
-          dangerouslySetInnerHTML={{
-            __html: sanitizeHTML(
-              detailsPopup || "<p>No content available.</p>"
-            ),
-          }}
-        />
-        {/* <p>{detailsPopup}</p> */}
+        <p>{detailsPopup}</p>
       </DialogContent>
 
       <DialogActions
@@ -80,4 +73,4 @@ const VisitDetailsPopup = ({ openPopup, handleClosePopup, detailsPopup }) => {
   );
 };
 
-export default VisitDetailsPopup;
+export default AppointmentDetailsPopup;

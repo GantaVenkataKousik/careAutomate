@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { format } from "date-fns";
 import { GoPerson } from "react-icons/go";
 import { RiServiceLine } from "react-icons/ri";
 import { SlNote } from "react-icons/sl";
 import { BsCalendar2Date } from "react-icons/bs";
 import { MdOutlineAccessTime } from "react-icons/md";
 import { GrLocation } from "react-icons/gr";
-import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -17,6 +15,7 @@ import { BASE_URL } from "../../config";
 import { API_ROUTES } from "../../routes";
 import activities from "../../utils/commonUtils/activities";
 import Select from "react-select";
+import { convertToUTCString } from "../../utils/commonUtils/timeFilter";
 
 const AppointmentModal = ({
   isOpen,
@@ -25,6 +24,7 @@ const AppointmentModal = ({
   isEdit,
   appointmentData,
 }) => {
+  // console.log(appointmentData);
   const [startDate, setStartDate] = useState(null);
   const [planOfService, setPlanOfService] = useState("");
   const [reasonForRemote, setReasonForRemote] = useState("");
@@ -37,16 +37,14 @@ const AppointmentModal = ({
   const [activity, setActivity] = useState("");
   const [tenantServices, setTenantServices] = useState([]);
   const [loadingServices, setLoadingServices] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       if (isEdit && appointmentData) {
         // Populate state with appointmentData for editing
-        setStartDate(
-          new Date(
-            dayjs(appointmentData.startDate.split("T")[0]).format("MM-DD-YYYY")
-          )
-        );
+        setStartDate(new Date(appointmentData.startDate));
+
         setPlanOfService(appointmentData.location || "");
         setStartTime(dayjs(appointmentData.startTime).format("HH:mm") || "");
         setEndTime(dayjs(appointmentData.endTime).format("HH:mm") || "");
@@ -55,6 +53,7 @@ const AppointmentModal = ({
         setSelectedTenantId(appointmentData.tenantId || "");
         setSelectedHcmId(appointmentData.hcmId || "");
         setActivity(appointmentData.activity || "");
+        setReasonForRemote(appointmentData.reasonForRemote || "");
       } else {
         // Reset to default values for new entries
         setStartDate(null);
@@ -73,8 +72,6 @@ const AppointmentModal = ({
 
   const [allTenants, setAllTenants] = useState([]);
   const [hcmList, setHcmList] = useState([]);
-  const [scheduleCreated, setScheduleCreated] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchTenants = async () => {
@@ -156,12 +153,15 @@ const AppointmentModal = ({
       setLoadingServices(true);
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${API_ROUTES.SERVICE_TRACKING.GET_ALL_SERVICES}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `${API_ROUTES.SERVICE_TRACKING.GET_ALL_SERVICES}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         const data = await response.json();
 
@@ -195,19 +195,36 @@ const AppointmentModal = ({
     // First create an object to store only changed fields
     const changedFields = {};
 
-    // Compare each field with original data and only add if changed
-    if (
-      startDate &&
-      dayjs(appointmentData.startTime).format("YYYY-MM-DD") !== startDate
-    ) {
-      // Format dates for comparison
-      const startDateTime = new Date(`${startDate}T${startTime}:00Z`);
-      changedFields.startTime = startDateTime.toISOString();
+    if (startDate && startDate !== new Date(appointmentData.startDate)) {
+      changedFields.date = startDate.toISOString();
     }
 
-    if (endTime && dayjs(appointmentData.endTime).format("HH:mm") !== endTime) {
-      const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
-      changedFields.endTime = endDateTime.toISOString();
+    if (startDate && startTime) {
+      try {
+        // Compare the new start time with the existing one in ISO format
+        if (startTime !== dayjs(appointmentData.startTime).toISOString()) {
+          changedFields.startTime = convertToUTCString(
+            dayjs(startDate).format("YYYY-MM-DD"),
+            startTime
+          );
+        }
+      } catch (error) {
+        console.error("Error processing startDate and startTime:", error);
+      }
+    }
+
+    if (startDate && endTime) {
+      try {
+        // Compare the new end time with the existing one in ISO format
+        if (endTime !== dayjs(appointmentData.endTime).format("HH:mm")) {
+          changedFields.endTime = convertToUTCString(
+            dayjs(startDate).format("YYYY-MM-DD"),
+            endTime
+          );
+        }
+      } catch (error) {
+        console.error("Error processing startDate and endTime:", error);
+      }
     }
 
     if (selectedTenantId !== appointmentData.tenantId) {
@@ -247,7 +264,9 @@ const AppointmentModal = ({
     // Add the ID to the payload
     changedFields.id = appointmentData.id;
     // console.log(changedFields);
+    // return;
     try {
+      setLoading(true);
       const token = localStorage.getItem("token");
       const response = await axios.put(
         `${API_ROUTES.APPOINTMENTS.BASE}/${appointmentData.id}`,
@@ -265,6 +284,7 @@ const AppointmentModal = ({
         toast.success("Appointment updated successfully.");
         onAptCreated();
         onClose();
+        setLoading(false);
       } else {
         toast.error("Failed to update appointment.");
       }
@@ -276,7 +296,18 @@ const AppointmentModal = ({
 
   const handleCreateAppointment = async () => {
     // Validate all fields
-    if (!selectedTenantId || !selectedHcmId || !serviceType || !activity || !methodOfContact || !planOfService || !startDate || !startTime || !endTime) {
+    setLoading(true);
+    if (
+      !selectedTenantId ||
+      !selectedHcmId ||
+      !serviceType ||
+      !activity ||
+      !methodOfContact ||
+      !planOfService ||
+      !startDate ||
+      !startTime ||
+      !endTime
+    ) {
       toast.error("Please fill all the mandatory fields.");
       return;
     }
@@ -294,21 +325,15 @@ const AppointmentModal = ({
       toast.error("End time must be after start time.");
       return;
     }
+    const startDateTime = convertToUTCString(startDate, startTime);
+    const endDateTime = convertToUTCString(startDate, endTime);
 
-    // Combine startDate and startTime into a single Date object
-    const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
-    const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
-
-    // Format the times to the desired string format
-    const formattedStartTime = startDateTime.toISOString();
-    const formattedEndTime = endDateTime.toISOString();
-    // console.log("time", new Date(`${startDate}T${startTime}:00`), endTime);
     const payload = {
       tenantId: selectedTenantId || "Unknown",
       hcmId: selectedHcmId || "N/A",
       date: startDate, // Keep the date separately if required
-      startTime: formattedStartTime,
-      endTime: formattedEndTime,
+      startTime: startDateTime,
+      endTime: endDateTime,
       activity: activity || "N/A",
       methodOfContact,
       reasonForRemote: reasonForRemote,
@@ -333,10 +358,9 @@ const AppointmentModal = ({
 
       if (response.status >= 200 && response.status < 300) {
         toast.success("Appointment created successfully.");
-        setScheduleCreated(true);
         onAptCreated();
-        // setShowCreateScheduleDialog(true);
         onClose();
+        setLoading(false);
       } else {
         console.error("Failed to create appointment:", response.statusText);
         toast.error("Failed to create appointment.");
@@ -393,8 +417,9 @@ const AppointmentModal = ({
             </label>
             <Select
               value={
-                allTenants.find((option) => option.value === selectedTenantId) ||
-                null
+                allTenants.find(
+                  (option) => option.value === selectedTenantId
+                ) || null
               }
               onChange={(selectedOption) =>
                 setSelectedTenantId(selectedOption ? selectedOption.value : "")
@@ -408,7 +433,8 @@ const AppointmentModal = ({
 
           <div className="flex gap-4">
             <label className="text-sm font-medium flex items-center w-1/3">
-              <GoPerson size={24} className="mr-2" />Assigned HCM's <span className="text-red-500">*</span>
+              <GoPerson size={24} className="mr-2" />
+              Assigned HCM's <span className="text-red-500">*</span>
             </label>
             <select
               value={selectedHcmId}
@@ -447,7 +473,9 @@ const AppointmentModal = ({
               </option>
               {tenantServices.map((service) => (
                 <option key={service._id} value={service.serviceType}>
-                  {service.serviceType} ({dayjs(service.startDate).format("MM/DD/YYYY")} - {dayjs(service.endDate).format("MM/DD/YYYY")})
+                  {service.serviceType} (
+                  {dayjs(service.startDate).format("MM/DD/YYYY")} -{" "}
+                  {dayjs(service.endDate).format("MM/DD/YYYY")})
                 </option>
               ))}
             </select>
@@ -482,6 +510,7 @@ const AppointmentModal = ({
               <div className="flex items-center gap-4">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
+                    value={dayjs(startDate)}
                     onChange={(date) =>
                       setStartDate(date?.format("YYYY-MM-DD"))
                     }
@@ -579,38 +608,9 @@ const AppointmentModal = ({
               <option value="remote">Indirect</option>
             </select>
           </div>
+          {/*  */}
+
           {methodOfContact === "remote" && (
-            <div className="flex flex-col gap-2 items-center">
-              <div className="flex items-center gap-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="indirectOption"
-                    value="remote"
-                    checked={reasonForRemote === "remote"}
-                    onChange={() => setReasonForRemote("remote")}
-                    className="mr-2"
-                  />
-                  Remote
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="indirectOption"
-                    value="in-person"
-                    checked={reasonForRemote === "in-person"}
-                    onChange={() => setReasonForRemote("in-person")}
-                    className="mr-2"
-                  />
-                  In-Person
-                </label>
-              </div>
-
-              {/* Conditional rendering for Reason for Remote */}
-            </div>
-          )}
-
-          {reasonForRemote === "remote" && (
             <div className="flex gap-4">
               <label className="text-sm font-medium flex items-center w-1/3">
                 <RiServiceLine size={24} className="mr-2" />
@@ -629,12 +629,19 @@ const AppointmentModal = ({
           <div className="flex gap-4 w-2/3" style={{ marginLeft: "auto" }}>
             <button
               onClick={handleSubmit}
+              disabled={loading}
               className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg
               border-blue-600
               border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
               active:border-b-[2px] active:brightness-90 active:translate-y-[2px]  py-3 px-6 w-full mt-6"
             >
-              Create Appointment
+              {isEdit
+                ? loading
+                  ? "Updating Appointment"
+                  : "Update Appointment"
+                : loading
+                  ? "Creating Appointment"
+                  : "Create Appointment"}
             </button>
             <button
               onClick={onClose || handleCancelAppointment}

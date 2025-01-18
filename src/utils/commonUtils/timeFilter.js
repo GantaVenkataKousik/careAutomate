@@ -1,3 +1,45 @@
+/**
+ * Converts local time and date to UTC ISO string.
+ *
+ * @param {string} date - The local date in "YYYY-MM-DD" format.
+ * @param {string} time - The local time in "HH:mm" format.
+ * @returns {string} - The UTC time string in ISO format.
+ */
+export const convertToUTCString = (date, time) => {
+  if (!date || !time) {
+    throw new Error("Both date and time must be provided.");
+  }
+
+  // Combine date and time into a single string
+  const localDateTime = new Date(`${date}T${time}:00`);
+
+  if (isNaN(localDateTime.getTime())) {
+    throw new Error("Invalid date or time format.");
+  }
+
+  // Convert to UTC and return the ISO string
+  return localDateTime.toISOString();
+};
+
+/**
+ * Converts a local Date object to a UTC ISO string.
+ *
+ * @param {Date} date - The local Date object.
+ * @returns {string} - The UTC date string in ISO format.
+ */
+export function convertDateToUTCString(date) {
+  if (!date || !(date instanceof Date)) {
+    throw new Error("A valid Date object must be provided.");
+  }
+
+  // Adjust to UTC by considering the local time zone offset
+  const utcDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+
+  // Return the UTC ISO string (only the date part)
+  console.log(utcDate);
+  return utcDate.toISOString(); // We only need the date, so we split at 'T'
+}
+
 export function formatTimeFormate(dateTime, format = "MM-DD-YYYY") {
   const date = new Date(dateTime);
 
