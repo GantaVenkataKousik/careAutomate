@@ -27,10 +27,6 @@ const VisitModal = ({
   setIsEdit,
   setShouldRefreshVisit,
 }) => {
-  console.log(
-    editVisitData,
-    dayjs(editVisitData?.duration.split(" - ")[0]).format("HH:mm")
-  );
   const [hcm, setHcm] = useState(isEdit ? editVisitData.hcmId : "");
   const [startDate, setStartDate] = useState(
     isEdit ? new Date(editVisitData.startDate) : null
@@ -41,14 +37,13 @@ const VisitModal = ({
   const [reasonForRemote, setReasonForRemote] = useState(
     isEdit ? editVisitData?.reasonForRemote : ""
   );
-  const [title, setTitle] = useState(isEdit ? editVisitData.title : "");
   const [activity, setActivity] = useState(isEdit ? editVisitData.title : "");
   const [startTime, setStartTime] = useState(
-    isEdit ? dayjs(editVisitData?.duration.split(" - ")[0]).format("HH:mm") : ""
+    isEdit ? dayjs(editVisitData?.startTime).format("HH:mm") : ""
   );
   const [allTenants, setAllTenants] = useState([]); // Store tenant data
   const [endTime, setEndTime] = useState(
-    isEdit ? dayjs(editVisitData?.duration.split(" - ")[1]).format("HH:mm") : ""
+    isEdit ? dayjs(editVisitData?.endTime).format("HH:mm") : ""
   );
   const [serviceType, setServiceType] = useState(
     isEdit ? editVisitData.serviceType : "Housing Sustaining"
@@ -86,7 +81,7 @@ const VisitModal = ({
   );
   const [tenantServices, setTenantServices] = useState([]);
   const [loadingServices, setLoadingServices] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
   const userName = user?.name;
 
@@ -160,15 +155,9 @@ const VisitModal = ({
       setStartDate(new Date(editVisitData.startDate));
       setPlanOfService(editVisitData.placeOfService);
       setReasonForRemote(editVisitData?.reasonForRemote);
-      setTitle(editVisitData.title);
       setActivity(editVisitData.title);
-      // setEndTime(new Date(editVisitData.endDate));
-      setEndTime(
-        dayjs(editVisitData?.duration.split(" - ")[1]).format("HH:mm") || ""
-      );
-      setStartTime(
-        dayjs(editVisitData?.duration.split(" - ")[0]).format("HH:mm") || ""
-      );
+      setEndTime(dayjs(editVisitData?.endTime).format("HH:mm") || "");
+      setStartTime(dayjs(editVisitData?.startTime).format("HH:mm") || "");
       setServiceType(editVisitData.serviceType || "Housing Sustaining");
       setMethodOfContact(editVisitData.typeMethod || "in-person");
       setTravel(editVisitData.travel.toLowerCase() === "yes" ? "Yes" : "No");
@@ -184,7 +173,6 @@ const VisitModal = ({
       setStartDate(null);
       setPlanOfService("");
       setReasonForRemote("");
-      setTitle("");
       setActivity("");
       setStartTime("");
       setEndTime("");
@@ -205,7 +193,7 @@ const VisitModal = ({
   }, []);
   const handleEditVisit = async () => {
     // console.log("Editing Visit:");
-
+    setLoading(true);
     let changedFields = {};
 
     // Compare each field with its initial value and add to `changedFields` if it's different
@@ -225,7 +213,7 @@ const VisitModal = ({
     if (endTime && endTime !== new Date(editVisitData.endDate))
       changedFields.endTime = convertToUTCString(
         dayjs(startDate).format("YYYY-MM-DD"),
-        startTime
+        endTime
       );
     if (serviceType !== editVisitData.serviceType)
       changedFields.serviceType = serviceType;
@@ -241,7 +229,7 @@ const VisitModal = ({
       changedFields.notes = detailsOfVisit;
     if (responseOfVisit !== editVisitData.response)
       changedFields.response = responseOfVisit;
-    console.log(changedFields);
+    // console.log(changedFields);
     // return;
     if (Object.keys(changedFields).length > 0) {
       // Make the API call to update the visit
@@ -270,6 +258,7 @@ const VisitModal = ({
     } else {
       console.log("No changes made.");
     }
+    setLoading(false);
   };
 
   const handleCreateVisit = async () => {
@@ -348,20 +337,9 @@ const VisitModal = ({
       return;
     }
 
-    // if (!signature) {
-    //   toast.error("Signature status is required.");
-    //   return;
-    // }
-
-    // Combine startDate and startTime into a single Date object
-    const startDateTime = new Date(`${startDate}T${startTime}:00Z`);
-    const endDateTime = endTime
-      ? new Date(`${startDate}T${endTime}:00Z`)
-      : null;
-
     // Format times
-    const formattedStartTime = startDateTime.toISOString();
-    const formattedEndTime = endDateTime ? endDateTime.toISOString() : null;
+    const formattedStartTime = convertToUTCString(startDate, startTime);
+    const formattedEndTime = convertToUTCString(startDate, endTime);
 
     // Prepare payload
     const payload = {
@@ -391,6 +369,7 @@ const VisitModal = ({
     // console.log("Payload:", payload);
 
     try {
+      setLoading(true);
       const token = localStorage.getItem("token");
       const response = await axios.post(
         `${API_ROUTES.VISITS.BASE}/createVisit`,
@@ -413,6 +392,8 @@ const VisitModal = ({
     } catch (error) {
       console.error("Error during API call:", error);
       toast.error("Error creating Visit. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -432,7 +413,7 @@ const VisitModal = ({
     setReasonForRemote("");
     setStartTime("");
     setActivity("");
-    setTitle("");
+    // setTitle("");
     setActivity("");
     setResponseOfVisit("");
     setDetailsOfVisit("");
@@ -851,21 +832,29 @@ const VisitModal = ({
               Signature
             </label>
             <div className="border border-gray-300 rounded-md p-2 w-2/3 bg-gray-100 text-gray-700">
-              {signature || user?.name || "No name available"}
+              {signature || userName || "No name available"}
             </div>
           </div>
 
           <div className="flex gap-4 w-2/3 " style={{ marginLeft: "auto" }}>
             <button
+              disabled={loading}
               onClick={isEdit ? handleEditVisit : handleCreateVisit}
               className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg
               border-blue-600
               border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
               active:border-b-[2px] active:brightness-90 active:translate-y-[2px]  py-3 px-6 w-full mt-6  mb-9 "
             >
-              {isEdit ? "Update Visit" : "Create Visit"}
+              {isEdit
+                ? loading
+                  ? "Updating Visit"
+                  : "Update Visit"
+                : loading
+                  ? "Creating Visit"
+                  : "Create Visit"}
             </button>
             <button
+              disabled={loading}
               onClick={handleCancelAppointment}
               className=" cursor-pointer transition-all bg-[#F57070] text-white 
               px-6 py-2 rounded-lg 
@@ -878,12 +867,6 @@ const VisitModal = ({
             </button>
           </div>
         </div>
-        {/* <button
-          onClick={handleCreateAnother}
-          className=" py-2 px-4 rounded-md mt-4  transition duration-300"
-        >
-          Create Another Schedule
-        </button> */}
       </div>
     </div>
   ) : null;

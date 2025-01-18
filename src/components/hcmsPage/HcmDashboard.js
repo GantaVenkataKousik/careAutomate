@@ -14,7 +14,7 @@ const HcmDashboard = () => {
     useState(false);
   // Find the selected HCM
 
-  // console.log(hcms, hcms);
+  // console.log("Dash", hcms);
   // Handle missing data
   if (!hcms) {
     return (
@@ -34,7 +34,7 @@ const HcmDashboard = () => {
 
         {/* Tenants Assigned Component */}
         <TenantsAssigned
-          hcmId={hcmId}
+          hcmId={hcms._id}
           setOpenAssignTenantModal={setOpenAssignTenantModal}
           shouldRefreshAssignedTenants={shouldRefreshAssignedTenants}
         />

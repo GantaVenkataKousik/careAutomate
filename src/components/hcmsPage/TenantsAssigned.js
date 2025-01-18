@@ -22,6 +22,7 @@ const TenantsAssigned = ({
   setOpenAssignTenantModal,
   shouldRefreshAssignedTenants,
 }) => {
+  // console.log("assigned", hcmId);
   const [tenants, setTenants] = useState([]);
   useEffect(() => {
     const fetchAssignedTenants = async () => {

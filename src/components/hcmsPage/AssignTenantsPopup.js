@@ -11,6 +11,7 @@ const AssignTenantsPopup = ({
   hcm,
   setShouldRefreshAssignedTenants,
 }) => {
+  // console.log("popup", hcm);
   const [allTenants, setAllTenants] = useState([]);
   const [selectedTenants, setSelectedTenants] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -81,7 +82,10 @@ const AssignTenantsPopup = ({
       tenantIds: selected,
       hcmId: hcm._id,
     };
+    // console.log(hcm);
+
     // console.log(payload);
+    // return;
     try {
       const response = await axios.post(
         `${API_ROUTES.HCM.ASSIGN_TENANTS}`,
@@ -93,6 +97,7 @@ const AssignTenantsPopup = ({
           },
         }
       );
+      console.log(response);
       if (response.status === 200) {
         toast.success("Tenants assigned to HCM successfully");
         setShouldRefreshAssignedTenants(true);

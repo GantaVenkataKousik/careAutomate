@@ -319,7 +319,7 @@ const PopupPage = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      // setComplete(true);
+      setComplete(true);
     }
   };
 

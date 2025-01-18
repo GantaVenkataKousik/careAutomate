@@ -8,7 +8,12 @@ import {
 } from "@mui/material";
 import DOMPurify from "dompurify";
 
-const VisitDetailsPopup = ({ openPopup, handleClosePopup, detailsPopup }) => {
+const VisitDetailsPopup = ({
+  openPopup,
+  handleClosePopup,
+  detailsPopup,
+  title,
+}) => {
   const sanitizeHTML = (html) => DOMPurify.sanitize(html);
 
   return (
@@ -34,7 +39,7 @@ const VisitDetailsPopup = ({ openPopup, handleClosePopup, detailsPopup }) => {
           paddingBottom: "10px", // Padding bottom for title
         }}
       >
-        Visit Details
+        {title}
       </DialogTitle>
 
       <DialogContent

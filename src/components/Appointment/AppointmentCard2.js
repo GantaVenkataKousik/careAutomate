@@ -96,34 +96,47 @@ const AppointmentCard2 = ({
 
       <div className="flex flex-col justify-center w-[75%] gap-2">
         {/** Center container */}
-        <div className="flex items-center">
-          <div
-            className="font-bold flex-shrink-0 mr-2"
-            style={{ color: getColor() }}
-          >
-            {appointment.service || "No Service"} {" - "}
+        <div className="flex justify-between items-center overflow-hidden">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center text-gray-600 gap-2">
+              <RiAdminLine className="w-8 h-8" />
+              <span
+                className="truncate w-full overflow-hidden text-ellipsis"
+                style={{ color: getColor() }}
+              >
+                {appointment.from}
+              </span>
+            </div>
+            <div className="text-gray-600">with</div>
+            <div className="flex items-center text-gray-600 gap-2">
+              <RiUserLine className="w-8 h-8" />
+              <span
+                className="truncate w-full overflow-hidden text-ellipsis"
+                style={{ color: getColor() }}
+              >
+                {appointment.with}
+              </span>
+            </div>
           </div>
-          <div className="text-gray-600 truncate overflow-hidden">
-            {appointment.activity || "No Activity"}
+
+          <div className="flex items-center text-gray-600">
+            <MdAccessTime className="w-6 h-6" style={{ color: getColor() }} />
+            <span>
+              {appointment.startTime && appointment.endTime ? (
+                <>
+                  {formatTime(appointment.startTime)} -{" "}
+                  {formatTime(appointment.endTime)}
+                </>
+              ) : (
+                "Time not available"
+              )}
+            </span>
           </div>
         </div>
 
         {/** Below container */}
-        <div className="flex items-center gap-8">
-          <div className="flex flex-col justify-center gap-2 w-[30%]">
-            <div className="flex items-center text-gray-600">
-              <MdAccessTime className="w-6 h-6" style={{ color: getColor() }} />
-              <span>
-                {appointment.startTime && appointment.endTime ? (
-                  <>
-                    {formatTime(appointment.startTime)} -{" "}
-                    {formatTime(appointment.endTime)}
-                  </>
-                ) : (
-                  "Time not available"
-                )}
-              </span>
-            </div>
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col justify-center gap-2 w-[20%]">
             <div className="flex items-center text-gray-600">
               <MdOutlineLocationOn
                 className="w-6 h-6"
@@ -140,30 +153,16 @@ const AppointmentCard2 = ({
             </div>
           </div>
 
-          <div className="flex flex-col justify-center gap-4 w-[70%] overflow-hidden">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center text-gray-600 gap-2">
-                <RiAdminLine className="w-8 h-8" />
-                <span
-                  className="truncate w-full overflow-hidden text-ellipsis"
-                  style={{ color: getColor() }}
-                >
-                  {appointment.from.length > 15
-                    ? `${appointment.from.slice(0, 13)}...`
-                    : appointment.from}
-                </span>
+          <div className="flex flex-col justify-center gap-4 w-[80%] overflow-hidden">
+            <div className="flex items-center">
+              <div
+                className="font-bold flex-shrink-0 mr-2"
+                style={{ color: getColor() }}
+              >
+                {appointment.service || "No Service"} {" - "}
               </div>
-              <div className="text-gray-600">with</div>
-              <div className="flex items-center text-gray-600 gap-2">
-                <RiUserLine className="w-8 h-8" />
-                <span
-                  className="truncate w-full overflow-hidden text-ellipsis"
-                  style={{ color: getColor() }}
-                >
-                  {appointment.with.length > 15
-                    ? `${appointment.with.slice(0, 13)}...`
-                    : appointment.with}
-                </span>
+              <div className="text-gray-600 w-full truncate overflow-hidden break-words">
+                {appointment.activity || "No Activity"}
               </div>
             </div>
 

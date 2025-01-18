@@ -8,9 +8,11 @@ import VisitCard from "./VisitCard";
 import VisitDetailsPopup from "./VisitDetailsPopup";
 import VisitFilter from "./VisitFilter";
 import { applyVisitsFilters } from "../../utils/visitsUtils/VisitsListFilterUtils/VisitFetchFilter";
+import { toast } from "react-toastify";
 
 const VisitList = () => {
   const [detailsPopup, setDetailsPopup] = useState("");
+  const [detailTitle, setDetailTitle] = useState("");
   const [activeTab, setActiveTab] = useState("Pending");
   const [openPopup, setOpenPopup] = useState(false);
   const [openNewVisitPopup, setOpenNewVisitPopup] = useState(false);
@@ -46,6 +48,8 @@ const VisitList = () => {
           title: visit.activity,
           startDate: visit.dateOfService || visit.date,
           endDate: visit.dateOfService || visit.date,
+          startTime: visit.startTime,
+          endTime: visit.endTime,
           typeMethod: visit.methodOfContact,
           hcm: visit.hcmId?.name || "N/A",
           hcmId: visit.hcmId?._id || "N/A",
@@ -57,8 +61,6 @@ const VisitList = () => {
           status: visit.status,
           serviceType: visit.serviceType,
           placeOfService: visit.placeOfService || visit.place,
-          approved: visit.approved,
-          rejected: visit.rejected,
           totalMile: visit.totalMiles,
           createdAt: visit.createdAt,
           tenantName: visit.tenantId?.name,
@@ -67,10 +69,11 @@ const VisitList = () => {
           travelWithTenant: visit.travelWithTenant,
           travelWithoutTenant: visit.travelWithoutTenant,
           response: visit.response ?? "",
+          reasonForRemote: visit.reasonForRemote,
         }));
         // console.log("mapped", mappedVisits);
         const sortedVisits = mappedVisits.sort((a, b) => {
-          return new Date(b.createdAt) - new Date(a.createdAt);
+          return new Date(b.startDate) - new Date(a.startDate);
         });
         setVisitData(sortedVisits);
         // console.log(sortedVisits);
@@ -87,8 +90,9 @@ const VisitList = () => {
     fetchVisits();
   }, [shouldRefreshVisit]);
 
-  const handleDetailsClick = (details) => {
+  const handleDetailsClick = (details, title) => {
     setDetailsPopup(details);
+    setDetailTitle(title);
     setOpenPopup(true);
   };
 
@@ -118,19 +122,23 @@ const VisitList = () => {
     setOpenNewVisitPopup(true);
   };
 
-  const handleStatusUpdate = async (index, isApproved) => {
-    const visitId = visitData[index]._id;
+  const handleStatusUpdate = async (index, status) => {
+    const visitId = index;
     const url = `${BASE_URL}/visit/${visitId}`;
     const response = await axios.put(
       url,
-      { status: isApproved ? "approved" : "rejected" },
+      { status: status },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
+    // console.log(response);
     if (response) {
+      toast.success(
+        `Visit is successfully ${status === "pending" ? "Withdraw" : status}`
+      );
       fetchVisits();
     } else {
       console.error("Failed to update visit status:", response.data.message);
@@ -187,6 +195,7 @@ const VisitList = () => {
         openPopup={openPopup}
         handleClosePopup={handleClosePopup}
         detailsPopup={detailsPopup}
+        title={detailTitle}
       />
 
       {/* Visit Modal */}
