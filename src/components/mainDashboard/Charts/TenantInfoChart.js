@@ -40,6 +40,7 @@ const TenantAreaChart = () => {
     });
     const [selectedYear, setSelectedYear] = useState("");
     const [availableYears, setAvailableYears] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
