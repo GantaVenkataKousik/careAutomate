@@ -38,7 +38,6 @@ const TenantAreaChart = () => {
             }
         }
     });
-
     const [selectedYear, setSelectedYear] = useState("");
     const [availableYears, setAvailableYears] = useState([]);
 
