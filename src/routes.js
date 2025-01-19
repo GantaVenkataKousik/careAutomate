@@ -1,11 +1,15 @@
 import { BASE_URL } from "./config";
 
 export const API_ROUTES = {
+  ALL: {
+    FETCH_ALL: `${BASE_URL}/fetchAll/fetchAllHCMsTenants/`,
+  },
   AUTH: {
     BASE: `${BASE_URL}/auth`,
   },
   HCM: {
     GET_INFO: `${BASE_URL}/hcm/get-hcm-info/`,
+    ASSIGN_TENANTS: `${BASE_URL}/hcm/assign-tenants-to-hcm/`,
     // Add other HCM-related routes here
   },
   COMMUNICATION: {
@@ -46,6 +50,13 @@ export const API_ROUTES = {
     UPDATE_TENANT: `${BASE_URL}/tenant/update-tenant/`,
     GET_INFO: `${BASE_URL}/tenant/get-tenant-info/`,
     REASSESSMENTS: `${BASE_URL}/tenant/tenant-reassessments/`,
+    NOTES: {
+      GET_NOTES: `${BASE_URL}/tenant/get-tenant-notes/`,
+      ADD_NOTE: `${BASE_URL}/tenant/add-tenant-note/`,
+      UPDATE_NOTES: `${BASE_URL}/tenant/update-tenant-note/`,
+      DELETE_NOTE: `${BASE_URL}/tenant/delete-tenant-note/`,
+    },
+    ASSIGN_HCMS: `${BASE_URL}/tenant/assign-hcms-to-tenant/`,
     // Add other tenant-related routes here
   },
   // Add other general routes here

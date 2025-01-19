@@ -6,6 +6,8 @@ import { formatTimeFormate } from "../../utils/commonUtils/timeFilter";
 import { GrLocation } from "react-icons/gr";
 import { GiPathDistance } from "react-icons/gi";
 import { API_ROUTES } from "../../routes";
+import { RiAdminLine, RiUserLine } from "react-icons/ri";
+import { PiTimer } from "react-icons/pi";
 
 const VisitCard = ({
   visitData,
@@ -82,7 +84,19 @@ const VisitCard = ({
       handleCloseDeletePopup(visitId);
     }
   };
+  function calculateDuration(start, end) {
+    // Parse the ISO date strings into Date objects
+    const startTime = new Date(start);
+    const endTime = new Date(end);
 
+    // Calculate the difference in milliseconds
+    const durationMs = endTime - startTime;
+
+    // Convert milliseconds to minutes
+    const durationMinutes = durationMs / (1000 * 60);
+
+    return durationMinutes + " mins"; // Returns the duration in minutes
+  }
   return (
     <div className="flex flex-col w-full ">
       {visitData.map((visit, index) => (
@@ -94,31 +108,57 @@ const VisitCard = ({
           )} overflow-hidden`}
         >
           <div className="flex items-center mb-2">
-            <h3 className="mr-[2rem] flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-              Service Type -{" "}
-              <span className="text">
-                {visit.title && visit.title.length > 40
-                  ? visit.title.substring(0, 45) + "..."
-                  : visit.title || "No Title"}
-              </span>
-            </h3>
+            <div className="flex items-center gap-4 justify-start mb-2">
+              <p className="flex items-center gap-2">
+                <RiAdminLine className="w-4 h-4" />
+                HCM -
+                <span
+                  className={`${getColorClass(visit.status, "text")} font-bold`}
+                >
+                  {visit.hcm}
+                </span>
+              </p>
+              <p className="text-gray-600">with</p>
+              <p className="flex items-center gap-2">
+                <RiUserLine className="w-4 h-4" />
+                Tenant -
+                <span
+                  className={`${getColorClass(visit.status, "text")} font-bold`}
+                >
+                  {visit.tenantName}
+                </span>
+              </p>
+            </div>
 
             <div className="flex gap-10 items-center mt-1 ml-auto">
-              {visit.status === "pending" && (
-                <div className="flex gap-4">
+              {visit.status !== "pending" ? (
+                <button
+                  className={`${
+                    visit.status === "approved"
+                      ? "bg-[#F57070] text-white border-[#F57070] hover:bg-white hover:text-[#F57070]"
+                      : "bg-[#6DD98C] text-white border-[#6DD98C] hover:bg-white hover:text-[#6DD98C]"
+                  } px-4 py-1 rounded-full border-2 transition-all duration-300`}
+                  onClick={() => handleStatusUpdate(visit._id, "pending")}
+                >
+                  {visit.status === "approved"
+                    ? "Unapprove"
+                    : "Withdraw Rejection"}
+                </button>
+              ) : (
+                <>
                   <button
-                    className="bg-[#F57070] text-white px-6 py-2.5 rounded-full border-2 border-[#F57070] transition-all duration-300 hover:bg-white hover:text-[#F57070] hover:border-[#F57070]"
-                    onClick={() => handleStatusUpdate(index, false)}
+                    className="bg-[#F57070] text-white px-4 py-1 rounded-full border-2 border-[#F57070] transition-all duration-300 hover:bg-white hover:text-[#F57070] hover:border-[#F57070]"
+                    onClick={() => handleStatusUpdate(visit._id, "rejected")}
                   >
                     Reject
                   </button>
                   <button
-                    className="bg-[#6DD98C] text-white px-6 py-2.5 rounded-full border-2 border-[#6DD98C] transition-all duration-300 hover:bg-white hover:text-[#6DD98C] hover:border-[#6DD98C]"
-                    onClick={() => handleStatusUpdate(index, true)}
+                    className="bg-[#6DD98C] text-white px-4 py-1 rounded-full border-2 border-[#6DD98C] transition-all duration-300 hover:bg-white hover:text-[#6DD98C] hover:border-[#6DD98C]"
+                    onClick={() => handleStatusUpdate(visit._id, "approved")}
                   >
                     Approve
                   </button>
-                </div>
+                </>
               )}
               <div className="flex gap-4">
                 <EditIcon
@@ -132,84 +172,174 @@ const VisitCard = ({
               </div>
             </div>
           </div>
+          <div className="flex flex-col items-center">
+            {/**kok */}
 
-          <div className="flex pb-2 gap-10 w-full">
-            <div className="flex flex-col gap-3 max-w-[400px]">
-              <p>
-                HCM -
-                <span
-                  className={`${getColorClass(visit.status, "text")} ml-2 font-bold`}
-                >
-                  {visit.hcm}
-                </span>
-              </p>
-              <div className="flex items-center">
-                <CiCalendarDate style={{ fontSize: "2rem" }} />
-                <p
-                  className={`${getColorClass(visit.status, "text")} text-lg pl-2 pt-1`}
-                >
-                  {formatTimeFormate(visit.dos?.split("T")[0])}
-                </p>
-              </div>
-              <div className="flex items-center">
-                <strong>
-                  <GrLocation className="text-2xl ml-1" />
-                </strong>
-                <div>
+            <div className="flex pb-2 gap-10 w-full">
+              <div className="flex flex-col gap-3 max-w-[400px]">
+                <div className="flex items-center">
+                  <CiCalendarDate style={{ fontSize: "2rem" }} />
                   <p
-                    className={`${getColorClass(visit.status, "text")} text-lg pl-3 pt-1 font-bold`}
+                    className={`${getColorClass(visit.status, "text")} text-lg pl-2 pt-1`}
                   >
-                    {visit.placeOfService}
+                    {formatTimeFormate(visit.dos?.split("T")[0])}
                   </p>
-                  <p className="pl-3"> {visit.typeMethod}</p>
+                </div>
+                <div className="flex items-center">
+                  <PiTimer style={{ fontSize: "2rem" }} />
+                  <p
+                    className={`${getColorClass(visit.status, "text")} text-lg pl-2 pt-1`}
+                  >
+                    {calculateDuration(
+                      visit?.duration.split(" - ")[0],
+                      visit?.duration.split(" - ")[1]
+                    )}
+                  </p>
+                </div>
+                <div className="flex items-center">
+                  <strong>
+                    <GrLocation className="text-2xl ml-1" />
+                  </strong>
+                  <div>
+                    <p
+                      className={`${getColorClass(visit.status, "text")} text-lg pl-3 pt-1 font-bold`}
+                    >
+                      {visit.placeOfService}
+                    </p>
+                    <p className="pl-3"> {visit.typeMethod}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <strong>
+                    <GiPathDistance style={{ fontSize: "2rem" }} />
+                  </strong>
+                  <p
+                    className={`${getColorClass(visit.status, "text")} text-lg pl-3 pt-1`}
+                  >
+                    {(visit.totalMile || "0") + " Miles"}
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center">
-                <strong>
-                  <GiPathDistance style={{ fontSize: "2rem" }} />
-                </strong>
-                <p
-                  className={`${getColorClass(visit.status, "text")} text-lg pl-3 pt-1`}
-                >
-                  {(visit.totalMile || "0") + " Miles"}
-                </p>
-              </div>
-            </div>
 
-            <div className="flex-1 ml-[2px]">
-              <div>
-                <p className={`${getColorClass(visit.status, "text")}`}>
-                  Visit Details
-                </p>
-                <div
-                  className={`${getColorClass(visit.status, "border")} border-2 overflow-hidden h-24 leading-6 p-2 pl-4 rounded-xl text-[#505254] mt-1`}
-                >
-                  {visit.details && visit.details.length > 20 ? (
-                    <>
-                      {visit.details.substring(0, 20)}...
-                      <button
-                        className={`${getColorClass("visit.status", "text")} ml-2 rounded-full px-2`}
-                        onClick={() => {
-                          handleDetailsClick(visit.details);
-                        }}
-                      >
-                        View More
-                      </button>
-                    </>
-                  ) : (
-                    visit.details || "No details provided."
-                  )}
-                </div>
-              </div>
-              <div className="flex justify-end items-center">
-                <span className="ml-auto mt-6">
-                  Signature:{" "}
+              <div className="flex-1 flex-col">
+                <h3 className=" flex-1 overflow-hidden text-ellipsis whitespace-nowrap mb-[2px]">
                   <span
                     className={`${getColorClass(visit.status, "text")} font-bold`}
                   >
-                    {visit.signature || "N/A"}
+                    {visit.serviceType}
+                  </span>{" "}
+                  -{" "}
+                  <span className="text">
+                    {visit.title && visit.title.length > 40
+                      ? visit.title.substring(0, 45) + "..."
+                      : visit.title || "No Title"}
                   </span>
-                </span>
+                </h3>
+                <div
+                  className={`flex-1  border-2 ${getColorClass(visit.status, "border")} px-2 pt-2 rounded-xl`}
+                >
+                  <div>
+                    <p className={`${getColorClass(visit.status, "text")}`}>
+                      Visit Details
+                    </p>
+                    <div
+                      className={`${getColorClass(visit.status, "border")} overflow-hidden h-8 leading-6 pl-4 text-[#505254] `}
+                    >
+                      {visit.details && visit.details.length > 20 ? (
+                        <>
+                          {visit.details.substring(0, 20)}...
+                          <button
+                            className={`${getColorClass("visit.status", "text")} ml-2 rounded-full px-2`}
+                            onClick={() => {
+                              handleDetailsClick(
+                                visit.details,
+                                "Visit Details"
+                              );
+                            }}
+                          >
+                            View More
+                          </button>
+                        </>
+                      ) : (
+                        visit.details || "No details provided."
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <p
+                      className={`${getColorClass(visit.status, "text")} mt-1`}
+                    >
+                      Response of the Visit
+                    </p>
+                    <div
+                      className={`${getColorClass(visit.status, "border")} overflow-hidden h-8 leading-6  pl-4 text-[#505254] `}
+                    >
+                      {visit.response && visit.response.length > 20 ? (
+                        <>
+                          {visit.response.substring(0, 30)}...
+                          <button
+                            className={`${getColorClass("visit.status", "text")} ml-2 rounded-full px-2`}
+                            onClick={() => {
+                              handleDetailsClick(
+                                visit.response,
+                                "Response of the Visit"
+                              );
+                            }}
+                          >
+                            View More
+                          </button>
+                        </>
+                      ) : (
+                        visit.response || "No response provided."
+                      )}
+                    </div>
+                  </div>
+                  {visit.reasonForRemote && (
+                    <div>
+                      <p
+                        className={`${getColorClass(visit.status, "text")} mt-1`}
+                      >
+                        Reason for Remote
+                      </p>
+                      <div
+                        className={`${getColorClass(visit.status, "border")} overflow-hidden h-8 leading-6  pl-4 text-[#505254] `}
+                      >
+                        {visit.reasonForRemote &&
+                        visit.reasonForRemote.length > 20 ? (
+                          <>
+                            {visit.reasonForRemote.substring(0, 30)}...
+                            <button
+                              className={`${getColorClass("visit.status", "text")} ml-2 rounded-full px-2`}
+                              onClick={() => {
+                                handleDetailsClick(
+                                  visit.reasonForRemote,
+                                  "Reason For Remote"
+                                );
+                              }}
+                            >
+                              View More
+                            </button>
+                          </>
+                        ) : (
+                          visit.reasonForRemote ||
+                          "No reasonForRemote provided."
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="flex justify-end items-center ml-auto">
+                  <span className="ml-auto">
+                    Signature:{" "}
+                    <span
+                      className={`${getColorClass(visit.status, "text")} font-bold`}
+                    >
+                      {visit.signature === "done"
+                        ? visit.hcm
+                        : visit.signature || "N/A"}
+                    </span>
+                  </span>
+                </div>
               </div>
             </div>
           </div>

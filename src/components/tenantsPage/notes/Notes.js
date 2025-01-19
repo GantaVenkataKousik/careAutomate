@@ -11,11 +11,13 @@ const Notes = () => {
   const location = useLocation();
   const { tenantData } = location.state || {};
   const [searchQuery, setSearchQuery] = useState("");
-  const [editMode, setEditMode] = useState(false);
+  const [isAddingNote, setIsAddingNote] = useState(false);
+  const [isEditingNote, setIsEditingNote] = useState(false);
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedNotes, setSelectedNotes] = useState("");
-  const [shouldRefetchNotes, setShouldRefetchNotes] = useState(false); // Renamed state
+  const [shouldRefetchNotes, setShouldRefetchNotes] = useState(false);
+  const [noteToEdit, setNoteToEdit] = useState(null);
 
   function formatDate(createdAt) {
     const date = new Date(createdAt);
@@ -42,7 +44,7 @@ const Notes = () => {
     const fetchNotes = async () => {
       try {
         const response = await axios.post(
-          `${API_ROUTES.TENANTS.BASE}/get-tenant-notes`,
+          `${API_ROUTES.TENANTS.NOTES.GET_NOTES}`,
           { tenantId: tenantData._id },
           {
             headers: {
@@ -75,9 +77,20 @@ const Notes = () => {
     fetchNotes();
   }, [tenantData, token, shouldRefetchNotes]);
 
-  const addNote = (newNote) => {
-    setNotes((prevNotes) => [...prevNotes, newNote]);
-    setEditMode(false); // Exit edit mode after adding
+  const handleEditNote = (note) => {
+    setNoteToEdit(note);
+    setIsEditingNote(true);
+  };
+
+  const handleAddNewNote = () => {
+    setNoteToEdit(null);
+    setIsAddingNote(true);
+  };
+
+  const handleCloseForm = () => {
+    setIsAddingNote(false);
+    setIsEditingNote(false);
+    setNoteToEdit(null);
   };
 
   const filteredNotes = notes.filter((note) =>
@@ -92,14 +105,14 @@ const Notes = () => {
         <h1 className="text-[1.8rem] m-0">
           Notes of {tenantData?.name || "Tenant"}
         </h1>
-        <button
-          className={`text-white p-2 px-5 rounded-full ${
-            editMode ? "bg-[#F57070]" : "bg-[#6F84F8]"
-          } `}
-          onClick={() => setEditMode(!editMode)}
-        >
-          {editMode ? "X Cancel" : "+ Add Notes"}
-        </button>
+        {!isAddingNote && !isEditingNote && (
+          <button
+            className="text-white p-2 px-5 rounded-full bg-[#6F84F8]"
+            onClick={handleAddNewNote}
+          >
+            + Add Notes
+          </button>
+        )}
       </div>
 
       <div className="flex p-4">
@@ -149,22 +162,25 @@ const Notes = () => {
 
         {/* Notes Content */}
         <div className="flex-1 p-4 border-l-2 border-gray-300 mr-auto">
-          {noteContent ? (
-            editMode ? (
-              <AddNotes
-                addNote={addNote}
-                setEditMode={setEditMode}
-                tenantId={tenantData._id}
-              />
-            ) : (
-              <NotesDisplay
-                noteContent={noteContent}
-                tenantId={tenantData._id}
-                setShouldRefetchNotes={setShouldRefetchNotes} // Pass this function as prop
-              />
-            )
+          {isAddingNote || isEditingNote ? (
+            <AddNotes
+              onClose={handleCloseForm}
+              tenantId={tenantData._id}
+              initialData={noteToEdit}
+              isEditing={isEditingNote}
+              setShouldRefetchNotes={setShouldRefetchNotes}
+            />
+          ) : noteContent ? (
+            <NotesDisplay
+              noteContent={noteContent}
+              tenantId={tenantData._id}
+              setShouldRefetchNotes={setShouldRefetchNotes}
+              onEditNote={handleEditNote}
+            />
           ) : (
-            <p className="text-gray-500">Select a note to view details.</p>
+            <p className="flex h-full items-center justify-center text-xl border rounded-xl text-gray-500">
+              Select a note to view details.
+            </p>
           )}
         </div>
       </div>
