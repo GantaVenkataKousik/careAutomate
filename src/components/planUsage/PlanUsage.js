@@ -20,6 +20,9 @@ export default function PlanUsage() {
   const [selectedYear, setSelectedYear] = useState("");
   const [yearOptions, setYearOptions] = useState([]);
   const [currentPlanType, setCurrentPlanType] = useState("");
+  const [selectedHcmDetails, setSelectedHcmDetails] = useState([]);
+  const [isFormatModalOpen, setIsFormatModalOpen] = useState(false);
+  const [selectedHcm, setSelectedHcm] = useState(null);
 
   useEffect(() => {
     const fetchUnitsData = async () => {
@@ -77,22 +80,30 @@ export default function PlanUsage() {
 
   const handleDownloadClick = (planType) => {
     setCurrentPlanType(planType);
-    setIsModalOpen(true);
+    setIsFormatModalOpen(true);
+  };
+
+  const handleFormatSelection = (format) => {
+    setIsFormatModalOpen(false);
+    handleDownloadFormat(format);
   };
 
   const handleDownloadFormat = (format) => {
-    const element = document.querySelector(`#${currentPlanType}Grid`);
+    console.log(`Attempting to download as ${format}`);
+    const element = document.querySelector('#planUsageContent');
     if (!element) {
       console.error("Element not found for download");
       return;
     }
 
+    console.log("Element found, proceeding with download...");
     html2canvas(element)
       .then((canvas) => {
+        const fileName = `_plan_usage`;
         if (format === "image") {
           const link = document.createElement("a");
           link.href = canvas.toDataURL("image/png");
-          link.setAttribute("download", `${currentPlanType}_usage.png`);
+          link.setAttribute("download", `${fileName}.png`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -100,7 +111,7 @@ export default function PlanUsage() {
           const imgData = canvas.toDataURL("image/png");
           const pdf = new jsPDF();
           pdf.addImage(imgData, "PNG", 10, 10, 180, 160);
-          pdf.save(`${currentPlanType}_usage.pdf`);
+          pdf.save(`${fileName}.pdf`);
         }
       })
       .catch((error) => {
@@ -108,11 +119,49 @@ export default function PlanUsage() {
       });
   };
 
+  const openHcmModal = (hcm) => {
+    setSelectedHcm(hcm);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedHcmDetails([]);
+  };
+
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title} className="mb-[1rem]">
+    <div id="planUsageContent" style={styles.container}>
+      <h2 style={styles.title} className="mb-[1rem] flex justify-between">
         {" "}
         Plan Usage :
+        <button
+          style={styles.downloadButton}
+          onClick={() => handleDownloadClick()}
+        >
+          <FaDownload /> Download
+        </button>
+        <Modal
+          isOpen={isFormatModalOpen}
+          onRequestClose={() => setIsFormatModalOpen(false)}
+          contentLabel="Select Download Format"
+          style={{
+            content: {
+              ...modalStyles.content,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+          }}
+        >
+          <h2>Select Download Format</h2>
+          <div style={{ marginBottom: '10px', marginTop: '10px' }}>
+            <button style={styles.downloadButton} onClick={() => handleFormatSelection('pdf')}>PDF</button>
+          </div>
+          <div style={{ marginBottom: '10px' }}>
+            <button style={styles.downloadButton} onClick={() => handleFormatSelection('image')}>Image</button>
+          </div>
+        </Modal>
       </h2>
       {loading ? (
         <p style={styles.loadingMessage}>Loading service information...</p>
@@ -148,18 +197,14 @@ export default function PlanUsage() {
                   )}
                 </div>
                 <div style={styles.actions}>
-                  <button
-                    style={styles.downloadButton}
-                    onClick={() => handleDownloadClick(serviceData.serviceType)}
-                  >
-                    <FaDownload /> Download
-                  </button>
+
                 </div>
               </div>
               <RenderPlanData
                 planType={serviceData.serviceType}
                 data={serviceData}
                 styles={styles}
+                onHcmClick={openHcmModal}
               />
             </div>
           ))}
@@ -172,25 +217,40 @@ export default function PlanUsage() {
 
       <Modal
         isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
+        onRequestClose={closeModal}
+        contentLabel="HCM Service Details"
         style={modalStyles}
       >
-        <h2>Select Download Format</h2>
-        <div style={styles.buttonContainer}>
-          <button
-            style={styles.downloadButton}
-            onClick={() => handleDownloadFormat("image")}
-          >
-            Image
-          </button>
-          <button
-            style={styles.downloadButton}
-            onClick={() => handleDownloadFormat("pdf")}
-          >
-            PDF
-          </button>
-        </div>
+        <h2>{selectedHcm?.hcmName} Service Details</h2>
+        <button onClick={closeModal}>Close</button>
+        {selectedHcm && selectedHcm.serviceDetails.length > 0 ? (
+          <table>
+            <thead>
+              <tr>
+                <th>Date of Service</th>
+                <th>Scheduled Units</th>
+                <th>Worked Units</th>
+                <th>Method of Contact</th>
+                <th>Place of Service</th>
+              </tr>
+            </thead>
+            <tbody>
+              {selectedHcm.serviceDetails.map((detail, index) => (
+                <tr key={index}>
+                  <td>{new Date(detail.dateOfService).toLocaleDateString()}</td>
+                  <td>{detail.scheduledUnits}</td>
+                  <td>{detail.workedUnits}</td>
+                  <td>{detail.methodOfContact}</td>
+                  <td>{detail.placeOfService}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>No service details available.</p>
+        )}
       </Modal>
+
     </div>
   );
 }
@@ -320,21 +380,29 @@ const styles = {
     gap: "10px",
   },
   downloadButton: {
-    color: "#000",
+    color: "#fff",
+    backgroundColor: "#6F84F8",
     padding: "10px 20px",
     borderRadius: "5px",
-    border: "none",
+    border: "1px solid #6F84F8",
     cursor: "pointer",
     fontSize: "16px",
     fontWeight: "bold",
     display: "flex",
     alignItems: "center",
+    justifyContent: "center",
     gap: "5px",
+    transition: "background-color 0.3s ease",
   },
-  HcmGrid: {
+  loadingMessage: {
+    color: "#333",
+    fontSize: "1.2em",
+    textAlign: "center",
+    marginTop: "20px",
+  }, HcmGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(280px, 280px))",
-    gap: "20px",
+    gap: "2rem",
     padding: "10px 10px 40px",
   },
   HcmCard: {
@@ -342,6 +410,8 @@ const styles = {
     backgroundColor: "#fff",
     borderRadius: "1rem",
     padding: "0.5rem 1rem",
+    width: "300px",
+    margin: "0.5rem",
   },
   HcmDetails: {
     flex: "1",
@@ -350,15 +420,6 @@ const styles = {
   HcmNameUI: {
     fontWeight: "bold",
     fontSize: "1.2rem",
-    color: "rgba(0, 0, 0, 0.73)",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    maxWidth: "150px",
-    cursor: "pointer",
-  },
-  HcmSubNameUI: {
-    fontSize: "0.8rem",
     color: "rgba(0, 0, 0, 0.73)",
     whiteSpace: "nowrap",
     overflow: "hidden",
@@ -377,13 +438,29 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-  },
-  HcmWorkInfo: {
+  }, noServiceData: {
+    color: "red",
+    fontSize: "1.2em",
+    textAlign: "center",
+    marginTop: "20px",
+  }, HcmWorkInfo: {
     marginTop: "10px",
     padding: "5px 0",
     borderTop: "1px solid #eee",
     fontSize: "0.9rem",
     color: "rgba(0, 0, 0, 0.73)",
+  },
+  periodSelect: {
+    padding: "10px",
+    borderRadius: "0.5rem",
+    cursor: "pointer",
+    backgroundColor: "white",
+    appearance: "none",
+    backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236F84F8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 0.5rem center",
+    backgroundSize: "1.2em 1.2em",
+    paddingRight: "2.5rem",
   },
 };
 

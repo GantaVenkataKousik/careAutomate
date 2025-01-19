@@ -19,6 +19,8 @@ const VisitsTenats = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedVisits, setSelectedVisits] = useState([]);
   const [result, setResult] = useState(null);
+  const [selectedMethod, setSelectedMethod] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -83,6 +85,8 @@ const VisitsTenats = () => {
     ) {
       const visitDetails = result.response.visitDetails[mappedMethod][year][month];
       setSelectedVisits(visitDetails);
+      setSelectedMethod(method);
+      setSelectedMonth(month);
       setModalIsOpen(true);
     }
   };
@@ -120,6 +124,8 @@ const VisitsTenats = () => {
             padding: '20px',
             maxWidth: '500px',
             width: '90%',
+            height: '700px',
+            overflowY: 'auto',
             zIndex: '10000',
           },
           overlay: {
@@ -127,15 +133,29 @@ const VisitsTenats = () => {
           },
         }}
       >
-        <h2>Visit Details</h2>
-        <button onClick={() => setModalIsOpen(false)}>Close</button>
-        <ul>
-          {selectedVisits.map((visit) => (
-            <li key={visit.visitId}>
-              {visit.tenant.tenantName} - {visit.serviceType} on {visit.dateOfService}
-            </li>
-          ))}
-        </ul>
+        <h2 className="flex justify-between items-center font-bold mb-4">
+          {selectedMethod} visits in {selectedMonth}
+          <button onClick={() => setModalIsOpen(false)}>Close</button>
+        </h2>
+
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <th style={{ border: '1px solid #ddd', padding: '8px', width: '30%' }}>Tenant Name</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px', width: '40%' }}>Service Type</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px', width: '30%' }}>Date of Service</th>
+            </tr>
+          </thead>
+          <tbody>
+            {selectedVisits.map((visit) => (
+              <tr key={visit.visitId}>
+                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{visit.tenant.tenantName}</td>
+                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{visit.serviceType}</td>
+                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{visit.dateOfService}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </Modal>
     </div>
   );

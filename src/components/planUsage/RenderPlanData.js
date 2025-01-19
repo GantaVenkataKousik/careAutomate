@@ -1,19 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import HcmImage from "../../images/tenant.jpg";
 import { useNavigate } from "react-router-dom";
+import Modal from "react-modal";
 
 const RenderPlanData = ({ planType, data, styles }) => {
   const navigate = useNavigate();
-  const handleHcmClick = (hcmId, hcm) => {
-    console.log(hcmId, hcm.hcmInfo);
-    navigate("/hcms/hcmProfile", {
-      state: { hcms: hcm.hcmInfo, hcmId: hcmId },
-    });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedHcm, setSelectedHcm] = useState(null);
+
+  console.log('RenderPlanData received data:', data);
+
+  const handleHcmClick = (hcm) => {
+    console.log('HCM clicked:', hcm);
+    setSelectedHcm(hcm);
+    setIsModalOpen(true);
   };
-  if (!data) {
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedHcm(null);
+  };
+
+  if (!data || !data.assignedHCMs || data.assignedHCMs.length === 0) {
     return (
       <p style={styles.noServiceData}>
-        No services have been done for this tenant.
+        No HCM is Assigned
       </p>
     );
   }
@@ -63,52 +74,99 @@ const RenderPlanData = ({ planType, data, styles }) => {
         <h2 className="flex items-center justify-center text-[#6F84F8] text-xl font-bold">
           Assigned HCM's
         </h2>
-        {data.hcmDetails && data.hcmDetails.length > 0 ? (
-          <div style={styles.HcmGrid}>
-            {data.hcmDetails.map((hcm, index) => (
-              <div key={hcm.hcmId || index} style={styles.HcmCard}>
-                <div style={styles.HcmCardUpperContainer}>
-                  <div style={styles.HcmDetails}>
-                    <h3
-                      style={styles.HcmNameUI}
-                      onClick={() => handleHcmClick(hcm.hcmId, hcm)}
-                    >
-                      {`${hcm.hcmInfo?.personalInfo?.firstName} ${hcm.hcmInfo?.personalInfo?.lastName}`}
-                    </h3>
-                    <p style={styles.HcmSubNameUI}>
-                      {hcm.hcmInfo?.contactInfo?.phoneNumber}
-                    </p>
-                    <p style={styles.HcmSubNameUI}>
-                      {hcm.hcmInfo?.contactInfo?.email}
-                    </p>
-                  </div>
-                  <div>
-                    <img src={HcmImage} alt="Hcm" style={styles.HcmImg} />
-                  </div>
+        <div style={styles.HcmGrid}>
+          {data.assignedHCMs.map((hcm, index) => (
+            <div key={hcm.hcmId || index} style={styles.HcmCard} className="width-500px">
+              <div style={styles.HcmCardUpperContainer}>
+                <div style={styles.HcmDetails}>
+                  <h3
+                    style={styles.HcmNameUI}
+                    onClick={() => handleHcmClick(hcm)}
+                  >
+                    {`${hcm.hcmInfo?.personalInfo?.firstName} ${hcm.hcmInfo?.personalInfo?.lastName}`}
+                  </h3>
+                  <p style={styles.HcmSubNameUI}>
+                    {hcm.hcmInfo?.contactInfo?.phoneNumber}
+                  </p>
+                  <p style={styles.HcmSubNameUI}>
+                    {hcm.hcmInfo?.contactInfo?.email}
+                  </p>
                 </div>
-                <div style={styles.HcmWorkInfo}>
-                  <p style={styles.valueGreen}>
-                    <span className="font-bold text-gray-600 mr-1">
-                      Worked Hours:
-                    </span>{" "}
-                    {Number(hcm.workedHours.toFixed(2))} hrs
-                  </p>
-                  <p style={styles.valueOrange}>
-                    <span className="font-bold text-gray-600 mr-1">
-                      Worked Units:
-                    </span>{" "}
-                    {Number(hcm.workedUnits.toFixed(3))} units
-                  </p>
+                <div>
+                  <img src={HcmImage} alt="Hcm" style={styles.HcmImg} />
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <p>No HCM is Assigned</p>
-        )}
+              <div style={styles.HcmWorkInfo}>
+                <p style={styles.valueGreen}>
+                  <span className="font-bold text-gray-600 mr-1">
+                    Worked Hours:
+                  </span>{" "}
+                  {Number(hcm.workedHours.toFixed(2))} hrs
+                </p>
+                <p style={styles.valueOrange}>
+                  <span className="font-bold text-gray-600 mr-1">
+                    Worked Units:
+                  </span>{" "}
+                  {Number(hcm.workedUnits.toFixed(3))} units
+                </p>
+              </div>
+              <div className="serviceDetails">
+
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          contentLabel="HCM Service Details"
+          style={modalStyles}
+        >
+          <h2 className=" font-bold mb-4">{selectedHcm?.hcmName}  Service Details</h2>
+          {selectedHcm?.serviceDetails?.length > 0 ? (
+            <table style={{ fontSize: '1em', borderCollapse: 'collapse', width: '100%' }}>
+              <thead>
+                <tr>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Date of Service</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Scheduled Units</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Worked Units</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Method of Contact</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Place of Service</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedHcm.serviceDetails.map((detail, index) => (
+                  <tr key={index}>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>{new Date(detail.dateOfService).toLocaleDateString()}</td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>{detail.scheduledUnits}</td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>{detail.workedUnits}</td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>{detail.methodOfContact}</td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>{detail.placeOfService}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No service details available.</p>
+          )}
+        </Modal>
       </div>
     </div>
   );
+};
+
+const modalStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    padding: "20px",
+    textAlign: "center",
+  },
 };
 
 export default RenderPlanData;

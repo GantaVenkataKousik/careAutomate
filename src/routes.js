@@ -1,5 +1,5 @@
 import { BASE_URL } from "./config";
-
+const LOCAL_URL = "http://localhost:9003";
 export const API_ROUTES = {
   AUTH: {
     BASE: `${BASE_URL}/auth`,
@@ -31,7 +31,7 @@ export const API_ROUTES = {
   },
   BILLING: {
     TENANTS_RUNNING_BY_UNITS: `${BASE_URL}/bill/tenants-running-by-units/`,
-    PLAN_USAGE: `${BASE_URL}/bill/plan-usage/`,
+    PLAN_USAGE: `${LOCAL_URL}/bill/plan-usage/`,
     BILLS_PENDING_BY_TENANT: `${BASE_URL}/bill/get-bills-pending-by-tenant/`,
     BILLS_PAID_BY_TENANT: `${BASE_URL}/bill/get-bills-completed-by-tenant/`,
     GET_BILLS_PENDING: `${BASE_URL}/bill/get-bills-pending/`,
@@ -46,7 +46,19 @@ export const API_ROUTES = {
     UPDATE_TENANT: `${BASE_URL}/tenant/update-tenant/`,
     GET_INFO: `${BASE_URL}/tenant/get-tenant-info/`,
     REASSESSMENTS: `${BASE_URL}/tenant/tenant-reassessments/`,
+
     // Add other tenant-related routes here
   },
-  // Add other general routes here
+  REPORTS: {
+    BASE: `${BASE_URL}/reports`,
+
+    //tenant-reports
+    GET_TENANT_PERSONAL_INFO_REPORTS: `${BASE_URL}/reports/tenant-personal-info-reports/`,
+    GET_TENANT_SERVICE_TRACKING_PLAN_REPORTS: `${BASE_URL}/reports/service-tracking-plan-reports/`,
+    GET_TENANT_VISIT_COMPLIANCE_REPORTS: `${BASE_URL}/reports/tenant-visit-compliance-reports/`,
+
+    //hcm-reports
+    GET_HCM_PERSONAL_INFO_REPORTS: `${BASE_URL}/reports/hcm-personal-info-reports/`,
+  },
 };
+

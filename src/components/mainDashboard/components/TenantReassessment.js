@@ -17,6 +17,7 @@ const TenantReassessment = () => {
     const [loading, setLoading] = useState(true);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedReassessments, setSelectedReassessments] = useState([]);
+    const [selectedDayCount, setSelectedDayCount] = useState("");
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -50,6 +51,7 @@ const TenantReassessment = () => {
     const handleBarClick = (days) => {
         if (reassessmentData[days]) {
             setSelectedReassessments(reassessmentData[days]);
+            setSelectedDayCount(days);
             setModalIsOpen(true);
         }
     };
@@ -84,15 +86,29 @@ const TenantReassessment = () => {
                     },
                 }}
             >
-                <h2>Reassessment Details</h2>
-                <button onClick={() => setModalIsOpen(false)}>Close</button>
-                <ul>
-                    {selectedReassessments.map((reassessment, index) => (
-                        <li key={index}>
-                            {reassessment.tenantName} - {reassessment.serviceType} from {reassessment.period}
-                        </li>
-                    ))}
-                </ul>
+                <h2 className="flex justify-between items-center font-bold mb-4">
+                    {selectedDayCount} days  Reassessment Details
+                    <button onClick={() => setModalIsOpen(false)}>Close</button>
+                </h2>
+
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                        <tr>
+                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>Tenant Name</th>
+                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>Service Type</th>
+                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>Period</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {selectedReassessments.map((reassessment, index) => (
+                            <tr key={index}>
+                                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{reassessment.tenantName}</td>
+                                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{reassessment.serviceType}</td>
+                                <td style={{ border: '1px solid #ddd', padding: '8px' }}>{reassessment.period}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </Modal>
         </div>
     );
