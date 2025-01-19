@@ -4,7 +4,7 @@ import { FaUserTie } from "react-icons/fa";
 import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
 import { BASE_URL } from "../../config"; // Ensure BASE_URL is correctly set
 
-const AssignedHcms = ({ tenantId }) => {
+const AssignedHcms = ({ tenantId, shouldRefreshAssignedHcms }) => {
   const [hcms, setHcms] = useState([]);
   useEffect(() => {
     const fetchAssignedHcms = async () => {
@@ -39,7 +39,7 @@ const AssignedHcms = ({ tenantId }) => {
     };
 
     fetchAssignedHcms();
-  }, [tenantId]);
+  }, [tenantId, shouldRefreshAssignedHcms]);
 
   return (
     <div className="space-y-3 overflow-y-auto max-h-[calc(5*3rem)] mt-2 tenant-visits-scrollbar">

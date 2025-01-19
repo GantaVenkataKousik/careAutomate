@@ -8,9 +8,12 @@ import VisitCard from "./VisitCard";
 import VisitDetailsPopup from "./VisitDetailsPopup";
 import VisitFilter from "./VisitFilter";
 import { applyVisitsFilters } from "../../utils/visitsUtils/VisitsListFilterUtils/VisitFetchFilter";
+import { toast } from "react-toastify";
 
 const VisitList = () => {
   const [detailsPopup, setDetailsPopup] = useState("");
+  const [detailTitle, setDetailTitle] = useState("");
+  const [activeTab, setActiveTab] = useState("Pending");
   const [openPopup, setOpenPopup] = useState(false);
   const [openNewVisitPopup, setOpenNewVisitPopup] = useState(false);
   const [visitData, setVisitData] = useState([]);
@@ -24,6 +27,7 @@ const VisitList = () => {
     startDate: null,
     endDate: null,
   });
+  const [shouldRefreshVisit, setShouldRefreshVisit] = useState(false);
 
   const fetchVisits = async () => {
     let url = `${BASE_URL}/visit/fetchVisits`;
@@ -36,7 +40,7 @@ const VisitList = () => {
       });
       if (response.data.response) {
         // Sorting the visits by the createdAt date (most recent first)
-        // console.log("raw", response.data.visits);
+        // console.log("raw", response.data.response);
         // Mapping the sorted visits
         // console.log(response);
         const mappedVisits = response.data.response.map((visit) => ({
@@ -44,7 +48,9 @@ const VisitList = () => {
           title: visit.activity,
           startDate: visit.dateOfService || visit.date,
           endDate: visit.dateOfService || visit.date,
-          typeMethod: visit.methodOfVisit,
+          startTime: visit.startTime,
+          endTime: visit.endTime,
+          typeMethod: visit.methodOfContact,
           hcm: visit.hcmId?.name || "N/A",
           hcmId: visit.hcmId?._id || "N/A",
           scheduledDate: visit.scheduledDate ?? "",
@@ -55,8 +61,6 @@ const VisitList = () => {
           status: visit.status,
           serviceType: visit.serviceType,
           placeOfService: visit.placeOfService || visit.place,
-          approved: visit.approved,
-          rejected: visit.rejected,
           totalMile: visit.totalMiles,
           createdAt: visit.createdAt,
           tenantName: visit.tenantId?.name,
@@ -65,10 +69,11 @@ const VisitList = () => {
           travelWithTenant: visit.travelWithTenant,
           travelWithoutTenant: visit.travelWithoutTenant,
           response: visit.response ?? "",
+          reasonForRemote: visit.reasonForRemote,
         }));
         // console.log("mapped", mappedVisits);
         const sortedVisits = mappedVisits.sort((a, b) => {
-          return new Date(b.createdAt) - new Date(a.createdAt);
+          return new Date(b.startDate) - new Date(a.startDate);
         });
         setVisitData(sortedVisits);
         // console.log(sortedVisits);
@@ -83,10 +88,11 @@ const VisitList = () => {
   // Fetch all visits initially
   useEffect(() => {
     fetchVisits();
-  }, []);
+  }, [shouldRefreshVisit]);
 
-  const handleDetailsClick = (details) => {
+  const handleDetailsClick = (details, title) => {
     setDetailsPopup(details);
+    setDetailTitle(title);
     setOpenPopup(true);
   };
 
@@ -96,10 +102,18 @@ const VisitList = () => {
   const handleFilterUpdate = (newFilters) => {
     setActiveFilters(newFilters);
   };
-  const filteredVisits = useMemo(
-    () => applyVisitsFilters(visitData, activeFilters),
-    [visitData, activeFilters]
-  );
+  const filteredVisits = useMemo(() => {
+    // Filter visits based on the activeTab and any other filters
+    const tabFilteredVisits = visitData.filter((visit) => {
+      if (activeTab === "Approved") return visit.status === "approved";
+      if (activeTab === "Rejected") return visit.status === "rejected";
+      if (activeTab === "Pending") return visit.status === "pending";
+      return true; // Default, show all if no matching tab
+    });
+
+    // Apply additional filters (like tenant, HCM, etc.)
+    return applyVisitsFilters(tabFilteredVisits, activeFilters);
+  }, [visitData, activeFilters, activeTab]);
 
   const handleEditClick = (index, id, visit) => {
     // dispatch(setSelectedVisit(visit));
@@ -108,19 +122,23 @@ const VisitList = () => {
     setOpenNewVisitPopup(true);
   };
 
-  const handleStatusUpdate = async (index, isApproved) => {
-    const visitId = visitData[index]._id;
+  const handleStatusUpdate = async (index, status) => {
+    const visitId = index;
     const url = `${BASE_URL}/visit/${visitId}`;
     const response = await axios.put(
       url,
-      { status: isApproved ? "approved" : "rejected" },
+      { status: status },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
+    // console.log(response);
     if (response) {
+      toast.success(
+        `Visit is successfully ${status === "pending" ? "Withdraw" : status}`
+      );
       fetchVisits();
     } else {
       console.error("Failed to update visit status:", response.data.message);
@@ -136,6 +154,8 @@ const VisitList = () => {
       <VisitHeader
         isListView={isListView}
         setIsListView={setIsListView}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
         setOpenNewVisitPopup={setOpenNewVisitPopup}
         visitCount={visitData.length} // Pass visit count here
       />
@@ -148,10 +168,10 @@ const VisitList = () => {
 
       {/* Visit List */}
       {!isListView ? (
-        <VisitCalendarView visits={visitData} />
+        <VisitCalendarView visits={filteredVisits} />
       ) : (
         <div className="flex gap-8 w-full pt-6 h-[calc(100vh-180px)] overflow-hidden">
-          <div className="flex-grow overflow-y-auto tenant-visits-scrollbar">
+          <div className="flex-grow overflow-y-auto px-4 tenant-visits-scrollbar">
             <VisitCard
               // visitData={visitData}
               visitData={
@@ -165,7 +185,7 @@ const VisitList = () => {
               handleStatusUpdate={handleStatusUpdate}
             />
           </div>
-          <div className="w-[280px] flex-shrink-0 border border-gray-200 rounded-[20px] p-[10px] h-full overflow-y-auto tenant-visits-scrollbar">
+          <div className="w-[280px] flex-shrink-0 border border-[#6F84F8] rounded-[20px] p-[10px] h-full overflow-y-auto tenant-visits-scrollbar">
             <VisitFilter onFilterUpdate={handleFilterUpdate} />
           </div>
         </div>
@@ -175,14 +195,17 @@ const VisitList = () => {
         openPopup={openPopup}
         handleClosePopup={handleClosePopup}
         detailsPopup={detailsPopup}
+        title={detailTitle}
       />
 
       {/* Visit Modal */}
       <VisitModal
         isOpen={openNewVisitPopup}
         onClose={() => setOpenNewVisitPopup(false)}
-        onVisitCreated={editVisitData}
+        editVisitData={editVisitData}
         isEdit={isEdit}
+        setIsEdit={setIsEdit}
+        setShouldRefreshVisit={setShouldRefreshVisit}
       />
     </div>
   );

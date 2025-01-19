@@ -17,7 +17,12 @@ const HCMRow = ({ name, onCallClick }) => (
 );
 
 // Main component
-const TenantsAssigned = ({ hcmId }) => {
+const TenantsAssigned = ({
+  hcmId,
+  setOpenAssignTenantModal,
+  shouldRefreshAssignedTenants,
+}) => {
+  // console.log("assigned", hcmId);
   const [tenants, setTenants] = useState([]);
   useEffect(() => {
     const fetchAssignedTenants = async () => {
@@ -30,7 +35,7 @@ const TenantsAssigned = ({ hcmId }) => {
 
         const response = await axios.post(
           `${BASE_URL}/hcm/get-assigned-tenants-to-hcm/`,
-          { hcmId },
+          { hcmId: hcmId },
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -40,6 +45,7 @@ const TenantsAssigned = ({ hcmId }) => {
         );
         if (response.data.response) {
           setTenants(response.data.response);
+          // console.log(response);
         } else {
           console.error(
             "Failed to fetch assigned HCMs:",
@@ -52,7 +58,7 @@ const TenantsAssigned = ({ hcmId }) => {
     };
 
     fetchAssignedTenants();
-  }, [hcmId]);
+  }, [hcmId, shouldRefreshAssignedTenants]);
 
   return (
     <div className="relative bg-white p-5 rounded-[20px] shadow-lg max-w-md mx-auto">
@@ -84,7 +90,10 @@ const TenantsAssigned = ({ hcmId }) => {
 
       {/* Icons at Bottom */}
       <div className="absolute bottom-5 right-5 flex space-x-2">
-        <AiFillPlusCircle className="text-3xl text-[#6DD98C] cursor-pointer" />
+        <AiFillPlusCircle
+          className="text-3xl text-[#6DD98C] cursor-pointer"
+          onClick={() => setOpenAssignTenantModal(true)}
+        />
         <AiFillMinusCircle className=" text-3xl text-[#F57070] cursor-pointer" />
       </div>
     </div>

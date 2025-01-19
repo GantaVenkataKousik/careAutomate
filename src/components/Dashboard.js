@@ -7,6 +7,7 @@ import { API_ROUTES } from "../routes";
 import { formatTime, monthNames, today } from "../utils/commonUtils/timeFilter";
 import ProfileCard from "./tenantsPage/ProfileCard";
 import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
+import AssignHcmsPopup from "./tenantsPage/AssignHcmsPopup";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -19,12 +20,16 @@ const ProfilePage = () => {
   const [documents, setDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   // const [error, setError] = useState(null);
-  console.log(tenantId);
+  const [openAssignHcmModal, setOpenAssignHcmModal] = useState(false);
+  const [shouldRefreshAssignedHcms, setShouldRefreshAssignedHcms] =
+    useState(false);
+
+  // console.log(tenantId);
   const fetchDocuments = async (tenantData) => {
     try {
       const token = localStorage.getItem("token");
       const id = tenantData._id;
-      console.log("user", id);
+      // console.log("user", id);
       if (!token) {
         throw new Error("Authorization token not found");
       }
@@ -42,7 +47,7 @@ const ProfilePage = () => {
       }
 
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       // Set the documents state to the correct array
       if (data.success && Array.isArray(data.documents)) {
         setDocuments(data.documents);
@@ -115,7 +120,7 @@ const ProfilePage = () => {
         }
 
         const data = await response.json();
-        console.log("Appointment Data:", data);
+        // console.log("Appointment Data:", data);
         setAppointments(data); // Assume `data` contains the list of appointments
 
         setIsLoading(false);
@@ -137,14 +142,6 @@ const ProfilePage = () => {
   const [selectedDescription, setSelectedDescription] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
-
-  const openDocument = () => {
-    setOpenModal(true);
-  };
-
-  const closeModal = () => {
-    setOpenModal(false);
-  };
 
   const sampleRecords = [
     {
@@ -220,11 +217,17 @@ const ProfilePage = () => {
 
           {/* List of Assigned HCMs */}
           <div className="space-y-3">
-            <AssignedHcms tenantId={tenantId} />
+            <AssignedHcms
+              tenantId={tenantId}
+              shouldRefreshAssignedHcms={shouldRefreshAssignedHcms}
+            />
           </div>
           {/* Icons at Bottom */}
           <div className="absolute bottom-5 right-5 flex space-x-2">
-            <AiFillPlusCircle className="text-3xl text-[#6DD98C] cursor-pointer" />
+            <AiFillPlusCircle
+              className="text-3xl text-[#6DD98C] cursor-pointer"
+              onClick={() => setOpenAssignHcmModal(!openAssignHcmModal)}
+            />
             <AiFillMinusCircle className=" text-3xl text-[#F57070] cursor-pointer" />
           </div>
         </div>
@@ -467,6 +470,14 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+      {openAssignHcmModal && (
+        <AssignHcmsPopup
+          tenantData={tenantData}
+          setShouldRefreshAssignedHcms={setShouldRefreshAssignedHcms}
+          open={openAssignHcmModal}
+          onClose={() => setOpenAssignHcmModal(false)}
+        />
+      )}
     </div>
   );
 };

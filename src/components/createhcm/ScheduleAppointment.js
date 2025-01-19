@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { convertToUTCString } from "../../utils/commonUtils/timeFilter";
 
 const ScheduleAppointment = ({ assignTenantLater }) => {
   const [hcm, setHcm] = useState("");
@@ -110,10 +111,10 @@ const ScheduleAppointment = ({ assignTenantLater }) => {
     // console.log("Date:", startDate);
     // console.log("Start Time:", startTime);
     // console.log("End Time:", endTime);
-    const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
-    const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
-    const formattedStartTime = startDateTime.toISOString();
-    const formattedEndTime = endDateTime.toISOString();
+    // const startDateTime = new Date(`${startDate}T${startTime}:00Z`); // Appends 'Z' for UTC
+    // const endDateTime = new Date(`${startDate}T${endTime}:00Z`);
+    const formattedStartTime = convertToUTCString(startDate, startTime);
+    const formattedEndTime = convertToUTCString(startDate, endTime);
     const payload = {
       tenantId: hcm || "Unknown",
       hcmId: hcmId || "N/A",

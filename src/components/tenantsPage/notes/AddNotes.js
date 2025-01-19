@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useAuth } from "../../../AuthContext";
@@ -6,46 +6,65 @@ import { toast } from "react-toastify";
 import { API_ROUTES } from "../../../routes";
 import axios from "axios";
 
-const AddNotes = ({ setEditMode, addNote, tenantId }) => {
+const AddNotes = ({
+  onClose,
+  tenantId,
+  initialData,
+  isEditing,
+  setShouldRefetchNotes,
+}) => {
   const { currentUser, token } = useAuth();
   const [title, setTitle] = useState("");
   const [noteDetails, setNoteDetails] = useState("");
 
+  useEffect(() => {
+    if (initialData && isEditing) {
+      setTitle(initialData.title);
+      setNoteDetails(initialData.content);
+    }
+  }, [initialData, isEditing]);
+
   const handleSaveNotes = async (e) => {
     e.preventDefault();
-    const newNote = {
+    const noteData = {
       tenantId: tenantId,
       title: title,
       content: noteDetails,
-      notedBy: currentUser?._id, // Optional chaining for safety
     };
 
-    try {
-      const apiUrl = `${API_ROUTES.TENANTS.BASE}/add-tenant-note`;
-      console.log("API URL:", apiUrl);
-      console.log("New Note:", newNote);
-      console.log("Token:", token);
+    if (!isEditing) {
+      noteData.notedBy = currentUser._id;
+    }
 
-      const response = await axios.post(apiUrl, newNote, {
+    if (isEditing) {
+      noteData.noteId = initialData.id;
+    }
+
+    try {
+      const apiUrl = isEditing
+        ? `${API_ROUTES.TENANTS.NOTES.UPDATE_NOTES}`
+        : `${API_ROUTES.TENANTS.NOTES.ADD_NOTE}`;
+
+      const response = await axios.post(apiUrl, noteData, {
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-          Authentication: `Bearer ${token}`,
         },
       });
 
-      console.log("Response:", response);
-
       if (response.data?.success) {
-        toast.success("Note Added Successfully");
-        setEditMode(false);
-        console.log(response.data);
+        toast.success(
+          isEditing ? "Note Updated Successfully" : "Note Added Successfully"
+        );
+        // Instead of using the response data directly, trigger a re-fetch
+        setShouldRefetchNotes((prev) => !prev); // Toggle the value to trigger useEffect
+        onClose(); // Close the form after successful operation
       } else {
-        console.log(response.data);
         toast.error(response.data?.message || "An error occurred");
       }
     } catch (error) {
       console.error("Axios Error:", error);
-      toast.error("Notes failed to upload");
+      toast.error(isEditing ? "Failed to update note" : "Failed to add note");
     }
   };
 
@@ -54,7 +73,9 @@ const AddNotes = ({ setEditMode, addNote, tenantId }) => {
       <div className="flex justify-between items-center">
         <div className="flex gap-2 items-center pb-3">
           <div className="bg-[#6F84F8] w-3 rounded-[20px] h-10"></div>
-          <h2 className="text-xl font-semibold text-gray-600">Add Notes</h2>
+          <h2 className="text-xl font-semibold text-gray-600">
+            {isEditing ? "Edit Note" : "Add Notes"}
+          </h2>
         </div>
       </div>
       <div className="m-5 p-5 border-2 border-gray-350 rounded-xl">
@@ -98,7 +119,7 @@ const AddNotes = ({ setEditMode, addNote, tenantId }) => {
             <button
               type="button"
               className="cursor-pointer text-[#F57070] rounded-full border-[#F57070] border-2 py-3 px-2 w-full mt-4 mb-9 mr-8 hover:bg-[#F57070] hover:text-white"
-              onClick={() => setEditMode(false)}
+              onClick={onClose}
             >
               Cancel
             </button>
@@ -106,7 +127,7 @@ const AddNotes = ({ setEditMode, addNote, tenantId }) => {
               type="submit"
               className="cursor-pointer text-[#6F84F8] rounded-full border-[#6F84F8] border-2 py-3 px-2 w-full mt-4 mb-9 hover:bg-[#6F84F8] hover:text-white"
             >
-              Create Notes
+              {isEditing ? "Update Note" : "Create Note"}
             </button>
           </div>
         </form>
