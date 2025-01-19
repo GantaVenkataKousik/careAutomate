@@ -130,8 +130,8 @@ const MonthView = () => {
             style: {
               backgroundColor: color,
               borderRadius: "5px",
-              padding: "5px",
               marginTop: "-10px",
+              width: "165px",
             },
           };
         }}

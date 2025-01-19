@@ -37,6 +37,7 @@ const AppointmentModal = ({
   const [activity, setActivity] = useState("");
   const [tenantServices, setTenantServices] = useState([]);
   const [loadingServices, setLoadingServices] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -343,6 +344,9 @@ const AppointmentModal = ({
       status: "pending",
     };
 
+    setIsCreating(true); // Set loading state to true
+    toast.info("Creating appointment... Please wait");
+
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
@@ -368,6 +372,8 @@ const AppointmentModal = ({
     } catch (error) {
       console.error("Error during API call:", error);
       toast.error("Error creating appointment. Please try again.");
+    } finally {
+      setIsCreating(false); // Reset loading state
     }
   };
 
@@ -404,6 +410,7 @@ const AppointmentModal = ({
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
           onClick={onClose}
           aria-label="Close"
+          disabled={isCreating} // Disable close button while creating
         >
           &times;
         </button>
@@ -628,12 +635,14 @@ const AppointmentModal = ({
 
           <div className="flex gap-4 w-2/3" style={{ marginLeft: "auto" }}>
             <button
-              onClick={handleSubmit}
+              onClick={handleCreateAppointment}
               disabled={loading}
-              className="cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg
+              className={`cursor-pointer transition-all bg-[#6F84F8] text-white px-6 py-2 rounded-lg
               border-blue-600
               border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
-              active:border-b-[2px] active:brightness-90 active:translate-y-[2px]  py-3 px-6 w-full mt-6"
+              active:border-b-[2px] active:brightness-90 active:translate-y-[2px] py-3 px-6 w-full mt-6
+              ${isCreating ? "opacity-50 cursor-not-allowed" : ""}`}
+            // Disable button while creating
             >
               {isEdit
                 ? loading
@@ -645,12 +654,14 @@ const AppointmentModal = ({
             </button>
             <button
               onClick={onClose || handleCancelAppointment}
-              className=" cursor-pointer transition-all bg-[#F57070] text-white 
+              className={`cursor-pointer transition-all bg-[#F57070] text-white 
               px-6 py-2 rounded-lg 
               border-red-700 border-b-[4px] 
               hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] 
               active:border-b-[2px] active:brightness-90 active:translate-y-[2px] 
-              py-3 px-6 w-full mt-6"
+              py-3 px-6 w-full mt-6
+              ${isCreating ? "opacity-50 cursor-not-allowed" : ""}`}
+              disabled={isCreating} // Disable button while creating
             >
               Cancel
             </button>

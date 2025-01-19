@@ -146,11 +146,10 @@ const Appointment = () => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-2 rounded-full font-medium ${
-                    activeTab === tab
+                  className={`px-4 py-2 rounded-full font-medium ${activeTab === tab
                       ? "bg-[#6F84F8] text-white"
                       : "bg-gray-200 text-gray-600"
-                  }`}
+                    }`}
                 >
                   {tab}
                 </button>
@@ -178,9 +177,8 @@ const Appointment = () => {
                 {/* Calendar Button */}
                 <button
                   onClick={() => setIsListView(false)}
-                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
-                    !isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-                  } `}
+                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${!isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                    } `}
                 >
                   <IoCalendar className="text-2xl" />
                 </button>
@@ -188,9 +186,8 @@ const Appointment = () => {
                 {/* List Button */}
                 <button
                   onClick={() => setIsListView(true)}
-                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${
-                    isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
-                  } `}
+                  className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${isListView ? "bg-white text-[#6F84F8]" : "text-gray-600"
+                    } `}
                 >
                   <IoList className="text-2xl" />
                 </button>

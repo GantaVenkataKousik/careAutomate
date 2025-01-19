@@ -46,6 +46,7 @@ export const API_ROUTES = {
     GET_INFO: `${BASE_URL}/tenant/get-tenant-info/`,
     REASSESSMENTS: `${BASE_URL}/tenant/tenant-reassessments/`,
 
+
     // Add other tenant-related routes here
   },
   REPORTS: {

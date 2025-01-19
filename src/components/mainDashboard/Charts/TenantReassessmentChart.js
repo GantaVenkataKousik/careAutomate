@@ -1,12 +1,19 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 
-const TenantReassessmentChart = ({ dayCounts }) => {
+const TenantReassessmentChart = ({ dayCounts, onBarClick }) => {
     const chartOptions = {
         chart: {
             type: "bar",
             toolbar: {
-                show: false, // Disable the toolbar
+                show: false,
+            },
+            events: {
+                dataPointSelection: (event, chartContext, config) => {
+                    const { dataPointIndex } = config;
+                    const days = ["90", "60", "30", "15", "5"][dataPointIndex];
+                    onBarClick(days);
+                },
             },
         },
         plotOptions: {
@@ -17,12 +24,12 @@ const TenantReassessmentChart = ({ dayCounts }) => {
             },
         },
         xaxis: {
-            categories: ["90", "60", "30", "15", "5"], // Reverse order
+            categories: ["90", "60", "30", "15", "5"],
             labels: {
                 style: {
                     colors: "#333",
                     fontSize: "12px",
-                    fontWeight: "normal", // Ensure labels are not bold
+                    fontWeight: "normal",
                 },
             },
             title: {
@@ -30,7 +37,7 @@ const TenantReassessmentChart = ({ dayCounts }) => {
                 style: {
                     color: "#333",
                     fontSize: "14px",
-                    fontWeight: "normal", // Ensure title is not bold
+                    fontWeight: "normal",
                 },
             },
         },
@@ -40,14 +47,14 @@ const TenantReassessmentChart = ({ dayCounts }) => {
                 style: {
                     color: "#333",
                     fontSize: "14px",
-                    fontWeight: "normal", // Ensure title is not bold
+                    fontWeight: "normal",
                 },
             },
             labels: {
                 style: {
                     colors: "#333",
                     fontSize: "12px",
-                    fontWeight: "normal", // Ensure labels are not bold
+                    fontWeight: "normal",
                 },
             },
         },
@@ -64,7 +71,7 @@ const TenantReassessmentChart = ({ dayCounts }) => {
             horizontalAlign: "center",
             labels: {
                 colors: "#333",
-                fontWeight: "normal", // Ensure legend labels are not bold
+                fontWeight: "normal",
             },
         },
         colors: ["#1E90FF"],
@@ -84,12 +91,14 @@ const TenantReassessmentChart = ({ dayCounts }) => {
     ];
 
     return (
-        <ReactApexChart
-            options={chartOptions}
-            series={chartSeries}
-            type="bar"
-            height={350}
-        />
+        <div className="chart-container" style={{ cursor: 'pointer' }}>
+            <ReactApexChart
+                options={chartOptions}
+                series={chartSeries}
+                type="bar"
+                height={350}
+            />
+        </div>
     );
 };
 

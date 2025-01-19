@@ -29,7 +29,7 @@ class MyCalendar2 extends Component {
         ranges={[selectionRange]}
         onChange={this.handleSelect} // Binding the onChange to the class method
         locale={enUS} // Setting the locale for the calendar
-        // showDateDisplay={false} // Hide the left-side panel
+      // showDateDisplay={false} // Hide the left-side panel
       />
     );
   }
